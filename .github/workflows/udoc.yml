@@ -41,7 +41,7 @@ jobs:
           sudo apt-get install python3-venv python3-wheel -y
           sudo pip3 install wheel pylode==2.13.2 rdflib shapely
           mkdir docs
-          python3 ${{inputs.rdffilepath}} ${{inputs.docpath}} ${{inputs.prefixns}} ${{inputs.prefixnsshort}} ${{inputs.indexpages}} 
+          python3 docgeneration.py ${{inputs.rdffilepath}} ${{inputs.docpath}} ${{inputs.prefixns}} ${{inputs.prefixnsshort}} ${{inputs.indexpages}} 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
