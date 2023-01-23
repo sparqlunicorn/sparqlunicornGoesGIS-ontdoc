@@ -30,7 +30,7 @@ on:
 jobs:
   sample-action:
     name: Ontology Documentation
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -38,6 +38,9 @@ jobs:
           fetch-depth: '0'
       - name: Run sample action
         run: |
+          sudo apt-get install python3-venv python3-wheel -y
+          sudo pip3 install wheel pylode==2.13.2 rdflib shapely
+          mkdir docs
           python3 ${{inputs.rdffilepath}} ${{inputs.docpath}} ${{inputs.prefixns}} ${{inputs.prefixnsshort}} ${{inputs.indexpages}} 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v3
