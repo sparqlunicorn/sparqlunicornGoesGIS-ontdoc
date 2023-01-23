@@ -1925,7 +1925,12 @@ class OntDocGeneration:
         savepath = savepath.replace("\\", "/")
         checkdepth=self.checkDepthFromPath(savepath, baseurl, subject)
         foundlabel = ""
-        imageannos=set()
+	logo=""
+        if self.logoname!=None and self.logoname!="":
+            logo="<img src=\""+self.logoname+"\" alt=\"logo\" width=\"25\" height=\"25\"/>&nbsp;&nbsp;"
+        textannos = []
+        foundvals=set()
+	imageannos=set()
         image3dannos=set()
         predobjmap={}
         isgeocollection=False
