@@ -1375,10 +1375,7 @@ classtreequery="""PREFIX owl: <http://www.w3.org/2002/07/owl#>\n
 
 
 def resolveTemplate(templatename):
-    QgsMessageLog.logMessage("Templatename " + str(templatename), "OntdocGeneration", Qgis.Info)
-    QgsMessageLog.logMessage("Templatename " + str(templatepath+"/"+templatename)+" - "+str(os.path.exists(templatepath+"/"+templatename)), "OntdocGeneration", Qgis.Info)
     if os.path.exists(templatepath+"/"+templatename):
-        QgsMessageLog.logMessage("Postprocessingggg " + str("""subdir"""), "OntdocGeneration", Qgis.Info)
         if os.path.exists(templatepath+"/"+templatename+"/css/style.css"):
             with open(templatepath+"/"+templatename+"/css/style.css", 'r') as file:
                 global stylesheet
