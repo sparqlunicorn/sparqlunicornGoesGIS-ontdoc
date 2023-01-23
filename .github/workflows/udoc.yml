@@ -37,8 +37,6 @@ jobs:
         with:
           fetch-depth: '0'
       - name: Run sample action
-        with:
-          ghcr-token: ${{ secrets.ghcr-token }}
         run: |
           python3 ${{inputs.rdffilepath}} ${{inputs.docpath}} ${{inputs.prefixns}} ${{inputs.prefixnsshort}} ${{inputs.indexpages}} 
       - name: Deploy 🚀
