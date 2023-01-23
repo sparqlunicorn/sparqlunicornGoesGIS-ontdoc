@@ -1,0 +1,49 @@
+name: SPARQLing Unicorn Ontology Documentation
+
+on:
+  workflow_call:
+    inputs:
+      rdffilepath:
+        required: true
+        type: string
+      docpath:
+        required: true
+        default: docs
+        type: string
+      prefixns:
+        required: true
+        default: http://www.sparqlunicorn.link/data/
+        type: string
+      prefixnsshort:
+        required: true
+        default: suni
+        type: string
+      indexpages:
+        required: false
+        default: true
+        type: boolean
+      ghpages:
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  sample-action:
+    name: Ontology Documentation
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: '0'
+      - name: Run sample action
+        with:
+          ghcr-token: ${{ secrets.ghcr-token }}
+        run: |
+          python3 ${{inputs.rdffilepath}} ${{inputs.docpath}} ${{inputs.prefixns}} ${{inputs.prefixnsshort}} ${{inputs.indexpages}} 
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: ${{inputs.docpath}}/
