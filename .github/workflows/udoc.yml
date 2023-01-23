@@ -8,7 +8,7 @@ on:
         type: string
       docpath:
         required: true
-        default: docs
+        default: docs 
         type: string
       prefixns:
         required: true
