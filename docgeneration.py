@@ -8,6 +8,8 @@ import os
 import json
 import sys
 
+templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
+
 labelproperties={
     "http://www.w3.org/2004/02/skos/core#prefLabel":"DatatypeProperty",
     "http://www.w3.org/2004/02/skos/core#prefSymbol": "DatatypeProperty",
