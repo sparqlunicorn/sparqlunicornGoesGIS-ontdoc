@@ -2249,8 +2249,9 @@ if not os.path.exists(outpath+'index.html'):
     subfolders= [f.path for f in os.scandir(outpath) if f.is_dir()]
     print(subfolders)
     for path in subfolders:
-        indexhtml+="<tr><td><a href=\""+path+"\">"+path+"</a></td></tr>"
+        indexhtml+="<tr><td><a href=\""+path.replace(outpath,"")+"/index.html\">"+path.replace(outpath,"")+"</a></td></tr>"
     indexhtml+="</tbody></table>"
     indexhtml+=htmlfooter.replace("{{license}}",license).replace("{{exports}}",nongeoexports)
+    print(indexhtml)
     indexf.write(indexhtml)
     indexf.close()
