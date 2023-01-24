@@ -1437,7 +1437,6 @@ class OntDocGeneration:
             self.outpath = self.outpath.replace("\\", "/")
             if not outpath.endswith("/"):
                 self.outpath += "/"
-            self.outpath = "suni_htmls/"
         self.outpath=self.outpath.replace("//","/")
         #prefixes["reversed"]["http://purl.org/suni/"] = "suni"
 
