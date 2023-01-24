@@ -2238,9 +2238,9 @@ for fp in filestoprocess:
     g.parse(fp)
     docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,g,createIndexPages)
     docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
-print("Path exists? "+outpath+'index.html '+str(os.path.exists(outpath+'index.html')))
-if not os.path.exists(outpath+'index.html'):
-    indexf=open(outpath+"index.html","w",encoding="utf-8")
+print("Path exists? "+outpath+'/index.html '+str(os.path.exists(outpath+'index.html')))
+if not os.path.exists(outpath+'/index.html'):
+    indexf=open(outpath+"/index.html","w",encoding="utf-8")
     indexhtml = htmltemplate.replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}","0").replace("{{toptitle}}","Index page").replace("{{title}}","Index page for").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
         .replace("{{classtreefolderpath}}",prefixnsshort + "_classtree.js").replace("{{baseurlhtml}}", ".").replace("{{scriptfolderpath}}", prefixnsshort+ '_search.js').replace("{{exports}}",nongeoexports)
     indexhtml.replace("{{indexpage}}","false")	
