@@ -52,7 +52,7 @@ jobs:
           mkdir docs
           cp ontdocscript/docgeneration.py ../
           wget https://raw.githubusercontent.com/sparqlunicorn/sparqlunicornGoesGIS-ontdoc/main/docgeneration.py
-          python3 docgeneration.py ${{inputs.rdffilepath}} ${{inputs.docpath}} ${{inputs.prefixns}} ${{inputs.prefixnsshort}} ${{inputs.indexpages}} ${{inputs.templatedir}} 
+          python3 docgeneration.py "${{inputs.rdffilepath}}" "${{inputs.docpath}}" "${{inputs.prefixns}}" "${{inputs.prefixnsshort}}" "${{inputs.indexpages}}" "${{inputs.templatedir}}" 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
