@@ -2216,7 +2216,7 @@ if len(sys.argv)<=1:
     exit()
 if len(sys.argv)>1:
     if " " in sys.argv[1]:
-        for itemm in filepath.split(" "):
+        for itemm in sys.argv[1].split(" "):
             filetoprocess.add(itemm)
     else:
         filestoprocess=sys.argv[1]
