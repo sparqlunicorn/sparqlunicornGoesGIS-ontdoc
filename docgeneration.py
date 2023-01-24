@@ -2230,6 +2230,8 @@ if len(sys.argv)>5:
     indexp=sys.argv[5]
     if indexp.lower()=="false":
         createIndexPages=False
+if len(sys.argv)>6:
+    templatepath=sys.argv[6]
 for filepath in filestoprocess:
     g = Graph()
     g.parse(filepath)
