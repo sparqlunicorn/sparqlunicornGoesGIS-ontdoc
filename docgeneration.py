@@ -2204,11 +2204,13 @@ prefixes["reversed"]["http://purl.org/graphemon/"]="graphemon"
 prefixes["reversed"]["http://www.opengis.net/ont/crs/"]="geocrs"
 prefixes["reversed"]["http://www.ontology-of-units-of-measure.org/resource/om-2/"]="om"
 prefixes["reversed"]["http://purl.org/meshsparql/"]="msp"
-prefixnsshort="cuneidict"
+prefixnsshort="suni"
 prefixnamespace="http://purl.org/cuneiform/"
-license="CC BY-SA 4.0"
-outpath="signlist_htmls/"
+license=""
+outpath="docs/"
 labellang="en"
+templatepath="resources/html/"
+templatename="default"
 createIndexPages=True
 filestoprocess=set()
 if len(sys.argv)<=1:
@@ -2233,6 +2235,8 @@ if len(sys.argv)>5:
         createIndexPages=False
 if len(sys.argv)>6:
     templatepath=sys.argv[6]
+if len(sys.argv)>7:
+    templatename=sys.argv[7]
 for fp in filestoprocess:
     g = Graph()
     g.parse(fp)
@@ -2251,7 +2255,7 @@ if not os.path.exists(outpath+'/index.html'):
     for path in subfolders:
         indexhtml+="<tr><td><a href=\""+path.replace(outpath+"/","")+"/index.html\">"+path.replace(outpath+"/","")+"</a></td></tr>"
     indexhtml+="</tbody></table>"
-    indexhtml+=htmlfooter.replace("{{license}}",license).replace("{{exports}}",nongeoexports)
+    indexhtml+=htmlfooter.replace("{{license}}",self.processLicense(license)).replace("{{exports}}",nongeoexports)
     print(indexhtml)
     indexf.write(indexhtml)
     indexf.close()
