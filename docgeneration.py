@@ -2219,7 +2219,7 @@ if len(sys.argv)>1:
         for itemm in filepath.split(" "):
             filetoprocess.add(itemm)
     else:
-	filestoprocess=sys.argv[1]
+        filestoprocess=sys.argv[1]
 if len(sys.argv)>2:
     outpath=sys.argv[2]
 if len(sys.argv)>3:
