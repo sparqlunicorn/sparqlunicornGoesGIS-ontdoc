@@ -1600,7 +1600,7 @@ class OntDocGeneration:
                             elif isinstance(tup[1],URIRef):
                                 ttlf.write("<"+str(sub)+"> <"+str(tup[0])+"> <"+str(tup[1])+"> .\n")
                 ttlf.close()
-                indexhtml = htmltemplate.replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink)\
+                indexhtml = htmltemplate.replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink)\
                     .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", nslink).replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports)
                 if nslink==prefixnamespace:
                     indexhtml=indexhtml.replace("{{indexpage}}","true")
@@ -1624,22 +1624,7 @@ class OntDocGeneration:
                 print(path)
                 with open(path + "index.html", 'w', encoding='utf-8') as f:
                     f.write(indexhtml)
-                    f.close()
-            if not os.path.exists(outpath+'index.html'):
-                indexf=open(outpath+"index.html","w",encoding="utf-8")
-                indexhtml = htmltemplate.replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{toptitle}}","Index page").replace("{{title}}","Index page for").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
-                    .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{baseurlhtml}}", ".").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports)
-                indexhtml.replace("{{indexpage}}","false")	
-                indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"
-                indexhtml+="<table class=\"description\" style =\"height: 100%; overflow: auto\" border=1 id=indextable><thead><tr><th>Dataset</th></tr></thead><tbody>"
-                subfolders= [f.path for f in os.scandir(outpath) if f.is_dir()]
-                for path in paths:
-                    indexhtml+="<tr><td><a href=\""+path+"\">"+path+"</a></td></tr>"
-                indexhtml+="</tbody></table>"
-                indexhtml+=htmlfooter.replace("{{license}}",curlicense).replace("{{exports}}",nongeoexports)
-                indexf.write(indexhtml)
-                indexf.close()
-				
+                    f.close()				
 
     def getPropertyRelations(self,graph,outpath):
         predicates= {}
@@ -2253,3 +2238,17 @@ for fp in filestoprocess:
     g.parse(fp)
     docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,g,createIndexPages)
     docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
+if not os.path.exists(outpath+'index.html'):
+    indexf=open(outpath+"index.html","w",encoding="utf-8")
+    indexhtml = htmltemplate.replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}","0").replace("{{toptitle}}","Index page").replace("{{title}}","Index page for").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
+        .replace("{{classtreefolderpath}}",prefixnsshort + "_classtree.js").replace("{{baseurlhtml}}", ".").replace("{{scriptfolderpath}}", prefixnsshort+ '_search.js').replace("{{exports}}",nongeoexports)
+    indexhtml.replace("{{indexpage}}","false")	
+    indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"
+    indexhtml+="<table class=\"description\" style =\"height: 100%; overflow: auto\" border=1 id=indextable><thead><tr><th>Dataset</th></tr></thead><tbody>"
+    subfolders= [f.path for f in os.scandir(outpath) if f.is_dir()]
+    for path in paths:
+        indexhtml+="<tr><td><a href=\""+path+"\">"+path+"</a></td></tr>"
+    indexhtml+="</tbody></table>"
+    indexhtml+=htmlfooter.replace("{{license}}",curlicense).replace("{{exports}}",nongeoexports)
+    indexf.write(indexhtml)
+    indexf.close()
