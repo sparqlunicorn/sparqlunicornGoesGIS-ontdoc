@@ -2255,7 +2255,7 @@ if not os.path.exists(outpath+'/index.html'):
     for path in subfolders:
         indexhtml+="<tr><td><a href=\""+path.replace(outpath+"/","")+"/index.html\">"+path.replace(outpath+"/","")+"</a></td></tr>"
     indexhtml+="</tbody></table>"
-    indexhtml+=htmlfooter.replace("{{license}}",self.processLicense(license)).replace("{{exports}}",nongeoexports)
+    indexhtml+=htmlfooter.replace("{{license}}",license).replace("{{exports}}",nongeoexports)
     print(indexhtml)
     indexf.write(indexhtml)
     indexf.close()
