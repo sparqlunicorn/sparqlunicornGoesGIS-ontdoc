@@ -2210,11 +2210,16 @@ license="CC BY-SA 4.0"
 outpath="signlist_htmls/"
 labellang="en"
 createIndexPages=True
+filestoprocess=set()
 if len(sys.argv)<=1:
     print("No TTL file to process has been given as a parameter")
     exit()
 if len(sys.argv)>1:
-    filepath=sys.argv[1]
+    if " " in sys.argv[1]:
+        for itemm in filepath.split(" "):
+            filetoprocess.add(itemm)
+    else:
+	filestoprocess=sys.argv[1]
 if len(sys.argv)>2:
     outpath=sys.argv[2]
 if len(sys.argv)>3:
@@ -2225,7 +2230,8 @@ if len(sys.argv)>5:
     indexp=sys.argv[5]
     if indexp.lower()=="false":
         createIndexPages=False
-g = Graph()
-g.parse(filepath)
-docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,g,createIndexPages)
-docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
+for filepath in filestoprocess:
+    g = Graph()
+    g.parse(filepath)
+    docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,g,createIndexPages)
+    docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
