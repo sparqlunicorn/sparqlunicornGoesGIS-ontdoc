@@ -26,6 +26,10 @@ on:
         required: false
         default: true
         type: boolean
+      templatedir:
+        required: false
+        default: ontdocscript/resources/html/
+        type: string
 
 jobs:
   sample-action:
@@ -36,13 +40,19 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: '0'
+      - name: Checkout tools repo
+        uses: actions/checkout@v3
+        with:
+          repository: sparqlunicorn/sparqlunicornGoesGIS-ontdoc
+          path: ontdocscript
       - name: Run sample action
         run: |
           sudo apt-get install wget python3-venv python3-wheel -y
           sudo pip3 install wheel pylode==2.13.2 rdflib shapely
           mkdir docs
+          cp ontdocscript/docgeneration.py ../
           wget https://raw.githubusercontent.com/sparqlunicorn/sparqlunicornGoesGIS-ontdoc/main/docgeneration.py
-          python3 docgeneration.py ${{inputs.rdffilepath}} ${{inputs.docpath}} ${{inputs.prefixns}} ${{inputs.prefixnsshort}} ${{inputs.indexpages}} 
+          python3 docgeneration.py ${{inputs.rdffilepath}} ${{inputs.docpath}} ${{inputs.prefixns}} ${{inputs.prefixnsshort}} ${{inputs.indexpages}} ${{inputs.templatedir}} 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
