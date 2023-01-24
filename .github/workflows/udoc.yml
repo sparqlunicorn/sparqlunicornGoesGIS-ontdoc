@@ -55,6 +55,7 @@ jobs:
           python3 docgeneration.py "${{inputs.rdffilepath}}" "${{inputs.docpath}}" "${{inputs.prefixns}}" "${{inputs.prefixnsshort}}" "${{inputs.indexpages}}" "${{inputs.templatedir}}" 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v3
+        if: ${{ inputs.ghpages }}
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
