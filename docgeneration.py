@@ -2245,7 +2245,7 @@ fcounter=0
 for fp in filestoprocess:
     g = Graph()
     g.parse(fp)
-    if len(outpath)<fcounter:
+    if fcounter<len(outpath):
         docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages)
     else:
         docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages)
