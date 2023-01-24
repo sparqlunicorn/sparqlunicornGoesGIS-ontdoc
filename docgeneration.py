@@ -1634,7 +1634,7 @@ class OntDocGeneration:
                 indexhtml+="<table class=\"description\" style =\"height: 100%; overflow: auto\" border=1 id=indextable><thead><tr><th>Dataset</th></tr></thead><tbody>"
                 subfolders= [f.path for f in os.scandir(outpath) if f.is_dir()]
                 for fol in subfolders:
-                    indexhtml+="<tr><td><a href=\""+fol+"\">"+fol+"</a>"</td></tr>"
+                    indexhtml+="<tr><td><a href=\""+fol+"\">"+fol+"</a></td></tr>"
                 indexhtml+="</tbody></table>"
                 indexhtml+=htmlfooter.replace("{{license}}",curlicense).replace("{{exports}}",nongeoexports)
                 indexf.write(indexhtml)
