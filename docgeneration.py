@@ -1625,6 +1625,21 @@ class OntDocGeneration:
                 with open(path + "index.html", 'w', encoding='utf-8') as f:
                     f.write(indexhtml)
                     f.close()
+			if not os.path.exists(outpath+'index.html'):
+				indexf=open(outpath+"index.html","w",encoding="utf-8")
+				indexhtml = htmltemplate.replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{toptitle}}","Index page").replace("{{title}}","Index page for").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
+                    .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{baseurlhtml}}", ".").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports)
+				indexhtml.replace("{{indexpage}}","true")	
+				indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"
+				indexhtml+="<table class=\"description\" style =\"height: 100%; overflow: auto\" border=1 id=indextable><thead><tr><th>Dataset</th></tr></thead><tbody>"
+				subfolders= [f.path for f in os.scandir(outpath) if f.is_dir()]
+				for fol in subfolders:
+					indexhtml+="<tr><td><a href=\""+fol+"\">"+fol+"</a>"</td></tr>"
+				indexhtml+="</tbody></table>"
+				indexhtml+=htmlfooter.replace("{{license}}",curlicense).replace("{{exports}}",nongeoexports)
+				indexf.write(indexhtml)
+				indexf.close()
+				
 
     def getPropertyRelations(self,graph,outpath):
         predicates= {}
