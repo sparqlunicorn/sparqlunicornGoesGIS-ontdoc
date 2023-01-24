@@ -2246,7 +2246,7 @@ if not os.path.exists(outpath+'index.html'):
     indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"
     indexhtml+="<table class=\"description\" style =\"height: 100%; overflow: auto\" border=1 id=indextable><thead><tr><th>Dataset</th></tr></thead><tbody>"
     subfolders= [f.path for f in os.scandir(outpath) if f.is_dir()]
-    for path in paths:
+    for path in subfolders:
         indexhtml+="<tr><td><a href=\""+path+"\">"+path+"</a></td></tr>"
     indexhtml+="</tbody></table>"
     indexhtml+=htmlfooter.replace("{{license}}",curlicense).replace("{{exports}}",nongeoexports)
