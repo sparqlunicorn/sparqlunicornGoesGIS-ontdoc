@@ -1431,6 +1431,9 @@ class OntDocGeneration:
         if prefixnamespace==None or prefixnsshort==None or prefixnamespace=="" or prefixnsshort=="":
             self.namespaceshort = "suni"
             self.prefixnamespace = "http://purl.org/suni/"
+        else:
+            if not prefixnamespace.endswith("/"):
+                self.prefixnamespace += "/"
         if outpath==None:
             self.outpath = "suni_htmls/"
         else:
