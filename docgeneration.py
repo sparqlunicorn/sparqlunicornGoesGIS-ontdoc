@@ -2232,8 +2232,8 @@ if len(sys.argv)>5:
         createIndexPages=False
 if len(sys.argv)>6:
     templatepath=sys.argv[6]
-for filepath in filestoprocess:
+for fp in filestoprocess:
     g = Graph()
-    g.parse(filepath)
+    g.parse(fp)
     docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,g,createIndexPages)
     docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
