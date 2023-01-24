@@ -1431,9 +1431,8 @@ class OntDocGeneration:
         if prefixnamespace==None or prefixnsshort==None or prefixnamespace=="" or prefixnsshort=="":
             self.namespaceshort = "suni"
             self.prefixnamespace = "http://purl.org/suni/"
-        else:
-            if not prefixnamespace.endswith("/"):
-                self.prefixnamespace += "/"
+        if not prefixnamespace.endswith("/"):
+            self.prefixnamespace += "/"
         if outpath==None:
             self.outpath = "suni_htmls/"
         else:
@@ -1441,7 +1440,8 @@ class OntDocGeneration:
             if not outpath.endswith("/"):
                 self.outpath += "/"
         self.outpath=self.outpath.replace("//","/")
-        #prefixes["reversed"]["http://purl.org/suni/"] = "suni"
+        self.prefixnamespace=self.prefixnamespace.replace("//","/")
+	#prefixes["reversed"]["http://purl.org/suni/"] = "suni"
 
     def processLiteral(self,literal, literaltype, reproject,currentlayergeojson=None,triplestoreconf=None):     
         #print("Process literal: " + str(literal) + " --- " + str(literaltype))
