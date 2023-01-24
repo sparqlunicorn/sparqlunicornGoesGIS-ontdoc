@@ -2207,24 +2207,28 @@ prefixes["reversed"]["http://purl.org/meshsparql/"]="msp"
 prefixnsshort="suni"
 prefixnamespace="http://purl.org/cuneiform/"
 license=""
-outpath="docs/"
+outpath=[]
 labellang="en"
 templatepath="resources/html/"
 templatename="default"
 createIndexPages=True
-filestoprocess=set()
+filestoprocess=[]
 if len(sys.argv)<=1:
     print("No TTL file to process has been given as a parameter")
     exit()
 if len(sys.argv)>1:
     if " " in sys.argv[1]:
         for itemm in sys.argv[1].split(" "):
-            filestoprocess.add(itemm)
+            filestoprocess.append(itemm)
     else:
-        filestoprocess=sys.argv[1]
+        filestoprocess.append(sys.argv[1])
 print("Files to process: "+str(filestoprocess))
 if len(sys.argv)>2:
-    outpath=sys.argv[2]
+    if " " in sys.argv[2]:
+        for itemm in sys.argv[2].split(" "):
+            outpath.append(itemm)
+    else:
+        outpath.append(sys.argv[2])
 if len(sys.argv)>3:
     prefixnamespace=sys.argv[3]
 if len(sys.argv)>4:
@@ -2237,11 +2241,16 @@ if len(sys.argv)>6:
     templatepath=sys.argv[6]
 if len(sys.argv)>7:
     templatename=sys.argv[7]
+fcounter=0
 for fp in filestoprocess:
     g = Graph()
     g.parse(fp)
-    docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,g,createIndexPages)
+    if len(outpath)<fcounter:
+        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages)
+    else:
+        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,g,createIndexPages)
     docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
+    fcounter+=1
 print("Path exists? "+outpath+'/index.html '+str(os.path.exists(outpath+'index.html')))
 if not os.path.exists(outpath+'/index.html'):
     indexf=open(outpath+"/index.html","w",encoding="utf-8")
