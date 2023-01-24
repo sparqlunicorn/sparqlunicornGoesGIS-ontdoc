@@ -50,8 +50,8 @@ jobs:
           sudo apt-get install wget python3-venv python3-wheel -y
           sudo pip3 install wheel pylode==2.13.2 rdflib shapely
           mkdir ${{inputs.docpath}}/
-          cp ontdocscript/docgeneration.py ../
-          cp ontdocscript/prefixes.json ../
+          cp ontdocscript/docgeneration.py .
+          cp ontdocscript/prefixes.json .
           python3 docgeneration.py "${{inputs.rdffilepath}}" "${{inputs.docpath}}" "${{inputs.prefixns}}" "${{inputs.prefixnsshort}}" "${{inputs.indexpages}}" "${{inputs.templatedir}}" 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v3
