@@ -2220,6 +2220,7 @@ if len(sys.argv)>1:
             filestoprocess.add(itemm)
     else:
         filestoprocess=sys.argv[1]
+print("Files to process: "+str(filestoprocess))
 if len(sys.argv)>2:
     outpath=sys.argv[2]
 if len(sys.argv)>3:
