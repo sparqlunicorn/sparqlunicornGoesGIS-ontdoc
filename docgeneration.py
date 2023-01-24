@@ -1420,7 +1420,7 @@ class OntDocGeneration:
         self.prefixnamespace = prefixnamespace
         self.namespaceshort = prefixnsshort.replace("/","")
         self.outpath=outpath
-	self.logoname=logoname
+        self.logoname=logoname
         resolveTemplate(templatename)
         self.license=license
         self.licenseuri=None
