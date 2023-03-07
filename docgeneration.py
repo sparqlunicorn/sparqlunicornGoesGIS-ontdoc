@@ -2,6 +2,10 @@
 from rdflib import Graph
 from rdflib import URIRef, Literal, BNode
 from rdflib.plugins.sparql import prepareQuery
+from urllib.request import urlopen
+from io import BytesIO
+from urllib.request import urlopen
+from zipfile import ZipFile
 import shapely.wkt
 import shapely.geometry
 import os
@@ -2423,11 +2427,20 @@ if len(sys.argv)>5:
     if indexp.lower()=="false":
         createIndexPages=False
 if len(sys.argv)>6:
-    templatepath=sys.argv[6]
-    if templatepath.startswith("http") and templatepath.endswith(".zip"):
-        print("URL")
+    indexp=sys.argv[6]
+    if indexp.lower()=="false":
+        createColl=False
 if len(sys.argv)>7:
-    templatename=sys.argv[7]
+    labellang=sys.argv[7]
+if len(sys.argv)>8:
+    templatepath=sys.argv[8]
+    if templatepath.startswith("http") and templatepath.endswith(".zip"):
+        with urlopen(zipurl) as zipresp:
+            with ZipFile(BytesIO(zipresp.read())) as zfile:
+                zfile.extractall('mydownloadedtemplate/')
+        templatepath="mydownloadedtemplate/"
+if len(sys.argv)>9:
+    templatename=sys.argv[9]
 fcounter=0
 for fp in filestoprocess:
     g = Graph()
