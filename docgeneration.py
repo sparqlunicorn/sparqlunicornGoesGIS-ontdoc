@@ -5,6 +5,8 @@ from rdflib.plugins.sparql import prepareQuery
 import shapely.wkt
 import shapely.geometry
 import os
+import re
+import shutil
 import json
 import sys
 
@@ -21,6 +23,10 @@ labelproperties={
     "http://www.w3.org/2004/02/skos/core#altSymbol": "DatatypeProperty",
     "http://www.w3.org/2004/02/skos/core#hiddenLabel": "DatatypeProperty",
     "http://www.w3.org/2000/01/rdf-schema#label": "DatatypeProperty"
+}
+
+baselayers={
+    "OpenStreetMap (OSM)":{"url":"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png","default":True,"type":"tile"}
 }
 
 collectionclasses=["http://www.opengis.net/ont/geosparql#FeatureCollection","http://www.opengis.net/ont/geosparql#GeometryCollection","http://www.opengis.net/ont/geosparql#SpatialObjectCollection","http://www.w3.org/2004/02/skos/core#Collection","http://www.w3.org/2004/02/skos/core#OrderedCollection","https://www.w3.org/ns/activitystreams#Collection","https://www.w3.org/ns/activitystreams#OrderedCollection"]
@@ -1338,6 +1344,8 @@ baseMaps["OSM"].addTo(map);
 </script>
 """
 
+
+
 htmlcommenttemplate="""<p class="comment"><b>Description:</b> {{comment}}</p>"""
 
 htmltabletemplate="""
@@ -1375,8 +1383,10 @@ classtreequery="""PREFIX owl: <http://www.w3.org/2002/07/owl#>\n
                 ?subject != owl:Ontology) )\n
         }"""
 
+featurecollectionspaths=set()
 
 def resolveTemplate(templatename):
+    print(templatepath+"/"+templatename)
     if os.path.exists(templatepath+"/"+templatename):
         if os.path.exists(templatepath+"/"+templatename+"/css/style.css"):
             with open(templatepath+"/"+templatename+"/css/style.css", 'r') as file:
@@ -1386,6 +1396,10 @@ def resolveTemplate(templatename):
             with open(templatepath+"/"+templatename+"/js/startscripts.js", 'r') as file:
                 global startscripts
                 startscripts=file.read()
+        if os.path.exists(templatepath+"/"+templatename+"/js/epsgdefs.js"):
+            with open(templatepath+"/"+templatename+"/js/epsgdefs.js", 'r') as file:
+                global epsgdefs
+                epsgdefs=file.read()
         if os.path.exists(templatepath+"/"+templatename+"/templates/header.html"):
             with open(templatepath+"/"+templatename+"/templates/header.html", 'r') as file:
                 global htmltemplate
@@ -1415,18 +1429,24 @@ def resolveTemplate(templatename):
 
 class OntDocGeneration:
 
-    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,logoname="",templatename="default"):
+    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,logoname="",templatename="default"):
         self.prefixes=prefixes
         self.prefixnamespace = prefixnamespace
         self.namespaceshort = prefixnsshort.replace("/","")
         self.outpath=outpath
         self.logoname=logoname
+        self.geocollectionspaths=[]
         resolveTemplate(templatename)
         self.license=license
         self.licenseuri=None
+        self.createColl=createColl
         self.labellang=labellang
+        self.typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
         self.createIndexPages=createIndexPages
         self.graph=graph
+        for nstup in self.graph.namespaces():
+            if str(nstup[1]) not in prefixes["reversed"]:
+                prefixes["reversed"][str(nstup[1])]=str(nstup[0])
         self.preparedclassquery=prepareQuery(classtreequery)
         if prefixnamespace==None or prefixnsshort==None or prefixnamespace=="" or prefixnsshort=="":
             self.namespaceshort = "suni"
@@ -1448,11 +1468,16 @@ class OntDocGeneration:
         try:
             if "wkt" in literaltype.lower(): 
                 crsuri=""
+                curcrs=None
                 if "http" in literal:
                     crsuri=literal[0:literal.rfind('>')].replace("<","")
+                    curcrs=crsuri[crsuri.rfind('/'):]
                     literal=literal[literal.rfind('>')+1:].strip()
                 shapelygeom=shapely.wkt.loads(literal)
-                return json.loads(json.dumps(shapely.geometry.mapping(shapelygeom),indent=2))
+                thejson=json.loads(json.dumps(shapely.geometry.mapping(shapelygeom),indent=2))
+                if curcrs!=None:
+                    thejson["crs"]=curcrs               
+                return thejson
             if "geojson" in literaltype.lower():
                 return literal
         except Exception as e:
@@ -1497,7 +1522,7 @@ class OntDocGeneration:
 
     def generateOntDocForNameSpace(self, prefixnamespace,dataformat="HTML"):
         outpath=self.outpath
-        corpusid=self.namespaceshort
+        corpusid=self.namespaceshort.replace("#","")
         if not os.path.isdir(outpath):
             os.mkdir(outpath)
         labeltouri = {}
@@ -1505,6 +1530,13 @@ class OntDocGeneration:
         uritotreeitem={}
         curlicense=self.processLicense()
         self.getPropertyRelations(self.graph, outpath)
+        if self.createColl:
+            self.graph=self.createCollections(self.graph,prefixnamespace)
+        if self.logoname!=None and self.logoname!="":
+            if not os.path.isdir(outpath+"/logo/"):
+                os.mkdir(outpath+"/logo/")
+            shutil.copy(self.logoname,outpath+"/logo/logo."+self.logoname[self.logoname.rfind("."):])
+            self.logoname=outpath+"/logo/logo."+self.logoname[self.logoname.rfind("."):]
         subjectstorender = set()
         for sub in self.graph.subjects(None,None,True):
             if prefixnamespace in sub and (isinstance(sub,URIRef) or isinstance(sub,BNode)):
@@ -1543,6 +1575,9 @@ class OntDocGeneration:
         with open(outpath + "startscripts.js", 'w', encoding='utf-8') as f:
             f.write(startscripts.replace("{{baseurl}}",prefixnamespace))
             f.close()
+        with open(outpath + "epsgdefs.js", 'w', encoding='utf-8') as f:
+            f.write(epsgdefs)
+            f.close()
         pathmap = {}
         paths = {}
         postprocessing=Graph()
@@ -1550,21 +1585,21 @@ class OntDocGeneration:
         subtorencounter = 0
         for subj in subjectstorender:
             path = subj.replace(prefixnamespace, "")
-            try:
-                paths=self.processSubjectPath(outpath,paths,path)
-                if os.path.exists(outpath + path+"/index.ttl"):
-                    try:
-                        self.graph.parse(outpath + path+"/index.ttl")
-                    except Exception as e:
-                        print(e)
-                postprocessing=self.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace, self.graph.subject_predicates(subj),
-                           self.graph,str(corpusid) + "_search.js", str(corpusid) + "_classtree.js",uritotreeitem,curlicense,subjectstorender,postprocessing)
-                subtorencounter += 1
-                if subtorencounter%500==0:
-                    subtorenderlen=len(subjectstorender)+len(postprocessing)
-                print(str(subtorencounter) + "/" + str(subtorenderlen) + " " + str(outpath + path))
-            except Exception as e:
-                print("Create HTML Exception: "+str(e))
+            #try:
+            paths=self.processSubjectPath(outpath,paths,path)
+            if os.path.exists(outpath + path+"/index.ttl"):
+                try:
+                    self.graph.parse(outpath + path+"/index.ttl")
+                except Exception as e:
+                    print(e)
+            postprocessing=self.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace, self.graph.subject_predicates(subj),
+                       self.graph,str(corpusid) + "_search.js", str(corpusid) + "_classtree.js",uritotreeitem,curlicense,subjectstorender,postprocessing)
+            subtorencounter += 1
+            if subtorencounter%500==0:
+                subtorenderlen=len(subjectstorender)+len(postprocessing)
+            print(str(subtorencounter) + "/" + str(subtorenderlen) + " " + str(outpath + path))
+            #except Exception as e:
+            #    print("Create HTML Exception: "+str(e))
         print("Postprocessing " + str(len(postprocessing)))
         for subj in postprocessing.subjects():
             path = str(subj).replace(prefixnamespace, "")
@@ -1592,6 +1627,8 @@ class OntDocGeneration:
                 classtreelink = self.generateRelativeLinkFromGivenDepth(prefixnamespace,checkdepth,corpusid + "_classtree.js",False)
                 stylelink =self.generateRelativeLinkFromGivenDepth(prefixnamespace,checkdepth,"style.css",False)
                 scriptlink = self.generateRelativeLinkFromGivenDepth(prefixnamespace, checkdepth, "startscripts.js", False)
+                epsgdefslink = self.generateRelativeLinkFromGivenDepth(prefixnamespace, checkdepth, "epsgdefs.js", False)
+                vowllink = self.generateRelativeLinkFromGivenDepth(prefixnamespace, checkdepth, "vowl_result.js", False)
                 nslink=prefixnamespace+str(self.getAccessFromBaseURL(str(outpath),str(path)))
                 for sub in subjectstorender:
                     if nslink in sub:
@@ -1604,7 +1641,7 @@ class OntDocGeneration:
                             elif isinstance(tup[1],URIRef):
                                 ttlf.write("<"+str(sub)+"> <"+str(tup[0])+"> <"+str(tup[1])+"> .\n")
                 ttlf.close()
-                indexhtml = htmltemplate.replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink)\
+                indexhtml = htmltemplate.replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{epsgdefspath}}", epsgdefslink).replace("{{vowlpath}}", vowllink)\
                     .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", nslink).replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports)
                 if nslink==prefixnamespace:
                     indexhtml=indexhtml.replace("{{indexpage}}","true")
@@ -1618,7 +1655,7 @@ class OntDocGeneration:
                         for item2 in tree["core"]["data"]:
                             if item2["parent"]==item["id"] and (item2["type"]=="instance" or item2["type"]=="geoinstance") and nslink in item2["id"]:
                                 checkdepth = self.checkDepthFromPath(path, prefixnamespace, item2["id"])-1
-                                exitem="<td><img src=\""+tree["types"][item2["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+item2["type"]+"\"/><a href=\""+self.generateRelativeLinkFromGivenDepth(prefixnamespace,checkdepth,str(item2["id"]),True)+"\">"+str(item2["text"])+"</a></td>"
+                                exitem="<td><img src=\""+tree["types"][item2["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+item2["type"]+"\"/><a href=\""+self.generateRelativeLinkFromGivenDepth(prefixnamespace,checkdepth,str(re.sub("_suniv[0-9]+_","",item2["id"])),True)+"\">"+str(item2["text"])+"</a></td>"
                                 break
                         if exitem!=None:
                             indexhtml+="<tr><td><img src=\""+tree["types"][item["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+item["type"]+"\"/><a href=\""+str(item["id"])+"\" target=\"_blank\">"+str(item["text"])+"</a></td>"
@@ -1628,7 +1665,29 @@ class OntDocGeneration:
                 print(path)
                 with open(path + "index.html", 'w', encoding='utf-8') as f:
                     f.write(indexhtml)
-                    f.close()				
+                    f.close()
+        if len(featurecollectionspaths)>0:
+            indexhtml = htmltemplate.replace("{{logo}}",self.logoname).replace("{{relativedepth}}","1").replace("{{baseurl}}", prefixnamespace).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{vowlpath}}", "vowl_result.js")\
+                    .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports)
+            indexhtml = indexhtml.replace("{{indexpage}}", "true")
+            self.merge_JsonFiles(featurecollectionspaths,str(outpath)+"features.js")
+            indexhtml += "<p>This page shows feature collections present in the linked open data export</p>"
+            indexhtml+="<script src=\"features.js\"></script>"
+            indexhtml+=maptemplate.replace("var featurecolls = {{myfeature}}","").replace("{{baselayers}}",json.dumps(baselayers))
+            indexhtml += htmlfooter.replace("{{license}}", curlicense).replace("{{exports}}", nongeoexports)
+            with open(outpath + "featurecollections.html", 'w', encoding='utf-8') as f:
+                f.write(indexhtml)
+                f.close()
+                    
+
+    def merge_JsonFiles(self,files,outpath):
+        print("Merging....."+str(files))
+        result = list()
+        for f1 in files:
+            with open(f1, 'r',encoding="utf-8") as infile:
+                result.append(json.load(infile))
+        with open(outpath, 'w',encoding="utf-8") as output_file:
+            output_file.write("var featurecolls="+json.dumps(result))
 
     def getPropertyRelations(self,graph,outpath):
         predicates= {}
@@ -1636,9 +1695,9 @@ class OntDocGeneration:
         for pred in graph.predicates(None,None,True):
             predicates[pred]={"from":set(),"to":set()}
             for tup in graph.subject_objects(pred):
-                for item in graph.objects(tup[0],URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),True):
+                for item in graph.objects(tup[0],URIRef(self.typeproperty),True):
                     predicates[pred]["from"].add(item)
-                for item in graph.objects(tup[1], URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),True):
+                for item in graph.objects(tup[1], URIRef(self.typeproperty),True):
                     predicates[pred]["to"].add(item)
             predicates[pred]["from"]=list(predicates[pred]["from"])
             predicates[pred]["to"] = list(predicates[pred]["to"])
@@ -1647,9 +1706,24 @@ class OntDocGeneration:
             f.write("var proprelations="+json.dumps(predicates))
             f.close()
 
+    def createCollections(self,graph,namespace):
+        classToInstances={}
+        for tup in graph.subject_objects(URIRef(self.typeproperty)):
+            if namespace in str(tup[0]):
+                if str(tup[1]) not in classToInstances:
+                    classToInstances[str(tup[1])]=set()
+                classToInstances[str(tup[1])].add(str(tup[0]))
+        for cls in classToInstances:
+            colluri=namespace+self.shortenURI(cls)+"_collection"
+            graph.add((URIRef(colluri),URIRef(self.typeproperty),URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
+            graph.add((URIRef(colluri),URIRef("http://www.w3.org/2000/01/rdf-schema#label"),Literal(str(self.shortenURI(cls))+" Instances Collection")))
+            for instance in classToInstances[cls]:
+                graph.add((URIRef(colluri),URIRef("http://www.w3.org/2000/01/rdf-schema#member"),URIRef(instance)))
+        return graph
+
     def getClassTree(self,graph, uritolabel,classidset,uritotreeitem):
         results = graph.query(self.preparedclassquery)
-        tree = {"plugins": ["search", "sort", "state", "types", "contextmenu"], "search": {"show_only_matches":True}, "types": {
+        tree = {"plugins": ["defaults","search", "sort", "state", "types", "contextmenu"], "search": {"show_only_matches":True}, "types": {
             "class": {"icon": "https://cdn.jsdelivr.net/gh/i3mainz/geopubby@master/public/icons/class.png"},
             "geoclass": {"icon": "https://cdn.jsdelivr.net/gh/i3mainz/geopubby@master/public/icons/geoclass.png"},
             "halfgeoclass": {"icon": "https://cdn.jsdelivr.net/gh/i3mainz/geopubby@master/public/icons/halfgeoclass.png"},
@@ -1659,7 +1733,7 @@ class OntDocGeneration:
             "instance": {"icon": "https://cdn.jsdelivr.net/gh/i3mainz/geopubby@master/public/icons/instance.png"},
             "geoinstance": {"icon": "https://cdn.jsdelivr.net/gh/i3mainz/geopubby@master/public/icons/geoinstance.png"}
         },
-        "core": {"check_callback": True, "data": []}}
+        "core": {"themes":{"responsive":True},"check_callback": True, "data": []}}
         result = []
         ress = {}
         for res in results:
@@ -1668,7 +1742,7 @@ class OntDocGeneration:
                 ress[str(res["subject"])] = {"super": res["supertype"], "label": res["label"]}
         print(ress)
         for cls in ress:
-            for obj in graph.subjects(URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef(cls)):
+            for obj in graph.subjects(URIRef(self.typeproperty), URIRef(cls),True):
                 res = self.replaceNameSpacesInLabel(str(obj))
                 if str(obj) in uritolabel:
                     restext= uritolabel[str(obj)]["label"] + " (" + self.shortenURI(str(obj)) + ")"
@@ -1684,7 +1758,9 @@ class OntDocGeneration:
                     result.append({"id": str(obj), "parent": cls,
                                    "type": "instance",
                                    "text": restext,"data":{}})
-                uritotreeitem[str(obj)] = result[-1]
+                if str(obj) not in uritotreeitem:
+                    uritotreeitem[str(obj)]=[]
+                uritotreeitem[str(obj)].append(result[-1])
                 classidset.add(str(obj))
             res = self.replaceNameSpacesInLabel(str(cls))
             if ress[cls]["super"] == None:
@@ -1709,7 +1785,9 @@ class OntDocGeneration:
                     result.append({"id": cls, "parent": ress[cls]["super"],
                                    "type": "class",
                                    "text": restext,"data":{}})
-                uritotreeitem[str(cls)] = result[-1]
+                if str(cls) not in uritotreeitem:
+                    uritotreeitem[str(cls)]=[]
+                uritotreeitem[str(cls)].append(result[-1])
             classidset.add(str(cls))
         tree["core"]["data"] = result
         return tree
@@ -1740,6 +1818,20 @@ class OntDocGeneration:
             else:
                 classlist[item]["item"]["type"] = "class"
 
+    def checkGeoInstanceAssignment(self,uritotreeitem):
+        for uri in uritotreeitem:
+            if len(uritotreeitem[uri])>1:
+                thetype="instance"
+                counter=0
+                for item in uritotreeitem[uri]:
+                    if item["type"]!="instance" or item["type"]!="class":
+                        thetype=item["type"]
+                    item["id"]=item["id"]+"_suniv"+str(counter)+"_"
+                    counter+=1
+                if thetype!="instance" or thetype!="class":
+                    for item in uritotreeitem[uri]:
+                        item["type"]=thetype
+
 
     def shortenURI(self,uri):
         if uri.endswith("/"):
@@ -1765,8 +1857,9 @@ class OntDocGeneration:
             rellink += "/index.html"
         return rellink
 
-    def searchObjectConnectionsForAggregateData(self,graph,object,pred,geojsonrep,foundmedia,imageannos,image3dannos,label,unitlabel):
+    def searchObjectConnectionsForAggregateData(self,graph,object,pred,geojsonrep,foundmedia,imageannos,textannos,image3dannos,label,unitlabel):
         geoprop=False
+        annosource=False
         incollection=False
         if pred in geopointerproperties:
             geoprop=True
@@ -1774,15 +1867,33 @@ class OntDocGeneration:
             incollection=True
         foundval=None
         foundunit=None
+        tempvalprop=None
+        onelabel=None
         for tup in graph.predicate_objects(object):
             if str(tup[0]) in labelproperties:
-                label=str(tup[1])
-            if pred=="http://www.w3.org/ns/oa#hasSelector" and tup[0]==URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type") and (tup[1]==URIRef("http://www.w3.org/ns/oa#SvgSelector") or tup[1]==URIRef("http://www.w3.org/ns/oa#WKTSelector")):
+                if tup[1].language==self.labellang:
+                    label=str(tup[1])
+                onelabel=str(tup[1])
+            if pred=="http://www.w3.org/ns/oa#hasSelector" and tup[0]==URIRef(self.typeproperty) and (tup[1]==URIRef("http://www.w3.org/ns/oa#SvgSelector") or tup[1]==URIRef("http://www.w3.org/ns/oa#WKTSelector")):
                 for svglit in graph.objects(object,URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#value")):
                     if "<svg" in str(svglit):
                         imageannos.add(str(svglit))
                     elif ("POINT" in str(svglit).upper() or "POLYGON" in str(svglit).upper() or "LINESTRING" in str(svglit).upper()):
                         image3dannos.add(str(svglit))
+            if pred == "http://www.w3.org/ns/oa#hasSelector" and tup[0] == URIRef(
+                    self.typeproperty) and tup[1] == URIRef(
+                    "http://www.w3.org/ns/oa#TextPositionSelector"):
+                curanno = {}
+                for txtlit in graph.predicate_objects(object):
+                    if str(txtlit[0]) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#value":
+                        curanno["exact"] = str(txtlit[1])
+                    elif str(txtlit[0]) == "http://www.w3.org/ns/oa#start":
+                        curanno["start"] = str(txtlit[1])
+                    elif str(txtlit[0]) == "http://www.w3.org/ns/oa#end":
+                        curanno["end"] = str(txtlit[1])
+                textannos.append(curanno)
+            if pred == "http://www.w3.org/ns/oa#hasSource":
+                annosource = str(tup[1])
             if isinstance(tup[1], Literal) and (str(tup[0]) in geoproperties or str(tup[1].datatype) in geoliteraltypes):
                 geojsonrep = self.processLiteral(str(tup[1]), tup[1].datatype, "")
             if incollection and "<svg" in str(tup[1]):
@@ -1792,8 +1903,23 @@ class OntDocGeneration:
                 if ext in fileextensionmap:
                     foundmedia[fileextensionmap[ext]].add(str(tup[1]))
             if str(tup[0]) in valueproperties:
-                if valueproperties[str(tup[0])]=="DatatypeProperty" and isinstance(tup[1],Literal):
-                    foundval=str(tup[1])
+                if tempvalprop == None and str(tup[0]) == "http://www.w3.org/ns/oa#hasSource":
+                    tempvalprop = str(tup[0])
+                    foundval = str(tup[1])
+                if str(tup[0]) != "http://www.w3.org/ns/oa#hasSource" and SPARQLUtils.valueproperties[
+                    str(tup[0])] == "DatatypeProperty" and (isinstance(tup[1], Literal) or isinstance(tup[1], URIRef)):
+                    tempvalprop = str(tup[0])
+                    foundval = str(tup[1])
+                elif str(tup[0]) != "http://www.w3.org/ns/oa#hasTarget":
+                    tempvalprop = "http://www.w3.org/ns/oa#hasTarget"
+                    for inttup in graph.predicate_objects(tup[1]):
+                        if str(inttup[0]) == "http://www.w3.org/ns/oa#hasSelector":
+                            for valtup in graph.predicate_objects(inttup[1]):
+                                if str(valtup[0]) in SPARQLUtils.unitproperties:
+                                    foundunit = str(valtup[1])
+                                if str(valtup[0]) in SPARQLUtils.valueproperties and (
+                                        isinstance(valtup[1], Literal) or isinstance(valtup[1], URIRef)):
+                                    foundval = str(valtup[1])
                 else:
                     for valtup in graph.predicate_objects(tup[1]):
                         if str(valtup[0]) in unitproperties:
@@ -1812,12 +1938,20 @@ class OntDocGeneration:
                     unitlabel=str(foundval)+" <a href=\""+str(foundunit)+"\" target=\"_blank\">"+str(self.shortenURI(foundunit))+"</a>"
             else:
                 unitlabel=str(foundval)+" "+str(foundunit)
-        if foundunit==None and foundval!=None:
-            unitlabel=str(foundval)
-        return {"geojsonrep":geojsonrep,"label":label,"unitlabel":unitlabel,"foundmedia":foundmedia,"imageannos":imageannos,"image3dannos":image3dannos}
+        if foundunit == None and foundval != None:
+            if "http" in foundval:
+                unitlabel = "<a href=\"" + str(foundval) + "\">" + str(self.shortenURI(foundval)) + "</a>"
+            else:
+                unitlabel = str(foundval)
+        if annosource != None:
+            for textanno in textannos:
+                textanno["src"] = annosource
+        if label=="" and onelabel!=None:
+            label=onelabel
+        return {"geojsonrep":geojsonrep,"label":label,"unitlabel":unitlabel,"foundmedia":foundmedia,"imageannos":imageannos,"textannos":textannos,"image3dannos":image3dannos}
 
 
-    def createHTMLTableValueEntry(self,subject,pred,object,ttlf,graph,baseurl,checkdepth,geojsonrep,foundmedia,imageannos,image3dannos):
+    def createHTMLTableValueEntry(self,subject,pred,object,ttlf,graph,baseurl,checkdepth,geojsonrep,foundmedia,imageannos,textannos,image3dannos):
         tablecontents=""
         label=""
         if isinstance(object,URIRef) or isinstance(object,BNode):
@@ -1825,11 +1959,12 @@ class OntDocGeneration:
                 ttlf.write("<" + str(subject) + "> <" + str(pred) + "> <" + str(object) + "> .\n")
             label = str(self.shortenURI(str(object)))
             unitlabel=""
-            mydata=self.searchObjectConnectionsForAggregateData(graph,object,pred,geojsonrep,foundmedia,imageannos,image3dannos,label,unitlabel)
+            mydata=self.searchObjectConnectionsForAggregateData(graph,object,pred,geojsonrep,foundmedia,imageannos,textannos,image3dannos,label,unitlabel)
             label=mydata["label"]
             geojsonrep=mydata["geojsonrep"]
             foundmedia=mydata["foundmedia"]
             imageannos=mydata["imageannos"]
+            textannos=mydata["textannos"]
             image3dannos=mydata["image3dannos"]
             unitlabel=mydata["unitlabel"]
             if baseurl in str(object) or isinstance(object,BNode):
@@ -1880,9 +2015,22 @@ class OntDocGeneration:
                 else:
                     if ttlf!=None:
                         ttlf.write("<" + str(subject) + "> <" + str(pred) + "> \"" + str(object) + "\" .\n")
-                    tablecontents += "<span property=\"" + str(pred) + "\" content=\"" + str(
-                        object).replace("<","&lt").replace(">","&gt;").replace("\"","'") + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">" + str(object).replace("<","&lt").replace(">","&gt;") + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
-        return {"html":tablecontents,"geojson":geojsonrep,"foundmedia":foundmedia,"imageannos":imageannos,"image3dannos":image3dannos,"label":label}
+                    tablecontents += self.detectStringLiteralContent(pred,object)
+        return {"html":tablecontents,"geojson":geojsonrep,"foundmedia":foundmedia,"imageannos":imageannos,"textannos":textannos,"image3dannos":image3dannos,"label":label}
+
+    def detectStringLiteralContent(self,pred,object):
+        if object.startswith("http://") or object.startswith("https://"):
+            return "<span><a property=\"" + str(pred) + "\" target=\"_blank\" href=\"" + str(
+                        object)+ "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">" + str(object)+ "</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
+        if object.startswith("www."):
+            return "<span><a property=\"" + str(pred) + "\" target=\"_blank\" href=\"http://" + str(
+                object) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">http://" + str(
+                object) + "</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
+        if re.search(r'[\w.]+\@[\w.]+', object):
+            return "<span><a property=\"" + str(pred) + "\" href=\"mailto:" + str(
+                object) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">mailto:" + str(
+                object) + "</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
+        return "<span property=\"" + str(pred) + "\" content=\"" + str(object).replace("<","&lt").replace(">","&gt;").replace("\"","'") + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">" + str(object).replace("<","&lt").replace(">","&gt;") + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
 
     def formatPredicate(self,tup,baseurl,checkdepth,tablecontents,graph,reverse):
         label = self.shortenURI(str(tup))
@@ -1927,6 +2075,7 @@ class OntDocGeneration:
         tablecontents = ""
         isodd = False
         geojsonrep=None
+        epsgcode=""
         foundmedia={"audio":set(),"video":set(),"image":set(),"mesh":set()}
         savepath = savepath.replace("\\", "/")
         checkdepth=self.checkDepthFromPath(savepath, baseurl, subject)
@@ -1940,56 +2089,61 @@ class OntDocGeneration:
         image3dannos=set()
         predobjmap={}
         isgeocollection=False
-        comment=None
+        comment={}
         parentclass=None
         inverse=False
-        if str(subject) in uritotreeitem and uritotreeitem[str(subject)]["parent"].startswith("http"):
-            parentclass=str(uritotreeitem[str(subject)]["parent"])
+        if str(subject) in uritotreeitem and uritotreeitem[str(subject)][-1]["parent"].startswith("http"):
+            parentclass=str(uritotreeitem[str(subject)][-1]["parent"])
             if parentclass not in uritotreeitem:
-                uritotreeitem[parentclass]={"id": parentclass, "parent": "#","type": "class","text": self.shortenURI(str(parentclass)),"data":{}}
-            uritotreeitem[parentclass]["instancecount"]=0
+                uritotreeitem[parentclass]=[{"id": parentclass, "parent": "#","type": "class","text": self.shortenURI(str(parentclass)),"data":{}}]
+            print(uritotreeitem[parentclass])
+            uritotreeitem[parentclass][-1]["instancecount"]=0
         ttlf = open(savepath + "/index.ttl", "w", encoding="utf-8")
         if parentclass!=None:
-            uritotreeitem[parentclass]["data"]["to"]={}
-            uritotreeitem[parentclass]["data"]["from"]={}
+            uritotreeitem[parentclass][-1]["data"]["to"]={}
+            uritotreeitem[parentclass][-1]["data"]["from"]={}
         for tup in sorted(predobjs,key=lambda tup: tup[0]):
             if str(tup[0]) not in predobjmap:
                 predobjmap[str(tup[0])]=[]
             predobjmap[str(tup[0])].append(tup[1])
-            if parentclass!=None and str(tup[0]) not in uritotreeitem[parentclass]["data"]["to"]:
-                uritotreeitem[parentclass]["data"]["to"][str(tup[0])]={}
-                uritotreeitem[parentclass]["data"]["to"][str(tup[0])]["instancecount"] = 0
+            if parentclass!=None and str(tup[0]) not in uritotreeitem[parentclass][-1]["data"]["to"]:
+                uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])]={}
+                uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])]["instancecount"] = 0
             if parentclass!=None:
-                uritotreeitem[parentclass]["data"]["to"][str(tup[0])]["instancecount"]+=1
-                uritotreeitem[parentclass]["instancecount"]+=1
+                uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])]["instancecount"]+=1
+                uritotreeitem[parentclass][-1]["instancecount"]+=1
             if isinstance(tup[1],URIRef):
-                for item in graph.objects(tup[1],URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")):
+                for item in graph.objects(tup[1],URIRef(self.typeproperty)):
                     if parentclass!=None:
-                        if item not in uritotreeitem[parentclass]["data"]["to"][str(tup[0])]:
-                            uritotreeitem[parentclass]["data"]["to"][str(tup[0])][item] = 0
-                        uritotreeitem[parentclass]["data"]["to"][str(tup[0])][item]+=1
+                        if item not in uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])]:
+                            uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])][item] = 0
+                        uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])][item]+=1
         for tup in sorted(predobjmap):
             if isodd:
                 tablecontents += "<tr class=\"odd\">"
             else:
                 tablecontents += "<tr class=\"even\">"
-            if str(tup)=="http://www.w3.org/1999/02/22-rdf-syntax-ns#type" and URIRef("http://www.opengis.net/ont/geosparql#FeatureCollection") in predobjmap[tup]:
+            if str(tup)==self.typeproperty and URIRef("http://www.opengis.net/ont/geosparql#FeatureCollection") in predobjmap[tup]:
                 isgeocollection=True
-                uritotreeitem["http://www.opengis.net/ont/geosparql#FeatureCollection"]["instancecount"] += 1
-            elif str(tup)=="http://www.w3.org/1999/02/22-rdf-syntax-ns#type" and URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection") in predobjmap[tup]:
+                uritotreeitem["http://www.opengis.net/ont/geosparql#FeatureCollection"][-1]["instancecount"] += 1
+            elif str(tup)==self.typeproperty and URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection") in predobjmap[tup]:
                 isgeocollection=True
-                uritotreeitem["http://www.opengis.net/ont/geosparql#GeometryCollection"]["instancecount"] += 1
+                uritotreeitem["http://www.opengis.net/ont/geosparql#GeometryCollection"][-1]["instancecount"] += 1
             tablecontents=self.formatPredicate(tup, baseurl, checkdepth, tablecontents, graph,inverse)
             if str(tup) in labelproperties:
-                foundlabel = str(predobjmap[tup][0])
+                for lab in predobjmap[tup]:
+                    if lab.language==self.labellang:
+                        foundlabel=lab
+                if foundlabel=="":
+                    foundlabel = str(predobjmap[tup][0])
             if str(tup) in commentproperties:
-                comment = str(predobjmap[tup][0])
+                comment[str(tup)]=str(predobjmap[tup][0])
             if len(predobjmap[tup]) > 0:
                 if len(predobjmap[tup])>1:
                     tablecontents+="<td class=\"wrapword\"><ul>"
                     labelmap={}
                     for item in predobjmap[tup]:
-                        if ("POINT" in str(item).upper() or "POLYGON" in str(item).upper() or "LINESTRING" in str(item).upper()) and tup in valueproperties and "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" in predobjmap and URIRef("http://www.w3.org/ns/oa#WKTSelector") in predobjmap["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]:
+                        if ("POINT" in str(item).upper() or "POLYGON" in str(item).upper() or "LINESTRING" in str(item).upper()) and tup in valueproperties and self.typeproperty in predobjmap and URIRef("http://www.w3.org/ns/oa#WKTSelector") in predobjmap[self.typeproperty]:
                             image3dannos.add(str(item))
                         elif "<svg" in str(item):
                             foundmedia["image"].add(str(item))
@@ -2000,11 +2154,14 @@ class OntDocGeneration:
                                 ext = "." + ''.join(filter(str.isalpha, str(item).split(".")[-1]))                            
                             if ext in fileextensionmap:
                                 foundmedia[fileextensionmap[ext]].add(str(item))
+                        elif tup in valueproperties:
+                            foundvals.add(str(item))
                         res=self.createHTMLTableValueEntry(subject, tup, item, ttlf, graph,
-                                              baseurl, checkdepth,geojsonrep,foundmedia,imageannos,image3dannos)
+                                              baseurl, checkdepth,geojsonrep,foundmedia,imageannos,textannos,image3dannos)
                         geojsonrep = res["geojson"]
                         foundmedia = res["foundmedia"]
                         imageannos=res["imageannos"]
+                        textannos=res["textannos"]
                         image3dannos=res["image3dannos"]
                         if res["label"] not in labelmap:
                             labelmap[res["label"]]=""
@@ -2014,7 +2171,7 @@ class OntDocGeneration:
                     tablecontents+="</ul></td>"
                 else:
                     tablecontents+="<td class=\"wrapword\">"
-                    if ("POINT" in str(predobjmap[tup]).upper() or "POLYGON" in str(predobjmap[tup]).upper() or "LINESTRING" in str(predobjmap[tup]).upper()) and tup in valueproperties and "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" in predobjmap and URIRef("http://www.w3.org/ns/oa#WKTSelector") in predobjmap["http://www.w3.org/1999/02/22-rdf-syntax-ns#type"]:
+                    if ("POINT" in str(predobjmap[tup]).upper() or "POLYGON" in str(predobjmap[tup]).upper() or "LINESTRING" in str(predobjmap[tup]).upper()) and tup in valueproperties and self.typeproperty in predobjmap and URIRef("http://www.w3.org/ns/oa#WKTSelector") in predobjmap[self.typeproperty]:
                         image3dannos.add(str(predobjmap[tup][0]))
                     elif "<svg" in str(predobjmap[tup]):
                         foundmedia["image"].add(str(predobjmap[tup][0]))
@@ -2026,7 +2183,7 @@ class OntDocGeneration:
                         if ext in fileextensionmap:
                             foundmedia[fileextensionmap[ext]].add(str(predobjmap[tup][0]))
                     res=self.createHTMLTableValueEntry(subject, tup, predobjmap[tup][0], ttlf, graph,
-                                              baseurl, checkdepth,geojsonrep,foundmedia,imageannos,image3dannos)
+                                              baseurl, checkdepth,geojsonrep,foundmedia,imageannos,textannos,image3dannos)
                     tablecontents+=res["html"]
                     geojsonrep=res["geojson"]
                     foundmedia = res["foundmedia"]
@@ -2042,15 +2199,15 @@ class OntDocGeneration:
             if str(tup[1]) not in subpredsmap:
                 subpredsmap[str(tup[1])]=[]
             subpredsmap[str(tup[1])].append(tup[0])
-            if parentclass!=None and str(tup[1]) not in uritotreeitem[parentclass]["data"]["from"]:
-                uritotreeitem[parentclass]["data"]["from"][str(tup[1])]={}
-                uritotreeitem[parentclass]["data"]["from"][str(tup[1])]["instancecount"] = 0
+            if parentclass!=None and str(tup[1]) not in uritotreeitem[parentclass][-1]["data"]["from"]:
+                uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])]={}
+                uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])]["instancecount"] = 0
             if isinstance(tup[0],URIRef):
-                for item in graph.objects(tup[0],URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")):
+                for item in graph.objects(tup[0],URIRef(self.typeproperty)):
                     if parentclass!=None:
-                        if item not in uritotreeitem[parentclass]["data"]["from"][str(tup[1])]:
-                            uritotreeitem[parentclass]["data"]["from"][str(tup[1])][item] = 0
-                        uritotreeitem[parentclass]["data"]["from"][str(tup[1])][item]+=1
+                        if item not in uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])]:
+                            uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])][item] = 0
+                        uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])][item]+=1
         for tup in subpredsmap:
             if isodd:
                 tablecontents += "<tr class=\"odd\">"
@@ -2066,7 +2223,7 @@ class OntDocGeneration:
                             print("Postprocessing: " + str(item)+" - "+str(tup)+" - "+str(subject))
                             postprocessing.add((item,URIRef(tup),subject))
                         res = self.createHTMLTableValueEntry(subject, tup, item, None, graph,
-                                                             baseurl, checkdepth, geojsonrep,foundmedia,imageannos,image3dannos)
+                                                             baseurl, checkdepth, geojsonrep,foundmedia,imageannos,textannos,image3dannos)
                         foundmedia = res["foundmedia"]
                         imageannos=res["imageannos"]
                         image3dannos=res["image3dannos"]
@@ -2082,7 +2239,7 @@ class OntDocGeneration:
                         print("Postprocessing: " + str(subpredsmap[tup][0]) + " - " + str(tup) + " - " + str(subject))
                         postprocessing.add((subpredsmap[tup][0], URIRef(tup), subject))
                     res = self.createHTMLTableValueEntry(subject, tup, subpredsmap[tup][0], None, graph,
-                                                         baseurl, checkdepth, geojsonrep,foundmedia,imageannos,image3dannos)
+                                                         baseurl, checkdepth, geojsonrep,foundmedia,imageannos,textannos,image3dannos)
                     tablecontents += res["html"]
                     foundmedia = res["foundmedia"]
                     imageannos=res["imageannos"]
@@ -2104,13 +2261,15 @@ class OntDocGeneration:
             rellink3 =self.generateRelativeLinkFromGivenDepth(baseurl,checkdepth,"style.css",False)
             rellink4 = self.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "startscripts.js", False)
             rellink5 = self.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "proprelations.js", False)
+            rellink6 = self.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "epsgdefs.js", False)
+            rellink7 = self.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "vowl_result.js", False)
             if geojsonrep != None:
                 myexports=geoexports
             else:
                 myexports=nongeoexports
             if foundlabel != "":
                 f.write(htmltemplate.replace("{{logo}}",logo).replace("{{baseurl}}",baseurl).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{toptitle}}", foundlabel).replace(
-                    "{{startscriptpath}}", rellink4).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{indexpage}}","false").replace("{{title}}",
+                    "{{startscriptpath}}", rellink4).replace("{{epsgdefspath}}", rellink6).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{indexpage}}","false").replace("{{title}}",
                                                                                                 "<a href=\"" + str(
                                                                                                     subject) + "\">" + str(
                                                                                                     foundlabel) + "</a>").replace(
@@ -2119,12 +2278,15 @@ class OntDocGeneration:
                     "{{scriptfolderpath}}", rellink).replace("{{classtreefolderpath}}", rellink2).replace("{{exports}}",myexports).replace("{{subject}}",str(subject)))
             else:
                 f.write(htmltemplate.replace("{{logo}}",logo).replace("{{baseurl}}",baseurl).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{indexpage}}","false").replace("{{toptitle}}", self.shortenURI(str(subject))).replace(
-                    "{{startscriptpath}}", rellink4).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{title}}","<a href=\"" + str(subject) + "\">" + self.shortenURI(str(subject)) + "</a>").replace(
+                    "{{startscriptpath}}", rellink4).replace(
+                    "{{epsgdefspath}}", rellink6).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{title}}","<a href=\"" + str(subject) + "\">" + self.shortenURI(str(subject)) + "</a>").replace(
                     "{{baseurl}}", baseurl).replace("{{description}}",
                                                                                                "").replace(
                     "{{scriptfolderpath}}", rellink).replace("{{classtreefolderpath}}", rellink2).replace("{{exports}}",myexports).replace("{{subject}}",str(subject)))
-            if comment!=None:
-                f.write(htmlcommenttemplate.replace("{{comment}}",comment))
+            for comm in comment:
+                f.write(htmlcommenttemplate.replace("{{comment}}", self.shortenURI(comm) + ":" + comment[comm]))
+            for fval in foundvals:
+                f.write(htmlcommenttemplate.replace("{{comment}}", "<b>Value:<mark>" + str(fval) + "</mark></b>"))
             if len(foundmedia["mesh"])>0 and len(image3dannos)>0:
                 for anno in image3dannos:
                     if ("POINT" in anno.upper() or "POLYGON" in anno.upper() or "LINESTRING" in anno.upper()):
@@ -2168,15 +2330,29 @@ class OntDocGeneration:
                         carousel="carousel-item"
             if len(foundmedia["image"])>3:
                 f.write(imagecarouselfooter)
+            if len(textannos) > 0:
+                for textanno in textannos:
+                    if isinstance(textanno, dict):
+                        if "src" in textanno:
+                            f.write("<span style=\"font-weight:bold\" class=\"textanno\" start=\"" + str(
+                                textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
+                                textanno["exact"]) + "\" src=\"" + str(textanno["src"]) + "\"><mark>" + str(
+                                textanno["exact"]) + "</mark></span>")
+                        else:
+                            f.write("<span style=\"font-weight:bold\" class=\"textanno\" start=\"" + str(
+                                textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
+                                textanno["exact"]) + "\"><mark>" + str(textanno["exact"]) + "</mark></span>")
             for audio in foundmedia["audio"]:
                 f.write(audiotemplate.replace("{{audio}}",str(audio)))
             for video in foundmedia["video"]:
                 f.write(videotemplate.replace("{{video}}",str(video)))
             if geojsonrep!=None and not isgeocollection:
                 if str(subject) in uritotreeitem:
-                    uritotreeitem[str(subject)]["type"]="geoinstance"
+                    uritotreeitem[str(subject)][-1]["type"]="geoinstance"
                 jsonfeat={"type": "Feature", 'id':str(subject),'label':foundlabel, 'properties': predobjmap, "geometry": geojsonrep}
-                f.write(maptemplate.replace("{{myfeature}}",json.dumps(jsonfeat)))
+                if epsgcode=="" and "crs" in geojsonrep:
+                    epsgcode="EPSG:"+geojsonrep["crs"]
+                f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(jsonfeat)+"]").replace("{{epsg}}",epsgcode).replace("{{baselayers}}",json.dumps(baselayers)))
             elif isgeocollection:
                 featcoll={"type":"FeatureCollection", "id":subject, "features":[]}
                 for memberid in graph.objects(subject,URIRef("http://www.w3.org/2000/01/rdf-schema#member")):
@@ -2184,15 +2360,19 @@ class OntDocGeneration:
                         geojsonrep=None                       
                         if isinstance(geoinstance[1], Literal) and (str(geoinstance[0]) in geoproperties or str(geoinstance[1].datatype) in geoliteraltypes):
                             geojsonrep = self.processLiteral(str(geoinstance[1]), geoinstance[1].datatype, "")
-                            uritotreeitem[str(subject)]["type"] = "geocollection"
+                            uritotreeitem[str(subject)][-1]["type"] = "geocollection"
                         elif str(geoinstance[0]) in geopointerproperties:
-                            uritotreeitem[str(subject)]["type"] = "featurecollection"
+                            uritotreeitem[str(subject)][-1]["type"] = "featurecollection"
                             for geotup in graph.predicate_objects(geoinstance[1]):             
                                 if isinstance(geotup[1], Literal) and (str(geotup[0]) in geoproperties or str(geotup[1].datatype) in geoliteraltypes):
                                     geojsonrep = self.processLiteral(str(geotup[1]), geotup[1].datatype, "")
                         if geojsonrep!=None:
                             featcoll["features"].append({"type": "Feature", 'id':str(memberid), 'properties': {}, "geometry": geojsonrep})
-                f.write(maptemplate.replace("{{myfeature}}",json.dumps(featcoll)))
+                    f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(featcoll)+"]").replace("{{baselayers}}",json.dumps(baselayers)))
+                    with open(savepath + "/index.geojson", 'w', encoding='utf-8') as fgeo:
+                        featurecollectionspaths.add(savepath + "/index.geojson")
+                        fgeo.write(json.dumps(featcoll))
+                        fgeo.close()
             f.write(htmltabletemplate.replace("{{tablecontent}}", tablecontents))
             f.write(htmlfooter.replace("{{exports}}",myexports).replace("{{license}}",curlicense))
             f.close()
@@ -2215,6 +2395,7 @@ outpath=[]
 labellang="en"
 templatepath="resources/html/"
 templatename="default"
+createColl=False
 createIndexPages=True
 filestoprocess=[]
 if len(sys.argv)<=1:
@@ -2243,6 +2424,8 @@ if len(sys.argv)>5:
         createIndexPages=False
 if len(sys.argv)>6:
     templatepath=sys.argv[6]
+    if templatepath.startswith("http") and templatepath.endswith(".zip"):
+        print("URL")
 if len(sys.argv)>7:
     templatename=sys.argv[7]
 fcounter=0
@@ -2250,9 +2433,9 @@ for fp in filestoprocess:
     g = Graph()
     g.parse(fp)
     if fcounter<len(outpath):
-        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages)
+        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl)
     else:
-        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages)
+        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl)
     docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
     fcounter+=1
 print("Path exists? "+outpath[0]+'/index.html '+str(os.path.exists(outpath[0]+'/index.html')))
