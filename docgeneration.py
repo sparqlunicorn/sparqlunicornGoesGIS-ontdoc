@@ -1671,7 +1671,7 @@ class OntDocGeneration:
                     f.write(indexhtml)
                     f.close()
         if len(featurecollectionspaths)>0:
-            indexhtml = htmltemplate.replace("{{logo}}",self.logoname).replace("{{relativedepth}}","1").replace("{{baseurl}}", prefixnamespace).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{vowlpath}}", "vowl_result.js")\
+            indexhtml = htmltemplate.replace("{{logo}}",self.logoname).replace("{{relativedepth}}","0").replace("{{baseurl}}", prefixnamespace).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{vowlpath}}", "vowl_result.js")\
                     .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports)
             indexhtml = indexhtml.replace("{{indexpage}}", "true")
             self.merge_JsonFiles(featurecollectionspaths,str(outpath)+"features.js")
@@ -2435,10 +2435,11 @@ if len(sys.argv)>7:
 if len(sys.argv)>8:
     templatepath=sys.argv[8]
     if templatepath.startswith("http") and templatepath.endswith(".zip"):
-        with urlopen(zipurl) as zipresp:
+        with urlopen(templatepath) as zipresp:
             with ZipFile(BytesIO(zipresp.read())) as zfile:
+                subfoldername=zfile.namelist()[0][0:zfile.namelist()[0].rfind('/')]
                 zfile.extractall('mydownloadedtemplate/')
-        templatepath="mydownloadedtemplate/"
+                templatepath="mydownloadedtemplate/"+subfoldername
 if len(sys.argv)>9:
     templatename=sys.argv[9]
 fcounter=0
