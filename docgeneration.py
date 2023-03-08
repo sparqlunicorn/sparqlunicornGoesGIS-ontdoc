@@ -1962,10 +1962,12 @@ class OntDocGeneration:
         if isinstance(object,URIRef) or isinstance(object,BNode):
             if ttlf != None:
                 ttlf.write("<" + str(subject) + "> <" + str(pred) + "> <" + str(object) + "> .\n")
-            label = str(self.shortenURI(str(object)))
+            label = ""
             unitlabel=""
             mydata=self.searchObjectConnectionsForAggregateData(graph,object,pred,geojsonrep,foundmedia,imageannos,textannos,image3dannos,label,unitlabel)
             label=mydata["label"]
+            if label=="":
+                label=str(self.shortenURI(str(object)))
             geojsonrep=mydata["geojsonrep"]
             foundmedia=mydata["foundmedia"]
             imageannos=mydata["imageannos"]
@@ -2038,11 +2040,16 @@ class OntDocGeneration:
         return "<span property=\"" + str(pred) + "\" content=\"" + str(object).replace("<","&lt").replace(">","&gt;").replace("\"","'") + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">" + str(object).replace("<","&lt").replace(">","&gt;") + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
 
     def formatPredicate(self,tup,baseurl,checkdepth,tablecontents,graph,reverse):
-        label = self.shortenURI(str(tup))
+        onelabel=self.shortenURI(str(tup))
+        label=None
         for obj in graph.predicate_objects(object):
-            if str(obj[0]) in labelproperties:
-                label = str(obj[1])
-                break
+            if str(obj[0]) in SPARQLUtils.labelproperties:
+                if obj[1].language==self.labellang:
+                    label = str(obj[1])
+                    break
+                onelabel=str(obj[1])
+        if label==None:
+            label=onelabel
         tablecontents += "<td class=\"property\">"
         if reverse:
             tablecontents+="Is "
