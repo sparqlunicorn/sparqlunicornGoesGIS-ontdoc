@@ -1620,7 +1620,7 @@ class OntDocGeneration:
                 subtorenderlen=len(subjectstorender)+len(postprocessing)
             print(str(subtorencounter) + "/" + str(subtorenderlen) + " " + str(outpath + path))
         self.assignGeoClassesToTree(tree)
-	self.checkGeoInstanceAssignment(uritotreeitem)
+        self.checkGeoInstanceAssignment(uritotreeitem)
         with open(outpath + corpusid + "_classtree.js", 'w', encoding='utf-8') as f:
             f.write("var tree=" + json.dumps(tree, indent=2))
             f.close()
