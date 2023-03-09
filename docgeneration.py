@@ -2436,8 +2436,8 @@ if len(sys.argv)>5:
         createIndexPages=False
 if len(sys.argv)>6:
     indexp=sys.argv[6]
-    if indexp.lower()=="false":
-        createColl=False
+    if indexp.lower()=="true":
+        createColl=True
 if len(sys.argv)>7:
     labellang=sys.argv[7]
 if len(sys.argv)>8:
