@@ -38,6 +38,10 @@ on:
         required: false
         default: en
         type: string
+      license:
+        required: false
+        default: nolicense
+        type: string
 
 jobs:
   sample-action:
