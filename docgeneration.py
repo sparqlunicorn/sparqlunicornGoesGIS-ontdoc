@@ -2441,15 +2441,17 @@ if len(sys.argv)>6:
 if len(sys.argv)>7:
     labellang=sys.argv[7]
 if len(sys.argv)>8:
-    templatepath=sys.argv[8]
+    license=sys.argv[8]
+if len(sys.argv)>9:
+    templatepath=sys.argv[9]
     if templatepath.startswith("http") and templatepath.endswith(".zip"):
         with urlopen(templatepath) as zipresp:
             with ZipFile(BytesIO(zipresp.read())) as zfile:
                 subfoldername=zfile.namelist()[0][0:zfile.namelist()[0].rfind('/')]
                 zfile.extractall('mydownloadedtemplate/')
                 templatepath="mydownloadedtemplate/"+subfoldername
-if len(sys.argv)>9:
-    templatename=sys.argv[9]
+if len(sys.argv)>10:
+    templatename=sys.argv[10]
 fcounter=0
 for fp in filestoprocess:
     g = Graph()
