@@ -2404,11 +2404,11 @@ class OntDocGeneration:
                                     geojsonrep = self.processLiteral(str(geotup[1]), geotup[1].datatype, "")
                         if geojsonrep!=None:
                             featcoll["features"].append({"type": "Feature", 'id':str(memberid), 'properties': {}, "geometry": geojsonrep})
-                    f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(featcoll)+"]").replace("{{baselayers}}",json.dumps(baselayers)))
-                    with open(savepath + "/index.geojson", 'w', encoding='utf-8') as fgeo:
-                        featurecollectionspaths.add(savepath + "/index.geojson")
-                        fgeo.write(json.dumps(featcoll))
-                        fgeo.close()
+                f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(featcoll)+"]").replace("{{baselayers}}",json.dumps(baselayers)))
+                with open(savepath + "/index.geojson", 'w', encoding='utf-8') as fgeo:
+                    featurecollectionspaths.add(savepath + "/index.geojson")
+                    fgeo.write(json.dumps(featcoll))
+                    fgeo.close()
             f.write(htmltabletemplate.replace("{{tablecontent}}", tablecontents))
             f.write(htmlfooter.replace("{{exports}}",myexports).replace("{{license}}",curlicense))
             f.close()
