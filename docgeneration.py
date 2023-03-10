@@ -1725,9 +1725,9 @@ class OntDocGeneration:
                 isgeo=False
                 isfeature = False
                 for geotup in graph.predicate_objects(tup[0]):
-                    if str(geotup[0]) in SPARQLUtils.geopointerproperties:
+                    if str(geotup[0]) in geopointerproperties:
                         isfeature=True
-                    elif str(geotup[0]) in SPARQLUtils.geoproperties:
+                    elif str(geotup[0]) in geoproperties:
                         isgeo=True
                 if isgeo:
                     classToGeoColl[str(tup[1])]+=1
@@ -1935,7 +1935,7 @@ class OntDocGeneration:
                 if tempvalprop == None and str(tup[0]) == "http://www.w3.org/ns/oa#hasSource":
                     tempvalprop = str(tup[0])
                     foundval = str(tup[1])
-                if str(tup[0]) != "http://www.w3.org/ns/oa#hasSource" and SPARQLUtils.valueproperties[
+                if str(tup[0]) != "http://www.w3.org/ns/oa#hasSource" and valueproperties[
                     str(tup[0])] == "DatatypeProperty" and (isinstance(tup[1], Literal) or isinstance(tup[1], URIRef)):
                     tempvalprop = str(tup[0])
                     foundval = str(tup[1])
@@ -1944,9 +1944,9 @@ class OntDocGeneration:
                     for inttup in graph.predicate_objects(tup[1]):
                         if str(inttup[0]) == "http://www.w3.org/ns/oa#hasSelector":
                             for valtup in graph.predicate_objects(inttup[1]):
-                                if str(valtup[0]) in SPARQLUtils.unitproperties:
+                                if str(valtup[0]) in unitproperties:
                                     foundunit = str(valtup[1])
-                                if str(valtup[0]) in SPARQLUtils.valueproperties and (
+                                if str(valtup[0]) in valueproperties and (
                                         isinstance(valtup[1], Literal) or isinstance(valtup[1], URIRef)):
                                     foundval = str(valtup[1])
                 else:
@@ -2067,7 +2067,7 @@ class OntDocGeneration:
         onelabel=self.shortenURI(str(tup))
         label=None
         for obj in graph.predicate_objects(object):
-            if str(obj[0]) in SPARQLUtils.labelproperties:
+            if str(obj[0]) in labelproperties:
                 if obj[1].language==self.labellang:
                     label = str(obj[1])
                     break
