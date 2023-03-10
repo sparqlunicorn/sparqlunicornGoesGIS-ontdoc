@@ -1486,7 +1486,7 @@ class OntDocGeneration:
                 return literal
         except Exception as e:
             print(e)
-        return {}
+        return None
 
 
     def processLicense(self):
