@@ -2403,7 +2403,10 @@ class OntDocGeneration:
                                 if isinstance(geotup[1], Literal) and (str(geotup[0]) in geoproperties or str(geotup[1].datatype) in geoliteraltypes):
                                     geojsonrep = self.processLiteral(str(geotup[1]), geotup[1].datatype, "")
                         if geojsonrep!=None:
-                            featcoll["features"].append({"type": "Feature", 'id':str(memberid), 'properties': {}, "geometry": geojsonrep})
+                            if str(memberid) in uritotreeitem:
+                                featcoll["features"].append({"type": "Feature", 'id': str(memberid), 'label': uritotreeitem[str(memberid)][-1]["text"], 'properties': {},"geometry": geojsonrep})
+                            else:
+                                featcoll["features"].append({"type": "Feature", 'id':str(memberid),'label':str(memberid), 'properties': {}, "geometry": geojsonrep})
                 f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(featcoll)+"]").replace("{{baselayers}}",json.dumps(baselayers)))
                 with open(savepath + "/index.geojson", 'w', encoding='utf-8') as fgeo:
                     featurecollectionspaths.add(savepath + "/index.geojson")
