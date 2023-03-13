@@ -1866,7 +1866,8 @@ class OntDocGeneration:
                     for item in uritotreeitem[uri]:
                         if item["type"]!="instance" or item["type"]!="class":
                             thetype=item["type"]
-                        item["id"]=item["id"]+"_suniv"+str(counter)+"_"
+                        if item["type"]!="class":
+                            item["id"]=item["id"]+"_suniv"+str(counter)+"_"
                         counter+=1
                     if thetype!="instance" or thetype!="class":
                         for item in uritotreeitem[uri]:
