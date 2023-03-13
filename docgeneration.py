@@ -1858,11 +1858,11 @@ class OntDocGeneration:
                 classlist[item]["item"]["type"] = "class"
 
     def checkGeoInstanceAssignment(self,uritotreeitem):
-        if uritotreeitem[uri]!=None:
-            for uri in uritotreeitem:
-                if len(uritotreeitem[uri])>1:
-                    thetype="instance"
-                    counter=0
+        for uri in uritotreeitem:
+            if len(uritotreeitem[uri])>1:
+                thetype="instance"
+                counter=0
+                if uritotreeitem[uri]!=None:
                     for item in uritotreeitem[uri]:
                         if item["type"]!="instance" or item["type"]!="class":
                             thetype=item["type"]
