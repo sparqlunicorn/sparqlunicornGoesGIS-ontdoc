@@ -79,6 +79,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: ${{inputs.ghpagesbranch}}
           FOLDER: ${{inputs.docpath}}/
+          TARGET-FOLDER: ${{inputs.ghpagesfolder}}
       - name: Create build-output artifact
         uses: actions/upload-artifact@master
         with:
