@@ -8,3 +8,8 @@ The standalone script does not rely on QGIS classes and does not provide the ful
 Deviations from the SPARQLing Unicorn Plugin are listed as follows:
 
 * Support for less geometry literals: Only WKT and GeoJSON literals are supported for rendering
+
+### Usage Example
+
+For a usage example please refer to this repository:
+https://github.com/sparqlunicorn/sparqlunicornGoesGIS_testdata
