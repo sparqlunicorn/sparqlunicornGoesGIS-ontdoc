@@ -42,6 +42,10 @@ on:
         required: false
         default: ""
         type: string
+      logourl:
+        required: false
+        default: ""
+        type: string
 
 jobs:
   sample-action:
@@ -63,7 +67,7 @@ jobs:
           sudo pip3 install wheel pylode==2.13.2 rdflib shapely
           cp ontdocscript/docgeneration.py .
           cp ontdocscript/prefixes.json .
-          python3 docgeneration.py "${{inputs.rdffilepath}}" "${{inputs.docpath}}" "${{inputs.prefixns}}" "${{inputs.prefixnsshort}}" "${{inputs.indexpages}}" "${{inputs.createcollections}}" "${{inputs.preferredlang}}" "${{inputs.license}}" "${{inputs.templatedir}}" 
+          python3 docgeneration.py "${{inputs.rdffilepath}}" "${{inputs.docpath}}" "${{inputs.prefixns}}" "${{inputs.prefixnsshort}}" "${{inputs.indexpages}}" "${{inputs.createcollections}}" "${{inputs.preferredlang}}" "${{inputs.license}}" "${{inputs.logourl}}" "${{inputs.templatedir}}" 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v3
         if: ${{ inputs.ghpages }}
