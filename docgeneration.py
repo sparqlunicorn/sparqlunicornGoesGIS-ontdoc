@@ -1536,7 +1536,7 @@ class OntDocGeneration:
         self.getPropertyRelations(self.graph, outpath)
         if self.createColl:
             self.graph=self.createCollections(self.graph,prefixnamespace)
-        if self.logoname!=None and self.logoname!="":
+        if self.logoname!=None and self.logoname!="" and not self.logoname.startswith("http"):
             if not os.path.isdir(outpath+"/logo/"):
                 os.mkdir(outpath+"/logo/")
             shutil.copy(self.logoname,outpath+"/logo/logo."+self.logoname[self.logoname.rfind("."):])
@@ -2430,6 +2430,7 @@ prefixes["reversed"]["http://purl.org/meshsparql/"]="msp"
 prefixnsshort="suni"
 prefixnamespace="http://purl.org/cuneiform/"
 license=""
+logourl=""
 outpath=[]
 labellang="en"
 templatepath="resources/html/"
@@ -2470,29 +2471,31 @@ if len(sys.argv)>7:
 if len(sys.argv)>8:
     license=sys.argv[8]
 if len(sys.argv)>9:
-    templatepath=sys.argv[9]
+    logourl=sys.argv[9]
+if len(sys.argv)>10:
+    templatepath=sys.argv[10]
     if templatepath.startswith("http") and templatepath.endswith(".zip"):
         with urlopen(templatepath) as zipresp:
             with ZipFile(BytesIO(zipresp.read())) as zfile:
                 subfoldername=zfile.namelist()[0][0:zfile.namelist()[0].rfind('/')]
                 zfile.extractall('mydownloadedtemplate/')
                 templatepath="mydownloadedtemplate/"+subfoldername
-if len(sys.argv)>10:
-    templatename=sys.argv[10]
+if len(sys.argv)>11:
+    templatename=sys.argv[11]
 fcounter=0
 for fp in filestoprocess:
     g = Graph()
     g.parse(fp)
     if fcounter<len(outpath):
-        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl)
+        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,logourl)
     else:
-        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl)
+        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,logourl)
     docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
     fcounter+=1
 print("Path exists? "+outpath[0]+'/index.html '+str(os.path.exists(outpath[0]+'/index.html')))
 if not os.path.exists(outpath[0]+'/index.html'):
     indexf=open(outpath[0]+"/index.html","w",encoding="utf-8")
-    indexhtml = htmltemplate.replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}","0").replace("{{toptitle}}","Index page").replace("{{title}}","Index page").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
+    indexhtml = htmltemplate.replace("{{logo}}",logourl).replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}","0").replace("{{toptitle}}","Index page").replace("{{title}}","Index page").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
         .replace("{{classtreefolderpath}}",prefixnsshort + "_classtree.js").replace("{{baseurlhtml}}", ".").replace("{{proprelationpath}}", "proprelations.js").replace("{{scriptfolderpath}}", prefixnsshort+ '_search.js').replace("{{exports}}",nongeoexports)
     indexhtml=indexhtml.replace("{{indexpage}}","true")	
     indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"
