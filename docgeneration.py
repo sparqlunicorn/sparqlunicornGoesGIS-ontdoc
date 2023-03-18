@@ -2078,7 +2078,7 @@ class OntDocGeneration:
     def formatPredicate(self,tup,baseurl,checkdepth,tablecontents,graph,reverse):
         onelabel=self.shortenURI(str(tup))
         label=None
-        for obj in graph.predicate_objects(object):
+        for obj in graph.predicate_objects(URIRef(tup)):
             if str(obj[0]) in labelproperties:
                 if obj[1].language==self.labellang:
                     label = str(obj[1])
@@ -2096,7 +2096,7 @@ class OntDocGeneration:
             res = self.replaceNameSpacesInLabel(tup)
             if res != None:
                 tablecontents += "<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"" + str(
-                    tup) + "\">" + label + " <span style=\"color: #666;\">(" + res[
+                    tup[0]) + "\">" + label + " <span style=\"color: #666;\">(" + res[
                                      "uri"] + ")</span></a></span>"
             else:
                 tablecontents += "<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"" + str(
