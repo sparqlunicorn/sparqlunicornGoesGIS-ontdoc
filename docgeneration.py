@@ -1256,16 +1256,8 @@ nongeoexports="""
 geoexports="""
 <option value="csv">Comma Separated Values (CSV)</option>
 <option value="geojson">(Geo)JSON</option>
-<!--<option value="geojsonld">GeoJSON-LD</option>
-<option value="geouri">GeoURI</option> 
-<option value="json">JSON-LD</option>
-<option value="kml">Keyhole Markup Language (KML)</option>
-<option value="latlontext">LatLonText</option>
-<option value="mapml">Map Markup Language (MapML)</option>
-<option value="osmlink">OSM Link</option>-->
 <option value="ttl" selected>Turtle (TTL)</option>
 <option value="wkt">Well-Known-Text (WKT)</option>
-<!--<option value="xyz">XYZ ASCII Format (XYZ)</option>-->
 """
 
 maptemplate="""
