@@ -2096,11 +2096,11 @@ class OntDocGeneration:
             res = self.replaceNameSpacesInLabel(tup)
             if res != None:
                 tablecontents += "<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"" + str(
-                    tup[0]) + "\">" + label + " <span style=\"color: #666;\">(" + res[
+                    tup) + "\">" + label + " <span style=\"color: #666;\">(" + res[
                                      "uri"] + ")</span></a></span>"
             else:
                 tablecontents += "<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"" + str(
-                    tup[0]) + "\">" + label + "</a></span>"
+                    tup) + "\">" + label + "</a></span>"
         if reverse:
             tablecontents+=" of"
         tablecontents += "</td>"
