@@ -2476,6 +2476,7 @@ if len(sys.argv)>10:
                 subfoldername=zfile.namelist()[0][0:zfile.namelist()[0].rfind('/')]
                 zfile.extractall('mydownloadedtemplate/')
                 templatepath="mydownloadedtemplate/"+subfoldername
+                templatename=subfoldername
 if len(sys.argv)>11:
     templatename=sys.argv[11]
 fcounter=0
