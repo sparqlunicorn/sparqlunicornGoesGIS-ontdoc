@@ -2484,6 +2484,7 @@ if len(sys.argv)>10:
                     templatepath=templatepath[0:-1]
                 print(templatepath)
                 print(subfoldername)
+                print(templatename)
 if len(sys.argv)>11:
     templatename=sys.argv[11]
 fcounter=0
@@ -2491,9 +2492,9 @@ for fp in filestoprocess:
     g = Graph()
     g.parse(fp)
     if fcounter<len(outpath):
-        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,logourl)
+        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,logourl,templatename)
     else:
-        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,logourl)
+        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,logourl,templatename)
     docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
     fcounter+=1
 print("Path exists? "+outpath[0]+'/index.html '+str(os.path.exists(outpath[0]+'/index.html')))
