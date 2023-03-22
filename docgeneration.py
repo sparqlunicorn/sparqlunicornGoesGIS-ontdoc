@@ -2479,7 +2479,10 @@ if len(sys.argv)>10:
                 if subfoldername.endswith("/"):
                     subfoldername=subfoldername[0:-1]
                 templatepath="mydownloadedtemplate/"+subfoldername[0:subfoldername.rfind('/')+1]
-                templatename=subfoldername[subfoldername.rfind('/'):]
+                templatename=subfoldername
+                if templatepath.endswith("/"):
+                    templatepath=templatepath[0:-1]
+                print(templatepath)
                 print(subfoldername)
 if len(sys.argv)>11:
     templatename=sys.argv[11]
