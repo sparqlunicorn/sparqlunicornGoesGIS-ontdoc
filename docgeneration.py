@@ -1361,7 +1361,7 @@ classtreequery="""PREFIX owl: <http://www.w3.org/2002/07/owl#>\n
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n
         SELECT DISTINCT ?subject ?label ?supertype\n
         WHERE {\n
-           { ?individual rdf:type ?subject . } UNION { ?subject rdf:type owl:Class . } .\n
+           { ?individual rdf:type ?subject . } UNION { ?subject rdf:type owl:Class . } UNION { ?subject rdf:type rdfs:Class . } .\n
            OPTIONAL { ?subject rdfs:subClassOf ?supertype } .\n
            OPTIONAL { ?subject rdfs:label ?label. filter(langMatches(lang(?label),\"en\")) }
            OPTIONAL { ?subject rdfs:label ?label }.\n
@@ -2476,7 +2476,11 @@ if len(sys.argv)>10:
                 subfoldername=zfile.namelist()[0][0:zfile.namelist()[0].rfind('/')]
                 zfile.extractall('mydownloadedtemplate/')
                 templatepath="mydownloadedtemplate/"+subfoldername
-                templatename=subfoldername
+                if subfoldername.endswith("/"):
+                    subfoldername=subfoldername[0:-1]
+                templatepath="mydownloadedtemplate/"+subfoldername[0:subfoldername.rfind('/')+1]
+                templatename=subfoldername[subfoldername.rfind('/'):]
+                print(subfoldername)
 if len(sys.argv)>11:
     templatename=sys.argv[11]
 fcounter=0
