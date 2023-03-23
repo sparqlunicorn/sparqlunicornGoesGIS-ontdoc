@@ -2171,7 +2171,7 @@ class OntDocGeneration:
         tablecontentcounter=-1
         metadatatablecontentcounter=-1
         for tup in sorted(predobjmap):
-            if self.metadatatable and tup not in SPARQLUtils.labelproperties and self.shortenURI(str(tup),True) in SPARQLUtils.metadatanamespaces:
+            if self.metadatatable and tup not in labelproperties and self.shortenURI(str(tup),True) in metadatanamespaces:
                 thetable=metadatatablecontents
                 metadatatablecontentcounter+=1
                 if metadatatablecontentcounter%2==0:
