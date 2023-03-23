@@ -2170,15 +2170,20 @@ class OntDocGeneration:
         tablecontentcounter=-1
         metadatatablecontentcounter=-1
         for tup in sorted(predobjmap):
-            if self.metadatatable and tup not in labelproperties and self.shortenURI(str(tup),True) in metadatanamespaces:
+            if self.metadatatable and tup not in SPARQLUtils.labelproperties and self.shortenURI(str(tup),True) in SPARQLUtils.metadatanamespaces:
                 thetable=metadatatablecontents
+                metadatatablecontentcounter+=1
+                if metadatatablecontentcounter%2==0:
+                    thetable += "<tr class=\"odd\">"
+                else:
+                    thetable += "<tr class=\"even\">"
             else:
                 thetable=tablecontents
-            tablecontentcounter+=1
-            if tablecontentcounter%2==0:
-                thetable += "<tr class=\"odd\">"
-            else:
-                thetable += "<tr class=\"even\">"
+                tablecontentcounter+=1
+                if tablecontentcounter%2==0:
+                    thetable += "<tr class=\"odd\">"
+                else:
+                    thetable += "<tr class=\"even\">"
             if str(tup)==self.typeproperty and URIRef("http://www.opengis.net/ont/geosparql#FeatureCollection") in predobjmap[tup]:
                 isgeocollection=True
                 uritotreeitem["http://www.opengis.net/ont/geosparql#FeatureCollection"][-1]["instancecount"] += 1
