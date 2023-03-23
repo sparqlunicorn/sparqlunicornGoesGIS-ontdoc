@@ -2200,7 +2200,6 @@ class OntDocGeneration:
                     foundlabel = str(predobjmap[tup][0])
             if str(tup) in commentproperties:
                 comment[str(tup)]=str(predobjmap[tup][0])
-            thetable=tablecontents
             if len(predobjmap[tup]) > 0:
                 thetable+="<td class=\"wrapword\">"
                 if len(predobjmap[tup])>1:
