@@ -33,7 +33,7 @@ baselayers={
     "OpenStreetMap (OSM)":{"url":"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png","default":True,"type":"tile"}
 }
 
-metadatanamespaces=["http://purl.org/dc/terms/","http://www.w3.org/ns/prov#"]
+metadatanamespaces=["http://purl.org/dc/terms/","http://www.w3.org/ns/prov#","http://creativecommons.org/ns#"]
 
 collectionclasses=["http://www.opengis.net/ont/geosparql#FeatureCollection","http://www.opengis.net/ont/geosparql#GeometryCollection","http://www.opengis.net/ont/geosparql#SpatialObjectCollection","http://www.w3.org/2004/02/skos/core#Collection","http://www.w3.org/2004/02/skos/core#OrderedCollection","https://www.w3.org/ns/activitystreams#Collection","https://www.w3.org/ns/activitystreams#OrderedCollection"]
 
@@ -1427,13 +1427,14 @@ def resolveTemplate(templatename):
 
 class OntDocGeneration:
 
-    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,logoname="",templatename="default"):
+    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,logoname="",templatename="default"):
         self.prefixes=prefixes
         self.prefixnamespace = prefixnamespace
         self.namespaceshort = prefixnsshort.replace("/","")
         self.outpath=outpath
         self.logoname=logoname
         self.geocollectionspaths=[]
+        self.metadatatable=metadatatable
         resolveTemplate(templatename)
         self.license=license
         self.licenseuri=None
@@ -2166,11 +2167,18 @@ class OntDocGeneration:
                         if item not in uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])]:
                             uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])][item] = 0
                         uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])][item]+=1
+        tablecontentcounter=-1
+        metadatatablecontentcounter=-1
         for tup in sorted(predobjmap):
-            if isodd:
-                tablecontents += "<tr class=\"odd\">"
+            if self.metadatatable and tup not in SPARQLUtils.labelproperties and self.shortenURI(str(tup),True) in SPARQLUtils.metadatanamespaces:
+                thetable=metadatatablecontents
             else:
-                tablecontents += "<tr class=\"even\">"
+                thetable=tablecontents
+            tablecontentcounter+=1
+            if tablecontentcounter%2==0:
+                thetable += "<tr class=\"odd\">"
+            else:
+                thetable += "<tr class=\"even\">"
             if str(tup)==self.typeproperty and URIRef("http://www.opengis.net/ont/geosparql#FeatureCollection") in predobjmap[tup]:
                 isgeocollection=True
                 uritotreeitem["http://www.opengis.net/ont/geosparql#FeatureCollection"][-1]["instancecount"] += 1
@@ -2227,10 +2235,10 @@ class OntDocGeneration:
             else:
                 thetable += "<td class=\"wrapword\"></td>"
             thetable += "</tr>"
-            #if tup not in labelproperties and self.shortenURI(str(tup), True) in metadatanamespaces:
-            #    metadatatablecontents=thetable
-            #else:
-            tablecontents=thetable
+            if self.metadatatable and tup not in SPARQLUtils.labelproperties and self.shortenURI(str(tup), True) in SPARQLUtils.metadatanamespaces:
+                metadatatablecontents=thetable
+            else:
+                tablecontents=thetable
             isodd = not isodd
         subpredsmap={}
         for tup in sorted(subpreds,key=lambda tup: tup[1]):
@@ -2426,6 +2434,7 @@ prefixes["reversed"]["http://purl.org/meshsparql/"]="msp"
 prefixnsshort="suni"
 prefixnamespace="http://purl.org/cuneiform/"
 license=""
+metadatatable=False
 logourl=""
 outpath=[]
 labellang="en"
@@ -2469,6 +2478,10 @@ if len(sys.argv)>8:
 if len(sys.argv)>9:
     logourl=sys.argv[9]
 if len(sys.argv)>10:
+    metap=sys.argv[10]
+    if metap.lower()=="true":
+        metadatatable=True
+if len(sys.argv)>10:
     templatepath=sys.argv[10]
     if templatepath.startswith("http") and templatepath.endswith(".zip"):
         with urlopen(templatepath) as zipresp:
@@ -2492,9 +2505,9 @@ for fp in filestoprocess:
     g = Graph()
     g.parse(fp)
     if fcounter<len(outpath):
-        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,logourl,templatename)
+        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,logourl,templatename)
     else:
-        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,logourl,templatename)
+        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,logourl,templatename)
     docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
     fcounter+=1
 print("Path exists? "+outpath[0]+'/index.html '+str(os.path.exists(outpath[0]+'/index.html')))
