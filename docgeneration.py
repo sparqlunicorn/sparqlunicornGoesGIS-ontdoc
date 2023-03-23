@@ -2170,7 +2170,7 @@ class OntDocGeneration:
         tablecontentcounter=-1
         metadatatablecontentcounter=-1
         for tup in sorted(predobjmap):
-            if self.metadatatable and tup not in SPARQLUtils.labelproperties and self.shortenURI(str(tup),True) in SPARQLUtils.metadatanamespaces:
+            if self.metadatatable and tup not in labelproperties and self.shortenURI(str(tup),True) in metadatanamespaces:
                 thetable=metadatatablecontents
             else:
                 thetable=tablecontents
@@ -2235,7 +2235,7 @@ class OntDocGeneration:
             else:
                 thetable += "<td class=\"wrapword\"></td>"
             thetable += "</tr>"
-            if self.metadatatable and tup not in SPARQLUtils.labelproperties and self.shortenURI(str(tup), True) in SPARQLUtils.metadatanamespaces:
+            if self.metadatatable and tup not in labelproperties and self.shortenURI(str(tup), True) in metadatanamespaces:
                 metadatatablecontents=thetable
             else:
                 tablecontents=thetable
