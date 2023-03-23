@@ -2423,6 +2423,9 @@ class OntDocGeneration:
                     fgeo.write(json.dumps(featcoll))
                     fgeo.close()
             f.write(htmltabletemplate.replace("{{tablecontent}}", tablecontents))
+            if metadatatablecontentcounter>=0:
+                f.write("<h5>Metadata</h5>")
+                f.write(htmltabletemplate.replace("{{tablecontent}}", metadatatablecontents))
             f.write(htmlfooter.replace("{{exports}}",myexports).replace("{{license}}",curlicense))
             f.close()
         return postprocessing
