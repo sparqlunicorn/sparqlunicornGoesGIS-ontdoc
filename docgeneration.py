@@ -2121,6 +2121,7 @@ class OntDocGeneration:
 
     def createHTML(self,savepath, predobjs, subject, baseurl, subpreds, graph, searchfilename, classtreename,uritotreeitem,curlicense,subjectstorender,postprocessing):
         tablecontents = ""
+        metadatatablecontents=""
         isodd = False
         geojsonrep=None
         epsgcode=""
