@@ -2191,7 +2191,7 @@ class OntDocGeneration:
             elif str(tup)==self.typeproperty and URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection") in predobjmap[tup]:
                 isgeocollection=True
                 uritotreeitem["http://www.opengis.net/ont/geosparql#GeometryCollection"][-1]["instancecount"] += 1
-            tablecontents=self.formatPredicate(tup, baseurl, checkdepth, tablecontents, graph,inverse)
+            tablecontents=self.formatPredicate(tup, baseurl, checkdepth, thetable, graph,inverse)
             if str(tup) in labelproperties:
                 for lab in predobjmap[tup]:
                     if lab.language==self.labellang:
