@@ -97,28 +97,28 @@ geolatlonproperties={
 }
 
 geoproperties={
-               "http://www.opengis.net/ont/geosparql#asWKT":"DatatypeProperty",
-               "http://www.opengis.net/ont/geosparql#asGML": "DatatypeProperty",
-               "http://www.opengis.net/ont/geosparql#asKML": "DatatypeProperty",
-               "http://www.opengis.net/ont/geosparql#asGeoJSON": "DatatypeProperty",
-               "http://www.opengis.net/ont/geosparql#hasGeometry": "ObjectProperty",
-               "http://www.opengis.net/ont/geosparql#hasDefaultGeometry": "ObjectProperty",
-               "http://www.w3.org/2003/01/geo/wgs84_pos#geometry": "ObjectProperty",
-               "http://www.georss.org/georss/point": "DatatypeProperty",
-               "http://www.w3.org/2006/vcard/ns#hasGeo": "ObjectProperty",
-               "http://schema.org/geo": "ObjectProperty",
-               "https://schema.org/geo": "ObjectProperty",
-               "http://purl.org/dc/terms/coverage":"DatatypeProperty",
-               "http://purl.org/dc/terms/spatial":"DatatypeProperty",
-               "http://schema.org/polygon": "DatatypeProperty",
-               "https://schema.org/polygon": "DatatypeProperty",
-               "http://geovocab.org/geometry#geometry": "ObjectProperty",
-               "http://www.w3.org/ns/locn#geometry": "ObjectProperty",
-               "http://rdfs.co/juso/geometry": "ObjectProperty",
-               "http://www.wikidata.org/prop/direct/P625":"DatatypeProperty",
-               "https://database.factgrid.de/prop/direct/P48": "DatatypeProperty",
-               "http://database.factgrid.de/prop/direct/P48":"DatatypeProperty",
-               "http://www.wikidata.org/prop/direct/P3896": "DatatypeProperty"
+   "http://www.opengis.net/ont/geosparql#asWKT":"DatatypeProperty",
+   "http://www.opengis.net/ont/geosparql#asGML": "DatatypeProperty",
+   "http://www.opengis.net/ont/geosparql#asKML": "DatatypeProperty",
+   "http://www.opengis.net/ont/geosparql#asGeoJSON": "DatatypeProperty",
+   "http://www.opengis.net/ont/geosparql#hasGeometry": "ObjectProperty",
+   "http://www.opengis.net/ont/geosparql#hasDefaultGeometry": "ObjectProperty",
+   "http://www.w3.org/2003/01/geo/wgs84_pos#geometry": "ObjectProperty",
+   "http://www.georss.org/georss/point": "DatatypeProperty",
+   "http://www.w3.org/2006/vcard/ns#hasGeo": "ObjectProperty",
+   "http://schema.org/geo": "ObjectProperty",
+   "https://schema.org/geo": "ObjectProperty",
+   "http://purl.org/dc/terms/coverage":"DatatypeProperty",
+   "http://purl.org/dc/terms/spatial":"DatatypeProperty",
+   "http://schema.org/polygon": "DatatypeProperty",
+   "https://schema.org/polygon": "DatatypeProperty",
+   "http://geovocab.org/geometry#geometry": "ObjectProperty",
+   "http://www.w3.org/ns/locn#geometry": "ObjectProperty",
+   "http://rdfs.co/juso/geometry": "ObjectProperty",
+   "http://www.wikidata.org/prop/direct/P625":"DatatypeProperty",
+   "https://database.factgrid.de/prop/direct/P48": "DatatypeProperty",
+   "http://database.factgrid.de/prop/direct/P48":"DatatypeProperty",
+   "http://www.wikidata.org/prop/direct/P3896": "DatatypeProperty"
 }
 
 imageextensions=[".apng",".bmp",".cur",".ico",".jpg",".jpeg",".png",".gif",".tif",".svg","<svg"]
@@ -2481,8 +2481,8 @@ if len(sys.argv)>10:
     metap=sys.argv[10]
     if metap.lower()=="true":
         metadatatable=True
-if len(sys.argv)>10:
-    templatepath=sys.argv[10]
+if len(sys.argv)>11:
+    templatepath=sys.argv[11]
     if templatepath.startswith("http") and templatepath.endswith(".zip"):
         with urlopen(templatepath) as zipresp:
             with ZipFile(BytesIO(zipresp.read())) as zfile:
@@ -2498,8 +2498,8 @@ if len(sys.argv)>10:
                 print(templatepath)
                 print(subfoldername)
                 print(templatename)
-if len(sys.argv)>11:
-    templatename=sys.argv[11]
+if len(sys.argv)>12:
+    templatename=sys.argv[12]
 fcounter=0
 for fp in filestoprocess:
     g = Graph()
