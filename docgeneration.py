@@ -2109,7 +2109,7 @@ class OntDocGeneration:
         tablecontents += "</td>"
         return tablecontents
 
-	def getSubjectPagesForNonGraphURIs(self,subjectstorender,graph,prefixnamespace,corpusid,outpath,curlicense,baseurl):
+    def getSubjectPagesForNonGraphURIs(self,subjectstorender,graph,prefixnamespace,corpusid,outpath,curlicense,baseurl):
         uristorender={}
         uritolabel={}
         for sub in subjectstorender:
