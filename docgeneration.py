@@ -1635,6 +1635,9 @@ class OntDocGeneration:
         with open(outpath + corpusid + "_classtree.js", 'w', encoding='utf-8') as f:
             f.write("var tree=" + json.dumps(tree, indent=2))
             f.close()
+        if self.generatePagesForNonNS:
+            self.detectURIsConnectedToSubjects(subjectstorender, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace)
+            self.getSubjectPagesForNonGraphURIs(subjectstorender, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace)
         if self.createIndexPages:
             for path in paths:
                 subgraph=Graph(bind_namespaces="rdflib")
@@ -2106,6 +2109,132 @@ class OntDocGeneration:
         tablecontents += "</td>"
         return tablecontents
 
+	def getSubjectPagesForNonGraphURIs(self,subjectstorender,graph,prefixnamespace,corpusid,outpath,curlicense,baseurl):
+        uristorender={}
+        uritolabel={}
+        for sub in subjectstorender:
+            onelabel=""
+            label=None
+            added=[]
+            for tup in graph.predicate_objects(sub):
+                if str(tup[0]) in labelproperties:
+                    if tup[1].language == self.labellang:
+                        label = str(tup[1])
+                        break
+                    onelabel = str(tup[1])
+                if isinstance(tup[1],URIRef) and prefixnamespace not in str(tup[1]) and "http://www.w3.org/1999/02/22-rdf-syntax-ns#" not in str(tup[1]):
+                    if str(tup[1]) not in uristorender:
+                        uristorender[str(tup[1])]={}
+                    if str(tup[0]) not in uristorender[str(tup[1])]:
+                        uristorender[str(tup[1])][str(tup[0])]=[]
+                    for objtup in graph.predicate_objects(tup[1]):
+                        if str(objtup[0]) in labelproperties:
+                            uritolabel[str(tup[1])]=str(objtup[1])
+                    toadd={"sub":sub,"label":onelabel}
+                    added.append(toadd)
+                    uristorender[str(tup[1])][str(tup[0])].append(toadd)
+            for item in added:
+                if label!=None:
+                    item["label"]=label
+                else:
+                    item["label"]=onelabel
+        for uri in uristorender:
+            subjlabelonly=self.shortenURI(str(uri))
+            subjlabel="<a href=\""+str(uri)+"\">"+self.shortenURI(str(uri))+"</a>"
+            if uri in uritolabel:
+                subjlabel="<a href=\""+str(uri)+"\">"+uritolabel[uri]+"</a>"
+                subjlabelonly=uritolabel[uri]
+            indexhtml = htmltemplate.replace("{{logo}}",self.logoname).replace("{{relativedepth}}","0").replace("{{baseurl}}", prefixnamespace).replace("{{toptitle}}",subjlabelonly).replace("{{title}}",subjlabel).replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{vowlpath}}", "vowl_result.js")\
+                    .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports)
+            indexhtml = indexhtml.replace("{{indexpage}}", "true")
+            indexhtml+="<table border=\"1\" width=\"100%\" class=\"description\"><tr><th>Property</th><th>Value</th></tr>"
+            counter=0
+            for entry in uristorender[uri]:
+                if counter%2==0:
+                    indexhtml += "<tr class=\"odd\">"
+                else:
+                    indexhtml += "<tr class=\"even\">"
+                indexhtml+="<td>Is <a href=\""+str(entry)+"\">"+self.shortenURI(entry)+"</a> of</td><td><ul>"
+                for sub in uristorender[uri][entry]:
+                    if baseurl in sub["sub"]:
+                        rellink = self.generateRelativeLinkFromGivenDepth(str(baseurl), 0, str(sub["sub"]), True)
+                    else:
+                        rellink=str(sub["sub"])
+                    if sub["label"]!="":
+                        indexhtml += "<li><a href=\"" + rellink + "\">" + str(sub["label"]) + "</a></li>"
+                    else:
+                        indexhtml+="<li><a href=\""+rellink+"\">"+self.shortenURI(str(sub["sub"]))+"</a></li>"
+                indexhtml+="</ul></td></tr>"
+                counter+=1
+            indexhtml+="</table>"
+            indexhtml += htmlfooter.replace("{{license}}", self.processLicense()).replace("{{exports}}", nongeoexports)
+            with open(outpath + "_"+self.shortenURI(uri)+".html", 'w', encoding='utf-8') as f:
+                f.write(indexhtml)
+                f.close()
+                
+    def detectURIsConnectedToSubjects(self,subjectstorender,graph,prefixnamespace,corpusid,outpath,curlicense,baseurl):
+        uristorender={}
+        uritolabel={}
+        for sub in subjectstorender:
+            onelabel=""
+            label=None
+            added=[]
+            for tup in graph.predicate_objects(sub):
+                if str(tup[0]) in labelproperties:
+                    if tup[1].language == self.labellang:
+                        label = str(tup[1])
+                        break
+                    onelabel = str(tup[1])
+                if isinstance(tup[1],URIRef) and prefixnamespace not in str(tup[1]) and "http://www.w3.org/1999/02/22-rdf-syntax-ns#" not in str(tup[1]):
+                    if str(tup[1]) not in uristorender:
+                        uristorender[str(tup[1])]={}
+                    if str(tup[0]) not in uristorender[str(tup[1])]:
+                        uristorender[str(tup[1])][str(tup[0])]=[]
+                    for objtup in graph.predicate_objects(tup[1]):
+                        if str(objtup[0]) in labelproperties:
+                            uritolabel[str(tup[1])] = str(objtup[1])
+                    toadd={"sub":sub,"label":onelabel}
+                    added.append(toadd)
+                    uristorender[str(tup[1])][str(tup[0])].append(toadd)
+            for item in added:
+                if label!=None:
+                    item["label"]=label
+                else:
+                    item["label"]=onelabel
+        for uri in uristorender:
+            subjlabelonly=self.shortenURI(str(uri))
+            subjlabel="<a href=\""+str(uri)+"\">"+self.shortenURI(str(uri))+"</a>"
+            if uri in uritolabel:
+                subjlabel="<a href=\""+str(uri)+"\">"+uritolabel[uri]+"</a>"
+                subjlabelonly=uritolabel[uri]
+            indexhtml = htmltemplate.replace("{{logo}}",self.logoname).replace("{{relativedepth}}","0").replace("{{baseurl}}", prefixnamespace).replace("{{toptitle}}",subjlabelonly).replace("{{title}}",subjlabel).replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{vowlpath}}", "vowl_result.js")\
+                    .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports)
+            indexhtml = indexhtml.replace("{{indexpage}}", "true")
+            indexhtml+="<table border=\"1\" width=\"100%\" class=\"description\"><tr><th>Property</th><th>Value</th></tr>"
+            counter=0
+            for entry in uristorender[uri]:
+                if counter%2==0:
+                    indexhtml += "<tr class=\"odd\">"
+                else:
+                    indexhtml += "<tr class=\"even\">"
+                indexhtml+="<td>Is <a href=\""+str(entry)+"\">"+self.shortenURI(entry)+"</a> of</td><td><ul>"
+                for sub in uristorender[uri][entry]:
+                    if baseurl in sub["sub"]:
+                        rellink = self.generateRelativeLinkFromGivenDepth(str(baseurl), 0, str(sub["sub"]), True)
+                    else:
+                        rellink=str(sub["sub"])
+                    if sub["label"]!="":
+                        indexhtml += "<li><a href=\"" + rellink + "\">" + str(sub["label"]) + "</a></li>"
+                    else:
+                        indexhtml+="<li><a href=\""+rellink+"\">"+self.shortenURI(str(sub["sub"]))+"</a></li>"
+                indexhtml+="</ul></td></tr>"
+                counter+=1
+            indexhtml+="</table>"
+            indexhtml += htmlfooter.replace("{{license}}", self.processLicense()).replace("{{exports}}", nongeoexports)
+            with open(outpath + "_"+self.shortenURI(uri)+".html", 'w', encoding='utf-8') as f:
+                f.write(indexhtml)
+                f.close()
+
     def checkDepthFromPath(self,savepath,baseurl,subject):
         if savepath.endswith("/"):
             checkdepth = subject.replace(baseurl, "").count("/")
@@ -2445,6 +2574,7 @@ license=""
 metadatatable=False
 logourl=""
 outpath=[]
+nonnspages=False
 labellang="en"
 templatepath="resources/html/"
 templatename="default"
@@ -2490,7 +2620,11 @@ if len(sys.argv)>10:
     if metap.lower()=="true":
         metadatatable=True
 if len(sys.argv)>11:
-    templatepath=sys.argv[11]
+    nonnsp=sys.argv[11]
+    if nonnsp.lower()=="true":
+        nonnspages=True
+if len(sys.argv)>12:
+    templatepath=sys.argv[12]
     if templatepath.startswith("http") and templatepath.endswith(".zip"):
         with urlopen(templatepath) as zipresp:
             with ZipFile(BytesIO(zipresp.read())) as zfile:
@@ -2506,8 +2640,8 @@ if len(sys.argv)>11:
                 print(templatepath)
                 print(subfoldername)
                 print(templatename)
-if len(sys.argv)>12:
-    templatename=sys.argv[12]
+if len(sys.argv)>13:
+    templatename=sys.argv[13]
 fcounter=0
 for fp in filestoprocess:
     g = Graph()
