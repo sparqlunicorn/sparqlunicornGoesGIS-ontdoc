@@ -1427,12 +1427,13 @@ def resolveTemplate(templatename):
 
 class OntDocGeneration:
 
-    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,logoname="",templatename="default"):
+    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,logoname="",templatename="default"):
         self.prefixes=prefixes
         self.prefixnamespace = prefixnamespace
         self.namespaceshort = prefixnsshort.replace("/","")
         self.outpath=outpath
         self.logoname=logoname
+        self.generatePagesForNonNS=generatePagesForNonNS
         self.geocollectionspaths=[]
         self.metadatatable=metadatatable
         resolveTemplate(templatename)
@@ -2647,9 +2648,9 @@ for fp in filestoprocess:
     g = Graph()
     g.parse(fp)
     if fcounter<len(outpath):
-        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,logourl,templatename)
+        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,nonnspages,logourl,templatename)
     else:
-        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,logourl,templatename)
+        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,nonnspages,logourl,templatename)
     docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
     fcounter+=1
 print("Path exists? "+outpath[0]+'/index.html '+str(os.path.exists(outpath[0]+'/index.html')))
