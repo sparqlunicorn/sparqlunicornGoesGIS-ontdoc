@@ -2034,6 +2034,11 @@ class OntDocGeneration:
                     tablecontents += "<span><a property=\"" + str(pred) + "\" "+rdfares+" target=\"_blank\" href=\"" + str(object) + "\">" + label + " <span style=\"color: #666;\">(" + res["uri"] + ")</span></a>"                                     
                 else:
                     tablecontents += "<span><a property=\"" + str(pred) + "\" "+rdfares+" target=\"_blank\" href=\"" + str(object) + "\">" + label + "</a>"
+                if self.generatePagesForNonNS:
+                    rellink = self.generateRelativeLinkFromGivenDepth(str(baseurl), checkdepth,
+                                                                      str(baseurl) + "_" + self.shortenURI(
+                                                                          str(object)), False)
+                    tablecontents+=" <a href=\""+rellink+".html\">[x]</a>"
             if unitlabel!="":
                 tablecontents+=" <span style=\"font-weight:bold\">["+str(unitlabel)+"]</span>"
             tablecontents+="</span>"
