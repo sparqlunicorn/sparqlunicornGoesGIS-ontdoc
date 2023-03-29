@@ -1427,12 +1427,13 @@ def resolveTemplate(templatename):
 
 class OntDocGeneration:
 
-    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,logoname="",templatename="default"):
+    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,logoname="",templatename="default"):
         self.prefixes=prefixes
         self.prefixnamespace = prefixnamespace
         self.namespaceshort = prefixnsshort.replace("/","")
         self.outpath=outpath
         self.logoname=logoname
+        self.createVOWL=createVOWL
         self.generatePagesForNonNS=generatePagesForNonNS
         self.geocollectionspaths=[]
         self.metadatatable=metadatatable
@@ -1484,6 +1485,43 @@ class OntDocGeneration:
             print(e)
         return None
 
+    def convertOWL2MiniVOWL(self,g,outpath,predicates=[],typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",labelproperty="http://www.w3.org/2000/01/rdf-schema#label"):
+        minivowlresult={"info": [{
+            "description": "Created with pyowl2vowl (version 0.1) as part of the SPARQLing Unicorn QGIS Plugin"}],
+            "nodes": [],"links": []}
+        nodes=[]
+        nodeuriToId={}
+        links=[]
+        nodecounter=0
+        for pred in g.subject_objects(URIRef(typeproperty)):
+            if str(pred[1]) not in nodeuriToId:
+                nodeuriToId[str(pred[1])]=nodecounter
+                nodecounter+=1
+                if str(pred[1])=="http://www.w3.org/2002/07/owl#Class" or str(pred[1])=="http://www.w3.org/2000/01/rdf-schema#Class" or str(pred[1])=="http://www.w3.org/2000/01/rdf-schema#Datatype":
+                    nodes.append({"name":self.shortenURI(str(pred[1])),"type":"class","uri":str(pred[1])})
+                else:
+                    nodes.append({"name": self.shortenURI(str(pred[1])), "type": "class", "uri": str(pred[1])})
+        if predicates!=[]:
+            for pred in predicates:
+                if "from" in predicates[pred] and "to" in predicates[pred]:
+                    for fromsub in predicates[pred]["from"]:
+                        if fromsub in nodeuriToId:
+                            if predicates[pred]["to"]!=[]:
+                                links.append({"source": nodeuriToId[str(fromsub)],
+                                              "target": nodeuriToId[str(predicates[pred]["to"])],
+                                              "valueTo": self.shortenURI(str(pred)),
+                                              "propertyTo": "class",
+                                              "uriTo": str(pred)})
+        else:
+            for node in nodeuriToId:
+                for predobj in g.predicate_objects(URIRef(node)):
+                    if node in nodeuriToId and str(predobj[1]) in nodeuriToId and str(predobj[0])!=typeproperty:
+                        links.append({"source":nodeuriToId[node],"target":nodeuriToId[str(predobj[1])],"valueTo": self.shortenURI(str(predobj[0])),"propertyTo":("class" if isinstance(predobj[1],URIRef) else "datatype"), "uriTo":(str(predobj[1]) if isinstance(predobj[1],URIRef) else predobj[1].datatype)})
+        minivowlresult["nodes"]=nodes
+        minivowlresult["links"] = links
+        f = open(outpath + "/minivowl_result.js", "w")
+        f.write("var minivowlresult=" + json.dumps(minivowlresult, indent=1))
+        f.close()
 
     def processLicense(self):
         if self.license==None or self.license=="" or self.license=="No License Statement":
@@ -1716,6 +1754,9 @@ class OntDocGeneration:
             predicates[pred]["from"]=list(predicates[pred]["from"])
             predicates[pred]["to"] = list(predicates[pred]["to"])
             predicatecounter+=1
+        if self.createVOWL:
+            vowlinstance=OWL2VOWL()
+            vowlinstance.convertOWL2MiniVOWL(graph,outpath,[])
         with open(outpath+"proprelations.js", 'w', encoding='utf-8') as f:
             f.write("var proprelations="+json.dumps(predicates))
             f.close()
@@ -2586,6 +2627,7 @@ templatepath="resources/html/"
 templatename="default"
 createColl=False
 createIndexPages=True
+createVOWL=False
 filestoprocess=[]
 if len(sys.argv)<=1:
     print("No TTL file to process has been given as a parameter")
@@ -2630,7 +2672,11 @@ if len(sys.argv)>11:
     if nonnsp.lower()=="true":
         nonnspages=True
 if len(sys.argv)>12:
-    templatepath=sys.argv[12]
+    crvowl=sys.argv[12]
+    if crvowl.lower()=="true":
+        createVOWL=True
+if len(sys.argv)>13:
+    templatepath=sys.argv[13]
     if templatepath.startswith("http") and templatepath.endswith(".zip"):
         with urlopen(templatepath) as zipresp:
             with ZipFile(BytesIO(zipresp.read())) as zfile:
@@ -2646,16 +2692,16 @@ if len(sys.argv)>12:
                 print(templatepath)
                 print(subfoldername)
                 print(templatename)
-if len(sys.argv)>13:
-    templatename=sys.argv[13]
+if len(sys.argv)>14:
+    templatename=sys.argv[14]
 fcounter=0
 for fp in filestoprocess:
     g = Graph()
     g.parse(fp)
     if fcounter<len(outpath):
-        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,nonnspages,logourl,templatename)
+        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,logourl,templatename)
     else:
-        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,nonnspages,logourl,templatename)
+        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,logourl,templatename)
     docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
     fcounter+=1
 print("Path exists? "+outpath[0]+'/index.html '+str(os.path.exists(outpath[0]+'/index.html')))

@@ -108,6 +108,7 @@ function testRDFLibParsing(cururl){
             console.log("---data loaded---")
         }
     })
+	return store
 }
 
 function exportCSV(){
