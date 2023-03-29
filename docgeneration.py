@@ -2169,7 +2169,7 @@ class OntDocGeneration:
             label=None
             added=[]
             for tup in sorted(graph.predicate_objects(sub),key=lambda tup: tup[0]):
-                if str(tup[0]) in SPARQLUtils.labelproperties:
+                if str(tup[0]) in labelproperties:
                     if tup[1].language == self.labellang:
                         label = str(tup[1])
                         break
@@ -2180,7 +2180,7 @@ class OntDocGeneration:
                     if str(tup[0]) not in uristorender[str(tup[1])]:
                         uristorender[str(tup[1])][str(tup[0])]=[]
                     for objtup in graph.predicate_objects(tup[1]):
-                        if str(objtup[0]) in SPARQLUtils.labelproperties:
+                        if str(objtup[0]) in labelproperties:
                             uritolabel[str(tup[1])]=str(objtup[1])
                     toadd={"sub":sub,"label":onelabel}
                     added.append(toadd)
@@ -2202,7 +2202,7 @@ class OntDocGeneration:
             label=None
             added=[]
             for tup in sorted(graph.predicate_objects(sub), key=lambda tup: tup[0]):
-                if str(tup[0]) in SPARQLUtils.labelproperties:
+                if str(tup[0]) in labelproperties:
                     if tup[1].language == self.labellang:
                         label = str(tup[1])
                         break
@@ -2213,7 +2213,7 @@ class OntDocGeneration:
                     if str(tup[0]) not in uristorender[str(tup[1])]:
                         uristorender[str(tup[1])][str(tup[0])]=[]
                     for objtup in graph.predicate_objects(tup[1]):
-                        if str(objtup[0]) in SPARQLUtils.labelproperties:
+                        if str(objtup[0]) in labelproperties:
                             uritolabel[str(tup[1])] = str(objtup[1])
                     toadd={"sub":sub,"label":onelabel}
                     added.append(toadd)
