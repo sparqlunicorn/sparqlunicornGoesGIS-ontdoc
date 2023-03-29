@@ -1523,6 +1523,8 @@ class OntDocGeneration:
                         links.append({"source":nodeuriToId[node],"target":nodeuriToId[str(predobj[1])],"valueTo": self.shortenURI(str(predobj[0])),"propertyTo":("class" if isinstance(predobj[1],URIRef) else "datatype"), "uriTo":(str(predobj[1]) if isinstance(predobj[1],URIRef) else predobj[1].datatype)})
         minivowlresult["nodes"]=nodes
         minivowlresult["links"] = links
+        print("MINIVOWL")
+        print(minivowlresult)
         f = open(outpath + "/minivowl_result.js", "w")
         f.write("var minivowlresult=" + json.dumps(minivowlresult, indent=1))
         f.close()
