@@ -1755,8 +1755,7 @@ class OntDocGeneration:
             predicates[pred]["to"] = list(predicates[pred]["to"])
             predicatecounter+=1
         if self.createVOWL:
-            vowlinstance=OWL2VOWL()
-            vowlinstance.convertOWL2MiniVOWL(graph,outpath,[])
+            self.convertOWL2MiniVOWL(graph,outpath,[])
         with open(outpath+"proprelations.js", 'w', encoding='utf-8') as f:
             f.write("var proprelations="+json.dumps(predicates))
             f.close()
