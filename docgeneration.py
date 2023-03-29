@@ -2266,7 +2266,7 @@ class OntDocGeneration:
         inverse=False
         tablecontentcounter=-1
         metadatatablecontentcounter=-1
-        if str(subject) in uritotreeitem and uritotreeitem[str(subject)][-1]["parent"].startswith("http"):
+        if uritotreeitem!=None str(subject) in uritotreeitem and uritotreeitem[str(subject)][-1]["parent"].startswith("http"):
             parentclass=str(uritotreeitem[str(subject)][-1]["parent"])
             if parentclass not in uritotreeitem:
                 uritotreeitem[parentclass]=[{"id": parentclass, "parent": "#","type": "class","text": self.shortenURI(str(parentclass)),"data":{}}]
