@@ -2168,7 +2168,7 @@ class OntDocGeneration:
             onelabel=""
             label=None
             added=[]
-            for tup in sorted(graph.predicate_objects(sub),key=lambda tup: tup[0]):
+            for tup in graph.predicate_objects(sub):
                 if str(tup[0]) in labelproperties:
                     if tup[1].language == self.labellang:
                         label = str(tup[1])
@@ -2202,7 +2202,7 @@ class OntDocGeneration:
             onelabel=""
             label=None
             added=[]
-            for tup in sorted(graph.predicate_objects(sub), key=lambda tup: tup[0]):
+            for tup in graph.predicate_objects(sub):
                 if str(tup[0]) in labelproperties:
                     if tup[1].language == self.labellang:
                         label = str(tup[1])
