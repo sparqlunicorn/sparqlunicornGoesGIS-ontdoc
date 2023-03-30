@@ -1821,10 +1821,10 @@ class OntDocGeneration:
         result = []
         ress = {}
         for res in results:
-            print(res)
+            #print(res)
             if "_:" not in str(res["subject"]) and str(res["subject"]).startswith("http"):
                 ress[str(res["subject"])] = {"super": res["supertype"], "label": res["label"]}
-        print(ress)
+        #print(ress)
         for cls in ress:
             for obj in graph.subjects(URIRef(self.typeproperty), URIRef(cls),True):
                 res = self.replaceNameSpacesInLabel(str(obj))
@@ -2272,7 +2272,7 @@ class OntDocGeneration:
             parentclass=str(uritotreeitem[str(subject)][-1]["parent"])
             if parentclass not in uritotreeitem:
                 uritotreeitem[parentclass]=[{"id": parentclass, "parent": "#","type": "class","text": self.shortenURI(str(parentclass)),"data":{}}]
-            print(uritotreeitem[parentclass])
+            #print(uritotreeitem[parentclass])
             uritotreeitem[parentclass][-1]["instancecount"]=0
         ttlf = Graph(bind_namespaces="rdflib")
         #ttlf = open(savepath + "/index.ttl", "w", encoding="utf-8")
@@ -2674,6 +2674,6 @@ if not os.path.exists(outpath[0]+'/index.html'):
         indexhtml+="<tr><td><a href=\""+path.replace(outpath[0]+"/","")+"/index.html\">"+path.replace(outpath[0]+"/","")+"</a></td></tr>"
     indexhtml+="</tbody></table>"
     indexhtml+=htmlfooter.replace("{{license}}",license).replace("{{exports}}",nongeoexports)
-    print(indexhtml)
+    #print(indexhtml)
     indexf.write(indexhtml)
     indexf.close()
