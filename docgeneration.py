@@ -2190,7 +2190,7 @@ class OntDocGeneration:
                     item["label"]=label
                 else:
                     item["label"]=onelabel
-	print(uristorender)
+        print(uristorender)
         for uri in uristorender:
             self.createHTML(outpath+"nonns_"+self.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri)), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, subjectstorender, Graph(),True)
 
