@@ -2156,11 +2156,11 @@ class OntDocGeneration:
             else:
                 tablecontents += "<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"" + str(
                     tup) + "\">" + label + "</a> "
-            if self.generatePagesForNonNS:
-                rellink = self.generateRelativeLinkFromGivenDepth(str(baseurl), checkdepth,
-                                                                  str(baseurl) + "nonns_" + self.shortenURI(
-                                                                      str(tup)), False)
-                tablecontents+=" <a href=\""+rellink+".html\">[x]</a>"
+            #if self.generatePagesForNonNS:
+            #    rellink = self.generateRelativeLinkFromGivenDepth(str(baseurl), checkdepth,
+            #                                                      str(baseurl) + "nonns_" + self.shortenURI(
+            #                                                          str(tup)), False)
+            #    tablecontents+=" <a href=\""+rellink+".html\">[x]</a>"
             tablecontents+="</span>"
         if reverse:
             tablecontents+=" of"
