@@ -1,5 +1,8 @@
 name: SPARQLing Unicorn Ontology Documentation
 
+permissions:
+  contents: write
+
 on:
   workflow_call:
     inputs:
@@ -89,7 +92,7 @@ jobs:
           cp ontdocscript/prefixes.json .
           python3 docgeneration.py "${{inputs.rdffilepath}}" "${{inputs.docpath}}" "${{inputs.prefixns}}" "${{inputs.prefixnsshort}}" "${{inputs.indexpages}}" "${{inputs.createcollections}}" "${{inputs.preferredlang}}" "${{inputs.license}}" "${{inputs.logourl}}" "${{inputs.metadatatable}}" "${{inputs.createnonNSPages}}" "${{inputs.createVOWL}}" "${{inputs.templatedir}}" 
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@releases/v3
+        uses: JamesIves/github-pages-deploy-action@releases/v4
         if: ${{ inputs.ghpages }}
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
