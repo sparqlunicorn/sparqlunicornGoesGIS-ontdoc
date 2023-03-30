@@ -2159,7 +2159,7 @@ class OntDocGeneration:
             if self.generatePagesForNonNS:
                 rellink = self.generateRelativeLinkFromGivenDepth(str(baseurl), checkdepth,
                                                                   str(baseurl) + "nonns_" + self.shortenURI(
-                                                                      str(object)), False)
+                                                                      str(tup)), False)
                 tablecontents+=" <a href=\""+rellink+".html\">[x]</a>"
             tablecontents+="</span>"
         if reverse:
