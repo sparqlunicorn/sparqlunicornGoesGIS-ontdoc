@@ -2152,10 +2152,16 @@ class OntDocGeneration:
             if res != None:
                 tablecontents += "<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"" + str(
                     tup) + "\">" + label + " <span style=\"color: #666;\">(" + res[
-                                     "uri"] + ")</span></a></span>"
+                                     "uri"] + ")</span></a> "
             else:
                 tablecontents += "<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"" + str(
-                    tup) + "\">" + label + "</a></span>"
+                    tup) + "\">" + label + "</a> "
+            if self.generatePagesForNonNS:
+                rellink = self.generateRelativeLinkFromGivenDepth(str(baseurl), checkdepth,
+                                                                  str(baseurl) + "nonns_" + self.shortenURI(
+                                                                      str(object)), False)
+                tablecontents+=" <a href=\""+rellink+".html\">[x]</a>"
+            tablecontents+="</span>"
         if reverse:
             tablecontents+=" of"
         tablecontents += "</td>"
@@ -2168,7 +2174,7 @@ class OntDocGeneration:
             onelabel=""
             label=None
             added=[]
-            for tup in sorted(graph.predicate_objects(sub),key=lambda tup: tup[0]):
+            for tup in graph.predicate_objects(sub):
                 if str(tup[0]) in labelproperties:
                     if tup[1].language == self.labellang:
                         label = str(tup[1])
@@ -2201,23 +2207,23 @@ class OntDocGeneration:
             onelabel=""
             label=None
             added=[]
-            for tup in sorted(graph.predicate_objects(sub), key=lambda tup: tup[0]):
+            for tup in graph.predicate_objects(sub):
                 if str(tup[0]) in labelproperties:
                     if tup[1].language == self.labellang:
                         label = str(tup[1])
                         break
                     onelabel = str(tup[1])
                 if isinstance(tup[1],URIRef) and prefixnamespace not in str(tup[1]) and "http://www.w3.org/1999/02/22-rdf-syntax-ns#" not in str(tup[1]):
-                    if str(tup[1]) not in uristorender:
-                        uristorender[str(tup[1])]={}
-                    if str(tup[0]) not in uristorender[str(tup[1])]:
-                        uristorender[str(tup[1])][str(tup[0])]=[]
-                    for objtup in graph.predicate_objects(tup[1]):
+                    if str(tup[0]) not in uristorender:
+                        uristorender[str(tup[0])]={}
+                    if str(tup[1]) not in uristorender[str(tup[0])]:
+                        uristorender[str(tup[0])][str(tup[1])]=[]
+                    for objtup in graph.predicate_objects(tup[0]):
                         if str(objtup[0]) in labelproperties:
-                            uritolabel[str(tup[1])] = str(objtup[1])
+                            uritolabel[str(tup[0])] = str(objtup[1])
                     toadd={"sub":sub,"label":onelabel}
                     added.append(toadd)
-                    uristorender[str(tup[1])][str(tup[0])].append(toadd)
+                    uristorender[str(tup[0])][str(tup[1])].append(toadd)
             for item in added:
                 if label!=None:
                     item["label"]=label
