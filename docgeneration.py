@@ -1515,7 +1515,7 @@ class OntDocGeneration:
                                     if "http://www.w3.org/1999/02/22-rdf-syntax-ns#" not in str(topred) and "http://www.w3.org/2002/07/owl#" not in str(topred):
                                         links.append({"source": nodeuriToId[str(fromsub)],
                                                       "target": nodeuriToId[str(topred)],
-                                                      "valueTo": self.getIRILabel(str(pred)),
+                                                      "valueTo": self.shortenURI(str(pred)),
                                                       "propertyTo": "class",
                                                       "uriTo": str(pred)})
         else:
