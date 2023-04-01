@@ -2159,7 +2159,7 @@ class OntDocGeneration:
             if self.generatePagesForNonNS:
                 rellink = self.generateRelativeLinkFromGivenDepth(str(baseurl), checkdepth,
                                                                   str(baseurl) + "nonns_" + self.shortenURI(
-                                                                      str(object)), False)
+                                                                      str(tup)), False)
                 tablecontents+=" <a href=\""+rellink+".html\">[x]</a>"
             tablecontents+="</span>"
         if reverse:
@@ -2180,7 +2180,7 @@ class OntDocGeneration:
                         label = str(tup[1])
                         break
                     onelabel = str(tup[1])
-                if isinstance(tup[1],URIRef) and prefixnamespace not in str(tup[1]) and "http://www.w3.org/1999/02/22-rdf-syntax-ns#" not in str(tup[1]):
+                if isinstance(tup[0],URIRef) and prefixnamespace not in str(tup[0]) and "http://www.w3.org/1999/02/22-rdf-syntax-ns#" not in str(tup[0]):
                     if str(tup[1]) not in uristorender:
                         uristorender[str(tup[1])]={}
                     if str(tup[0]) not in uristorender[str(tup[1])]:
