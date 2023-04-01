@@ -1509,13 +1509,15 @@ class OntDocGeneration:
             for pred in predicates:
                 if "from" in predicates[pred] and "to" in predicates[pred]:
                     for fromsub in predicates[pred]["from"]:
-                        if fromsub in nodeuriToId:
+                        if str(fromsub) in nodeuriToId:
                             if predicates[pred]["to"]!=[]:
-                                links.append({"source": nodeuriToId[str(fromsub)],
-                                              "target": nodeuriToId[str(predicates[pred]["to"])],
-                                              "valueTo": self.shortenURI(str(pred)),
-                                              "propertyTo": "class",
-                                              "uriTo": str(pred)})
+                                for topred in predicates[pred]["to"]:
+                                    if "http://www.w3.org/1999/02/22-rdf-syntax-ns#" not in str(topred) and "http://www.w3.org/2002/07/owl#" not in str(topred):
+                                        links.append({"source": nodeuriToId[str(fromsub)],
+                                                      "target": nodeuriToId[str(topred)],
+                                                      "valueTo": self.shortenURI(str(pred)),
+                                                      "propertyTo": "class",
+                                                      "uriTo": str(pred)})
         else:
             for node in nodeuriToId:
                 for predobj in g.predicate_objects(URIRef(node)):
@@ -1761,7 +1763,7 @@ class OntDocGeneration:
             predicates[pred]["to"] = list(predicates[pred]["to"])
             predicatecounter+=1
         if self.createVOWL:
-            self.convertOWL2MiniVOWL(graph,outpath,[])
+            self.convertOWL2MiniVOWL(graph,outpath,predicates)
         with open(outpath+"proprelations.js", 'w', encoding='utf-8') as f:
             f.write("var proprelations="+json.dumps(predicates))
             f.close()
@@ -2156,11 +2158,11 @@ class OntDocGeneration:
             else:
                 tablecontents += "<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"" + str(
                     tup) + "\">" + label + "</a> "
-            if self.generatePagesForNonNS:
-                rellink = self.generateRelativeLinkFromGivenDepth(str(baseurl), checkdepth,
-                                                                  str(baseurl) + "nonns_" + self.shortenURI(
-                                                                      str(tup)), False)
-                tablecontents+=" <a href=\""+rellink+".html\">[x]</a>"
+            #if self.generatePagesForNonNS:
+            #    rellink = self.generateRelativeLinkFromGivenDepth(str(baseurl), checkdepth,
+            #                                                      str(baseurl) + "nonns_" + self.shortenURI(
+            #                                                          str(tup)), False)
+            #    tablecontents+=" <a href=\""+rellink+".html\">[x]</a>"
             tablecontents+="</span>"
         if reverse:
             tablecontents+=" of"
