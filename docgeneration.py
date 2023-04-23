@@ -2085,7 +2085,7 @@ class OntDocGeneration:
                 if self.generatePagesForNonNS:
                     rellink = self.generateRelativeLinkFromGivenDepth(str(baseurl), checkdepth,
                                                                       str(baseurl) + "nonns_" + self.shortenURI(
-                                                                          str(object)), False)
+                                                                          str(object).replace(":","_"), False)
                     tablecontents+=" <a href=\""+rellink+".html\">[x]</a>"
             if unitlabel!="":
                 tablecontents+=" <span style=\"font-weight:bold\">["+str(unitlabel)+"]</span>"
@@ -2200,7 +2200,7 @@ class OntDocGeneration:
                     item["label"]=onelabel
         print(uristorender)
         for uri in uristorender:
-            self.createHTML(outpath+"nonns_"+self.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri)), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, subjectstorender, Graph(),True)
+            self.createHTML(outpath+"nonns_"+self.shortenURI(uri).replace(":","_")+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri)), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, subjectstorender, Graph(),True)
 
                 
     def detectURIsConnectedToSubjects(self,subjectstorender,graph,prefixnamespace,corpusid,outpath,curlicense,baseurl):
