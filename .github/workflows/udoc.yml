@@ -99,8 +99,8 @@ jobs:
           BRANCH: ${{inputs.ghpagesbranch}}
           FOLDER: ${{inputs.docpath}}/
           TARGET-FOLDER: ${{inputs.ghpagesfolder}}
-      - name: Create build-output artifact
-        uses: actions/upload-artifact@master
-        with:
-          name: build-output
-          path: docs/
+      #- name: Create build-output artifact
+      #  uses: actions/upload-artifact@master
+      #  with:
+      #   name: build-output
+      #    path: docs/
