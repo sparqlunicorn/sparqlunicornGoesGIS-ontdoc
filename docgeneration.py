@@ -2440,133 +2440,136 @@ class OntDocGeneration:
             with open(savepath + "/index.json", 'w', encoding='utf-8') as f:
                 f.write(json.dumps(predobjmap))
                 f.close()
-        with open(completesavepath, 'w', encoding='utf-8') as f:
-            rellink=self.generateRelativeLinkFromGivenDepth(baseurl,checkdepth,searchfilename,False)
-            rellink2 = self.generateRelativeLinkFromGivenDepth(baseurl,checkdepth,classtreename,False)
-            rellink3 =self.generateRelativeLinkFromGivenDepth(baseurl,checkdepth,"style.css",False)
-            rellink4 = self.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "startscripts.js", False)
-            rellink5 = self.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "proprelations.js", False)
-            rellink6 = self.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "epsgdefs.js", False)
-            rellink7 = self.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "vowl_result.js", False)
-            if geojsonrep != None:
-                myexports=geoexports
-            else:
-                myexports=nongeoexports
-            if foundlabel != "":
-                f.write(htmltemplate.replace("{{logo}}",logo).replace("{{baseurl}}",baseurl).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{toptitle}}", foundlabel).replace(
-                    "{{startscriptpath}}", rellink4).replace("{{epsgdefspath}}", rellink6).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{indexpage}}","false").replace("{{title}}",
-                                                                                                "<a href=\"" + str(
-                                                                                                    subject) + "\">" + str(
-                                                                                                    foundlabel) + "</a>").replace(
-                    "{{baseurl}}", baseurl).replace("{{tablecontent}}", tablecontents).replace("{{description}}",
-                                                                                               "").replace(
-                    "{{scriptfolderpath}}", rellink).replace("{{classtreefolderpath}}", rellink2).replace("{{exports}}",myexports).replace("{{subject}}",str(subject)))
-            else:
-                f.write(htmltemplate.replace("{{logo}}",logo).replace("{{baseurl}}",baseurl).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{indexpage}}","false").replace("{{toptitle}}", self.shortenURI(str(subject))).replace(
-                    "{{startscriptpath}}", rellink4).replace(
-                    "{{epsgdefspath}}", rellink6).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{title}}","<a href=\"" + str(subject) + "\">" + self.shortenURI(str(subject)) + "</a>").replace(
-                    "{{baseurl}}", baseurl).replace("{{description}}",
-                                                                                               "").replace(
-                    "{{scriptfolderpath}}", rellink).replace("{{classtreefolderpath}}", rellink2).replace("{{exports}}",myexports).replace("{{subject}}",str(subject)))
-            for comm in comment:
-                f.write(htmlcommenttemplate.replace("{{comment}}", self.shortenURI(comm) + ":" + comment[comm]))
-            for fval in foundvals:
-                f.write(htmlcommenttemplate.replace("{{comment}}", "<b>Value:<mark>" + str(fval) + "</mark></b>"))
-            if len(foundmedia["mesh"])>0 and len(image3dannos)>0:
-                for anno in image3dannos:
-                    if ("POINT" in anno.upper() or "POLYGON" in anno.upper() or "LINESTRING" in anno.upper()):
-                        f.write(threejstemplate.replace("{{wktstring}}",anno).replace("{{meshurls}}",str(list(foundmedia["mesh"]))))
-            elif len(foundmedia["mesh"])>0 and len(image3dannos)==0:
-                print("Found 3D Model: "+str(foundmedia["mesh"]))
-                for curitem in foundmedia["mesh"]:
-                    format="ply"
-                    if ".nxs" in curitem or ".nxz" in curitem:
-                        format="nexus"
-                    f.write(image3dtemplate.replace("{{meshurl}}",curitem).replace("{{meshformat}}",format))
-                    break                
-            elif len(foundmedia["mesh"])==0 and len(image3dannos)>0:
-                for anno in image3dannos:
-                    if ("POINT" in anno.upper() or "POLYGON" in anno.upper() or "LINESTRING" in anno.upper()):
-                        f.write(threejstemplate.replace("{{wktstring}}",anno).replace("{{meshurls}}","[]"))
-            carousel="image"
-            if len(foundmedia["image"])>3:
-                carousel="carousel-item active"
-                f.write(imagecarouselheader)
-            if len(imageannos)>0 and len(foundmedia["image"])>0:
-                for image in foundmedia["image"]:
-                    annostring=""
-                    for anno in imageannos:
-                        annostring+=anno.replace("<svg>","<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
-                    f.write(imageswithannotemplate.replace("{{carousel}}",carousel+"\" style=\"position: relative;display: inline-block;").replace("{{image}}",str(image)).replace("{{svganno}}",annostring).replace("{{imagetitle}}",str(image)[0:str(image).rfind('.')]))
-                    if len(foundmedia["image"])>3:
-                        carousel="carousel-item"                  
-            else:
-                for image in foundmedia["image"]:
-                    if image=="<svg width=":
-                        continue
-                    if "<svg" in image:
-                        if "<svg>" in image:
-                            f.write(imagestemplatesvg.replace("{{carousel}}",carousel).replace("{{image}}", str(image.replace("<svg>","<svg class=\"svgview\">"))))
-                        else:
-                            f.write(imagestemplatesvg.replace("{{carousel}}",carousel).replace("{{image}}",str(image)))
-                    else:
-                        f.write(imagestemplate.replace("{{carousel}}",carousel).replace("{{image}}",str(image)).replace("{{imagetitle}}",str(image)[0:str(image).rfind('.')]))
-                    if len(foundmedia["image"])>3:
-                        carousel="carousel-item"
-            if len(foundmedia["image"])>3:
-                f.write(imagecarouselfooter)
-            if len(textannos) > 0:
-                for textanno in textannos:
-                    if isinstance(textanno, dict):
-                        if "src" in textanno:
-                            f.write("<span style=\"font-weight:bold\" class=\"textanno\" start=\"" + str(
-                                textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
-                                textanno["exact"]) + "\" src=\"" + str(textanno["src"]) + "\"><mark>" + str(
-                                textanno["exact"]) + "</mark></span>")
-                        else:
-                            f.write("<span style=\"font-weight:bold\" class=\"textanno\" start=\"" + str(
-                                textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
-                                textanno["exact"]) + "\"><mark>" + str(textanno["exact"]) + "</mark></span>")
-            for audio in foundmedia["audio"]:
-                f.write(audiotemplate.replace("{{audio}}",str(audio)))
-            for video in foundmedia["video"]:
-                f.write(videotemplate.replace("{{video}}",str(video)))
-            if geojsonrep!=None and not isgeocollection:
-                if str(subject) in uritotreeitem:
-                    uritotreeitem[str(subject)][-1]["type"]="geoinstance"
-                jsonfeat={"type": "Feature", 'id':str(subject),'label':foundlabel, 'properties': predobjmap, "geometry": geojsonrep}
-                if epsgcode=="" and "crs" in geojsonrep:
-                    epsgcode="EPSG:"+geojsonrep["crs"]
-                f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(jsonfeat)+"]").replace("{{epsg}}",epsgcode).replace("{{baselayers}}",json.dumps(baselayers)))
-            elif isgeocollection:
-                featcoll={"type":"FeatureCollection", "id":subject,"name":self.shortenURI(subject), "features":[]}
-                for memberid in graph.objects(subject,URIRef("http://www.w3.org/2000/01/rdf-schema#member")):
-                    for geoinstance in graph.predicate_objects(memberid):
-                        geojsonrep=None                       
-                        if isinstance(geoinstance[1], Literal) and (str(geoinstance[0]) in geoproperties or str(geoinstance[1].datatype) in geoliteraltypes):
-                            geojsonrep = self.processLiteral(str(geoinstance[1]), geoinstance[1].datatype, "")
-                            uritotreeitem[str(subject)][-1]["type"] = "geocollection"
-                        elif str(geoinstance[0]) in geopointerproperties:
-                            uritotreeitem[str(subject)][-1]["type"] = "featurecollection"
-                            for geotup in graph.predicate_objects(geoinstance[1]):             
-                                if isinstance(geotup[1], Literal) and (str(geotup[0]) in geoproperties or str(geotup[1].datatype) in geoliteraltypes):
-                                    geojsonrep = self.processLiteral(str(geotup[1]), geotup[1].datatype, "")
-                        if geojsonrep!=None:
-                            if str(memberid) in uritotreeitem:
-                                featcoll["features"].append({"type": "Feature", 'id': str(memberid), 'label': uritotreeitem[str(memberid)][-1]["text"], 'properties': {},"geometry": geojsonrep})
-                            else:
-                                featcoll["features"].append({"type": "Feature", 'id':str(memberid),'label':str(memberid), 'properties': {}, "geometry": geojsonrep})
-                f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(featcoll)+"]").replace("{{baselayers}}",json.dumps(baselayers)))
-                with open(completesavepath.replace(".html",".geojson"), 'w', encoding='utf-8') as fgeo:
-                    featurecollectionspaths.add(savepath + "/index.geojson")
-                    fgeo.write(json.dumps(featcoll))
-                    fgeo.close()
-            f.write(htmltabletemplate.replace("{{tablecontent}}", tablecontents))
-            if metadatatablecontentcounter>=0:
-                f.write("<h5>Metadata</h5>")
-                f.write(htmltabletemplate.replace("{{tablecontent}}", metadatatablecontents))
-            f.write(htmlfooter.replace("{{exports}}",myexports).replace("{{license}}",curlicense))
-            f.close()
+        try:
+			with open(completesavepath, 'w', encoding='utf-8') as f:
+				rellink=self.generateRelativeLinkFromGivenDepth(baseurl,checkdepth,searchfilename,False)
+				rellink2 = self.generateRelativeLinkFromGivenDepth(baseurl,checkdepth,classtreename,False)
+				rellink3 =self.generateRelativeLinkFromGivenDepth(baseurl,checkdepth,"style.css",False)
+				rellink4 = self.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "startscripts.js", False)
+				rellink5 = self.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "proprelations.js", False)
+				rellink6 = self.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "epsgdefs.js", False)
+				rellink7 = self.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "vowl_result.js", False)
+				if geojsonrep != None:
+					myexports=geoexports
+				else:
+					myexports=nongeoexports
+				if foundlabel != "":
+					f.write(htmltemplate.replace("{{logo}}",logo).replace("{{baseurl}}",baseurl).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{toptitle}}", foundlabel).replace(
+						"{{startscriptpath}}", rellink4).replace("{{epsgdefspath}}", rellink6).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{indexpage}}","false").replace("{{title}}",
+																									"<a href=\"" + str(
+																										subject) + "\">" + str(
+																										foundlabel) + "</a>").replace(
+						"{{baseurl}}", baseurl).replace("{{tablecontent}}", tablecontents).replace("{{description}}",
+																								   "").replace(
+						"{{scriptfolderpath}}", rellink).replace("{{classtreefolderpath}}", rellink2).replace("{{exports}}",myexports).replace("{{subject}}",str(subject)))
+				else:
+					f.write(htmltemplate.replace("{{logo}}",logo).replace("{{baseurl}}",baseurl).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{indexpage}}","false").replace("{{toptitle}}", self.shortenURI(str(subject))).replace(
+						"{{startscriptpath}}", rellink4).replace(
+						"{{epsgdefspath}}", rellink6).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{title}}","<a href=\"" + str(subject) + "\">" + self.shortenURI(str(subject)) + "</a>").replace(
+						"{{baseurl}}", baseurl).replace("{{description}}",
+																								   "").replace(
+						"{{scriptfolderpath}}", rellink).replace("{{classtreefolderpath}}", rellink2).replace("{{exports}}",myexports).replace("{{subject}}",str(subject)))
+				for comm in comment:
+					f.write(htmlcommenttemplate.replace("{{comment}}", self.shortenURI(comm) + ":" + comment[comm]))
+				for fval in foundvals:
+					f.write(htmlcommenttemplate.replace("{{comment}}", "<b>Value:<mark>" + str(fval) + "</mark></b>"))
+				if len(foundmedia["mesh"])>0 and len(image3dannos)>0:
+					for anno in image3dannos:
+						if ("POINT" in anno.upper() or "POLYGON" in anno.upper() or "LINESTRING" in anno.upper()):
+							f.write(threejstemplate.replace("{{wktstring}}",anno).replace("{{meshurls}}",str(list(foundmedia["mesh"]))))
+				elif len(foundmedia["mesh"])>0 and len(image3dannos)==0:
+					print("Found 3D Model: "+str(foundmedia["mesh"]))
+					for curitem in foundmedia["mesh"]:
+						format="ply"
+						if ".nxs" in curitem or ".nxz" in curitem:
+							format="nexus"
+						f.write(image3dtemplate.replace("{{meshurl}}",curitem).replace("{{meshformat}}",format))
+						break                
+				elif len(foundmedia["mesh"])==0 and len(image3dannos)>0:
+					for anno in image3dannos:
+						if ("POINT" in anno.upper() or "POLYGON" in anno.upper() or "LINESTRING" in anno.upper()):
+							f.write(threejstemplate.replace("{{wktstring}}",anno).replace("{{meshurls}}","[]"))
+				carousel="image"
+				if len(foundmedia["image"])>3:
+					carousel="carousel-item active"
+					f.write(imagecarouselheader)
+				if len(imageannos)>0 and len(foundmedia["image"])>0:
+					for image in foundmedia["image"]:
+						annostring=""
+						for anno in imageannos:
+							annostring+=anno.replace("<svg>","<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
+						f.write(imageswithannotemplate.replace("{{carousel}}",carousel+"\" style=\"position: relative;display: inline-block;").replace("{{image}}",str(image)).replace("{{svganno}}",annostring).replace("{{imagetitle}}",str(image)[0:str(image).rfind('.')]))
+						if len(foundmedia["image"])>3:
+							carousel="carousel-item"                  
+				else:
+					for image in foundmedia["image"]:
+						if image=="<svg width=":
+							continue
+						if "<svg" in image:
+							if "<svg>" in image:
+								f.write(imagestemplatesvg.replace("{{carousel}}",carousel).replace("{{image}}", str(image.replace("<svg>","<svg class=\"svgview\">"))))
+							else:
+								f.write(imagestemplatesvg.replace("{{carousel}}",carousel).replace("{{image}}",str(image)))
+						else:
+							f.write(imagestemplate.replace("{{carousel}}",carousel).replace("{{image}}",str(image)).replace("{{imagetitle}}",str(image)[0:str(image).rfind('.')]))
+						if len(foundmedia["image"])>3:
+							carousel="carousel-item"
+				if len(foundmedia["image"])>3:
+					f.write(imagecarouselfooter)
+				if len(textannos) > 0:
+					for textanno in textannos:
+						if isinstance(textanno, dict):
+							if "src" in textanno:
+								f.write("<span style=\"font-weight:bold\" class=\"textanno\" start=\"" + str(
+									textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
+									textanno["exact"]) + "\" src=\"" + str(textanno["src"]) + "\"><mark>" + str(
+									textanno["exact"]) + "</mark></span>")
+							else:
+								f.write("<span style=\"font-weight:bold\" class=\"textanno\" start=\"" + str(
+									textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
+									textanno["exact"]) + "\"><mark>" + str(textanno["exact"]) + "</mark></span>")
+				for audio in foundmedia["audio"]:
+					f.write(audiotemplate.replace("{{audio}}",str(audio)))
+				for video in foundmedia["video"]:
+					f.write(videotemplate.replace("{{video}}",str(video)))
+				if geojsonrep!=None and not isgeocollection:
+					if str(subject) in uritotreeitem:
+						uritotreeitem[str(subject)][-1]["type"]="geoinstance"
+					jsonfeat={"type": "Feature", 'id':str(subject),'label':foundlabel, 'properties': predobjmap, "geometry": geojsonrep}
+					if epsgcode=="" and "crs" in geojsonrep:
+						epsgcode="EPSG:"+geojsonrep["crs"]
+					f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(jsonfeat)+"]").replace("{{epsg}}",epsgcode).replace("{{baselayers}}",json.dumps(baselayers)))
+				elif isgeocollection:
+					featcoll={"type":"FeatureCollection", "id":subject,"name":self.shortenURI(subject), "features":[]}
+					for memberid in graph.objects(subject,URIRef("http://www.w3.org/2000/01/rdf-schema#member")):
+						for geoinstance in graph.predicate_objects(memberid):
+							geojsonrep=None                       
+							if isinstance(geoinstance[1], Literal) and (str(geoinstance[0]) in geoproperties or str(geoinstance[1].datatype) in geoliteraltypes):
+								geojsonrep = self.processLiteral(str(geoinstance[1]), geoinstance[1].datatype, "")
+								uritotreeitem[str(subject)][-1]["type"] = "geocollection"
+							elif str(geoinstance[0]) in geopointerproperties:
+								uritotreeitem[str(subject)][-1]["type"] = "featurecollection"
+								for geotup in graph.predicate_objects(geoinstance[1]):             
+									if isinstance(geotup[1], Literal) and (str(geotup[0]) in geoproperties or str(geotup[1].datatype) in geoliteraltypes):
+										geojsonrep = self.processLiteral(str(geotup[1]), geotup[1].datatype, "")
+							if geojsonrep!=None:
+								if str(memberid) in uritotreeitem:
+									featcoll["features"].append({"type": "Feature", 'id': str(memberid), 'label': uritotreeitem[str(memberid)][-1]["text"], 'properties': {},"geometry": geojsonrep})
+								else:
+									featcoll["features"].append({"type": "Feature", 'id':str(memberid),'label':str(memberid), 'properties': {}, "geometry": geojsonrep})
+					f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(featcoll)+"]").replace("{{baselayers}}",json.dumps(baselayers)))
+					with open(completesavepath.replace(".html",".geojson"), 'w', encoding='utf-8') as fgeo:
+						featurecollectionspaths.add(savepath + "/index.geojson")
+						fgeo.write(json.dumps(featcoll))
+						fgeo.close()
+				f.write(htmltabletemplate.replace("{{tablecontent}}", tablecontents))
+				if metadatatablecontentcounter>=0:
+					f.write("<h5>Metadata</h5>")
+					f.write(htmltabletemplate.replace("{{tablecontent}}", metadatatablecontents))
+				f.write(htmlfooter.replace("{{exports}}",myexports).replace("{{license}}",curlicense))
+				f.close()
+		except:
+			print("Could not write "+str(completesavepath))
         return postprocessing
             
 prefixes={"reversed":{}}
