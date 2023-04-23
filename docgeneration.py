@@ -2432,9 +2432,9 @@ class OntDocGeneration:
         if self.licenseuri!=None:
              ttlf.add((subject, URIRef("http://purl.org/dc/elements/1.1/license"), URIRef(self.licenseuri)))
         if nonns:
-            completesavepath = savepath
+            completesavepath = savepath.replace(":","_")
         else:
-            completesavepath=savepath + "/index.html"
+            completesavepath=savepath.replace(":","_") + "/index.html"
         if not nonns:
             ttlf.serialize(savepath + "/index.ttl", encoding="utf-8")
             with open(savepath + "/index.json", 'w', encoding='utf-8') as f:
