@@ -2663,13 +2663,16 @@ if len(sys.argv)>14:
     templatename=sys.argv[14]
 fcounter=0
 for fp in filestoprocess:
-    g = Graph()
-    g.parse(fp)
-    if fcounter<len(outpath):
-        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,logourl,templatename)
-    else:
-        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,logourl,templatename)
-    docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
+    try:
+        g = Graph()
+        g.parse(fp)
+        if fcounter<len(outpath):
+            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,logourl,templatename)
+        else:
+            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,logourl,templatename)
+        docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
+    except:
+    	print("Could not parse "+str(fp))
     fcounter+=1
 print("Path exists? "+outpath[0]+'/index.html '+str(os.path.exists(outpath[0]+'/index.html')))
 if not os.path.exists(outpath[0]+'/index.html'):
