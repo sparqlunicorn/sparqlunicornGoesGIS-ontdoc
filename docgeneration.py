@@ -2709,8 +2709,9 @@ for fp in filestoprocess:
         else:
             docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,logourl,templatename)
         docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
-    except:
+    except Exception as inst:
     	print("Could not parse "+str(fp))
+        print(inst)
     fcounter+=1
 print("Path exists? "+outpath[0]+'/index.html '+str(os.path.exists(outpath[0]+'/index.html')))
 if not os.path.exists(outpath[0]+'/index.html'):
