@@ -2606,8 +2606,9 @@ class OntDocGeneration:
                     f.write(htmltabletemplate.replace("{{tablecontent}}", metadatatablecontents))
                 f.write(htmlfooter.replace("{{exports}}",myexports).replace("{{license}}",curlicense))
                 f.close()
-        except:
+        except Exception as inst:
             print("Could not write "+str(completesavepath))
+            print(inst)
         return postprocessing
             
 prefixes={"reversed":{}}
