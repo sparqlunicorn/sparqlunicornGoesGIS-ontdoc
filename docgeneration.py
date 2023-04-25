@@ -2390,7 +2390,7 @@ class OntDocGeneration:
                         elif tup in valueproperties:
                             foundvals.add(str(item))
                         res=self.createHTMLTableValueEntry(subject, tup, item, ttlf, graph,
-                                              baseurl, checkdepth,geojsonrep,foundmedia,imageannos,textannos,image3dannos,inverse)
+                                              baseurl, checkdepth,geojsonrep,foundmedia,imageannos,textannos,image3dannos,inverse,nonns)
                         geojsonrep = res["geojson"]
                         foundmedia = res["foundmedia"]
                         imageannos=res["imageannos"]
