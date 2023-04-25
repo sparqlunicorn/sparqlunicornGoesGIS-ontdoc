@@ -1671,7 +1671,7 @@ class OntDocGeneration:
                 except Exception as e:
                     print(e)
             postprocessing=self.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace, self.graph.subject_predicates(subj),
-                       self.graph,str(corpusid) + "_search.js", str(corpusid) + "_classtree.js",uritotreeitem,curlicense,subjectstorender,postprocessing,nonns)
+                       self.graph,str(corpusid) + "_search.js", str(corpusid) + "_classtree.js",uritotreeitem,curlicense,subjectstorender,postprocessing)
             subtorencounter += 1
             if subtorencounter%500==0:
                 subtorenderlen=len(subjectstorender)+len(postprocessing)
@@ -1688,7 +1688,7 @@ class OntDocGeneration:
                 except Exception as e:
                     print(e)
             self.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace, self.graph.subject_predicates(subj),
-                       self.graph,str(corpusid) + "_search.js", str(corpusid) + "_classtree.js",uritotreeitem,curlicense,subjectstorender,postprocessing,nonns)
+                       self.graph,str(corpusid) + "_search.js", str(corpusid) + "_classtree.js",uritotreeitem,curlicense,subjectstorender,postprocessing)
             subtorencounter += 1
             if subtorencounter%500==0:
                 subtorenderlen=len(subjectstorender)+len(postprocessing)
