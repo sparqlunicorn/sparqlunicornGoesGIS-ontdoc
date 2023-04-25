@@ -1986,7 +1986,7 @@ class OntDocGeneration:
                 geojsonrep = {"type": "Point", "coordinates": [float(str(object)), float(str(othervalue))]}
         elif isinstance(object, Literal) and (
                 str(pred) in geoproperties or str(object.datatype) in geoliteraltypes):
-            geojsonrep = self..processLiteral(str(object), str(object.datatype), "")
+            geojsonrep = self.processLiteral(str(object), str(object.datatype), "")
         elif isinstance(object, URIRef) and nonns:
             for pobj in graph.predicate_objects(object):
                 if isinstance(pobj[1], Literal) and (
