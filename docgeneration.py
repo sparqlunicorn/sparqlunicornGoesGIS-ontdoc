@@ -1992,7 +1992,7 @@ class OntDocGeneration:
                 if isinstance(pobj[1], Literal) and (
                         str(pobj[0]) in geoproperties or str(
                     pobj[1].datatype) in geoliteraltypes):
-                    geojsonrep = self..processLiteral(str(pobj[1]), str(pobj[1].datatype), "")
+                    geojsonrep = self.processLiteral(str(pobj[1]), str(pobj[1].datatype), "")
         return geojsonrep
 
     def searchObjectConnectionsForAggregateData(self,graph,object,pred,geojsonrep,foundmedia,imageannos,textannos,image3dannos,label,unitlabel,nonns):
