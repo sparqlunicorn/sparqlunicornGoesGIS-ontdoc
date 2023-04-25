@@ -33,7 +33,7 @@ baselayers={
     "OpenStreetMap (OSM)":{"url":"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png","default":True,"type":"tile"}
 }
 
-metadatanamespaces=["http://purl.org/dc/terms/","http://www.w3.org/ns/prov#","http://www.w3.org/ns/prov-o/","http://creativecommons.org/ns#"]
+metadatanamespaces=["http://purl.org/dc/terms/","http://www.w3.org/ns/prov#","http://www.w3.org/ns/prov-o/","http://creativecommons.org/ns#","http://www.w3.org/ns/dcat#","http://purl.org/cerif/frapo/","http://www.lido-schema.org/"]
 
 collectionclasses=["http://www.opengis.net/ont/geosparql#FeatureCollection","http://www.opengis.net/ont/geosparql#GeometryCollection","http://www.opengis.net/ont/geosparql#SpatialObjectCollection","http://www.w3.org/2004/02/skos/core#Collection","http://www.w3.org/2004/02/skos/core#OrderedCollection","https://www.w3.org/ns/activitystreams#Collection","https://www.w3.org/ns/activitystreams#OrderedCollection"]
 
@@ -95,6 +95,18 @@ geolatlonproperties={
    "http://schema.org/latitude": "DatatypeProperty",
    "https://schema.org/latitude": "DatatypeProperty",
 }
+
+geopairproperties={
+    "http://schema.org/longitude":{"type":"DatatypeProperty","pair":"http://schema.org/latitude","islong":False},
+    "http://schema.org/latitude": {"type": "DatatypeProperty", "pair": "http://schema.org/longitude","islong":True},
+    "https://schema.org/longitude": {"type": "DatatypeProperty", "pair": "https://schema.org/latitude","islong":False},
+    "https://schema.org/latitude": {"type": "DatatypeProperty", "pair": "https://schema.org/longitude","islong":True},
+    "http://www.w3.org/2003/01/geo/wgs84_pos#lat": {"type": "DatatypeProperty", "pair": "http://www.w3.org/2003/01/geo/wgs84_pos#long","islong":True},
+    "http://www.w3.org/2003/01/geo/wgs84_pos#long": {"type": "DatatypeProperty", "pair": "http://www.w3.org/2003/01/geo/wgs84_pos#lat","islong":False},
+    "http://www.semanticweb.org/ontologies/2015/1/EPNet-ONTOP_Ontology#hasLongitude": {"type": "DatatypeProperty", "pair": "http://www.semanticweb.org/ontologies/2015/1/EPNet-ONTOP_Ontology#hasLatitude","islong": False},
+    "http://www.semanticweb.org/ontologies/2015/1/EPNet-ONTOP_Ontology#hasLatitude": {"type": "DatatypeProperty", "pair": "http://www.semanticweb.org/ontologies/2015/1/EPNet-ONTOP_Ontology#hasLongitude","islong": True}
+}
+
 
 geoproperties={
    "http://www.opengis.net/ont/geosparql#asWKT":"DatatypeProperty",
@@ -1545,17 +1557,21 @@ class OntDocGeneration:
 
     def addAdditionalTriplesForInd(self,graph,ind,tobeaddedPerInd):
         for prop in tobeaddedPerInd:
-            if "value" in tobeaddedPerInd[prop] and not tobeaddedPerInd[prop]["value"].startswith("http"):
+            if "value" in tobeaddedPerInd[prop] and "uri" in tobeaddedPerInd[prop]:
+                graph.add((ind, URIRef(prop), URIRef(str(tobeaddedPerInd[prop]["value"]))))
+                graph.add((URIRef(str(tobeaddedPerInd[prop]["value"])),
+                           URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                           URIRef(str(tobeaddedPerInd[prop]["uri"]))))
+                graph.add((URIRef(str(tobeaddedPerInd[prop]["value"]).replace(" ", "_")),
+                           URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
+                           URIRef(str(tobeaddedPerInd[prop]["value"]))))
+            elif "value" in tobeaddedPerInd[prop] and not tobeaddedPerInd[prop]["value"].startswith("http"):
                 if "type" in tobeaddedPerInd[prop]:
                     graph.add((ind,URIRef(prop),Literal(tobeaddedPerInd[prop]["value"],datatype=tobeaddedPerInd[prop]["type"])))
                 elif "value" in tobeaddedPerInd[prop]:
                     graph.add((ind, URIRef(prop), Literal(tobeaddedPerInd[prop]["value"])))
             elif "value" in tobeaddedPerInd[prop] and not "uri" in tobeaddedPerInd[prop]:
                 graph.add((ind, URIRef(prop), URIRef(str(tobeaddedPerInd[prop]["value"]))))
-            elif "value" in tobeaddedPerInd[prop] and "uri" in tobeaddedPerInd[prop]:
-                graph.add((ind, URIRef(prop), URIRef(str(tobeaddedPerInd[prop]["value"]))))
-                graph.add((URIRef(str(tobeaddedPerInd[prop]["value"])), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef(str(tobeaddedPerInd[prop]["uri"]))))
-                graph.add((URIRef(str(tobeaddedPerInd[prop]["value"]).replace(" ","_")),URIRef("http://www.w3.org/2000/01/rdf-schema#label"),URIRef(str(tobeaddedPerInd[prop]["value"]))))
 
 
 
@@ -1655,7 +1671,7 @@ class OntDocGeneration:
                 except Exception as e:
                     print(e)
             postprocessing=self.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace, self.graph.subject_predicates(subj),
-                       self.graph,str(corpusid) + "_search.js", str(corpusid) + "_classtree.js",uritotreeitem,curlicense,subjectstorender,postprocessing)
+                       self.graph,str(corpusid) + "_search.js", str(corpusid) + "_classtree.js",uritotreeitem,curlicense,subjectstorender,postprocessing,nonns)
             subtorencounter += 1
             if subtorencounter%500==0:
                 subtorenderlen=len(subjectstorender)+len(postprocessing)
@@ -1672,7 +1688,7 @@ class OntDocGeneration:
                 except Exception as e:
                     print(e)
             self.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace, self.graph.subject_predicates(subj),
-                       self.graph,str(corpusid) + "_search.js", str(corpusid) + "_classtree.js",uritotreeitem,curlicense,subjectstorender,postprocessing)
+                       self.graph,str(corpusid) + "_search.js", str(corpusid) + "_classtree.js",uritotreeitem,curlicense,subjectstorender,postprocessing,nonns)
             subtorencounter += 1
             if subtorencounter%500==0:
                 subtorenderlen=len(subjectstorender)+len(postprocessing)
@@ -1957,7 +1973,29 @@ class OntDocGeneration:
             rellink += "/index.html"
         return rellink
 
-    def searchObjectConnectionsForAggregateData(self,graph,object,pred,geojsonrep,foundmedia,imageannos,textannos,image3dannos,label,unitlabel):
+    def resolveGeoLiterals(self,pred,object,graph,geojsonrep,nonns,subject=None):
+        if subject!=None and isinstance(object, Literal) and (str(pred) in geopairproperties):
+            pairprop = geopairproperties[str(pred)]["pair"]
+            latorlong = geopairproperties[str(pred)]["islong"]
+            othervalue = ""
+            for obj in graph.objects(subject, URIRef(pairprop)):
+                othervalue = str(obj)
+            if latorlong:
+                geojsonrep = {"type": "Point", "coordinates": [float(str(othervalue)), float(str(object))]}
+            else:
+                geojsonrep = {"type": "Point", "coordinates": [float(str(object)), float(str(othervalue))]}
+        elif isinstance(object, Literal) and (
+                str(pred) in geoproperties or str(object.datatype) in geoliteraltypes):
+            geojsonrep = self..processLiteral(str(object), str(object.datatype), "")
+        elif isinstance(object, URIRef) and nonns:
+            for pobj in graph.predicate_objects(object):
+                if isinstance(pobj[1], Literal) and (
+                        str(pobj[0]) in geoproperties or str(
+                    pobj[1].datatype) in geoliteraltypes):
+                    geojsonrep = self..processLiteral(str(pobj[1]), str(pobj[1].datatype), "")
+        return geojsonrep
+
+    def searchObjectConnectionsForAggregateData(self,graph,object,pred,geojsonrep,foundmedia,imageannos,textannos,image3dannos,label,unitlabel,nonns):
         geoprop=False
         annosource=False
         incollection=False
@@ -1994,10 +2032,9 @@ class OntDocGeneration:
                 textannos.append(curanno)
             if pred == "http://www.w3.org/ns/oa#hasSource":
                 annosource = str(tup[1])
-            if isinstance(tup[1], Literal) and (str(tup[0]) in geoproperties or str(tup[1].datatype) in geoliteraltypes):
-                geojsonrep = self.processLiteral(str(tup[1]), tup[1].datatype, "")
+            geojsonrep=self.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep,nonns)
             if incollection and "<svg" in str(tup[1]):
-                 foundmedia["image"].add(str(tup[1]))
+                foundmedia["image"].add(str(tup[1]))
             elif incollection and "http" in str(tup[1]):
                 ext="."+''.join(filter(str.isalpha,str(tup[1]).split(".")[-1]))
                 if ext in fileextensionmap:
@@ -2010,7 +2047,7 @@ class OntDocGeneration:
                     str(tup[0])] == "DatatypeProperty" and (isinstance(tup[1], Literal) or isinstance(tup[1], URIRef)):
                     tempvalprop = str(tup[0])
                     foundval = str(tup[1])
-                elif str(tup[0]) != "http://www.w3.org/ns/oa#hasTarget":
+                elif str(tup[0]) == "http://www.w3.org/ns/oa#hasTarget":
                     tempvalprop = "http://www.w3.org/ns/oa#hasTarget"
                     for inttup in graph.predicate_objects(tup[1]):
                         if str(inttup[0]) == "http://www.w3.org/ns/oa#hasSelector":
@@ -2051,7 +2088,7 @@ class OntDocGeneration:
         return {"geojsonrep":geojsonrep,"label":label,"unitlabel":unitlabel,"foundmedia":foundmedia,"imageannos":imageannos,"textannos":textannos,"image3dannos":image3dannos}
 
 
-    def createHTMLTableValueEntry(self,subject,pred,object,ttlf,graph,baseurl,checkdepth,geojsonrep,foundmedia,imageannos,textannos,image3dannos,inverse):
+    def createHTMLTableValueEntry(self,subject,pred,object,ttlf,graph,baseurl,checkdepth,geojsonrep,foundmedia,imageannos,textannos,image3dannos,inverse,nonns):
         tablecontents=""
         label=""
         if isinstance(object,URIRef) or isinstance(object,BNode):
@@ -2059,7 +2096,7 @@ class OntDocGeneration:
                 ttlf.add((subject,URIRef(pred),object))
             label = ""
             unitlabel=""
-            mydata=self.searchObjectConnectionsForAggregateData(graph,object,pred,geojsonrep,foundmedia,imageannos,textannos,image3dannos,label,unitlabel)
+            mydata=self.searchObjectConnectionsForAggregateData(graph,object,pred,geojsonrep,foundmedia,imageannos,textannos,image3dannos,label,unitlabel,nonns)
             label=mydata["label"]
             if label=="":
                 label=str(self.shortenURI(str(object)))
@@ -2109,8 +2146,7 @@ class OntDocGeneration:
                         object).replace("<", "&lt").replace(">", "&gt;").replace("\"", "'") + "\" datatype=\"" + str(
                         object.datatype) + "\">" + objstring + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"" + str(
                         object.datatype) + "\">" + self.shortenURI(str(object.datatype)) + "</a>)</small></span>"
-                if isinstance(object, Literal) and (str(pred) in geoproperties or str(object.datatype) in geoliteraltypes):
-                    geojsonrep = self.processLiteral(str(object), object.datatype, "")
+                geojsonrep=self.resolveGeoLiterals(URIRef(pred), object, graph, geojsonrep,nonns,subject)
             else:
                 if object.language != None:
                     tablecontents += "<span property=\"" + str(pred) + "\" content=\"" + str(object).replace("<", "&lt").replace(">", "&gt;").replace("\"","'") + "\" datatype=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\" xml:lang=\"" + str(object.language) + "\">" + str(object).replace("<", "&lt").replace(">", "&gt;") + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\">rdf:langString</a>) (<a href=\"http://www.lexvo.org/page/iso639-1/"+str(object.language)+"\" target=\"_blank\">iso6391:" + str(object.language) + "</a>)</small></span>"
@@ -2182,7 +2218,7 @@ class OntDocGeneration:
                         label = str(tup[1])
                         break
                     onelabel = str(tup[1])
-                if isinstance(tup[0],URIRef) and prefixnamespace not in str(tup[0]) and "http://www.w3.org/1999/02/22-rdf-syntax-ns#" not in str(tup[0]):
+                if isinstance(tup[1],URIRef) and prefixnamespace not in str(tup[1]) and "http://www.w3.org/1999/02/22-rdf-syntax-ns#" not in str(tup[1]):
                     if str(tup[1]) not in uristorender:
                         uristorender[str(tup[1])]={}
                     if str(tup[0]) not in uristorender[str(tup[1])]:
@@ -2217,16 +2253,16 @@ class OntDocGeneration:
                         break
                     onelabel = str(tup[1])
                 if isinstance(tup[1],URIRef) and prefixnamespace not in str(tup[1]) and "http://www.w3.org/1999/02/22-rdf-syntax-ns#" not in str(tup[1]):
-                    if str(tup[0]) not in uristorender:
-                        uristorender[str(tup[0])]={}
-                    if str(tup[1]) not in uristorender[str(tup[0])]:
-                        uristorender[str(tup[0])][str(tup[1])]=[]
-                    for objtup in graph.predicate_objects(tup[0]):
+                    if str(tup[1]) not in uristorender:
+                        uristorender[str(tup[1])]={}
+                    if str(tup[0]) not in uristorender[str(tup[1])]:
+                        uristorender[str(tup[1])][str(tup[0])]=[]
+                    for objtup in graph.predicate_objects(tup[1]):
                         if str(objtup[0]) in labelproperties:
-                            uritolabel[str(tup[0])] = str(objtup[1])
+                            uritolabel[str(tup[1])] = str(objtup[1])
                     toadd={"sub":sub,"label":onelabel}
                     added.append(toadd)
-                    uristorender[str(tup[0])][str(tup[1])].append(toadd)
+                    uristorender[str(tup[1])][str(tup[0])].append(toadd)
             for item in added:
                 if label!=None:
                     item["label"]=label
@@ -2414,6 +2450,8 @@ class OntDocGeneration:
                         foundmedia = res["foundmedia"]
                         imageannos=res["imageannos"]
                         image3dannos=res["image3dannos"]
+                        if nonns:
+                            geojsonrep=res["geojson"]
                         if res["label"] not in labelmap:
                             labelmap[res["label"]]=""
                         if len(subpredsmap[tup]) > 1:
