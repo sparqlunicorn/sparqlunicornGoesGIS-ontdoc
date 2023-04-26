@@ -2617,12 +2617,13 @@ def resolveWildcardPath(thepath):
         result.append(thepath)
         return result
     print(thepath)
-    if os.path.exists(thepath.replace("*","")):
-        files=os.listdir(thepath)
+    normpath=thepath.replace("*","")
+    if os.path.exists(normpath):
+        files=os.listdir(normpath)
         for file in files:
             print(file)
             if file.endswith(".ttl") or file.endswith(".owl") or file.endswith(".ttl") or file.endswith("n3") or file.endswith(".nt"):
-                result.append(thepath[0:thepath.find("/*")]+file)
+                result.append(normpath+file)
     return result
             
 prefixes={"reversed":{}}
