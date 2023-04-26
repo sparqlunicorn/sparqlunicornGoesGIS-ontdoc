@@ -2614,6 +2614,7 @@ class OntDocGeneration:
 def resolveWildcardPath(thepath):
     result=[]
     if "/*" not in thepath:
+        result.append(thepath)
         return result
     if os.path.exists(thepath):
         files=os.listdir(thepath)
@@ -2652,10 +2653,8 @@ if len(sys.argv)<=1:
 if len(sys.argv)>1:
     if " " in sys.argv[1]:
         for itemm in sys.argv[1].split(" "):
-            filestoprocess.append(itemm)
             filestoprocess+=resolveWildcardPath(itemm)
     else:
-        filestoprocess.append(sys.argv[1])
         filestoprocess+=resolveWildcardPath(sys.argv[1])
 print("Files to process: "+str(filestoprocess))
 if len(sys.argv)>2:
