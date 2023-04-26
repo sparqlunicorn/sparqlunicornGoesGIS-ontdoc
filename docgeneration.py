@@ -2241,7 +2241,10 @@ class OntDocGeneration:
                     item["label"]=onelabel
         print(uristorender)
         for uri in uristorender:
-            self.createHTML(outpath+"nonns_"+self.shortenURI(uri).replace(":","_")+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri)), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, subjectstorender, Graph(),True)
+            thelabel=""
+            if uri in uritolabel:
+                thelabel=uritolabel[uri]
+            self.createHTML(outpath+"nonns_"+self.shortenURI(uri).replace(":","_")+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri)), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, subjectstorender, Graph(),True,thelabel)
 
                 
     def detectURIsConnectedToSubjects(self,subjectstorender,graph,prefixnamespace,corpusid,outpath,curlicense,baseurl):
@@ -2275,7 +2278,10 @@ class OntDocGeneration:
                     item["label"]=onelabel
         print(uristorender)
         for uri in uristorender:
-            self.createHTML(outpath+"nonns_"+self.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri)), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, subjectstorender, Graph(),True)
+            thelabel=""
+            if uri in uritolabel:
+                thelabel=uritolabel[uri]
+            self.createHTML(outpath+"nonns_"+self.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri)), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, subjectstorender, Graph(),True,thelabel)
 
 
     def checkDepthFromPath(self,savepath,baseurl,subject):
@@ -2291,7 +2297,7 @@ class OntDocGeneration:
         return savepath.replace(baseurl, "")
 
 
-    def createHTML(self,savepath, predobjs, subject, baseurl, subpreds, graph, searchfilename, classtreename,uritotreeitem,curlicense,subjectstorender,postprocessing,nonns=False):
+    def createHTML(self,savepath, predobjs, subject, baseurl, subpreds, graph, searchfilename, classtreename,uritotreeitem,curlicense,subjectstorender,postprocessing,nonns=False,foundlabel=""):
         tablecontents = ""
         metadatatablecontents=""
         isodd = False
@@ -2302,7 +2308,6 @@ class OntDocGeneration:
         checkdepth=0
         if not nonns:
             checkdepth=self.checkDepthFromPath(savepath, baseurl, subject)
-        foundlabel = ""
         logo=""
         if self.logoname!=None and self.logoname!="":
                 logo="<img src=\""+self.logoname+"\" alt=\"logo\" width=\"25\" height=\"25\"/>&nbsp;&nbsp;"
