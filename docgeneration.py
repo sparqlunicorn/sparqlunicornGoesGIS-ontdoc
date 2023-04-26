@@ -1899,6 +1899,11 @@ class OntDocGeneration:
                     result.append(theitem)
                 classidset.add(str(ress[cls]["super"]))
             classidset.add(str(cls))
+	if len(classidset)==0:
+            classidset.add("http://www.w3.org/2002/07/owl#Thing")
+            result.append({"id": "http://www.w3.org/2002/07/owl#Thing", "parent": "#", "type": "class", "text": "owl:Thing", "data": {}})
+            for obj in graph.subjects(True):
+                result.append({"id":str(obj) , "parent": "http://www.w3.org/2002/07/owl#Thing", "type": "instance", "text": self.shortenURI(str(obj)),"data": {}})
         tree["core"]["data"] = result
         return tree
 
