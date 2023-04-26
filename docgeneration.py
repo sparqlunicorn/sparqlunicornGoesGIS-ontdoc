@@ -2616,9 +2616,11 @@ def resolveWildcardPath(thepath):
     if "/*" not in thepath:
         result.append(thepath)
         return result
+    print(thepath)
     if os.path.exists(thepath):
         files=os.listdir(thepath)
         for file in files:
+            print(file)
             if file.endswith(".ttl") or file.endswith(".owl") or file.endswith(".ttl") or file.endswith("n3") or file.endswith(".nt"):
                 result.append(thepath[0:thepath.find("/*")]+file)
     return result
