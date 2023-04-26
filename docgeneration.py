@@ -2617,7 +2617,7 @@ def resolveWildcardPath(thepath):
         result.append(thepath)
         return result
     print(thepath)
-    if os.path.exists(thepath):
+    if os.path.exists(thepath.replace("*","")):
         files=os.listdir(thepath)
         for file in files:
             print(file)
