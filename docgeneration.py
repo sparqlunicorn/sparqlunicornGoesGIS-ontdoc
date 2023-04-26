@@ -1899,11 +1899,6 @@ class OntDocGeneration:
                     result.append(theitem)
                 classidset.add(str(ress[cls]["super"]))
             classidset.add(str(cls))
-        if len(result)==0:
-            classidset.add("http://www.w3.org/2002/07/owl#Thing")
-            result.append({"id": "http://www.w3.org/2002/07/owl#Thing", "parent": "#", "type": "class", "text": "owl:Thing", "data": {}})
-            for obj in graph.subjects(True):
-                result.append({"id":str(obj) , "parent": "http://www.w3.org/2002/07/owl#Thing", "type": "instance", "text": self.shortenURI(str(obj)),"data": {}})
         tree["core"]["data"] = result
         return tree
 
@@ -2241,10 +2236,7 @@ class OntDocGeneration:
                     item["label"]=onelabel
         print(uristorender)
         for uri in uristorender:
-            thelabel=""
-            if uri in uritolabel:
-                thelabel=uritolabel[uri]
-            self.createHTML(outpath+"nonns_"+self.shortenURI(uri).replace(":","_")+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri)), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, subjectstorender, Graph(),True,thelabel)
+            self.createHTML(outpath+"nonns_"+self.shortenURI(uri).replace(":","_")+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri)), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, subjectstorender, Graph(),True)
 
                 
     def detectURIsConnectedToSubjects(self,subjectstorender,graph,prefixnamespace,corpusid,outpath,curlicense,baseurl):
@@ -2278,10 +2270,7 @@ class OntDocGeneration:
                     item["label"]=onelabel
         print(uristorender)
         for uri in uristorender:
-            thelabel=""
-            if uri in uritolabel:
-                thelabel=uritolabel[uri]
-            self.createHTML(outpath+"nonns_"+self.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri)), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, subjectstorender, Graph(),True,thelabel)
+            self.createHTML(outpath+"nonns_"+self.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri)), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, subjectstorender, Graph(),True)
 
 
     def checkDepthFromPath(self,savepath,baseurl,subject):
@@ -2297,7 +2286,7 @@ class OntDocGeneration:
         return savepath.replace(baseurl, "")
 
 
-    def createHTML(self,savepath, predobjs, subject, baseurl, subpreds, graph, searchfilename, classtreename,uritotreeitem,curlicense,subjectstorender,postprocessing,nonns=False,foundlabel=""):
+    def createHTML(self,savepath, predobjs, subject, baseurl, subpreds, graph, searchfilename, classtreename,uritotreeitem,curlicense,subjectstorender,postprocessing,nonns=False):
         tablecontents = ""
         metadatatablecontents=""
         isodd = False
@@ -2308,6 +2297,7 @@ class OntDocGeneration:
         checkdepth=0
         if not nonns:
             checkdepth=self.checkDepthFromPath(savepath, baseurl, subject)
+        foundlabel = ""
         logo=""
         if self.logoname!=None and self.logoname!="":
                 logo="<img src=\""+self.logoname+"\" alt=\"logo\" width=\"25\" height=\"25\"/>&nbsp;&nbsp;"
@@ -2620,6 +2610,17 @@ class OntDocGeneration:
             print("Could not write "+str(completesavepath))
             print(inst)
         return postprocessing
+
+def resolveWildcardPath(thepath):
+    result=[]
+    if "/*" not in thepath:
+        return result
+    if os.path.exists(thepath):
+        files=os.listdir(thepath)
+        for file in files:
+            if file.endswith(".ttl") or file.endswith(".owl") or file.endswith(".ttl") or file.endswith("n3") or file.endswith(".nt"):
+                result.append(thepath[0:thepath.find("/*")]+file)
+    return result
             
 prefixes={"reversed":{}}
 if os.path.exists('prefixes.json'):
@@ -2652,8 +2653,10 @@ if len(sys.argv)>1:
     if " " in sys.argv[1]:
         for itemm in sys.argv[1].split(" "):
             filestoprocess.append(itemm)
+            filestoprocess+=resolveWildcardPath(itemm)
     else:
         filestoprocess.append(sys.argv[1])
+        filestoprocess+=resolveWildcardPath(sys.argv[1])
 print("Files to process: "+str(filestoprocess))
 if len(sys.argv)>2:
     if " " in sys.argv[2]:
