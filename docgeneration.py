@@ -1537,8 +1537,8 @@ class OntDocGeneration:
                         links.append({"source":nodeuriToId[node],"target":nodeuriToId[str(predobj[1])],"valueTo": self.shortenURI(str(predobj[0])),"propertyTo":("class" if isinstance(predobj[1],URIRef) else "datatype"), "uriTo":(str(predobj[1]) if isinstance(predobj[1],URIRef) else predobj[1].datatype)})
         minivowlresult["nodes"]=nodes
         minivowlresult["links"] = links
-        print("MINIVOWL")
-        print(minivowlresult)
+        #print("MINIVOWL")
+        #print(minivowlresult)
         f = open(outpath + "/minivowl_result.js", "w")
         f.write("var minivowlresult=" + json.dumps(minivowlresult, indent=1))
         f.close()
@@ -1673,9 +1673,9 @@ class OntDocGeneration:
             postprocessing=self.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace, self.graph.subject_predicates(subj),
                        self.graph,str(corpusid) + "_search.js", str(corpusid) + "_classtree.js",uritotreeitem,curlicense,subjectstorender,postprocessing)
             subtorencounter += 1
-            if subtorencounter%500==0:
+            if subtorencounter%250==0:
                 subtorenderlen=len(subjectstorender)+len(postprocessing)
-            print(str(subtorencounter) + "/" + str(subtorenderlen) + " " + str(outpath + path))
+            	print(str(subtorencounter) + "/" + str(subtorenderlen) + " " + str(outpath + path))
             #except Exception as e:
             #    print("Create HTML Exception: "+str(e))
         print("Postprocessing " + str(len(postprocessing)))
@@ -1690,9 +1690,9 @@ class OntDocGeneration:
             self.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace, self.graph.subject_predicates(subj),
                        self.graph,str(corpusid) + "_search.js", str(corpusid) + "_classtree.js",uritotreeitem,curlicense,subjectstorender,postprocessing)
             subtorencounter += 1
-            if subtorencounter%500==0:
+            if subtorencounter%250==0:
                 subtorenderlen=len(subjectstorender)+len(postprocessing)
-            print(str(subtorencounter) + "/" + str(subtorenderlen) + " " + str(outpath + path))
+            	print(str(subtorencounter) + "/" + str(subtorenderlen) + " " + str(outpath + path))
         self.checkGeoInstanceAssignment(uritotreeitem)
         self.assignGeoClassesToTree(tree)
         with open(outpath + corpusid + "_classtree.js", 'w', encoding='utf-8') as f:
@@ -1738,7 +1738,7 @@ class OntDocGeneration:
                             indexhtml+="<td>"+str(item["instancecount"])+"</td>"+exitem+"</tr>"
                 indexhtml += "</tbody></table><script>$('#indextable').DataTable();</script>"
                 indexhtml+=htmlfooter.replace("{{license}}",curlicense).replace("{{exports}}",nongeoexports)
-                print(path)
+                #print(path)
                 with open(path + "index.html", 'w', encoding='utf-8') as f:
                     f.write(indexhtml)
                     f.close()
