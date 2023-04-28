@@ -1450,6 +1450,7 @@ class OntDocGeneration:
         self.outpath=outpath
         self.logoname=logoname
         self.createVOWL=createVOWL
+        self.geocache={}
         self.generatePagesForNonNS=generatePagesForNonNS
         self.geocollectionspaths=[]
         self.metadatatable=metadatatable
@@ -1699,7 +1700,7 @@ class OntDocGeneration:
             f.write("var tree=" + json.dumps(tree, indent=2))
             f.close()
         if self.generatePagesForNonNS:
-            self.detectURIsConnectedToSubjects(subjectstorender, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace)
+            #self.detectURIsConnectedToSubjects(subjectstorender, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace)
             self.getSubjectPagesForNonGraphURIs(subjectstorender, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace)
         if self.createIndexPages:
             for path in paths:
@@ -2205,38 +2206,19 @@ class OntDocGeneration:
         tablecontents += "</td>"
         return tablecontents
 
-    def getSubjectPagesForNonGraphURIs(self,subjectstorender,graph,prefixnamespace,corpusid,outpath,curlicense,baseurl):
-        uristorender={}
-        uritolabel={}
-        for sub in subjectstorender:
-            onelabel=""
-            label=None
-            added=[]
-            for tup in graph.predicate_objects(sub):
-                if str(tup[0]) in labelproperties:
-                    if tup[1].language == self.labellang:
-                        label = str(tup[1])
-                        break
-                    onelabel = str(tup[1])
-                if isinstance(tup[1],URIRef) and prefixnamespace not in str(tup[1]) and "http://www.w3.org/1999/02/22-rdf-syntax-ns#" not in str(tup[1]):
-                    if str(tup[1]) not in uristorender:
-                        uristorender[str(tup[1])]={}
-                    if str(tup[0]) not in uristorender[str(tup[1])]:
-                        uristorender[str(tup[1])][str(tup[0])]=[]
-                    for objtup in graph.predicate_objects(tup[1]):
-                        if str(objtup[0]) in labelproperties:
-                            uritolabel[str(tup[1])]=str(objtup[1])
-                    toadd={"sub":sub,"label":onelabel}
-                    added.append(toadd)
-                    uristorender[str(tup[1])][str(tup[0])].append(toadd)
-            for item in added:
-                if label!=None:
-                    item["label"]=label
-                else:
-                    item["label"]=onelabel
-        print(uristorender)
-        for uri in uristorender:
-            self.createHTML(outpath+"nonns_"+self.shortenURI(uri).replace(":","_")+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri)), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, subjectstorender, Graph(),True)
+    def getSubjectPagesForNonGraphURIs(self,uristorender,graph,prefixnamespace,corpusid,outpath,nonnsmap,baseurl):	
+        nonnsuris=len(uristorender)	
+        counter=0	
+        for uri in uristorender:	
+            label=""	
+            for tup in graph.predicate_objects(uri):	
+                if str(tup[0]) in labelproperties:	
+                    label = str(tup[1])	
+            if counter%10==0:	
+                self.updateProgressBar(counter,nonnsuris,"NonNS URIs")	
+            print("NonNS Counter " +str(counter)+"/"+str(nonnsuris)+" "+ str(uri), "OntdocGeneration", Qgis.Info)	
+            self.createHTML(outpath+"nonns_"+self.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri),True), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, None, Graph(),uristorender,True,label)	
+            counter+=1	
 
                 
     def detectURIsConnectedToSubjects(self,subjectstorender,graph,prefixnamespace,corpusid,outpath,curlicense,baseurl):
@@ -2340,6 +2322,11 @@ class OntDocGeneration:
                             if item not in uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])]:
                                 uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])][item] = 0
                             uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])][item]+=1
+                    if baseurl not in str(tup[1]) and str(tup[0])!=self.typeproperty:	
+                        hasnonns.add(str(tup[1]))	
+                        if tup[1] not in nonnsmap:	
+                            nonnsmap[str(tup[1])]=set()	
+                        nonnsmap[str(tup[1])].add(subject)
             for tup in sorted(predobjmap):
                 if self.metadatatable and tup not in labelproperties and self.shortenURI(str(tup),True) in metadatanamespaces:
                     thetable=metadatatablecontents
@@ -2442,7 +2429,7 @@ class OntDocGeneration:
                         tablecontents += "<ul>"
                     labelmap={}
                     for item in subpredsmap[tup]:
-                        if item not in subjectstorender and baseurl in str(item):
+                        if subjectstorender!=None and item not in subjectstorender and baseurl in str(item):
                             QgsMessageLog.logMessage("Postprocessing: " + str(item)+" - "+str(tup)+" - "+str(subject))
                             postprocessing.add((item,URIRef(tup),subject))
                         res = self.createHTMLTableValueEntry(subject, tup, item, None, graph,
@@ -2450,6 +2437,8 @@ class OntDocGeneration:
                         foundmedia = res["foundmedia"]
                         imageannos=res["imageannos"]
                         image3dannos=res["image3dannos"]
+                        if nonns and str(tup) != self.typeproperty:	
+                            hasnonns.add(str(item))
                         if nonns:
                             geojsonrep=res["geojson"]
                         if res["label"] not in labelmap:
@@ -2577,39 +2566,42 @@ class OntDocGeneration:
                     if epsgcode=="" and "crs" in geojsonrep:
                         epsgcode="EPSG:"+geojsonrep["crs"]
                     f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(jsonfeat)+"]").replace("{{epsg}}",epsgcode).replace("{{baselayers}}",json.dumps(baselayers)))
-                elif isgeocollection:
-                    featcoll={"type":"FeatureCollection", "id":subject,"name":self.shortenURI(subject), "features":[]}
-                    for memberid in graph.objects(subject,URIRef("http://www.w3.org/2000/01/rdf-schema#member")):
-                        for geoinstance in graph.predicate_objects(memberid):
-                            geojsonrep=None                       
-                            if isinstance(geoinstance[1], Literal) and (str(geoinstance[0]) in geoproperties or str(geoinstance[1].datatype) in geoliteraltypes):
-                                geojsonrep = self.processLiteral(str(geoinstance[1]), geoinstance[1].datatype, "")
-                                uritotreeitem[str(subject)][-1]["type"] = "geocollection"
-                            elif str(geoinstance[0]) in geopointerproperties:
-                                uritotreeitem[str(subject)][-1]["type"] = "featurecollection"
-                                for geotup in graph.predicate_objects(geoinstance[1]):             
-                                    if isinstance(geotup[1], Literal) and (str(geotup[0]) in geoproperties or str(geotup[1].datatype) in geoliteraltypes):
-                                        geojsonrep = self.processLiteral(str(geotup[1]), geotup[1].datatype, "")
-                            if geojsonrep!=None:
-                                if str(memberid) in uritotreeitem:
-                                    featcoll["features"].append({"type": "Feature", 'id': str(memberid), 'label': uritotreeitem[str(memberid)][-1]["text"], 'properties': {},"geometry": geojsonrep})
-                                else:
-                                    featcoll["features"].append({"type": "Feature", 'id':str(memberid),'label':str(memberid), 'properties': {}, "geometry": geojsonrep})
-                    f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(featcoll)+"]").replace("{{baselayers}}",json.dumps(baselayers)))
-                    with open(completesavepath.replace(".html",".geojson"), 'w', encoding='utf-8') as fgeo:
-                        featurecollectionspaths.add(savepath + "/index.geojson")
-                        fgeo.write(json.dumps(featcoll))
-                        fgeo.close()
-                f.write(htmltabletemplate.replace("{{tablecontent}}", tablecontents))
-                if metadatatablecontentcounter>=0:
-                    f.write("<h5>Metadata</h5>")
-                    f.write(htmltabletemplate.replace("{{tablecontent}}", metadatatablecontents))
-                f.write(htmlfooter.replace("{{exports}}",myexports).replace("{{license}}",curlicense))
-                f.close()
-        except Exception as inst:
-            print("Could not write "+str(completesavepath))
-            print(inst)
-        return postprocessing
+                if isgeocollection and not nonns:	
+                    memberpred=URIRef("http://www.w3.org/2000/01/rdf-schema#member")	
+                    for memberid in graph.objects(subject,memberpred,True):	
+                        for geoinstance in graph.predicate_objects(memberid,True):	
+                            geojsonrep=None	
+                            if geoinstance!=None and isinstance(geoinstance[1], Literal) and (str(geoinstance[0]) in geoproperties or str(geoinstance[1].datatype) in geoliteraltypes):	
+                                geojsonrep = self.processLiteral(str(geoinstance[1]), str(geoinstance[1].datatype), "",None,None,True)	
+                                uritotreeitem[str(subject)][-1]["type"] = "geocollection"	
+                            elif geoinstance!=None and str(geoinstance[0]) in geopointerproperties:	
+                                uritotreeitem[str(subject)][-1]["type"] = "featurecollection"	
+                                for geotup in graph.predicate_objects(geoinstance[1],True):	
+                                    if isinstance(geotup[1], Literal) and (str(geotup[0]) in geoproperties or str(geotup[1].datatype) in geoliteraltypes):	
+                                        geojsonrep = self.processLiteral(str(geotup[1]), str(geotup[1].datatype), "",None,None,True)	
+                            if geojsonrep!=None:	
+                                if uritotreeitem !=None and str(memberid) in uritotreeitem:	
+                                    featcoll["features"].append({"type": "Feature", 'id': str(memberid), 'label': uritotreeitem[str(memberid)][-1]["text"], 'properties': {},"geometry": geojsonrep})	
+                                else:	
+                                    featcoll["features"].append({"type": "Feature", 'id': str(memberid),'label': str(memberid), 'properties': {}, "geometry": geojsonrep})	
+                    if len(hasnonns)>0:	
+                        self.geocache[str(subject)]=featcoll	
+                elif nonns:	
+                    for item in hasnonns:	
+                        if item in self.geocache:	
+                            featcoll["features"].append(self.geocache[item])	
+                f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(featcoll)+"]").replace("{{baselayers}}",json.dumps(self.baselayers)))	
+                with open(completesavepath.replace(".html",".geojson"), 'w', encoding='utf-8') as fgeo:	
+                    featurecollectionspaths.add(completesavepath.replace(".html",".geojson"))	
+                    fgeo.write(json.dumps(featcoll))	
+                    fgeo.close()	
+            f.write(htmltabletemplate.replace("{{tablecontent}}", tablecontents))	
+            if metadatatablecontentcounter>=0:	
+                f.write("<h5>Metadata</h5>")	
+                f.write(htmltabletemplate.replace("{{tablecontent}}", metadatatablecontents))	
+            f.write(htmlfooter.replace("{{exports}}",myexports).replace("{{license}}",curlicense))	
+            f.close()	
+        return [postprocessing,nonnsmap]
 
 def resolveWildcardPath(thepath):
     result=[]
