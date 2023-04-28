@@ -2268,7 +2268,7 @@ class OntDocGeneration:
         return savepath.replace(baseurl, "")
 
 
-    def createHTML(self,savepath, predobjs, subject, baseurl, subpreds, graph, searchfilename, classtreename,uritotreeitem,curlicense,subjectstorender,postprocessing,nonns=False):
+    def createHTML(self,savepath, predobjs, subject, baseurl, subpreds, graph, searchfilename, classtreename,uritotreeitem,curlicense,subjectstorender,postprocessing,nonnsmap=None,nonns=False,foundlabel=""):
         tablecontents = ""
         metadatatablecontents=""
         isodd = False
