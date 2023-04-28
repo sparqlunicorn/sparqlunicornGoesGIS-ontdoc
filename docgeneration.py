@@ -2195,11 +2195,6 @@ class OntDocGeneration:
             else:
                 tablecontents += "<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"" + str(
                     tup) + "\">" + label + "</a> "
-            #if self.generatePagesForNonNS:
-            #    rellink = self.generateRelativeLinkFromGivenDepth(str(baseurl), checkdepth,
-            #                                                      str(baseurl) + "nonns_" + self.shortenURI(
-            #                                                          str(tup)), False)
-            #    tablecontents+=" <a href=\""+rellink+".html\">[x]</a>"
             tablecontents+="</span>"
         if reverse:
             tablecontents+=" of"
@@ -2214,8 +2209,6 @@ class OntDocGeneration:
             for tup in graph.predicate_objects(uri):	
                 if str(tup[0]) in labelproperties:	
                     label = str(tup[1])	
-            if counter%10==0:	
-                self.updateProgressBar(counter,nonnsuris,"NonNS URIs")	
             print("NonNS Counter " +str(counter)+"/"+str(nonnsuris)+" "+ str(uri), "OntdocGeneration", Qgis.Info)	
             self.createHTML(outpath+"nonns_"+self.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri),True), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, None, Graph(),uristorender,True,label)	
             counter+=1	
@@ -2252,7 +2245,7 @@ class OntDocGeneration:
                     item["label"]=onelabel
         print(uristorender)
         for uri in uristorender:
-            self.createHTML(outpath+"nonns_"+self.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri)), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, subjectstorender, Graph(),True)
+            self.createHTML(outpath+"nonns_"+self.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri)), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, subjectstorender, Graph(),None,True,thelabel)
 
 
     def checkDepthFromPath(self,savepath,baseurl,subject):
