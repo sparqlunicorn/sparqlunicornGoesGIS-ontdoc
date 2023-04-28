@@ -2212,7 +2212,7 @@ class OntDocGeneration:
             for tup in graph.predicate_objects(uri):	
                 if str(tup[0]) in labelproperties:	
                     label = str(tup[1])	
-            print("NonNS Counter " +str(counter)+"/"+str(nonnsuris)+" "+ str(uri), "OntdocGeneration", Qgis.Info)	
+            print("NonNS Counter " +str(counter)+"/"+str(nonnsuris)+" "+ str(uri))	
             self.createHTML(outpath+"nonns_"+self.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri),True), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, None, Graph(),uristorender,True,label)	
             counter+=1	
 
