@@ -2600,7 +2600,10 @@ class OntDocGeneration:
                 f.write("<h5>Metadata</h5>")	
                 f.write(htmltabletemplate.replace("{{tablecontent}}", metadatatablecontents))	
             f.write(htmlfooter.replace("{{exports}}",myexports).replace("{{license}}",curlicense))	
-            f.close()	
+            f.close()
+        except Exception as inst:
+            print("Could not write "+str(completesavepath))
+            print(inst)            
         return [postprocessing,nonnsmap]
 
 def resolveWildcardPath(thepath):
