@@ -2568,13 +2568,13 @@ class OntDocGeneration:
                         for memberid in graph.objects(subject,memberpred,True):
                             for geoinstance in graph.predicate_objects(memberid,True):
                                 geojsonrep=None
-                                if geoinstance!=None and isinstance(geoinstance[1], Literal) and (str(geoinstance[0]) in SPARQLUtils.geoproperties or str(geoinstance[1].datatype) in SPARQLUtils.geoliteraltypes):
+                                if geoinstance!=None and isinstance(geoinstance[1], Literal) and (str(geoinstance[0]) in geoproperties or str(geoinstance[1].datatype) in geoliteraltypes):
                                     geojsonrep = LayerUtils.processLiteral(str(geoinstance[1]), str(geoinstance[1].datatype), "",None,None,True)
                                     uritotreeitem[str(subject)][-1]["type"] = "geocollection"
-                                elif geoinstance!=None and str(geoinstance[0]) in SPARQLUtils.geopointerproperties:
+                                elif geoinstance!=None and str(geoinstance[0]) in geopointerproperties:
                                     uritotreeitem[str(subject)][-1]["type"] = "featurecollection"
                                     for geotup in graph.predicate_objects(geoinstance[1],True):
-                                        if isinstance(geotup[1], Literal) and (str(geotup[0]) in SPARQLUtils.geoproperties or str(geotup[1].datatype) in SPARQLUtils.geoliteraltypes):
+                                        if isinstance(geotup[1], Literal) and (str(geotup[0]) in geoproperties or str(geotup[1].datatype) in geoliteraltypes):
                                             geojsonrep = LayerUtils.processLiteral(str(geotup[1]), str(geotup[1].datatype), "",None,None,True)
                                 if geojsonrep!=None:
                                     if uritotreeitem !=None and str(memberid) in uritotreeitem:
