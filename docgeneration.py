@@ -1683,7 +1683,7 @@ class OntDocGeneration:
             #except Exception as e:
             #    print("Create HTML Exception: "+str(e))
         print("Postprocessing " + str(len(postprocessing)))
-        for subj in postprocessing.postprocessing.subjects(None,None,True):
+        for subj in postprocessing.subjects(None,None,True):
             path = str(subj).replace(prefixnamespace, "")
             paths=self.processSubjectPath(outpath,paths,path)
             if os.path.exists(outpath + path+"/index.ttl"):
@@ -2571,13 +2571,13 @@ class OntDocGeneration:
                             for geoinstance in graph.predicate_objects(memberid,True):
                                 geojsonrep=None
                                 if geoinstance!=None and isinstance(geoinstance[1], Literal) and (str(geoinstance[0]) in geoproperties or str(geoinstance[1].datatype) in geoliteraltypes):
-                                    geojsonrep = LayerUtils.processLiteral(str(geoinstance[1]), str(geoinstance[1].datatype), "",None,None,True)
+                                    geojsonrep = processLiteral(str(geoinstance[1]), str(geoinstance[1].datatype), "",None,None,True)
                                     uritotreeitem[str(subject)][-1]["type"] = "geocollection"
                                 elif geoinstance!=None and str(geoinstance[0]) in geopointerproperties:
                                     uritotreeitem[str(subject)][-1]["type"] = "featurecollection"
                                     for geotup in graph.predicate_objects(geoinstance[1],True):
                                         if isinstance(geotup[1], Literal) and (str(geotup[0]) in geoproperties or str(geotup[1].datatype) in geoliteraltypes):
-                                            geojsonrep = LayerUtils.processLiteral(str(geotup[1]), str(geotup[1].datatype), "",None,None,True)
+                                            geojsonrep = processLiteral(str(geotup[1]), str(geotup[1].datatype), "",None,None,True)
                                 if geojsonrep!=None:
                                     if uritotreeitem !=None and str(memberid) in uritotreeitem:
                                         featcoll["features"].append({"type": "Feature", 'id': str(memberid), 'label': uritotreeitem[str(memberid)][-1]["text"], 'properties': {},"geometry": geojsonrep})
