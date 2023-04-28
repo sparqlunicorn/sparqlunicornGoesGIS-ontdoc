@@ -2036,7 +2036,8 @@ class OntDocGeneration:
                 textannos.append(curanno)
             if pred == "http://www.w3.org/ns/oa#hasSource":
                 annosource = str(tup[1])
-            geojsonrep=self.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep,nonns)
+            if not nonns:
+                geojsonrep=self.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep,nonns)
             if incollection and "<svg" in str(tup[1]):
                 foundmedia["image"].add(str(tup[1]))
             elif incollection and "http" in str(tup[1]):
