@@ -1672,8 +1672,10 @@ class OntDocGeneration:
                     self.graph.parse(outpath + path+"/index.ttl")
                 except Exception as e:
                     print(e)
-            postprocessing=self.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace, self.graph.subject_predicates(subj),
+            res=self.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace, self.graph.subject_predicates(subj),
                        self.graph,str(corpusid) + "_search.js", str(corpusid) + "_classtree.js",uritotreeitem,curlicense,subjectstorender,postprocessing,nonnsmap)
+            postprocessing=res[0]
+            nonnsmap=res[1]
             subtorencounter += 1
             if subtorencounter%250==0:
                 subtorenderlen=len(subjectstorender)+len(postprocessing)
@@ -1681,7 +1683,7 @@ class OntDocGeneration:
             #except Exception as e:
             #    print("Create HTML Exception: "+str(e))
         print("Postprocessing " + str(len(postprocessing)))
-        for subj in postprocessing.subjects():
+        for subj in postprocessing.postprocessing.subjects(None,None,True):
             path = str(subj).replace(prefixnamespace, "")
             paths=self.processSubjectPath(outpath,paths,path)
             if os.path.exists(outpath + path+"/index.ttl"):
