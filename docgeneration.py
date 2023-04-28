@@ -2568,6 +2568,7 @@ class OntDocGeneration:
                         epsgcode="EPSG:"+geojsonrep["crs"]
                     f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(jsonfeat)+"]").replace("{{epsg}}",epsgcode).replace("{{baselayers}}",json.dumps(baselayers)))
                 if isgeocollection and not nonns:	
+                    featcoll={"type":"FeatureCollection", "id":subject,"name":self.shortenURI(subject), "features":[]}
                     memberpred=URIRef("http://www.w3.org/2000/01/rdf-schema#member")	
                     for memberid in graph.objects(subject,memberpred,True):	
                         for geoinstance in graph.predicate_objects(memberid,True):	
