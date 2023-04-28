@@ -2305,6 +2305,7 @@ class OntDocGeneration:
         if parentclass!=None:
             uritotreeitem[parentclass][-1]["data"]["to"]={}
             uritotreeitem[parentclass][-1]["data"]["from"]={}
+        hasnonns=set()
         if predobjs!=None:
             for tup in sorted(predobjs,key=lambda tup: tup[0]):
                 if str(tup[0]) not in predobjmap:
