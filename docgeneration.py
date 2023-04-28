@@ -1704,7 +1704,7 @@ class OntDocGeneration:
             f.close()
         if self.generatePagesForNonNS:
             #self.detectURIsConnectedToSubjects(subjectstorender, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace)
-            self.getSubjectPagesForNonGraphURIs(subjectstorender, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace)
+            self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace)
         if self.createIndexPages:
             for path in paths:
                 subgraph=Graph(bind_namespaces="rdflib")
@@ -1761,7 +1761,7 @@ class OntDocGeneration:
                     
 
     def merge_JsonFiles(self,files,outpath):
-        print("Merging....."+str(files))
+        #print("Merging....."+str(files))
         result = list()
         for f1 in files:
             with open(f1, 'r',encoding="utf-8") as infile:
