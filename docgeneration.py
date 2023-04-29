@@ -2563,6 +2563,8 @@ class OntDocGeneration:
                     jsonfeat={"type": "Feature", 'id':str(subject),'label':foundlabel, 'properties': predobjmap, "geometry": geojsonrep}
                     if epsgcode=="" and "crs" in geojsonrep:
                         epsgcode="EPSG:"+geojsonrep["crs"]
+                    if len(hasnonns)>0:
+                        self.geocache[str(subject)]=jsonfeat
                     f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(jsonfeat)+"]").replace("{{epsg}}",epsgcode).replace("{{baselayers}}",json.dumps(baselayers)))
                 elif isgeocollection or nonns:
                     featcoll={"type":"FeatureCollection", "id":subject,"name":self.shortenURI(subject), "features":[]}
