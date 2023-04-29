@@ -2572,13 +2572,13 @@ class OntDocGeneration:
                             for geoinstance in graph.predicate_objects(memberid,True):
                                 geojsonrep=None
                                 if geoinstance!=None and isinstance(geoinstance[1], Literal) and (str(geoinstance[0]) in geoproperties or str(geoinstance[1].datatype) in geoliteraltypes):
-                                    geojsonrep = self.processLiteral(str(geoinstance[1]), str(geoinstance[1].datatype), "",None,None,True)
+                                    geojsonrep = self.processLiteral(str(geoinstance[1]), str(geoinstance[1].datatype), "")
                                     uritotreeitem[str(subject)][-1]["type"] = "geocollection"
                                 elif geoinstance!=None and str(geoinstance[0]) in geopointerproperties:
                                     uritotreeitem[str(subject)][-1]["type"] = "featurecollection"
                                     for geotup in graph.predicate_objects(geoinstance[1],True):
                                         if isinstance(geotup[1], Literal) and (str(geotup[0]) in geoproperties or str(geotup[1].datatype) in geoliteraltypes):
-                                            geojsonrep = self.processLiteral(str(geotup[1]), str(geotup[1].datatype), "",None,None,True)
+                                            geojsonrep = self.processLiteral(str(geotup[1]), str(geotup[1].datatype), "")
                                 if geojsonrep!=None:
                                     if uritotreeitem !=None and str(memberid) in uritotreeitem:
                                         featcoll["features"].append({"type": "Feature", 'id': str(memberid), 'label': uritotreeitem[str(memberid)][-1]["text"], 'properties': {},"geometry": geojsonrep})
