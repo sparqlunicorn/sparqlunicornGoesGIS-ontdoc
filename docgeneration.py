@@ -2210,7 +2210,7 @@ class OntDocGeneration:
         counter=0	
         for uri in uristorender:	
             label=""	
-            for tup in graph.predicate_objects(uri):	
+            for tup in graph.predicate_objects(URIRef(uri)):
                 if str(tup[0]) in labelproperties:	
                     label = str(tup[1])	
             print("NonNS Counter " +str(counter)+"/"+str(nonnsuris)+" "+ str(uri))	
