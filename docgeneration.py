@@ -1358,8 +1358,7 @@ vowltemplate=""
 
 htmlcommenttemplate="""<p class="comment"><b>Description:</b> {{comment}}</p>"""
 
-htmltabletemplate="""
-<table border=1 width=100% class=description><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>{{tablecontent}}</tbody></table>"""
+htmltabletemplate="""<div style="overflow-x:auto;"><table border=1 width=100% class=description><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>{{tablecontent}}</tbody></table></div>"""
 
 htmlfooter="""<div id="footer"><div class="container-fluid"><b>Download Options:</b>&nbsp;Format:<select id="format" onchange="changeDefLink()">	
 {{exports}}
