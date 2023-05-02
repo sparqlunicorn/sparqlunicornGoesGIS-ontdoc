@@ -1358,8 +1358,7 @@ vowltemplate=""
 
 htmlcommenttemplate="""<p class="comment"><b>Description:</b> {{comment}}</p>"""
 
-htmltabletemplate="""
-<table border=1 width=100% class=description><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>{{tablecontent}}</tbody></table>"""
+htmltabletemplate="""<div style="overflow-x:auto;"><table border=1 width=100% class=description><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>{{tablecontent}}</tbody></table></div>"""
 
 htmlfooter="""<div id="footer"><div class="container-fluid"><b>Download Options:</b>&nbsp;Format:<select id="format" onchange="changeDefLink()">	
 {{exports}}
@@ -2210,7 +2209,7 @@ class OntDocGeneration:
         counter=0	
         for uri in uristorender:	
             label=""	
-            for tup in graph.predicate_objects(uri):	
+            for tup in graph.predicate_objects(URIRef(uri)):
                 if str(tup[0]) in labelproperties:	
                     label = str(tup[1])	
             print("NonNS Counter " +str(counter)+"/"+str(nonnsuris)+" "+ str(uri))	
@@ -2321,7 +2320,7 @@ class OntDocGeneration:
                             uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])][item]+=1
                     if baseurl not in str(tup[1]) and str(tup[0])!=self.typeproperty:	
                         hasnonns.add(str(tup[1]))	
-                        if tup[1] not in nonnsmap:	
+                        if str(tup[1]) not in nonnsmap:
                             nonnsmap[str(tup[1])]=set()	
                         nonnsmap[str(tup[1])].add(subject)
             for tup in sorted(predobjmap):
