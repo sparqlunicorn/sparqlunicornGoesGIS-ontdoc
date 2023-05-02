@@ -2591,11 +2591,12 @@ class OntDocGeneration:
                         for item in hasnonns:
                             if item in self.geocache:
                                 featcoll["features"].append(self.geocache[item])
-                    f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(featcoll)+"]").replace("{{baselayers}}",json.dumps(baselayers)))
-                    with open(completesavepath.replace(".html",".geojson"), 'w', encoding='utf-8') as fgeo:
-                        featurecollectionspaths.add(completesavepath.replace(".html",".geojson"))
-                        fgeo.write(json.dumps(featcoll))
-                        fgeo.close()
+                    if len(featcoll["features"])>0:
+                        f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(featcoll)+"]").replace("{{baselayers}}",json.dumps(baselayers)))
+                        with open(completesavepath.replace(".html",".geojson"), 'w', encoding='utf-8') as fgeo:
+                            featurecollectionspaths.add(completesavepath.replace(".html",".geojson"))
+                            fgeo.write(json.dumps(featcoll))
+                            fgeo.close()
                 f.write(htmltabletemplate.replace("{{tablecontent}}", tablecontents))	
                 if metadatatablecontentcounter>=0:	
                     f.write("<h5>Metadata</h5>")	
