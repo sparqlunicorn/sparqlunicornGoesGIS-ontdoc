@@ -2013,7 +2013,6 @@ class OntDocGeneration:
                 bibtexitem["type"]=bibtextypemappings[str(tup[1])]	             
             elif str(tup[0]) in bibtexmappings:	
                 bibtexitem[bibtexmappings[str(tup[0])]] = str(tup[1])	
-        if 
         res=bibtexitem["type"]+"{"+self.shortenURI(item)+",\n"	
         for bibpart in bibtexitem:	
             if bibpart=="author":	
