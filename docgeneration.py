@@ -1991,8 +1991,8 @@ class OntDocGeneration:
                       "http://purl.org/ontology/bibo/isbn": "isbn",	
                       "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":"type"	
                       }	
-        bibtextypemappings={"http://purl.org/ontology/bibo/Book":"@book","http://purl.org/ontology/bibo/Proceedings":"@inproceedings"}	
-        bibtexitem={}	
+        bibtextypemappings={"http://purl.org/ontology/bibo/Document":"@misc","http://purl.org/ontology/bibo/Article":"@article","http://purl.org/ontology/bibo/Thesis":"@phdthesis","http://purl.org/ontology/bibo/BookSection":"@inbook","http://purl.org/ontology/bibo/Book":"@book","http://purl.org/ontology/bibo/Proceedings":"@inproceedings"}	
+        bibtexitem={"type":"@misc"}	
         for tup in predobjs:	
             if str(tup[0])=="http://purl.org/dc/elements/1.1/creator":	
                 if "author" not in bibtexitem:	
@@ -2010,9 +2010,10 @@ class OntDocGeneration:
                     bibtexitem["pages"]={}	
                 bibtexitem["pages"]["end"]=str(tup[1])	
             elif str(tup[0]) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" and str(tup[1]) in bibtextypemappings:	
-                bibtexitem["type"]=bibtextypemappings[str(tup[1])]	
+                bibtexitem["type"]=bibtextypemappings[str(tup[1])]	             
             elif str(tup[0]) in bibtexmappings:	
-                    bibtexitem[bibtexmappings[str(tup[0])]] = str(tup[1])	
+                bibtexitem[bibtexmappings[str(tup[0])]] = str(tup[1])	
+        if 
         res=bibtexitem["type"]+"{"+self.shortenURI(item)+",\n"	
         for bibpart in bibtexitem:	
             if bibpart=="author":	
