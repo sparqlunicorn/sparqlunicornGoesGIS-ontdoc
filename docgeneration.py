@@ -2010,7 +2010,7 @@ class OntDocGeneration:
                     bibtexitem["pages"]={}	
                 bibtexitem["pages"]["end"]=str(tup[1])	
             elif str(tup[0]) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" and str(tup[1]) in bibtextypemappings:	
-                bibtexitem["key"]=bibtextypemappings[str(tup[1])]	
+                bibtexitem["type"]=bibtextypemappings[str(tup[1])]	
             elif str(tup[0]) in bibtexmappings:	
                     bibtexitem[bibtexmappings[str(tup[0])]] = str(tup[1])	
         res=bibtexitem["type"]+"{"+self.shortenURI(item)+",\n"	
