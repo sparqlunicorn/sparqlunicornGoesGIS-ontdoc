@@ -2014,7 +2014,9 @@ class OntDocGeneration:
             elif str(tup[0]) in bibtexmappings:	
                 bibtexitem[bibtexmappings[str(tup[0])]] = str(tup[1])	
         res=bibtexitem["type"]+"{"+self.shortenURI(item)+",\n"	
-        for bibpart in bibtexitem:	
+        for bibpart in bibtexitem:
+	    if bibpart=="type":
+		continue
             if bibpart=="author":	
                 res += bibpart + "\t=\t{"	
                 first=True	
@@ -2250,7 +2252,7 @@ class OntDocGeneration:
         return "<span property=\"" + str(pred) + "\" content=\"" + str(object).replace("<","&lt").replace(">","&gt;").replace("\"","'") + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">" + str(object).replace("<","&lt").replace(">","&gt;") + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
 
     def formatPredicate(self,tup,baseurl,checkdepth,tablecontents,graph,reverse):
-        label=self.getLabelForObject(URIRef(tup[1]), graph,self.labellang)
+        label=self.getLabelForObject(URIRef(tup), graph,self.labellang)
         tablecontents += "<td class=\"property\">"
         if reverse:
             tablecontents+="Is "
