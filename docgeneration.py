@@ -16,6 +16,12 @@ import sys
 
 templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
 
+version="SPARQLing Unicorn QGIS Plugin OntDoc Script 0.15"
+
+versionurl="https://github.com/sparqlunicorn/sparqlunicornGoesGIS-ontdoc"
+
+bibtextypemappings={"http://purl.org/ontology/bibo/Document":"@misc","http://purl.org/ontology/bibo/Article":"@article","http://purl.org/ontology/bibo/Thesis":"@phdthesis","http://purl.org/ontology/bibo/BookSection":"@inbook","http://purl.org/ontology/bibo/Book":"@book","http://purl.org/ontology/bibo/Proceedings":"@inproceedings"}
+
 labelproperties={
     "http://www.w3.org/2004/02/skos/core#prefLabel":"DatatypeProperty",
     "http://www.w3.org/2004/02/skos/core#prefSymbol": "DatatypeProperty",
@@ -1174,11 +1180,11 @@ htmltemplate = """<html about=\"{{subject}}\"><head><title>{{toptitle}}</title>
   Search:<input type="text" id="classsearch"><br/><div id="jstree"></div>
 </div><script>var indexpage={{indexpage}}
 var relativedepth={{relativedepth}}</script>
-<body><div id="header"><h1 id="title">{{title}}</h1></div><div class="page-resource-uri"><a href="{{baseurl}}">{{baseurl}}</a> <b>powered by Static GeoPubby</b> generated using the <a style="color:blue;font-weight:bold" target="_blank" href="https://github.com/sparqlunicorn/sparqlunicornGoesGIS">SPARQLing Unicorn QGIS Plugin</a></div>
+<body><div id="header"><h1 id="title">{{title}}</h1></div><div class="page-resource-uri"><a href="{{baseurl}}">{{baseurl}}</a> <b>powered by Static GeoPubby</b> generated using the <a style="color:blue;font-weight:bold" target="_blank" href="{{versionurl}}">{{version}}</a></div>
 </div><div id="rdficon"><span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span></div> <div class="search"><div class="ui-widget">Search: <input id="search" size="50"><button id="gotosearch" onclick="followLink()">Go</button><b>Download Options:</b>&nbsp;Format:<select id="format" onchange="changeDefLink()">	
 {{exports}}
 </select><a id="formatlink" href="#" target="_blank"><svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-info-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM8 5.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg></a>&nbsp;
-<button id="downloadButton" onclick="download()">Download</button><br/></div></div><dialog id="classrelationdialog" width="500" height="500" modal="true"></dialog><dialog id="dataschemadialog" width="500" height="500" modal="true"></dialog>
+<button id="downloadButton" onclick="download()">Download</button>{{bibtex}}<br/></div></div><dialog id="classrelationdialog" width="500" height="500" modal="true"></dialog><dialog id="dataschemadialog" width="500" height="500" modal="true"></dialog>
 <div class="container-fluid"><div class="row-fluid" id="main-wrapper">
 """
 
@@ -1363,7 +1369,7 @@ htmltabletemplate="""<div style="overflow-x:auto;"><table border=1 width=100% cl
 htmlfooter="""<div id="footer"><div class="container-fluid"><b>Download Options:</b>&nbsp;Format:<select id="format" onchange="changeDefLink()">	
 {{exports}}
 </select><a id="formatlink2" href="#" target="_blank"><svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-info-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM8 5.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg></a>&nbsp;
-<button id="downloadButton" onclick="download()">Download</button>{{license}}</div></div></body><script>$(document).ready(function(){setSVGDimensions()})</script></html>"""
+<button id="downloadButton" onclick="download()">Download</button>{{bibtex}}{{license}}</div></div></body><script>$(document).ready(function(){setSVGDimensions()})</script></html>"""
 
 licensetemplate=""""""
 
@@ -1991,7 +1997,6 @@ class OntDocGeneration:
                       "http://purl.org/ontology/bibo/isbn": "isbn",	
                       "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":"type"	
                       }	
-        bibtextypemappings={"http://purl.org/ontology/bibo/Document":"@misc","http://purl.org/ontology/bibo/Article":"@article","http://purl.org/ontology/bibo/Thesis":"@phdthesis","http://purl.org/ontology/bibo/BookSection":"@inbook","http://purl.org/ontology/bibo/Book":"@book","http://purl.org/ontology/bibo/Proceedings":"@inproceedings"}	
         bibtexitem={"type":"@misc"}	
         for tup in predobjs:	
             if str(tup[0])=="http://purl.org/dc/elements/1.1/creator":	
@@ -2015,8 +2020,8 @@ class OntDocGeneration:
                 bibtexitem[bibtexmappings[str(tup[0])]] = str(tup[1])	
         res=bibtexitem["type"]+"{"+self.shortenURI(item)+",\n"	
         for bibpart in bibtexitem:
-	    if bibpart=="type":
-		continue
+            if bibpart=="type":
+                continue
             if bibpart=="author":	
                 res += bibpart + "\t=\t{"	
                 first=True	
@@ -2371,6 +2376,7 @@ class OntDocGeneration:
             uritotreeitem[parentclass][-1]["data"]["to"]={}
             uritotreeitem[parentclass][-1]["data"]["from"]={}
         hasnonns=set()
+        itembibtex=""
         if predobjs!=None:
             for tup in sorted(predobjs,key=lambda tup: tup[0]):
                 if str(tup[0]) not in predobjmap:
@@ -2414,6 +2420,8 @@ class OntDocGeneration:
                 elif str(tup)==self.typeproperty and URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection") in predobjmap[tup]:
                     isgeocollection=True
                     uritotreeitem["http://www.opengis.net/ont/geosparql#GeometryCollection"][-1]["instancecount"] += 1
+                elif str(tup)==self.typeproperty and str(predobjmap[tup]) in bibtextypemappings:
+                    itembibtex=self.resolveBibtexReference(graph.predicate_objects(tup[0]),tup[0])
                 thetable=self.formatPredicate(tup, baseurl, checkdepth, thetable, graph,inverse)
                 if str(tup) in labelproperties:
                     for lab in predobjmap[tup]:
@@ -2548,7 +2556,7 @@ class OntDocGeneration:
                     myexports=nongeoexports
                 if foundlabel != "":
                     f.write(htmltemplate.replace("{{logo}}",logo).replace("{{baseurl}}",baseurl).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{toptitle}}", foundlabel).replace(
-                        "{{startscriptpath}}", rellink4).replace("{{epsgdefspath}}", rellink6).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{indexpage}}","false").replace("{{title}}",
+                        "{{startscriptpath}}", rellink4).replace("{{epsgdefspath}}", rellink6).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}",itembibtex).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{indexpage}}","false").replace("{{title}}",
                                                                                                     "<a href=\"" + str(
                                                                                                         subject) + "\">" + str(
                                                                                                         foundlabel) + "</a>").replace(
@@ -2558,7 +2566,7 @@ class OntDocGeneration:
                 else:
                     f.write(htmltemplate.replace("{{logo}}",logo).replace("{{baseurl}}",baseurl).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{indexpage}}","false").replace("{{toptitle}}", self.shortenURI(str(subject))).replace(
                         "{{startscriptpath}}", rellink4).replace(
-                        "{{epsgdefspath}}", rellink6).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{title}}","<a href=\"" + str(subject) + "\">" + self.shortenURI(str(subject)) + "</a>").replace(
+                        "{{epsgdefspath}}", rellink6).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}",itembibtex).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{title}}","<a href=\"" + str(subject) + "\">" + self.shortenURI(str(subject)) + "</a>").replace(
                         "{{baseurl}}", baseurl).replace("{{description}}",
                                                                                                    "").replace(
                         "{{scriptfolderpath}}", rellink).replace("{{classtreefolderpath}}", rellink2).replace("{{exports}}",myexports).replace("{{subject}}",str(subject)))
@@ -2670,7 +2678,7 @@ class OntDocGeneration:
                 if metadatatablecontentcounter>=0:	
                     f.write("<h5>Metadata</h5>")	
                     f.write(htmltabletemplate.replace("{{tablecontent}}", metadatatablecontents))	
-                f.write(htmlfooter.replace("{{exports}}",myexports).replace("{{license}}",curlicense))	
+                f.write(htmlfooter.replace("{{exports}}",myexports).replace("{{license}}",curlicense).replace("{{bibtex}}",itembibtex)))
                 f.close()
         except Exception as inst:
             print("Could not write "+str(completesavepath))
@@ -2799,7 +2807,7 @@ print("Path exists? "+outpath[0]+'/index.html '+str(os.path.exists(outpath[0]+'/
 if not os.path.exists(outpath[0]+'/index.html'):
     indexf=open(outpath[0]+"/index.html","w",encoding="utf-8")
     indexhtml = htmltemplate.replace("{{logo}}",logourl).replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}","0").replace("{{toptitle}}","Index page").replace("{{title}}","Index page").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
-        .replace("{{classtreefolderpath}}",prefixnsshort + "_classtree.js").replace("{{baseurlhtml}}", ".").replace("{{proprelationpath}}", "proprelations.js").replace("{{scriptfolderpath}}", prefixnsshort+ '_search.js').replace("{{exports}}",nongeoexports)
+        .replace("{{classtreefolderpath}}",prefixnsshort + "_classtree.js").replace("{{baseurlhtml}}", ".").replace("{{proprelationpath}}", "proprelations.js").replace("{{scriptfolderpath}}", prefixnsshort+ '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
     indexhtml=indexhtml.replace("{{indexpage}}","true")	
     indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"
     indexhtml+="<table class=\"description\" border=1 id=indextable><thead><tr><th>Dataset</th></tr></thead><tbody>"
@@ -2808,7 +2816,7 @@ if not os.path.exists(outpath[0]+'/index.html'):
     for path in subfolders:
         indexhtml+="<tr><td><a href=\""+path.replace(outpath[0]+"/","")+"/index.html\">"+path.replace(outpath[0]+"/","")+"</a></td></tr>"
     indexhtml+="</tbody></table>"
-    indexhtml+=htmlfooter.replace("{{license}}",license).replace("{{exports}}",nongeoexports)
+    indexhtml+=htmlfooter.replace("{{license}}",license).replace("{{exports}}",nongeoexports).replace("{{bibtex}}","")
     #print(indexhtml)
     indexf.write(indexhtml)
     indexf.close()
