@@ -2029,7 +2029,7 @@ class OntDocGeneration:
                 res+=bibpart+ "\t=\t{"+bibtexitem[bibpart]["start"]+"--"+bibtexitem[bibpart]["end"]+"},\n"	
             else:	
                 res+=bibpart+"\t=\t{"+str(bibtexitem[bibpart])+"},\n"	
-        return bibtexitem
+        return res
 
     def resolveGeoLiterals(self,pred,object,graph,geojsonrep,nonns,subject=None):
         if subject!=None and isinstance(object, Literal) and (str(pred) in geopairproperties):
