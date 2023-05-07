@@ -2053,10 +2053,10 @@ class OntDocGeneration:
                     geojsonrep = self.processLiteral(str(pobj[1]), str(pobj[1].datatype), "")
         return geojsonrep
 
-    def getLabelForObject(self,object,graph,labellang=None):	
+    def getLabelForObject(self,obj,graph,labellang=None):	
         label=""	
         onelabel=None	
-        for tup in graph.predicate_objects(object):	
+        for tup in graph.predicate_objects(obj):	
             if str(tup[0]) in labelproperties:	
                 # Check for label property	
                 if tup[1].language==labellang or labellang==None:	
@@ -2190,6 +2190,8 @@ class OntDocGeneration:
             if baseurl in str(object) or isinstance(object,BNode):
                 rellink = self.generateRelativeLinkFromGivenDepth(baseurl,checkdepth,str(object),True)
                 tablecontents += "<span><a property=\"" + str(pred) + "\" "+rdfares+" href=\"" + rellink + "\">"+ label + " <span style=\"color: #666;\">(" + self.namespaceshort + ":" + str(self.shortenURI(str(object))) + ")</span></a>"
+                if bibtex!=None:
+                    tablecontents+="<details><summary>[BIBTEX]</summary><pre>"+str(bibtex)+"</pre></details>"
             else:
                 res = self.replaceNameSpacesInLabel(str(object))
                 if res != None:
@@ -2248,7 +2250,7 @@ class OntDocGeneration:
         return "<span property=\"" + str(pred) + "\" content=\"" + str(object).replace("<","&lt").replace(">","&gt;").replace("\"","'") + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">" + str(object).replace("<","&lt").replace(">","&gt;") + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
 
     def formatPredicate(self,tup,baseurl,checkdepth,tablecontents,graph,reverse):
-        label=self.getLabelForObject(tup[1], graph,self.labellang)
+        label=self.getLabelForObject(URIRef(tup[1]), graph,self.labellang)
         tablecontents += "<td class=\"property\">"
         if reverse:
             tablecontents+="Is "
