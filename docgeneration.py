@@ -2019,7 +2019,7 @@ class OntDocGeneration:
             elif str(tup[0]) in bibtexmappings:	
                 bibtexitem[bibtexmappings[str(tup[0])]] = str(tup[1])	
         res=bibtexitem["type"]+"{"+self.shortenURI(item)+",\n"	
-        for bibpart in bibtexitem:
+        for bibpart in sorted(bibtexitem):
             if bibpart=="type":
                 continue
             if bibpart=="author":	
@@ -2031,6 +2031,7 @@ class OntDocGeneration:
                         first=False	
                     else:	
                         res+="and "+author+" "	
+                res=res[0:-1]
                 res+="},\n"	
             elif bibpart=="pages":	
                 res+=bibpart+ "\t=\t{"+bibtexitem[bibpart]["start"]+"--"+bibtexitem[bibpart]["end"]+"},\n"	
