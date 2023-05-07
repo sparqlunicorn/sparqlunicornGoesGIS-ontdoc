@@ -33,7 +33,7 @@ baselayers={
     "OpenStreetMap (OSM)":{"url":"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png","default":True,"type":"tile"}
 }
 
-metadatanamespaces=["http://purl.org/dc/terms/","http://www.w3.org/ns/prov#","http://www.w3.org/ns/prov-o/","http://creativecommons.org/ns#","http://www.w3.org/ns/dcat#","http://purl.org/cerif/frapo/","http://www.lido-schema.org/"]
+metadatanamespaces=["http://purl.org/dc/terms/","http://purl.org/dc/elements/1.1/","http://www.w3.org/ns/prov#","http://www.w3.org/ns/prov-o/","http://creativecommons.org/ns#","http://www.w3.org/ns/dcat#","http://purl.org/cerif/frapo/","http://www.lido-schema.org/"]
 
 collectionclasses=["http://www.opengis.net/ont/geosparql#FeatureCollection","http://www.opengis.net/ont/geosparql#GeometryCollection","http://www.opengis.net/ont/geosparql#SpatialObjectCollection","http://www.w3.org/2004/02/skos/core#Collection","http://www.w3.org/2004/02/skos/core#OrderedCollection","https://www.w3.org/ns/activitystreams#Collection","https://www.w3.org/ns/activitystreams#OrderedCollection"]
 
@@ -1194,12 +1194,12 @@ imagecarouselfooter="""</div> <a class="carousel-control-prev" href="#carouselEx
     <span class="sr-only">Next</span>
   </a></div>"""
 
-imagestemplate="""<div class="{{carousel}}">
+imagestemplate="""<div class="{{carousel}}" width="100%">
 <a href="{{image}}" target=\"_blank\"><img src="{{image}}" style="max-width:485px;max-height:500px" alt="{{image}}" title="{{imagetitle}}" /></a>
 </div>
 """
 
-imageswithannotemplate="""<div class="{{carousel}}">
+imageswithannotemplate="""<div class="{{carousel}}" width="100%">
 <a href=\"{{image}}\" target=\"_blank\"><img src="{{image}}" style="max-width:485px;max-height:500px" alt="{{image}}" title="{{imagetitle}}" /></a>
 {{svganno}}
 </div>
@@ -1976,6 +1976,61 @@ class OntDocGeneration:
             rellink += "/index.html"
         return rellink
 
+    def resolveBibtexReference(self,predobjs,item,graph):	
+        bibtexmappings={"http://purl.org/dc/elements/1.1/title":"title",	
+                      "http://purl.org/dc/elements/1.1/created":"year",	
+                      "http://purl.org/ontology/bibo/number":"number",	
+                      "http://purl.org/ontology/bibo/publisher":"publisher",	
+                      "http://purl.org/ontology/bibo/issuer": "journal",	
+                      "http://purl.org/ontology/bibo/volume":"volume",	
+                      "http://purl.org/ontology/bibo/doi": "doi",	
+                      "http://purl.org/ontology/bibo/eissn": "eissn",	
+                      "http://purl.org/ontology/bibo/eprint": "eprint",	
+                      "http://purl.org/ontology/bibo/url": "url",	
+                      "http://purl.org/ontology/bibo/issn": "issn",	
+                      "http://purl.org/ontology/bibo/isbn": "isbn",	
+                      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":"type"	
+                      }	
+        bibtextypemappings={"http://purl.org/ontology/bibo/Book":"@book","http://purl.org/ontology/bibo/Proceedings":"@inproceedings"}	
+        bibtexitem={}	
+        for tup in predobjs:	
+            if str(tup[0])=="http://purl.org/dc/elements/1.1/creator":	
+                if "author" not in bibtexitem:	
+                    bibtexitem["author"]=[]	
+                if isinstance(tup[1],URIRef):	
+                    bibtexitem["author"].append(self.getLabelForObject(tup[1],graph))	
+                else:	
+                    bibtexitem["author"].append(str(tup[1]))	
+            elif str(tup[0]) == "http://purl.org/dc/elements/1.1/startPage":	
+                if "pages" not in bibtexitem:	
+                    bibtexitem["pages"]={}	
+                bibtexitem["pages"]["start"]=str(tup[1])	
+            elif str(tup[0]) == "http://purl.org/dc/elements/1.1/endPage":	
+                if "pages" not in bibtexitem:	
+                    bibtexitem["pages"]={}	
+                bibtexitem["pages"]["end"]=str(tup[1])	
+            elif str(tup[0]) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" and str(tup[1]) in bibtextypemappings:	
+                bibtexitem["key"]=bibtextypemappings[str(tup[1])]	
+            elif str(tup[0]) in bibtexmappings:	
+                    bibtexitem[bibtexmappings[str(tup[0])]] = str(tup[1])	
+        res=bibtexitem["type"]+"{"+self.shortenURI(item)+",\n"	
+        for bibpart in bibtexitem:	
+            if bibpart=="author":	
+                res += bibpart + "\t=\t{"	
+                first=True	
+                for author in bibtexitem["author"]:	
+                    if first:	
+                        res+=author+" "	
+                        first=False	
+                    else:	
+                        res+="and "+author+" "	
+                res+="},\n"	
+            elif bibpart=="pages":	
+                res+=bibpart+ "\t=\t{"+bibtexitem[bibpart]["start"]+"--"+bibtexitem[bibpart]["end"]+"},\n"	
+            else:	
+                res+=bibpart+"\t=\t{"+str(bibtexitem[bibpart])+"},\n"	
+        return bibtexitem
+
     def resolveGeoLiterals(self,pred,object,graph,geojsonrep,nonns,subject=None):
         if subject!=None and isinstance(object, Literal) and (str(pred) in geopairproperties):
             pairprop = geopairproperties[str(pred)]["pair"]
@@ -1998,6 +2053,19 @@ class OntDocGeneration:
                     geojsonrep = self.processLiteral(str(pobj[1]), str(pobj[1].datatype), "")
         return geojsonrep
 
+    def getLabelForObject(self,object,graph,labellang=None):	
+        label=""	
+        onelabel=None	
+        for tup in graph.predicate_objects(object):	
+            if str(tup[0]) in SPARQLUtils.labelproperties:	
+                # Check for label property	
+                if tup[1].language==labellang or labellang==None:	
+                    label=str(tup[1])	
+                onelabel=str(tup[1])	
+        if label=="" and onelabel!=None:	
+            label=onelabel	
+        return label
+
     def searchObjectConnectionsForAggregateData(self,graph,object,pred,geojsonrep,foundmedia,imageannos,textannos,image3dannos,label,unitlabel,nonns):
         geoprop=False
         annosource=False
@@ -2010,6 +2078,7 @@ class OntDocGeneration:
         foundunit=None
         tempvalprop=None
         onelabel=None
+        bibtex=None
         for tup in graph.predicate_objects(object):
             if str(tup[0]) in labelproperties:
                 if tup[1].language==self.labellang:
@@ -2035,6 +2104,8 @@ class OntDocGeneration:
                 textannos.append(curanno)
             if pred == "http://www.w3.org/ns/oa#hasSource":
                 annosource = str(tup[1])
+            if pred == "http://purl.org/dc/terms/isReferencedBy" and tup[0] == URIRef(self.typeproperty) and ("http://purl.org/ontology/bibo/" in str(tup[1])):	
+                bibtex=self.resolveBibtexReference(graph.predicate_objects(object),object,graph)
             if not nonns:
                 geojsonrep=self.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep,nonns)
             if incollection and "<svg" in str(tup[1]):
@@ -2089,12 +2160,13 @@ class OntDocGeneration:
                 textanno["src"] = annosource
         if label=="" and onelabel!=None:
             label=onelabel
-        return {"geojsonrep":geojsonrep,"label":label,"unitlabel":unitlabel,"foundmedia":foundmedia,"imageannos":imageannos,"textannos":textannos,"image3dannos":image3dannos}
+        return {"geojsonrep":geojsonrep,"label":label,"unitlabel":unitlabel,"foundmedia":foundmedia,"imageannos":imageannos,"textannos":textannos,"image3dannos":image3dannos,"bibtex":bibtex}
 
 
     def createHTMLTableValueEntry(self,subject,pred,object,ttlf,graph,baseurl,checkdepth,geojsonrep,foundmedia,imageannos,textannos,image3dannos,inverse,nonns):
         tablecontents=""
         label=""
+        bibtex=None
         if isinstance(object,URIRef) or isinstance(object,BNode):
             if ttlf != None:
                 ttlf.add((subject,URIRef(pred),object))
@@ -2110,6 +2182,7 @@ class OntDocGeneration:
             textannos=mydata["textannos"]
             image3dannos=mydata["image3dannos"]
             unitlabel=mydata["unitlabel"]
+            bibtex=mydata["bibtex"]
             if inverse:
                 rdfares = " about=\"" + str(object) + "\" resource=\"" + str(subject) + "\""
             else:
@@ -2123,6 +2196,8 @@ class OntDocGeneration:
                     tablecontents += "<span><a property=\"" + str(pred) + "\" "+rdfares+" target=\"_blank\" href=\"" + str(object) + "\">" + label + " <span style=\"color: #666;\">(" + res["uri"] + ")</span></a>"                                     
                 else:
                     tablecontents += "<span><a property=\"" + str(pred) + "\" "+rdfares+" target=\"_blank\" href=\"" + str(object) + "\">" + label + "</a>"
+                if bibtex!=None:
+                    tablecontents+="<details><summary>[BIBTEX]</summary><pre>"+str(bibtex)+"</pre></details>"
                 if self.generatePagesForNonNS:
                     rellink = self.generateRelativeLinkFromGivenDepth(str(baseurl), checkdepth,
                                                                       str(baseurl) + "nonns_" + self.shortenURI(
@@ -2173,16 +2248,7 @@ class OntDocGeneration:
         return "<span property=\"" + str(pred) + "\" content=\"" + str(object).replace("<","&lt").replace(">","&gt;").replace("\"","'") + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">" + str(object).replace("<","&lt").replace(">","&gt;") + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
 
     def formatPredicate(self,tup,baseurl,checkdepth,tablecontents,graph,reverse):
-        onelabel=self.shortenURI(str(tup))
-        label=None
-        for obj in graph.predicate_objects(URIRef(tup)):
-            if str(obj[0]) in labelproperties:
-                if obj[1].language==self.labellang:
-                    label = str(obj[1])
-                    break
-                onelabel=str(obj[1])
-        if label==None:
-            label=onelabel
+        label=self.getLabelForObject(tup[1], graph,self.labellang)
         tablecontents += "<td class=\"property\">"
         if reverse:
             tablecontents+="Is "
