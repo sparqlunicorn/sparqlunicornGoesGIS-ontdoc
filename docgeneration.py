@@ -2678,7 +2678,7 @@ class OntDocGeneration:
                 if metadatatablecontentcounter>=0:	
                     f.write("<h5>Metadata</h5>")	
                     f.write(htmltabletemplate.replace("{{tablecontent}}", metadatatablecontents))	
-                f.write(htmlfooter.replace("{{exports}}",myexports).replace("{{license}}",curlicense).replace("{{bibtex}}",itembibtex)))
+                f.write(htmlfooter.replace("{{exports}}",myexports).replace("{{license}}",curlicense).replace("{{bibtex}}",itembibtex))
                 f.close()
         except Exception as inst:
             print("Could not write "+str(completesavepath))
