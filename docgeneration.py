@@ -2057,7 +2057,7 @@ class OntDocGeneration:
         label=""	
         onelabel=None	
         for tup in graph.predicate_objects(object):	
-            if str(tup[0]) in SPARQLUtils.labelproperties:	
+            if str(tup[0]) in labelproperties:	
                 # Check for label property	
                 if tup[1].language==labellang or labellang==None:	
                     label=str(tup[1])	
