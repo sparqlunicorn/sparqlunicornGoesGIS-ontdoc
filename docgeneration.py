@@ -2059,7 +2059,7 @@ class OntDocGeneration:
                     for tobj2 in graph.predicate_objects(tobj[1]):
                         if str(tobj2[0]) in timeliteraltype:
                             timeobj["timepoint"]=str(tobj2[1])
-        timeres=""
+        timeres=None
         if "begin" in timeobj and "end" in timeobj:
             timeres=str(timeobj["begin"])+" - "+str(timeobj["end"])
         elif "begin" in timeobj and not "end" in timeobj:
