@@ -2177,6 +2177,7 @@ class OntDocGeneration:
         tablecontents=""
         label=""
         bibtex=None
+        dateprops=[]
         if isinstance(object,URIRef) or isinstance(object,BNode):
             if ttlf != None:
                 ttlf.add((subject,URIRef(pred),object))
@@ -2227,6 +2228,8 @@ class OntDocGeneration:
                 objstring=str(object).replace("<", "&lt").replace(">", "&gt;")
                 if str(object.datatype)=="http://www.w3.org/2001/XMLSchema#anyURI":
                     objstring="<a href=\""+str(object)+"\">"+str(object)+"</a>"
+                if str(object.datatype)=="http://www.w3.org/2001/XMLSchema#date" or str(object.datatype)=="http://www.w3.org/2001/XMLSchema#dateTime":
+                    dateprops.append(str(pred))
                 if res != None:
                     tablecontents += "<span property=\"" + str(pred) + "\" content=\"" + str(
                         object).replace("<", "&lt").replace(">", "&gt;").replace("\"", "'") + "\" datatype=\"" + str(
@@ -2243,17 +2246,21 @@ class OntDocGeneration:
                     tablecontents += "<span property=\"" + str(pred) + "\" content=\"" + str(object).replace("<", "&lt").replace(">", "&gt;").replace("\"","'") + "\" datatype=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\" xml:lang=\"" + str(object.language) + "\">" + str(object).replace("<", "&lt").replace(">", "&gt;") + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\">rdf:langString</a>) (<a href=\"http://www.lexvo.org/page/iso639-1/"+str(object.language)+"\" target=\"_blank\">iso6391:" + str(object.language) + "</a>)</small></span>"
                 else:
                     tablecontents += self.detectStringLiteralContent(pred,object)
-        return {"html":tablecontents,"geojson":geojsonrep,"foundmedia":foundmedia,"imageannos":imageannos,"textannos":textannos,"image3dannos":image3dannos,"label":label}
+        return {"html":tablecontents,"geojson":geojsonrep,"foundmedia":foundmedia,"imageannos":imageannos,"textannos":textannos,"image3dannos":image3dannos,"label":label,"dateprops":dateprops}
 
     def detectStringLiteralContent(self,pred,object):
         if object.startswith("http://") or object.startswith("https://"):
             return "<span><a property=\"" + str(pred) + "\" target=\"_blank\" href=\"" + str(
                         object)+ "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">" + str(object)+ "</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
-        if object.startswith("www."):
+        elif object.startswith("www."):
             return "<span><a property=\"" + str(pred) + "\" target=\"_blank\" href=\"http://" + str(
                 object) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">http://" + str(
                 object) + "</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
-        if re.search(r'[\w.]+\@[\w.]+', object):
+        elif re.search('(10[.][0-9]{2,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)',object):
+            return "<span><a property=\"" + str(pred) + "\" href=\"https://www.doi.org/" + str(
+                object) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#anyURI\">" + str(
+                object) + "</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#anyURI\">xsd:anyURI</a>)</small></span>"        
+        elif re.search(r'[\w.]+\@[\w.]+', object):
             return "<span><a property=\"" + str(pred) + "\" href=\"mailto:" + str(
                 object) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">mailto:" + str(
                 object) + "</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
@@ -2365,6 +2372,7 @@ class OntDocGeneration:
         comment={}
         parentclass=None
         inverse=False
+        dateprops=[]
         tablecontentcounter=-1
         metadatatablecontentcounter=-1
         if uritotreeitem!=None and str(subject) in uritotreeitem and uritotreeitem[str(subject)][-1]["parent"].startswith("http"):
@@ -2463,6 +2471,7 @@ class OntDocGeneration:
                         imageannos=res["imageannos"]
                         textannos=res["textannos"]
                         image3dannos=res["image3dannos"]
+                        dateprops=res["dateprops"]
                         if res["label"] not in labelmap:
                             labelmap[res["label"]]=""
                         if len(predobjmap[tup]) > 1:
@@ -2642,7 +2651,7 @@ class OntDocGeneration:
                 if geojsonrep!=None and not isgeocollection:
                     if uritotreeitem!=None and str(subject) in uritotreeitem:
                         uritotreeitem[str(subject)][-1]["type"]="geoinstance"
-                    jsonfeat={"type": "Feature", 'id':str(subject),'label':foundlabel, 'properties': predobjmap, "geometry": geojsonrep}
+                    jsonfeat={"type": "Feature", 'id':str(subject),'label':foundlabel,'dateprops':dateprops, 'properties': predobjmap, "geometry": geojsonrep}
                     if epsgcode=="" and "crs" in geojsonrep:
                         epsgcode="EPSG:"+geojsonrep["crs"]
                     if len(hasnonns)>0:
@@ -2665,9 +2674,9 @@ class OntDocGeneration:
                                             geojsonrep = self.processLiteral(str(geotup[1]), str(geotup[1].datatype), "")
                                 if geojsonrep!=None:
                                     if uritotreeitem !=None and str(memberid) in uritotreeitem:
-                                        featcoll["features"].append({"type": "Feature", 'id': str(memberid), 'label': uritotreeitem[str(memberid)][-1]["text"], 'properties': {},"geometry": geojsonrep})
+                                        featcoll["features"].append({"type": "Feature", 'id': str(memberid), 'label': uritotreeitem[str(memberid)][-1]["text"],'dateprops':dateprops, 'properties': {},"geometry": geojsonrep})
                                     else:
-                                        featcoll["features"].append({"type": "Feature", 'id': str(memberid),'label': str(memberid), 'properties': {}, "geometry": geojsonrep})
+                                        featcoll["features"].append({"type": "Feature", 'id': str(memberid),'label': str(memberid),'dateprops':dateprops, 'properties': {}, "geometry": geojsonrep})
                         if len(hasnonns)>0:
                             self.geocache[str(subject)]=featcoll
                     elif nonns:
