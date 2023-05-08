@@ -2022,8 +2022,8 @@ class OntDocGeneration:
         for bibpart in sorted(bibtexitem):
             if bibpart=="type":
                 continue
-            if bibpart=="author":	
-                res += bibpart + "\t=\t{"	
+            res += bibpart + "={"
+            if bibpart=="author":
                 first=True	
                 for author in bibtexitem["author"]:	
                     if first:	
@@ -2034,9 +2034,11 @@ class OntDocGeneration:
                 res=res[0:-1]
                 res+="},\n"	
             elif bibpart=="pages":	
-                res+=bibpart+ "\t=\t{"+bibtexitem[bibpart]["start"]+"--"+bibtexitem[bibpart]["end"]+"},\n"	
+                res+=bibtexitem[bibpart]["start"]+"--"+bibtexitem[bibpart]["end"]+"},\n"
             else:	
-                res+=bibpart+"\t=\t{"+str(bibtexitem[bibpart])+"},\n"	
+                res+=str(bibtexitem[bibpart])+"},\n"
+        res=res[0:-2]
+        res+="\n}"
         return res
 
     def resolveGeoLiterals(self,pred,object,graph,geojsonrep,nonns,subject=None):
