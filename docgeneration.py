@@ -45,6 +45,8 @@ collectionclasses=["http://www.opengis.net/ont/geosparql#FeatureCollection","htt
 
 geoliteraltypes=["http://www.opengis.net/ont/geosparql#wktLiteral","http://www.opengis.net/ont/geosparql#gmlLiteral","http://www.opengis.net/ont/geosparql#kmlLiteral","http://www.opengis.net/ont/geosparql#geoJSONLiteral","http://www.opengis.net/ont/geosparql#dggsLiteral"]
 
+timeliteraltype=["http://www.w3.org/2006/time#inXSDDateTime","http://www.w3.org/2006/time#inXSDDate","http://www.w3.org/2006/time#inXSDDateTimeStamp","http://www.w3.org/2006/time#inXSDgYear","http://www.w3.org/2006/time#inXSDgYearMonth"]
+
 collectionrelationproperties={
     "http://www.w3.org/2000/01/rdf-schema#member":"ObjectProperty",
     "http://www.w3.org/2004/02/skos/core#member":"ObjectProperty"
@@ -2041,6 +2043,29 @@ class OntDocGeneration:
         res+="\n}"
         return res
 
+    def resolveTimeLiterals(self,pred,object,graph):
+        timeobj={}
+        if isinstance(object,URIRef) and str(pred)=="http://www.w3.org/2006/time#hasTime":
+            for tobj in graph.predicate_objects(object):
+                if str(tobj[0])=="http://www.w3.org/2006/time#hasBeginning":
+                    for tobj2 in graph.predicate_objects(tobj[1]):
+                        if str(tobj2[0]) in timeliteraltype:
+                            timeobj["begin"]=str(tobj2[1])
+                elif str(tobj[0])=="http://www.w3.org/2006/time#hasEnd":
+                    for tobj2 in graph.predicate_objects(tobj[1]):
+                        if str(tobj2[0]) in timeliteraltype:
+                            timeobj["end"]=str(tobj2[1])
+                elif str(tobj[0])=="http://www.w3.org/2006/time#hasTime":
+                    for tobj2 in graph.predicate_objects(tobj[1]):
+                        if str(tobj2[0]) in timeliteraltype:
+                            timeobj["timepoint"]=str(tobj2[1])
+        timeres=""
+        if "begin" in timeobj and "end" in timeobj:
+            timeres=str(timeobj["begin"])+" - "+str(timeobj["end"])
+        elif "timepoint" in timeobj:
+            timeres=timeobj["timepoint"]
+        return timeres
+
     def resolveGeoLiterals(self,pred,object,graph,geojsonrep,nonns,subject=None):
         if subject!=None and isinstance(object, Literal) and (str(pred) in geopairproperties):
             pairprop = geopairproperties[str(pred)]["pair"]
@@ -2089,6 +2114,7 @@ class OntDocGeneration:
         tempvalprop=None
         onelabel=None
         bibtex=None
+        timeobj=None
         for tup in graph.predicate_objects(object):
             if str(tup[0]) in labelproperties:
                 if tup[1].language==self.labellang:
@@ -2116,6 +2142,8 @@ class OntDocGeneration:
                 annosource = str(tup[1])
             if pred == "http://purl.org/dc/terms/isReferencedBy" and tup[0] == URIRef(self.typeproperty) and ("http://purl.org/ontology/bibo/" in str(tup[1])):	
                 bibtex=self.resolveBibtexReference(graph.predicate_objects(object),object,graph)
+            if pred=="http://www.w3.org/2006/time#hasTime":
+                timeobj=self.resolveTimeLiterals(pred,object,graph)
             if not nonns:
                 geojsonrep=self.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep,nonns)
             if incollection and "<svg" in str(tup[1]):
@@ -2170,13 +2198,14 @@ class OntDocGeneration:
                 textanno["src"] = annosource
         if label=="" and onelabel!=None:
             label=onelabel
-        return {"geojsonrep":geojsonrep,"label":label,"unitlabel":unitlabel,"foundmedia":foundmedia,"imageannos":imageannos,"textannos":textannos,"image3dannos":image3dannos,"bibtex":bibtex}
+        return {"geojsonrep":geojsonrep,"label":label,"unitlabel":unitlabel,"foundmedia":foundmedia,"imageannos":imageannos,"textannos":textannos,"image3dannos":image3dannos,"bibtex":bibtex,"timeobj":timeobj}
 
 
     def createHTMLTableValueEntry(self,subject,pred,object,ttlf,graph,baseurl,checkdepth,geojsonrep,foundmedia,imageannos,textannos,image3dannos,dateprops,inverse,nonns):
         tablecontents=""
         label=""
         bibtex=None
+        timeobj=None
         if isinstance(object,URIRef) or isinstance(object,BNode):
             if ttlf != None:
                 ttlf.add((subject,URIRef(pred),object))
@@ -2193,6 +2222,7 @@ class OntDocGeneration:
             image3dannos=mydata["image3dannos"]
             unitlabel=mydata["unitlabel"]
             bibtex=mydata["bibtex"]
+            timeobj=mydata["timeobj"]
             if inverse:
                 rdfares = " about=\"" + str(object) + "\" resource=\"" + str(subject) + "\""
             else:
@@ -2217,6 +2247,8 @@ class OntDocGeneration:
                     tablecontents+=" <a href=\""+rellink+".html\">[x]</a>"
             if unitlabel!="":
                 tablecontents+=" <span style=\"font-weight:bold\">["+str(unitlabel)+"]</span>"
+            if timeobj!=None:
+                tablecontents+=" <span style=\"font-weight:bold\">["+str(timeobj)+"]</span>"
             tablecontents+="</span>"
         else:
             label=str(object)
@@ -2227,7 +2259,7 @@ class OntDocGeneration:
                 objstring=str(object).replace("<", "&lt").replace(">", "&gt;")
                 if str(object.datatype)=="http://www.w3.org/2001/XMLSchema#anyURI":
                     objstring="<a href=\""+str(object)+"\">"+str(object)+"</a>"
-                if (str(object.datatype)=="http://www.w3.org/2001/XMLSchema#gYear" or str(object.datatype)=="http://www.w3.org/2001/XMLSchema#date" or str(object.datatype)=="http://www.w3.org/2001/XMLSchema#dateTime") and dateprops!=None and str(pred) not in dateprops:
+                if (str(object.datatype)=="http://www.w3.org/2001/XMLSchema#gYear" or str(object.datatype)=="http://www.w3.org/2001/XMLSchema#date" or str(object.datatype)=="http://www.w3.org/2001/XMLSchema#dateTime") and dateprops!=None and self.shortenURI(str(pred),True) not in metadatanamespaces and str(pred) not in dateprops:
                     dateprops.append(str(pred))
                 if res != None:
                     tablecontents += "<span property=\"" + str(pred) + "\" content=\"" + str(
@@ -2255,7 +2287,7 @@ class OntDocGeneration:
             return "<span><a property=\"" + str(pred) + "\" target=\"_blank\" href=\"http://" + str(
                 object) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">http://" + str(
                 object) + "</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
-        elif re.search('(10[.][0-9]{2,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)',str(object)):
+        elif re.search(r'(10[.][0-9]{2,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)',str(object)):
             return "<span><a property=\"" + str(pred) + "\" href=\"https://www.doi.org/" + str(
                 object) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#anyURI\">" + str(
                 object) + "</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#anyURI\">xsd:anyURI</a>)</small></span>"        
