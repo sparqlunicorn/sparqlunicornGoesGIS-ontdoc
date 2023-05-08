@@ -2256,7 +2256,7 @@ class OntDocGeneration:
             return "<span><a property=\"" + str(pred) + "\" target=\"_blank\" href=\"http://" + str(
                 object) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">http://" + str(
                 object) + "</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
-        elif re.search('(10[.][0-9]{2,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)',object):
+        elif re.search('(10[.][0-9]{2,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)',str(object)):
             return "<span><a property=\"" + str(pred) + "\" href=\"https://www.doi.org/" + str(
                 object) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#anyURI\">" + str(
                 object) + "</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#anyURI\">xsd:anyURI</a>)</small></span>"        
