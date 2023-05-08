@@ -2426,7 +2426,7 @@ class OntDocGeneration:
                 elif str(tup)==self.typeproperty:
                     for tp in predobjmap[tup]:
                         if str(tp) in bibtextypemappings:
-                            itembibtex=self.resolveBibtexReference(graph.predicate_objects(subject),subject,graph)
+                            itembibtex="<details><summary>[BIBTEX]</summary><pre>"+str(self.resolveBibtexReference(graph.predicate_objects(subject),subject,graph))+"</pre></details>"
                             break
                 thetable=self.formatPredicate(tup, baseurl, checkdepth, thetable, graph,inverse)
                 if str(tup) in labelproperties:
