@@ -2227,8 +2227,8 @@ class OntDocGeneration:
                 objstring=str(object).replace("<", "&lt").replace(">", "&gt;")
                 if str(object.datatype)=="http://www.w3.org/2001/XMLSchema#anyURI":
                     objstring="<a href=\""+str(object)+"\">"+str(object)+"</a>"
-                if (str(object.datatype)=="http://www.w3.org/2001/XMLSchema#gYear" or str(object.datatype)=="http://www.w3.org/2001/XMLSchema#date" or str(object.datatype)=="http://www.w3.org/2001/XMLSchema#dateTime") and dateprops!=None:
-                    dateprops.add(str(pred))
+                if (str(object.datatype)=="http://www.w3.org/2001/XMLSchema#gYear" or str(object.datatype)=="http://www.w3.org/2001/XMLSchema#date" or str(object.datatype)=="http://www.w3.org/2001/XMLSchema#dateTime") and dateprops!=None and str(pred) not in dateprops:
+                    dateprops.append(str(pred))
                 if res != None:
                     tablecontents += "<span property=\"" + str(pred) + "\" content=\"" + str(
                         object).replace("<", "&lt").replace(">", "&gt;").replace("\"", "'") + "\" datatype=\"" + str(
@@ -2371,7 +2371,7 @@ class OntDocGeneration:
         comment={}
         parentclass=None
         inverse=False
-        dateprops=set()
+        dateprops=[]
         tablecontentcounter=-1
         metadatatablecontentcounter=-1
         if uritotreeitem!=None and str(subject) in uritotreeitem and uritotreeitem[str(subject)][-1]["parent"].startswith("http"):
