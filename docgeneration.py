@@ -2065,11 +2065,11 @@ class OntDocGeneration:
 
     def getLabelForObject(self,obj,graph,labellang=None):	
         label=""	
-        onelabel=None	
+        onelabel=self.shortenURI(str(obj))
         for tup in graph.predicate_objects(obj):	
             if str(tup[0]) in labelproperties:	
                 # Check for label property	
-                if tup[1].language==labellang or labellang==None:	
+                if tup[1].language==labellang:
                     label=str(tup[1])	
                 onelabel=str(tup[1])	
         if label=="" and onelabel!=None:	
@@ -2260,7 +2260,7 @@ class OntDocGeneration:
         return "<span property=\"" + str(pred) + "\" content=\"" + str(object).replace("<","&lt").replace(">","&gt;").replace("\"","'") + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">" + str(object).replace("<","&lt").replace(">","&gt;") + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
 
     def formatPredicate(self,tup,baseurl,checkdepth,tablecontents,graph,reverse):
-        label=self.getLabelForObject(URIRef(tup), graph,self.labellang)
+        label=self.getLabelForObject(URIRef(str(tup)), graph,self.labellang)
         tablecontents += "<td class=\"property\">"
         if reverse:
             tablecontents+="Is "
