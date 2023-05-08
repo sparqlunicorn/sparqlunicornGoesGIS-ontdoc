@@ -2424,7 +2424,7 @@ class OntDocGeneration:
                     isgeocollection=True
                     uritotreeitem["http://www.opengis.net/ont/geosparql#GeometryCollection"][-1]["instancecount"] += 1
                 elif str(tup)==self.typeproperty and str(predobjmap[tup]) in bibtextypemappings:
-                    itembibtex=self.resolveBibtexReference(graph.predicate_objects(tup[0]),tup[0])
+                    itembibtex=self.resolveBibtexReference(graph.predicate_objects(subject),subject)
                 thetable=self.formatPredicate(tup, baseurl, checkdepth, thetable, graph,inverse)
                 if str(tup) in labelproperties:
                     for lab in predobjmap[tup]:
