@@ -2062,6 +2062,10 @@ class OntDocGeneration:
         timeres=""
         if "begin" in timeobj and "end" in timeobj:
             timeres=str(timeobj["begin"])+" - "+str(timeobj["end"])
+        elif "begin" in timeobj and not "end" in timeobj:
+            timeres=str(timeobj["begin"])
+        elif "begin" not in timeobj and "end" in timeobj:
+            timeres=str(timeobj["end"])
         elif "timepoint" in timeobj:
             timeres=timeobj["timepoint"]
         return timeres
