@@ -1727,7 +1727,7 @@ class OntDocGeneration:
                             subgraph.add((sub, tup[0], tup[1]))
                 subgraph.serialize(path + "index.ttl",encoding="utf-8")
                 indexhtml = htmltemplate.replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{epsgdefspath}}", epsgdefslink).replace("{{vowlpath}}", vowllink)\
-                    .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", nslink).replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports)
+                    .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", nslink).replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
                 if nslink==prefixnamespace:
                     indexhtml=indexhtml.replace("{{indexpage}}","true")
                 else:
@@ -1746,20 +1746,20 @@ class OntDocGeneration:
                             indexhtml+="<tr><td><img src=\""+tree["types"][item["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+item["type"]+"\"/><a href=\""+str(item["id"])+"\" target=\"_blank\">"+str(item["text"])+"</a></td>"
                             indexhtml+="<td>"+str(item["instancecount"])+"</td>"+exitem+"</tr>"
                 indexhtml += "</tbody></table><script>$('#indextable').DataTable();</script>"
-                indexhtml+=htmlfooter.replace("{{license}}",curlicense).replace("{{exports}}",nongeoexports)
+                indexhtml+=htmlfooter.replace("{{license}}",curlicense).replace("{{exports}}",nongeoexports).replace("{{bibtex}}","")
                 #print(path)
                 with open(path + "index.html", 'w', encoding='utf-8') as f:
                     f.write(indexhtml)
                     f.close()
         if len(featurecollectionspaths)>0:
             indexhtml = htmltemplate.replace("{{logo}}",self.logoname).replace("{{relativedepth}}","0").replace("{{baseurl}}", prefixnamespace).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{vowlpath}}", "vowl_result.js")\
-                    .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports)
+                    .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
             indexhtml = indexhtml.replace("{{indexpage}}", "true")
             self.merge_JsonFiles(featurecollectionspaths,str(outpath)+"features.js")
             indexhtml += "<p>This page shows feature collections present in the linked open data export</p>"
             indexhtml+="<script src=\"features.js\"></script>"
             indexhtml+=maptemplate.replace("var featurecolls = {{myfeature}}","").replace("{{baselayers}}",json.dumps(baselayers))
-            indexhtml += htmlfooter.replace("{{license}}", curlicense).replace("{{exports}}", nongeoexports)
+            indexhtml += htmlfooter.replace("{{license}}", curlicense).replace("{{exports}}", nongeoexports).replace("{{bibtex}}","")
             with open(outpath + "featurecollections.html", 'w', encoding='utf-8') as f:
                 f.write(indexhtml)
                 f.close()
@@ -2006,11 +2006,11 @@ class OntDocGeneration:
                     bibtexitem["author"].append(self.getLabelForObject(tup[1],graph))	
                 else:	
                     bibtexitem["author"].append(str(tup[1]))	
-            elif str(tup[0]) == "http://purl.org/dc/elements/1.1/startPage":	
+            elif str(tup[0]) == "http://purl.org/ontology/bibo/pageStart":
                 if "pages" not in bibtexitem:	
                     bibtexitem["pages"]={}	
                 bibtexitem["pages"]["start"]=str(tup[1])	
-            elif str(tup[0]) == "http://purl.org/dc/elements/1.1/endPage":	
+            elif str(tup[0]) == "http://purl.org/ontology/bibo/pageEnd":
                 if "pages" not in bibtexitem:	
                     bibtexitem["pages"]={}	
                 bibtexitem["pages"]["end"]=str(tup[1])	
