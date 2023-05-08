@@ -2177,7 +2177,7 @@ class OntDocGeneration:
         tablecontents=""
         label=""
         bibtex=None
-        dateprops=[]
+        dateprops=set()
         if isinstance(object,URIRef) or isinstance(object,BNode):
             if ttlf != None:
                 ttlf.add((subject,URIRef(pred),object))
@@ -2229,7 +2229,7 @@ class OntDocGeneration:
                 if str(object.datatype)=="http://www.w3.org/2001/XMLSchema#anyURI":
                     objstring="<a href=\""+str(object)+"\">"+str(object)+"</a>"
                 if str(object.datatype)=="http://www.w3.org/2001/XMLSchema#gYear" or str(object.datatype)=="http://www.w3.org/2001/XMLSchema#date" or str(object.datatype)=="http://www.w3.org/2001/XMLSchema#dateTime":
-                    dateprops.append(str(pred))
+                    dateprops.add(str(pred))
                 if res != None:
                     tablecontents += "<span property=\"" + str(pred) + "\" content=\"" + str(
                         object).replace("<", "&lt").replace(">", "&gt;").replace("\"", "'") + "\" datatype=\"" + str(
@@ -2372,7 +2372,7 @@ class OntDocGeneration:
         comment={}
         parentclass=None
         inverse=False
-        dateprops=[]
+        dateprops=set()
         tablecontentcounter=-1
         metadatatablecontentcounter=-1
         if uritotreeitem!=None and str(subject) in uritotreeitem and uritotreeitem[str(subject)][-1]["parent"].startswith("http"):
@@ -2471,7 +2471,7 @@ class OntDocGeneration:
                         imageannos=res["imageannos"]
                         textannos=res["textannos"]
                         image3dannos=res["image3dannos"]
-                        dateprops=res["dateprops"]
+                        dateprops.update(res["dateprops"])
                         if res["label"] not in labelmap:
                             labelmap[res["label"]]=""
                         if len(predobjmap[tup]) > 1:
