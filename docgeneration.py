@@ -2051,7 +2051,7 @@ class OntDocGeneration:
         res+="\n}"
         return res
 
-    def resolveTimeObject(self,pred,obj):
+    def resolveTimeObject(self,pred,obj,graph):
         timeobj={}
         if str(pred)=="http://www.w3.org/2006/time#hasBeginning":
             for tobj2 in graph.predicate_objects(obj):
@@ -2071,9 +2071,9 @@ class OntDocGeneration:
         timeobj={}
         if isinstance(obj,URIRef) and str(pred)=="http://www.w3.org/2006/time#hasTime":         
             for tobj in graph.predicate_objects(obj):
-                timeobj=self.resolveTimeObject(tobj[0],tobj[1])
+                timeobj=self.resolveTimeObject(tobj[0],tobj[1],graph)
         elif isinstance(obj,Literal):
-            timeobj=self.resolveTimeObject(pred,obj)
+            timeobj=self.resolveTimeObject(pred,obj,graph)
         timeres=None
         if "begin" in timeobj and "end" in timeobj:
             timeres=str(timeobj["begin"])+" "
