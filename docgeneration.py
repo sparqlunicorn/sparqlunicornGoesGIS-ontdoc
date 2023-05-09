@@ -45,7 +45,15 @@ collectionclasses=["http://www.opengis.net/ont/geosparql#FeatureCollection","htt
 
 geoliteraltypes=["http://www.opengis.net/ont/geosparql#wktLiteral","http://www.opengis.net/ont/geosparql#gmlLiteral","http://www.opengis.net/ont/geosparql#kmlLiteral","http://www.opengis.net/ont/geosparql#geoJSONLiteral","http://www.opengis.net/ont/geosparql#dggsLiteral"]
 
-timeliteraltype=["http://www.w3.org/2006/time#inXSDDateTime","http://www.w3.org/2006/time#inXSDDate","http://www.w3.org/2006/time#inXSDDateTimeStamp","http://www.w3.org/2006/time#inXSDgYear","http://www.w3.org/2006/time#inXSDgYearMonth"]
+timeproperties=["http://www.w3.org/2006/time#inXSDDateTime","http://www.w3.org/2006/time#inXSDDate","http://www.w3.org/2006/time#inXSDDateTimeStamp","http://www.w3.org/2006/time#inXSDgYear","http://www.w3.org/2006/time#inXSDgYearMonth"]
+
+timeliteraltypes={"http://www.w3.org/2001/XMLSchema#gYear":"http://www.ontology-of-units-of-measure.org/resource/om-2/year",
+"http://www.w3.org/2006/time#generalYear":"http://www.w3.org/2006/time#unitYear",
+"http://www.w3.org/2001/XMLSchema#gMonth":"http://www.ontology-of-units-of-measure.org/resource/om-2/month",
+"http://www.w3.org/TR/owl-time#generalMonth",
+"http://www.w3.org/2001/XMLSchema#gDay":"http://www.ontology-of-units-of-measure.org/resource/om-2/day",
+"http://www.w3.org/TR/owl-time#generalDay":"http://www.w3.org/2006/time#unitDay",
+"http://www.w3.org/2001/XMLSchema#date":"","http://www.w3.org/2001/XMLSchema#dateTime":""]
 
 collectionrelationproperties={
     "http://www.w3.org/2000/01/rdf-schema#member":"ObjectProperty",
@@ -2043,31 +2051,47 @@ class OntDocGeneration:
         res+="\n}"
         return res
 
+    def resolveTimeLiteralType(self,datatype):
+        if datatype in timeliteraltypes:
+            return timeliteraltype[datatype]
+        return ""
+    
     def resolveTimeLiterals(self,pred,object,graph):
         timeobj={}
         if isinstance(object,URIRef) and str(pred)=="http://www.w3.org/2006/time#hasTime":
             for tobj in graph.predicate_objects(object):
                 if str(tobj[0])=="http://www.w3.org/2006/time#hasBeginning":
                     for tobj2 in graph.predicate_objects(tobj[1]):
-                        if str(tobj2[0]) in timeliteraltype:
-                            timeobj["begin"]=str(tobj2[1])
+                        if str(tobj2[0]) in timeproperties:
+                            timeobj["begin"]=tobj2[1]
                 elif str(tobj[0])=="http://www.w3.org/2006/time#hasEnd":
                     for tobj2 in graph.predicate_objects(tobj[1]):
-                        if str(tobj2[0]) in timeliteraltype:
-                            timeobj["end"]=str(tobj2[1])
+                        if str(tobj2[0]) in timeproperties:
+                            timeobj["end"]=tobj2[1]
                 elif str(tobj[0])=="http://www.w3.org/2006/time#hasTime":
                     for tobj2 in graph.predicate_objects(tobj[1]):
-                        if str(tobj2[0]) in timeliteraltype:
-                            timeobj["timepoint"]=str(tobj2[1])
+                        if str(tobj2[0]) in timeproperties:
+                            timeobj["timepoint"]=tobj2[1]
         timeres=None
         if "begin" in timeobj and "end" in timeobj:
-            timeres=str(timeobj["begin"])+" - "+str(timeobj["end"])
+            timeres=str(timeobj["begin"])+" "
+            if str(timeobj["begin"].datatype) in timeliteraltypes:
+                timeres+=" <a href=\""+str(timeliteraltype[str(timeobj["begin"].datatype) ])+"\">"+self.shortenURI(timeliteraltype[str(timeobj["begin"].datatype) ])+"</a> "
+            timeres+=" - "+str(timeobj["end"])
+            if str(timeobj["end"].datatype) in timeliteraltypes:
+                timeres+=" <a href=\""+str(timeliteraltype[str(timeobj["end"].datatype) ])+"\">"+self.shortenURI(timeliteraltype[str(timeobj["end"].datatype)])+"</a> "            
         elif "begin" in timeobj and not "end" in timeobj:
             timeres=str(timeobj["begin"])
+            if str(timeobj["begin"].datatype) in timeliteraltypes:
+                timeres+=" <a href=\""+str(timeliteraltype[str(timeobj["begin"].datatype) ])+"\">"+self.shortenURI(timeliteraltype[str(timeobj["begin"].datatype) ])+"</a> "
         elif "begin" not in timeobj and "end" in timeobj:
             timeres=str(timeobj["end"])
+            if str(timeobj["end"].datatype) in timeliteraltypes:
+                timeres+=" <a href=\""+str(timeliteraltype[str(timeobj["end"].datatype) ])+"\">"+self.shortenURI(timeliteraltype[str(timeobj["end"].datatype)])+"</a> "
         elif "timepoint" in timeobj:
             timeres=timeobj["timepoint"]
+            if str(timeobj["timepoint"].datatype) in timeliteraltypes:
+                timeres+=" <a href=\""+str(timeliteraltype[str(timeobj["timepoint"].datatype)])+"\">"+self.shortenURI(timeliteraltype[str(timeobj["timepoint"].datatype) ])+"</a> "
         return timeres
 
     def resolveGeoLiterals(self,pred,object,graph,geojsonrep,nonns,subject=None):
