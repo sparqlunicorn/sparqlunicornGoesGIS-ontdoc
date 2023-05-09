@@ -2074,6 +2074,8 @@ class OntDocGeneration:
         if isinstance(obj,URIRef) and str(pred)=="http://www.w3.org/2006/time#hasTime":         
             for tobj in graph.predicate_objects(obj):
                 timeobj=self.resolveTimeObject(tobj[0],tobj[1],graph)
+        elif isinstance(obj,URIRef) and str(pred) in timepointerproperties: 
+            timeobj=self.resolveTimeObject(pred,obj,graph)
         elif isinstance(obj,Literal):
             timeobj=self.resolveTimeObject(pred,obj,graph)
         timeres=None
