@@ -2053,8 +2053,7 @@ class OntDocGeneration:
         res+="\n}"
         return res
 
-    def resolveTimeObject(self,pred,obj,graph):
-        timeobj={}
+    def resolveTimeObject(self,pred,obj,graph,timeobj):
         if str(pred)=="http://www.w3.org/2006/time#hasBeginning":
             for tobj2 in graph.predicate_objects(obj):
                 if str(tobj2[0]) in timeproperties:
