@@ -2051,27 +2051,29 @@ class OntDocGeneration:
         res+="\n}"
         return res
 
-    def resolveTimeLiteralType(self,datatype):
-        if datatype in timeliteraltypes:
-            return timeliteraltypes[datatype]
-        return ""
-    
-    def resolveTimeLiterals(self,pred,object,graph):
+    def resolveTimeObject(self,pred,obj):
         timeobj={}
-        if isinstance(object,URIRef) and str(pred)=="http://www.w3.org/2006/time#hasTime":
-            for tobj in graph.predicate_objects(object):
-                if str(tobj[0])=="http://www.w3.org/2006/time#hasBeginning":
-                    for tobj2 in graph.predicate_objects(tobj[1]):
-                        if str(tobj2[0]) in timeproperties:
-                            timeobj["begin"]=tobj2[1]
-                elif str(tobj[0])=="http://www.w3.org/2006/time#hasEnd":
-                    for tobj2 in graph.predicate_objects(tobj[1]):
-                        if str(tobj2[0]) in timeproperties:
-                            timeobj["end"]=tobj2[1]
-                elif str(tobj[0])=="http://www.w3.org/2006/time#hasTime":
-                    for tobj2 in graph.predicate_objects(tobj[1]):
-                        if str(tobj2[0]) in timeproperties:
-                            timeobj["timepoint"]=tobj2[1]
+        if str(pred)=="http://www.w3.org/2006/time#hasBeginning":
+            for tobj2 in graph.predicate_objects(obj):
+                if str(tobj2[0]) in timeproperties:
+                    timeobj["begin"]=tobj2[1]
+        elif str(pred)=="http://www.w3.org/2006/time#hasEnd":
+            for tobj2 in graph.predicate_objects(obj):
+                if str(tobj2[0]) in timeproperties:
+                    timeobj["end"]=tobj2[1]
+        elif str(pred)=="http://www.w3.org/2006/time#hasTime":
+            for tobj2 in graph.predicate_objects(obj):
+                if str(tobj2[0]) in timeproperties:
+                    timeobj["timepoint"]=tobj2[1]
+        return timeobj
+    
+    def resolveTimeLiterals(self,pred,obj,graph):
+        timeobj={}
+        if isinstance(object,URIRef) and str(pred)=="http://www.w3.org/2006/time#hasTime":         
+            for tobj in graph.predicate_objects(obj):
+                timeobj=resolveTimeObject(tobj[0],tobj[1])
+        elif isinstance(object,Literal):
+            timeobj=resolveTimeObject(pred,obj)
         timeres=None
         if "begin" in timeobj and "end" in timeobj:
             timeres=str(timeobj["begin"])+" "
