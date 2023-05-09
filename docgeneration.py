@@ -53,7 +53,7 @@ timeliteraltypes={"http://www.w3.org/2001/XMLSchema#gYear":"http://www.ontology-
 "http://www.w3.org/TR/owl-time#generalMonth",
 "http://www.w3.org/2001/XMLSchema#gDay":"http://www.ontology-of-units-of-measure.org/resource/om-2/day",
 "http://www.w3.org/TR/owl-time#generalDay":"http://www.w3.org/2006/time#unitDay",
-"http://www.w3.org/2001/XMLSchema#date":"","http://www.w3.org/2001/XMLSchema#dateTime":""]
+"http://www.w3.org/2001/XMLSchema#date":"","http://www.w3.org/2001/XMLSchema#dateTime":""}
 
 collectionrelationproperties={
     "http://www.w3.org/2000/01/rdf-schema#member":"ObjectProperty",
