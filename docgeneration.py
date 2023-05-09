@@ -47,6 +47,8 @@ geoliteraltypes=["http://www.opengis.net/ont/geosparql#wktLiteral","http://www.o
 
 timeproperties=["http://www.w3.org/2006/time#inXSDDateTime","http://www.w3.org/2006/time#inXSDDate","http://www.w3.org/2006/time#inXSDDateTimeStamp","http://www.w3.org/2006/time#inXSDgYear","http://www.w3.org/2006/time#inXSDgYearMonth"]
 
+timepointerproperties=["http://www.w3.org/2006/time#hasTime", "http://www.w3.org/2006/time#hasDuration","http://www.w3.org/2006/time#hasBeginning","http://www.w3.org/2006/time#hasEnd"]
+
 timeliteraltypes={"http://www.w3.org/2001/XMLSchema#gYear":"http://www.ontology-of-units-of-measure.org/resource/om-2/year",
 "http://www.w3.org/2006/time#generalYear":"http://www.w3.org/2006/time#unitYear",
 "http://www.w3.org/2001/XMLSchema#gMonth":"http://www.ontology-of-units-of-measure.org/resource/om-2/month",
@@ -2172,7 +2174,7 @@ class OntDocGeneration:
                 annosource = str(tup[1])
             if pred == "http://purl.org/dc/terms/isReferencedBy" and tup[0] == URIRef(self.typeproperty) and ("http://purl.org/ontology/bibo/" in str(tup[1])):	
                 bibtex=self.resolveBibtexReference(graph.predicate_objects(object),object,graph)
-            if pred in timeproperties:
+            if pred in timepointerproperties:
                 timeobj=self.resolveTimeLiterals(pred,object,graph)
             if not nonns:
                 geojsonrep=self.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep,nonns)
