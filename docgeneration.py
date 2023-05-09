@@ -2172,7 +2172,7 @@ class OntDocGeneration:
                 annosource = str(tup[1])
             if pred == "http://purl.org/dc/terms/isReferencedBy" and tup[0] == URIRef(self.typeproperty) and ("http://purl.org/ontology/bibo/" in str(tup[1])):	
                 bibtex=self.resolveBibtexReference(graph.predicate_objects(object),object,graph)
-            if pred=="http://www.w3.org/2006/time#hasTime":
+            if pred in timeproperties:
                 timeobj=self.resolveTimeLiterals(pred,object,graph)
             if not nonns:
                 geojsonrep=self.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep,nonns)
