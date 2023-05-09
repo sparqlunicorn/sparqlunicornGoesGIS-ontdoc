@@ -50,7 +50,7 @@ timeproperties=["http://www.w3.org/2006/time#inXSDDateTime","http://www.w3.org/2
 timeliteraltypes={"http://www.w3.org/2001/XMLSchema#gYear":"http://www.ontology-of-units-of-measure.org/resource/om-2/year",
 "http://www.w3.org/2006/time#generalYear":"http://www.w3.org/2006/time#unitYear",
 "http://www.w3.org/2001/XMLSchema#gMonth":"http://www.ontology-of-units-of-measure.org/resource/om-2/month",
-"http://www.w3.org/TR/owl-time#generalMonth",
+"http://www.w3.org/TR/owl-time#generalMonth":"http://www.w3.org/2006/time#unitMonth",
 "http://www.w3.org/2001/XMLSchema#gDay":"http://www.ontology-of-units-of-measure.org/resource/om-2/day",
 "http://www.w3.org/TR/owl-time#generalDay":"http://www.w3.org/2006/time#unitDay",
 "http://www.w3.org/2001/XMLSchema#date":"","http://www.w3.org/2001/XMLSchema#dateTime":""}
