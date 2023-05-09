@@ -2072,11 +2072,11 @@ class OntDocGeneration:
         timeobj={}
         if isinstance(obj,URIRef) and str(pred)=="http://www.w3.org/2006/time#hasTime":         
             for tobj in graph.predicate_objects(obj):
-                timeobj=self.resolveTimeObject(tobj[0],tobj[1],graph)
+                timeobj=self.resolveTimeObject(tobj[0],tobj[1],graph,timeobj)
         elif isinstance(obj,URIRef) and str(pred) in timepointerproperties: 
-            timeobj=self.resolveTimeObject(pred,obj,graph)
+            timeobj=self.resolveTimeObject(pred,obj,graph,timeobj)
         elif isinstance(obj,Literal):
-            timeobj=self.resolveTimeObject(pred,obj,graph)
+            timeobj=self.resolveTimeObject(pred,obj,graph,timeobj)
         timeres=None
         if "begin" in timeobj and "end" in timeobj:
             timeres=str(timeobj["begin"])+" "
