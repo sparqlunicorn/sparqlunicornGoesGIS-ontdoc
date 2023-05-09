@@ -2069,10 +2069,10 @@ class OntDocGeneration:
     
     def resolveTimeLiterals(self,pred,obj,graph):
         timeobj={}
-        if isinstance(object,URIRef) and str(pred)=="http://www.w3.org/2006/time#hasTime":         
+        if isinstance(obj,URIRef) and str(pred)=="http://www.w3.org/2006/time#hasTime":         
             for tobj in graph.predicate_objects(obj):
                 timeobj=resolveTimeObject(tobj[0],tobj[1])
-        elif isinstance(object,Literal):
+        elif isinstance(obj,Literal):
             timeobj=resolveTimeObject(pred,obj)
         timeres=None
         if "begin" in timeobj and "end" in timeobj:
