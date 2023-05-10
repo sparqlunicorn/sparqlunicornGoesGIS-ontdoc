@@ -2075,7 +2075,7 @@ class OntDocGeneration:
         else:
             return " <a href=\""+str(uri)+"\" target=\"_blank\">"+self.shortenURI(uri)+"</a>"
 
-    def timeObjectToHTML(self,timeobj)
+    def timeObjectToHTML(self,timeobj):
         timeres=None
         if "begin" in timeobj and "end" in timeobj:
             timeres=str(timeobj["begin"])+" "
