@@ -2317,7 +2317,7 @@ class OntDocGeneration:
                     tablecontents += "<span property=\"" + str(pred) + "\" content=\"" + str(object).replace("<", "&lt").replace(">", "&gt;").replace("\"","'") + "\" datatype=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\" xml:lang=\"" + str(object.language) + "\">" + str(object).replace("<", "&lt").replace(">", "&gt;") + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\">rdf:langString</a>) (<a href=\"http://www.lexvo.org/page/iso639-1/"+str(object.language)+"\" target=\"_blank\">iso6391:" + str(object.language) + "</a>)</small></span>"
                 else:
                     tablecontents += self.detectStringLiteralContent(pred,object)
-        return {"html":tablecontents,"geojson":geojsonrep,"foundmedia":foundmedia,"imageannos":imageannos,"textannos":textannos,"image3dannos":image3dannos,"label":label,"timeobj":dateprops}
+        return {"html":tablecontents,"geojson":geojsonrep,"foundmedia":foundmedia,"imageannos":imageannos,"textannos":textannos,"image3dannos":image3dannos,"label":label,"timeobj":timeobj}
 
     def detectStringLiteralContent(self,pred,object):
         if object.startswith("http://") or object.startswith("https://"):
@@ -2544,7 +2544,8 @@ class OntDocGeneration:
                         imageannos=res["imageannos"]
                         textannos=res["textannos"]
                         image3dannos=res["image3dannos"]
-                        timeobj=res["timeobj"]
+                        if res["timeobj"]!=None:
+                            timeobj=res["timeobj"]
                         if res["label"] not in labelmap:
                             labelmap[res["label"]]=""
                         if len(predobjmap[tup]) > 1:
