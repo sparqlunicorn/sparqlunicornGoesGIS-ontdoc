@@ -2288,6 +2288,7 @@ class OntDocGeneration:
                 tablecontents+=" <span style=\"font-weight:bold\">["+str(unitlabel)+"]</span>"
             if timeobj!=None:
                 tablecontents+=" <span style=\"font-weight:bold\">["+str(self.timeObjectToHTML(timeobj))+"]</span>"
+                dateprops=timeobj
             tablecontents+="</span>"
         else:
             label=str(object)
@@ -2316,7 +2317,7 @@ class OntDocGeneration:
                     tablecontents += "<span property=\"" + str(pred) + "\" content=\"" + str(object).replace("<", "&lt").replace(">", "&gt;").replace("\"","'") + "\" datatype=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\" xml:lang=\"" + str(object.language) + "\">" + str(object).replace("<", "&lt").replace(">", "&gt;") + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\">rdf:langString</a>) (<a href=\"http://www.lexvo.org/page/iso639-1/"+str(object.language)+"\" target=\"_blank\">iso6391:" + str(object.language) + "</a>)</small></span>"
                 else:
                     tablecontents += self.detectStringLiteralContent(pred,object)
-        return {"html":tablecontents,"geojson":geojsonrep,"foundmedia":foundmedia,"imageannos":imageannos,"textannos":textannos,"image3dannos":image3dannos,"label":label,"timeobj":timeobj}
+        return {"html":tablecontents,"geojson":geojsonrep,"foundmedia":foundmedia,"imageannos":imageannos,"textannos":textannos,"image3dannos":image3dannos,"label":label,"timeobj":dateprops}
 
     def detectStringLiteralContent(self,pred,object):
         if object.startswith("http://") or object.startswith("https://"):
@@ -2367,7 +2368,8 @@ class OntDocGeneration:
             for tup in graph.predicate_objects(URIRef(uri)):
                 if str(tup[0]) in labelproperties:	
                     label = str(tup[1])	
-            print("NonNS Counter " +str(counter)+"/"+str(nonnsuris)+" "+ str(uri))	
+            if counter%50==0:
+                print("NonNS Counter " +str(counter)+"/"+str(nonnsuris)+" "+ str(uri))	
             self.createHTML(outpath+"nonns_"+self.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri),True), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, None, Graph(),uristorender,True,label)	
             counter+=1	
 
@@ -2723,8 +2725,8 @@ class OntDocGeneration:
                     if uritotreeitem!=None and str(subject) in uritotreeitem:
                         uritotreeitem[str(subject)][-1]["type"]="geoinstance"
                     props=predobjmap
-                    print("PROPS: "+str(props))
-                    print("TIMEOBJ: "+str(timeobj))
+                    if timeobj!=None:
+                        print("TIMEOBJ: "+str(timeobj))
                     if timeobj!=None:
                         for item in timeobj:
                             dateprops.append(item)
