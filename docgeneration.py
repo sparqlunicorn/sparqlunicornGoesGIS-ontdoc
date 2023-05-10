@@ -2298,7 +2298,7 @@ class OntDocGeneration:
                 objstring=str(object).replace("<", "&lt").replace(">", "&gt;")
                 if str(object.datatype)=="http://www.w3.org/2001/XMLSchema#anyURI":
                     objstring="<a href=\""+str(object)+"\">"+str(object)+"</a>"
-                if (str(object.datatype) in timeliteraltypes and dateprops!=None and self.shortenURI(str(pred),True) not in metadatanamespaces and str(pred) not in dateprops:
+                if str(object.datatype) in timeliteraltypes and dateprops!=None and self.shortenURI(str(pred),True) not in metadatanamespaces and str(pred) not in dateprops:
                     dateprops.append(str(pred))
                 if res != None:
                     tablecontents += "<span property=\"" + str(pred) + "\" content=\"" + str(
