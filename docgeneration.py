@@ -2723,6 +2723,8 @@ class OntDocGeneration:
                     if uritotreeitem!=None and str(subject) in uritotreeitem:
                         uritotreeitem[str(subject)][-1]["type"]="geoinstance"
                     props=predobjmap
+                    print("PROPS: "+str(props))
+                    print("TIMEOBJ: "+str(timeobj))
                     if timeobj!=None:
                         for item in timeobj:
                             dateprops.append(item)
