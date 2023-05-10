@@ -2080,22 +2080,22 @@ class OntDocGeneration:
         if "begin" in timeobj and "end" in timeobj:
             timeres=str(timeobj["begin"])+" "
             if str(timeobj["begin"].datatype) in timeliteraltypes:
-                timeres+=self.createURILink(str(timeobj["begin"].datatype))
+                timeres+=self.createURILink(str(timeliteraltypes[timeobj["begin"].datatype]))
             timeres+=" - "+str(timeobj["end"])
             if str(timeobj["end"].datatype) in timeliteraltypes:
-                timeres+=self.createURILink(str(timeobj["end"].datatype))
+                timeres+=self.createURILink(str(timeliteraltypes[timeobj["end"].datatype]))
         elif "begin" in timeobj and not "end" in timeobj:
             timeres=str(timeobj["begin"])
             if str(timeobj["begin"].datatype) in timeliteraltypes:
-                timeres+=self.createURILink(str(timeobj["begin"].datatype))
+                timeres+=self.createURILink(str(timeliteraltypes[timeobj["begin"].datatype]))
         elif "begin" not in timeobj and "end" in timeobj:
             timeres=str(timeobj["end"])
             if str(timeobj["end"].datatype) in timeliteraltypes:
-                timeres+=self.createURILink(str(timeobj["end"].datatype))
+                timeres+=self.createURILink(str(timeliteraltypes[timeobj["end"].datatype]))
         elif "timepoint" in timeobj:
             timeres=timeobj["timepoint"]
             if str(timeobj["timepoint"].datatype) in timeliteraltypes:
-                timeres+=self.createURILink(str(timeobj["timepoint"].datatype))
+                timeres+=self.createURILink(str(timeliteraltypes[timeobj["timepoint"].datatype]))
         return timeres
 
     def resolveTimeLiterals(self,pred,obj,graph):
@@ -2443,6 +2443,7 @@ class OntDocGeneration:
         parentclass=None
         inverse=False
         dateprops=[]
+        timeobj=None
         tablecontentcounter=-1
         metadatatablecontentcounter=-1
         if uritotreeitem!=None and str(subject) in uritotreeitem and uritotreeitem[str(subject)][-1]["parent"].startswith("http"):
@@ -2724,6 +2725,7 @@ class OntDocGeneration:
                     props=predobjmap
                     if timeobj!=None:
                         for item in timeobj:
+                            dateprops.append(item)
                             props[item]=str(timeobj[item])
                     jsonfeat={"type": "Feature", 'id':str(subject),'label':foundlabel,'dateprops':dateprops, 'properties': props, "geometry": geojsonrep}
                     if epsgcode=="" and "crs" in geojsonrep:
