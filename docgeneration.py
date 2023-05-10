@@ -2080,22 +2080,22 @@ class OntDocGeneration:
         if "begin" in timeobj and "end" in timeobj:
             timeres=str(timeobj["begin"])+" "
             if str(timeobj["begin"].datatype) in timeliteraltypes:
-                timeres+=self.createURILink(str(timeliteraltypes[timeobj["begin"].datatype]))
+                timeres+=self.createURILink(timeliteraltypes[str(timeobj["begin"].datatype)])
             timeres+=" - "+str(timeobj["end"])
             if str(timeobj["end"].datatype) in timeliteraltypes:
-                timeres+=self.createURILink(str(timeliteraltypes[timeobj["end"].datatype]))
+                timeres+=self.createURILink(timeliteraltypes[str(timeobj["end"].datatype)])
         elif "begin" in timeobj and not "end" in timeobj:
             timeres=str(timeobj["begin"])
             if str(timeobj["begin"].datatype) in timeliteraltypes:
-                timeres+=self.createURILink(str(timeliteraltypes[timeobj["begin"].datatype]))
+                timeres+=self.createURILink(timeliteraltypes[str(timeobj["begin"].datatype)])
         elif "begin" not in timeobj and "end" in timeobj:
             timeres=str(timeobj["end"])
             if str(timeobj["end"].datatype) in timeliteraltypes:
-                timeres+=self.createURILink(str(timeliteraltypes[timeobj["end"].datatype]))
+                timeres+=self.createURILink(timeliteraltypes[str(timeobj["end"].datatype)])
         elif "timepoint" in timeobj:
             timeres=timeobj["timepoint"]
             if str(timeobj["timepoint"].datatype) in timeliteraltypes:
-                timeres+=self.createURILink(str(timeliteraltypes[timeobj["timepoint"].datatype]))
+                timeres+=self.createURILink(timeliteraltypes[str(timeobj["timepoint"].datatype)])
         return timeres
 
     def resolveTimeLiterals(self,pred,obj,graph):
