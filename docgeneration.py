@@ -2068,7 +2068,7 @@ class OntDocGeneration:
                     timeobj["timepoint"]=tobj2[1]
         return timeobj
     
-    def createURILink(uri):
+    def createURILink(self,uri):
         res=self.replaceNameSpacesInLabel(uri)
         if res!=None:
            return " <a href=\""+str(uri)+"\" target=\"_blank\">"+str(res["uri"])+"</a>"
