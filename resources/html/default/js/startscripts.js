@@ -978,7 +978,7 @@ function generateLeafletPopup(feature, layer){
             popup+=prop
         }
         popup+=" : "
-        if(feature.properties[prop].length>1){
+        if(Array.isArray(feature.properties[prop]) && feature.properties[prop].length>1){
             popup+="<ul>"
             for(item of feature.properties[prop]){
                 popup+="<li>"
@@ -990,7 +990,7 @@ function generateLeafletPopup(feature, layer){
                 popup+="</li>"
             }
             popup+="</ul>"
-        }else if((feature.properties[prop][0]+"").startsWith("http")){
+        }else if(Array.isArray(feature.properties[prop]) && (feature.properties[prop][0]+"").startsWith("http")){
             popup+="<a href=\""+rewriteLink(feature.properties[prop][0])+"\" target=\"_blank\">"+feature.properties[prop][0].substring(feature.properties[prop][0].lastIndexOf('/')+1)+"</a>"
         }else{
             popup+=feature.properties[prop]
