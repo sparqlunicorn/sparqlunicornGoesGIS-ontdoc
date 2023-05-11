@@ -1038,7 +1038,7 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,dateatt=""){
         setLatLng: function () {} // Dummy method.
     });
 	var bounds = L.latLngBounds([]);
-    var markercluster = L.markerClusterGroup.layerSupport({}).checkIn(layerr);
+    var markercluster = L.markerClusterGroup.layerSupport({})
     first=true
     counter=1
     for(feature of featurecolls){
@@ -1069,6 +1069,7 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,dateatt=""){
             map.fitBounds(bounds);
             first = false
         }
+		markercluster.checkIn(layerr);
     }
 	layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map)
 	if(dateatt!=null && dateatt!=""){
