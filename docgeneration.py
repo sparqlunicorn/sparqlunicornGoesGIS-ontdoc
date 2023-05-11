@@ -2702,7 +2702,7 @@ class OntDocGeneration:
                                         featcoll["features"].append({"type": "Feature", 'id': str(memberid), 'label': uritotreeitem[str(memberid)][-1]["text"],'dateprops':dateprops, 'properties': {},"geometry": geojsonrep})
                                     else:
                                         featcoll["features"].append({"type": "Feature", 'id': str(memberid),'label': str(memberid),'dateprops':dateprops, 'properties': {}, "geometry": geojsonrep})
-                                if len(self.geocache[item]["dateprops"])>0:
+                                if len(featcoll["features"][-1]["dateprops"])>0:
                                     dateatt=self.geocache[item]["dateprops"][0]                               
                         if len(hasnonns)>0:
                             self.geocache[str(subject)]=featcoll
