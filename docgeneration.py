@@ -2713,6 +2713,10 @@ class OntDocGeneration:
                                 if len(self.geocache[item]["dateprops"])>0:
                                     dateatt=self.geocache[item]["dateprops"][0]
                     if len(featcoll["features"])>0:
+                        if dateatt!="":
+                            for feat in featcoll["features"]:
+                                if dateatt not in feat["properties"]:
+                                    feat["properties"][dateatt]=""
                         f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(featcoll)+"]").replace("{{baselayers}}",json.dumps(baselayers)).replace("{{epsgdefspath}}", epsgdefslink).replace("{{dateatt}}", dateatt))
                         with open(completesavepath.replace(".html",".geojson"), 'w', encoding='utf-8') as fgeo:
                             featurecollectionspaths.add(completesavepath.replace(".html",".geojson"))
