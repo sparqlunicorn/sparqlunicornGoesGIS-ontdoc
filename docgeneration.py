@@ -2590,17 +2590,13 @@ class OntDocGeneration:
                 if foundlabel != "":
                     f.write(htmltemplate.replace("{{logo}}",logo).replace("{{baseurl}}",baseurl).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{toptitle}}", foundlabel).replace(
                         "{{startscriptpath}}", rellink4).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}",itembibtex).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{indexpage}}","false").replace("{{title}}",
-                                                                                                    "<a href=\"" + str(
-                                                                                                        subject) + "\">" + str(
-                                                                                                        foundlabel) + "</a>").replace(
-                        "{{baseurl}}", baseurl).replace("{{tablecontent}}", tablecontents).replace("{{description}}",
-                                                                                                   "").replace(
+                                                                                                    "<a href=\"" + str(subject) + "\">" + str(foundlabel) + "</a>").replace(
+                        "{{baseurl}}", baseurl).replace("{{tablecontent}}", tablecontents).replace("{{description}}","").replace(
                         "{{scriptfolderpath}}", rellink).replace("{{classtreefolderpath}}", rellink2).replace("{{exports}}",myexports).replace("{{subject}}",str(subject)))
                 else:
                     f.write(htmltemplate.replace("{{logo}}",logo).replace("{{baseurl}}",baseurl).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{indexpage}}","false").replace("{{toptitle}}", self.shortenURI(str(subject))).replace(
                         "{{startscriptpath}}", rellink4).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}",itembibtex).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{title}}","<a href=\"" + str(subject) + "\">" + self.shortenURI(str(subject)) + "</a>").replace(
-                        "{{baseurl}}", baseurl).replace("{{description}}",
-                                                                                                   "").replace(
+                        "{{baseurl}}", baseurl).replace("{{description}}","").replace(
                         "{{scriptfolderpath}}", rellink).replace("{{classtreefolderpath}}", rellink2).replace("{{exports}}",myexports).replace("{{subject}}",str(subject)))
                 for comm in comment:
                     f.write(htmlcommenttemplate.replace("{{comment}}", self.shortenURI(comm) + ":" + comment[comm]))
@@ -2655,8 +2651,7 @@ class OntDocGeneration:
                             if "src" in textanno:
                                 f.write("<span style=\"font-weight:bold\" class=\"textanno\" start=\"" + str(
                                     textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
-                                    textanno["exact"]) + "\" src=\"" + str(textanno["src"]) + "\"><mark>" + str(
-                                    textanno["exact"]) + "</mark></span>")
+                                    textanno["exact"]) + "\" src=\"" + str(textanno["src"]) + "\"><mark>" + str(textanno["exact"]) + "</mark></span>")
                             else:
                                 f.write("<span style=\"font-weight:bold\" class=\"textanno\" start=\"" + str(
                                     textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
