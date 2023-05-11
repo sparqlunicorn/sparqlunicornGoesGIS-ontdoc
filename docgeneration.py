@@ -2068,6 +2068,36 @@ class OntDocGeneration:
                     timeobj["timepoint"]=tobj2[1]
         return timeobj
     
+    def createURILink(self,uri):
+        res=self.replaceNameSpacesInLabel(uri)
+        if res!=None:
+           return " <a href=\""+str(uri)+"\" target=\"_blank\">"+str(res["uri"])+"</a>"
+        else:
+            return " <a href=\""+str(uri)+"\" target=\"_blank\">"+self.shortenURI(uri)+"</a>"
+
+    def timeObjectToHTML(self,timeobj):
+        timeres=None
+        if "begin" in timeobj and "end" in timeobj:
+            timeres=str(timeobj["begin"])+" "
+            if str(timeobj["begin"].datatype) in timeliteraltypes:
+                timeres+=self.createURILink(timeliteraltypes[str(timeobj["begin"].datatype)])
+            timeres+=" - "+str(timeobj["end"])
+            if str(timeobj["end"].datatype) in timeliteraltypes:
+                timeres+=self.createURILink(timeliteraltypes[str(timeobj["end"].datatype)])
+        elif "begin" in timeobj and not "end" in timeobj:
+            timeres=str(timeobj["begin"])
+            if str(timeobj["begin"].datatype) in timeliteraltypes:
+                timeres+=self.createURILink(timeliteraltypes[str(timeobj["begin"].datatype)])
+        elif "begin" not in timeobj and "end" in timeobj:
+            timeres=str(timeobj["end"])
+            if str(timeobj["end"].datatype) in timeliteraltypes:
+                timeres+=self.createURILink(timeliteraltypes[str(timeobj["end"].datatype)])
+        elif "timepoint" in timeobj:
+            timeres=timeobj["timepoint"]
+            if str(timeobj["timepoint"].datatype) in timeliteraltypes:
+                timeres+=self.createURILink(timeliteraltypes[str(timeobj["timepoint"].datatype)])
+        return timeres
+
     def resolveTimeLiterals(self,pred,obj,graph):
         timeobj={}
         if isinstance(obj,URIRef) and str(pred)=="http://www.w3.org/2006/time#hasTime":         
@@ -2077,47 +2107,7 @@ class OntDocGeneration:
             timeobj=self.resolveTimeObject(pred,obj,graph,timeobj)
         elif isinstance(obj,Literal):
             timeobj=self.resolveTimeObject(pred,obj,graph,timeobj)
-        timeres=None
-        if "begin" in timeobj and "end" in timeobj:
-            timeres=str(timeobj["begin"])+" "
-            if str(timeobj["begin"].datatype) in timeliteraltypes:
-                res=self.replaceNameSpacesInLabel(timeliteraltypes[str(timeobj["begin"].datatype)])
-                if res!=None:
-                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["begin"].datatype)])+"\" target=\"_blank\">"+str(res["uri"])+"</a>"
-                else:
-                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["begin"].datatype)])+"\" target=\"_blank\">"+self.shortenURI(timeliteraltypes[str(timeobj["begin"].datatype)])+"</a>" 
-            timeres+=" - "+str(timeobj["end"])
-            if str(timeobj["end"].datatype) in timeliteraltypes:
-                res=self.replaceNameSpacesInLabel(timeliteraltypes[str(timeobj["end"].datatype)])
-                if res!=None:
-                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["end"].datatype)])+"\" target=\"_blank\">"+str(res["uri"])+"</a>"
-                else:
-                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["end"].datatype)])+"\" target=\"_blank\">"+self.shortenURI(timeliteraltypes[str(timeobj["end"].datatype)])+"</a>"         
-        elif "begin" in timeobj and not "end" in timeobj:
-            timeres=str(timeobj["begin"])
-            if str(timeobj["begin"].datatype) in timeliteraltypes:
-                res=self.replaceNameSpacesInLabel(timeliteraltypes[str(timeobj["begin"].datatype)])
-                if res!=None:
-                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["begin"].datatype)])+"\" target=\"_blank\">"+str(res["uri"])+"</a>"
-                else:
-                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["begin"].datatype)])+"\" target=\"_blank\">"+self.shortenURI(timeliteraltypes[str(timeobj["begin"].datatype)])+"</a>" 
-        elif "begin" not in timeobj and "end" in timeobj:
-            timeres=str(timeobj["end"])
-            if str(timeobj["end"].datatype) in timeliteraltypes:
-                res=self.replaceNameSpacesInLabel(timeliteraltypes[str(timeobj["end"].datatype)])
-                if res!=None:
-                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["end"].datatype)])+"\" target=\"_blank\">"+str(res["uri"])+"</a>"
-                else:
-                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["end"].datatype)])+"\" target=\"_blank\">"+self.shortenURI(timeliteraltypes[str(timeobj["end"].datatype)])+"</a>" 
-        elif "timepoint" in timeobj:
-            timeres=timeobj["timepoint"]
-            if str(timeobj["timepoint"].datatype) in timeliteraltypes:
-                res=self.replaceNameSpacesInLabel(timeliteraltypes[str(timeobj["timepoint"].datatype)])
-                if res!=None:
-                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["timepoint"].datatype)])+"\" target=\"_blank\">"+str(res["uri"])+"</a>"
-                else:
-                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["timepoint"].datatype)])+"\" target=\"_blank\">"+self.shortenURI(timeliteraltypes[str(timeobj["timepoint"].datatype)])+"</a>"             
-        return timeres
+        return timeobj
 
     def resolveGeoLiterals(self,pred,object,graph,geojsonrep,nonns,subject=None):
         if subject!=None and isinstance(object, Literal) and (str(pred) in geopairproperties):
@@ -2234,11 +2224,7 @@ class OntDocGeneration:
         if foundunit!=None and foundval!=None:
             res=None
             if "http" in foundunit:
-                res=self.replaceNameSpacesInLabel(str(foundunit))
-                if res!=None:
-                    unitlabel=str(foundval)+" <a href=\""+str(foundunit)+"\" target=\"_blank\">"+str(res["uri"])+"</a>"
-                else:
-                    unitlabel=str(foundval)+" <a href=\""+str(foundunit)+"\" target=\"_blank\">"+str(self.shortenURI(foundunit))+"</a>"
+                unitlabel=self.createURILink(str(foundunit))
             else:
                 unitlabel=str(foundval)+" "+str(foundunit)
         if foundunit == None and foundval != None:
@@ -2301,7 +2287,8 @@ class OntDocGeneration:
             if unitlabel!="":
                 tablecontents+=" <span style=\"font-weight:bold\">["+str(unitlabel)+"]</span>"
             if timeobj!=None:
-                tablecontents+=" <span style=\"font-weight:bold\">["+str(timeobj)+"]</span>"
+                tablecontents+=" <span style=\"font-weight:bold\">["+str(self.timeObjectToHTML(timeobj))+"]</span>"
+                dateprops=timeobj
             tablecontents+="</span>"
         else:
             label=str(object)
@@ -2312,7 +2299,7 @@ class OntDocGeneration:
                 objstring=str(object).replace("<", "&lt").replace(">", "&gt;")
                 if str(object.datatype)=="http://www.w3.org/2001/XMLSchema#anyURI":
                     objstring="<a href=\""+str(object)+"\">"+str(object)+"</a>"
-                if (str(object.datatype)=="http://www.w3.org/2001/XMLSchema#gYear" or str(object.datatype)=="http://www.w3.org/2001/XMLSchema#date" or str(object.datatype)=="http://www.w3.org/2001/XMLSchema#dateTime") and dateprops!=None and self.shortenURI(str(pred),True) not in metadatanamespaces and str(pred) not in dateprops:
+                if str(object.datatype) in timeliteraltypes and dateprops!=None and self.shortenURI(str(pred),True) not in metadatanamespaces and str(pred) not in dateprops:
                     dateprops.append(str(pred))
                 if res != None:
                     tablecontents += "<span property=\"" + str(pred) + "\" content=\"" + str(
@@ -2330,7 +2317,7 @@ class OntDocGeneration:
                     tablecontents += "<span property=\"" + str(pred) + "\" content=\"" + str(object).replace("<", "&lt").replace(">", "&gt;").replace("\"","'") + "\" datatype=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\" xml:lang=\"" + str(object.language) + "\">" + str(object).replace("<", "&lt").replace(">", "&gt;") + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\">rdf:langString</a>) (<a href=\"http://www.lexvo.org/page/iso639-1/"+str(object.language)+"\" target=\"_blank\">iso6391:" + str(object.language) + "</a>)</small></span>"
                 else:
                     tablecontents += self.detectStringLiteralContent(pred,object)
-        return {"html":tablecontents,"geojson":geojsonrep,"foundmedia":foundmedia,"imageannos":imageannos,"textannos":textannos,"image3dannos":image3dannos,"label":label,"dateprops":dateprops}
+        return {"html":tablecontents,"geojson":geojsonrep,"foundmedia":foundmedia,"imageannos":imageannos,"textannos":textannos,"image3dannos":image3dannos,"label":label,"timeobj":timeobj}
 
     def detectStringLiteralContent(self,pred,object):
         if object.startswith("http://") or object.startswith("https://"):
@@ -2381,7 +2368,8 @@ class OntDocGeneration:
             for tup in graph.predicate_objects(URIRef(uri)):
                 if str(tup[0]) in labelproperties:	
                     label = str(tup[1])	
-            print("NonNS Counter " +str(counter)+"/"+str(nonnsuris)+" "+ str(uri))	
+            if counter%50==0:
+                print("NonNS Counter " +str(counter)+"/"+str(nonnsuris)+" "+ str(uri))	
             self.createHTML(outpath+"nonns_"+self.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri),True), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, None, Graph(),uristorender,True,label)	
             counter+=1	
 
@@ -2457,6 +2445,7 @@ class OntDocGeneration:
         parentclass=None
         inverse=False
         dateprops=[]
+        timeobj=None
         tablecontentcounter=-1
         metadatatablecontentcounter=-1
         if uritotreeitem!=None and str(subject) in uritotreeitem and uritotreeitem[str(subject)][-1]["parent"].startswith("http"):
@@ -2555,7 +2544,8 @@ class OntDocGeneration:
                         imageannos=res["imageannos"]
                         textannos=res["textannos"]
                         image3dannos=res["image3dannos"]
-                        dateprops=res["dateprops"]
+                        if res["timeobj"]!=None:
+                            timeobj=res["timeobj"]
                         if res["label"] not in labelmap:
                             labelmap[res["label"]]=""
                         if len(predobjmap[tup]) > 1:
@@ -2735,7 +2725,14 @@ class OntDocGeneration:
                 if geojsonrep!=None and not isgeocollection:
                     if uritotreeitem!=None and str(subject) in uritotreeitem:
                         uritotreeitem[str(subject)][-1]["type"]="geoinstance"
-                    jsonfeat={"type": "Feature", 'id':str(subject),'label':foundlabel,'dateprops':dateprops, 'properties': predobjmap, "geometry": geojsonrep}
+                    props=predobjmap
+                    if timeobj!=None and timeobj!=[]:
+                        print("TIMEOBJ: "+str(timeobj))
+                    if timeobj!=None:
+                        for item in timeobj:
+                            dateprops.append(item)
+                            props[item]=str(timeobj[item])
+                    jsonfeat={"type": "Feature", 'id':str(subject),'label':foundlabel,'dateprops':dateprops, 'properties': props, "geometry": geojsonrep}
                     if epsgcode=="" and "crs" in geojsonrep:
                         epsgcode="EPSG:"+geojsonrep["crs"]
                     if len(hasnonns)>0:
