@@ -2544,7 +2544,7 @@ class OntDocGeneration:
                         imageannos=res["imageannos"]
                         textannos=res["textannos"]
                         image3dannos=res["image3dannos"]
-                        if res["timeobj"]!=None:
+                        if res["timeobj"]!=None and res["timeobj"]!=[]:
                             print("RESTIMEOBJ: "+str(timeobj))
                             timeobj=res["timeobj"]
                         if res["label"] not in labelmap:
