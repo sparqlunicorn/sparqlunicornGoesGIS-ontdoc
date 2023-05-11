@@ -1074,7 +1074,7 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,dateatt=""){
 	layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map)
 	if(dateatt!=null && dateatt!=""){
 		var sliderControl = L.control.sliderControl({
-			position: "downleft",
+			position: "bottomleft",
 			layer: layerr,
 			range: true,
 			rezoom: 10,
