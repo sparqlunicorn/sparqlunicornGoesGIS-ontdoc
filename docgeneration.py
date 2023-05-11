@@ -2083,40 +2083,40 @@ class OntDocGeneration:
             if str(timeobj["begin"].datatype) in timeliteraltypes:
                 res=self.replaceNameSpacesInLabel(timeliteraltypes[str(timeobj["begin"].datatype)])
                 if res!=None:
-                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["begin"].datatype)])+"\">"+str(res["uri"])+"</a>"
+                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["begin"].datatype)])+"\" target=\"_blank\">"+str(res["uri"])+"</a>"
                 else:
-                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["begin"].datatype)])+"\">"+self.shortenURI(timeliteraltypes[str(timeobj["begin"].datatype)])+"</a>" 
+                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["begin"].datatype)])+"\" target=\"_blank\">"+self.shortenURI(timeliteraltypes[str(timeobj["begin"].datatype)])+"</a>" 
             timeres+=" - "+str(timeobj["end"])
             if str(timeobj["end"].datatype) in timeliteraltypes:
                 res=self.replaceNameSpacesInLabel(timeliteraltypes[str(timeobj["end"].datatype)])
                 if res!=None:
-                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["end"].datatype)])+"\">"+str(res["uri"])+"</a>"
+                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["end"].datatype)])+"\" target=\"_blank\">"+str(res["uri"])+"</a>"
                 else:
-                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["end"].datatype)])+"\">"+self.shortenURI(timeliteraltypes[str(timeobj["end"].datatype)])+"</a>"         
+                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["end"].datatype)])+"\" target=\"_blank\">"+self.shortenURI(timeliteraltypes[str(timeobj["end"].datatype)])+"</a>"         
         elif "begin" in timeobj and not "end" in timeobj:
             timeres=str(timeobj["begin"])
             if str(timeobj["begin"].datatype) in timeliteraltypes:
                 res=self.replaceNameSpacesInLabel(timeliteraltypes[str(timeobj["begin"].datatype)])
                 if res!=None:
-                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["begin"].datatype)])+"\">"+str(res["uri"])+"</a>"
+                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["begin"].datatype)])+"\" target=\"_blank\">"+str(res["uri"])+"</a>"
                 else:
-                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["begin"].datatype)])+"\">"+self.shortenURI(timeliteraltypes[str(timeobj["begin"].datatype)])+"</a>" 
+                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["begin"].datatype)])+"\" target=\"_blank\">"+self.shortenURI(timeliteraltypes[str(timeobj["begin"].datatype)])+"</a>" 
         elif "begin" not in timeobj and "end" in timeobj:
             timeres=str(timeobj["end"])
             if str(timeobj["end"].datatype) in timeliteraltypes:
                 res=self.replaceNameSpacesInLabel(timeliteraltypes[str(timeobj["end"].datatype)])
                 if res!=None:
-                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["end"].datatype)])+"\">"+str(res["uri"])+"</a>"
+                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["end"].datatype)])+"\" target=\"_blank\">"+str(res["uri"])+"</a>"
                 else:
-                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["end"].datatype)])+"\">"+self.shortenURI(timeliteraltypes[str(timeobj["end"].datatype)])+"</a>" 
+                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["end"].datatype)])+"\" target=\"_blank\">"+self.shortenURI(timeliteraltypes[str(timeobj["end"].datatype)])+"</a>" 
         elif "timepoint" in timeobj:
             timeres=timeobj["timepoint"]
             if str(timeobj["timepoint"].datatype) in timeliteraltypes:
                 res=self.replaceNameSpacesInLabel(timeliteraltypes[str(timeobj["timepoint"].datatype)])
                 if res!=None:
-                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["timepoint"].datatype)])+"\">"+str(res["uri"])+"</a>"
+                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["timepoint"].datatype)])+"\" target=\"_blank\">"+str(res["uri"])+"</a>"
                 else:
-                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["timepoint"].datatype)])+"\">"+self.shortenURI(timeliteraltypes[str(timeobj["timepoint"].datatype)])+"</a>"             
+                    timeres+=" <a href=\""+str(timeliteraltypes[str(timeobj["timepoint"].datatype)])+"\" target=\"_blank\">"+self.shortenURI(timeliteraltypes[str(timeobj["timepoint"].datatype)])+"</a>"             
         return timeres
 
     def resolveGeoLiterals(self,pred,object,graph,geojsonrep,nonns,subject=None):
