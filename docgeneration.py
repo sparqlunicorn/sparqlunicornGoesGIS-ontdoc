@@ -2732,7 +2732,7 @@ class OntDocGeneration:
                     if timeobj!=None:
                         for item in timeobj:
                             dateprops.append(item)
-                            props[item]=str(timeobj[item])
+                            props[item]=[str(timeobj[item])]
                     jsonfeat={"type": "Feature", 'id':str(subject),'label':foundlabel,'dateprops':dateprops, 'properties': props, "geometry": geojsonrep}
                     if epsgcode=="" and "crs" in geojsonrep:
                         epsgcode="EPSG:"+geojsonrep["crs"]
