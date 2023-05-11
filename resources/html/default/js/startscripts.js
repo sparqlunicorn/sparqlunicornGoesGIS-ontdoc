@@ -1001,7 +1001,7 @@ function generateLeafletPopup(feature, layer){
     return popup
 }
 
-function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map){
+function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,dateatt=""){
     if(typeof (baselayers) === 'undefined' || baselayers===[]){
         basemaps["OSM"]=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'})
         baseMaps["OSM"].addTo(map);
@@ -1070,5 +1070,14 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map){
         }
     }
 	layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map)
+	if(dateatt!=null && dateatt!=""){
+		var sliderControl = L.control.sliderControl({
+			position: "topleft",
+			layer: testlayer,
+			timeAttribute: dateatt
+		});
+		map.addControl(sliderControl);
+		sliderControl.startSlider();
+	}
     markercluster.addTo(map)
 }

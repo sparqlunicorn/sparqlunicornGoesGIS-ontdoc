@@ -1291,84 +1291,27 @@ geoexports="""
 """
 
 maptemplate="""
-<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.0.6/dist/leaflet.markercluster-src.js"></script>
+<script src="https://unpkg.com/leaflet.featuregroup.subgroup@1.0.2/dist/leaflet.featuregroup.subgroup.js"></script>
 <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
-<script>
-/*** Leaflet.geojsonCSS
- * @author Alexander Burtsev, http://burtsev.me, 2014
- * @license MIT*/
-!function(a){a.L&&L.GeoJSON&&(L.GeoJSON.CSS=L.GeoJSON.extend({initialize:function(a,b){var c=L.extend({},b,{onEachFeature:function(a,c){b&&b.onEachFeature&&b.onEachFeature(a,c);var d=a.style,e=a.popupTemplate;d&&(c instanceof L.Marker?d.icon&&c.setIcon(L.icon(d.icon)):c.setStyle(d)),e&&a.properties&&c.bindPopup(L.Util.template(e,a.properties))}});L.setOptions(this,c),this._layers={},a&&this.addData(a)}}),L.geoJson.css=function(a,b){return new L.GeoJSON.CSS(a,b)})}(window,document);
-</script>
-<div id="map" style="height:500px;z-index: 0;"></div>
-<script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.1/proj4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/albburtsev/Leaflet.geojsonCSS/leaflet.geojsoncss.min.js"></script>
+<script src="{{epsgdefspath}}"></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css" />
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.Default.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css">
+<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+<div id="map" style="height:500px;z-index: 0;"></div><script>
+var rangesByAttribute={}
 var overlayMaps={}
+var baselayers={{baselayers}}
+var featurecolls = {{myfeature}}
+var epsg="{{epsg}}"
 var map = L.map('map',{fullscreenControl: true,fullscreenControlOptions: {position: 'topleft'}}).setView([51.505, -0.09], 13);
-	var layer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-	});
-	var baseMaps = {
-        "OSM": layer
-	};
-baseMaps["OSM"].addTo(map);
-	L.control.scale({
-	position: 'bottomright',
-	imperial: false
-	}).addTo(map);
-	layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map);
-	var bounds = L.latLngBounds([]);
-	props={}
-	var feature = {{myfeature}};
-	layerr=L.geoJSON.css(feature,{
-	pointToLayer: function(feature, latlng){
-                  var greenIcon = new L.Icon({
-                    iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png',
-                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-                    iconSize: [25, 41],
-                    iconAnchor: [12, 41],
-                    popupAnchor: [1, -34],
-                    shadowSize: [41, 41]
-                });
-                return L.marker(latlng, {icon: greenIcon});
-    },onEachFeature: function (feature, layer) {
-    var popup="<b>"
-    if("label" in feature && feature.label!=""){
-        popup+="<a href=\\""+feature.id+"\\" class=\\"footeruri\\" target=\\"_blank\\">"+feature.label+"</a></b><br/><ul>"
-    }else{
-        popup+="<a href=\\""+feature.id+"\\" class=\\"footeruri\\" target=\\"_blank\\">"+feature.id.substring(feature.id.lastIndexOf('/')+1)+"</a></b><br/><ul>"
-    }
-    for(prop in feature.properties){
-        popup+="<li>"
-        if(prop.startsWith("http")){
-            popup+="<a href=\\""+prop+"\\" target=\\"_blank\\">"+prop.substring(prop.lastIndexOf('/')+1)+"</a>"
-        }else{
-            popup+=prop
-        }
-        popup+=" : "
-        if(feature.properties[prop].length>1){
-            popup+="<ul>"
-            for(item of feature.properties[prop]){
-                popup+="<li>"
-                if((item+"").startsWith("http")){
-                    popup+="<a href=\\""+item+"\\" target=\\"_blank\\">"+item.substring(item.lastIndexOf('/')+1)+"</a>"
-                }else{
-                    popup+=item
-                }
-                popup+="</li>"           
-            }
-            popup+="</ul>"
-        }else if((feature.properties[prop][0]+"").startsWith("http")){
-            popup+="<a href=\\""+rewriteLink(feature.properties[prop][0])+"\\" target=\\"_blank\\">"+feature.properties[prop][0].substring(feature.properties[prop][0].lastIndexOf('/')+1)+"</a>"
-        }else{
-            popup+=feature.properties[prop]
-        }
-        popup+="</li>"
-    }
-    popup+="</ul>"
-    layer.bindPopup(popup)}})
-	layerr.addTo(map)
-    var layerBounds = layerr.getBounds();
-    bounds.extend(layerBounds);
-    map.fitBounds(bounds);
+var baseMaps = {};
+props={}
+setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map)
 </script>
 """
 
@@ -1738,7 +1681,7 @@ class OntDocGeneration:
                         for tup in self.graph.predicate_objects(sub):
                             subgraph.add((sub, tup[0], tup[1]))
                 subgraph.serialize(path + "index.ttl",encoding="utf-8")
-                indexhtml = htmltemplate.replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{epsgdefspath}}", epsgdefslink).replace("{{vowlpath}}", vowllink)\
+                indexhtml = htmltemplate.replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink)\
                     .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", nslink).replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
                 if nslink==prefixnamespace:
                     indexhtml=indexhtml.replace("{{indexpage}}","true")
@@ -1764,13 +1707,13 @@ class OntDocGeneration:
                     f.write(indexhtml)
                     f.close()
         if len(featurecollectionspaths)>0:
-            indexhtml = htmltemplate.replace("{{logo}}",self.logoname).replace("{{relativedepth}}","0").replace("{{baseurl}}", prefixnamespace).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{vowlpath}}", "vowl_result.js")\
+            indexhtml = htmltemplate.replace("{{logo}}",self.logoname).replace("{{relativedepth}}","0").replace("{{baseurl}}", prefixnamespace).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}", "vowl_result.js")\
                     .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
             indexhtml = indexhtml.replace("{{indexpage}}", "true")
             self.merge_JsonFiles(featurecollectionspaths,str(outpath)+"features.js")
             indexhtml += "<p>This page shows feature collections present in the linked open data export</p>"
             indexhtml+="<script src=\"features.js\"></script>"
-            indexhtml+=maptemplate.replace("var featurecolls = {{myfeature}}","").replace("{{baselayers}}",json.dumps(baselayers))
+            indexhtml+=maptemplate.replace("var featurecolls = {{myfeature}}","").replace("{{baselayers}}",json.dumps(baselayers).replace("{{epsgdefspath}}", epsgdefslink))
             indexhtml += htmlfooter.replace("{{license}}", curlicense).replace("{{exports}}", nongeoexports).replace("{{bibtex}}","")
             with open(outpath + "featurecollections.html", 'w', encoding='utf-8') as f:
                 f.write(indexhtml)
@@ -2638,7 +2581,7 @@ class OntDocGeneration:
                 rellink3 =self.generateRelativeLinkFromGivenDepth(baseurl,checkdepth,"style.css",False)
                 rellink4 = self.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "startscripts.js", False)
                 rellink5 = self.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "proprelations.js", False)
-                rellink6 = self.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "epsgdefs.js", False)
+                epsgdefslink = self.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "epsgdefs.js", False)
                 rellink7 = self.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "vowl_result.js", False)
                 if geojsonrep != None:
                     myexports=geoexports
@@ -2646,7 +2589,7 @@ class OntDocGeneration:
                     myexports=nongeoexports
                 if foundlabel != "":
                     f.write(htmltemplate.replace("{{logo}}",logo).replace("{{baseurl}}",baseurl).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{toptitle}}", foundlabel).replace(
-                        "{{startscriptpath}}", rellink4).replace("{{epsgdefspath}}", rellink6).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}",itembibtex).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{indexpage}}","false").replace("{{title}}",
+                        "{{startscriptpath}}", rellink4).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}",itembibtex).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{indexpage}}","false").replace("{{title}}",
                                                                                                     "<a href=\"" + str(
                                                                                                         subject) + "\">" + str(
                                                                                                         foundlabel) + "</a>").replace(
@@ -2655,8 +2598,7 @@ class OntDocGeneration:
                         "{{scriptfolderpath}}", rellink).replace("{{classtreefolderpath}}", rellink2).replace("{{exports}}",myexports).replace("{{subject}}",str(subject)))
                 else:
                     f.write(htmltemplate.replace("{{logo}}",logo).replace("{{baseurl}}",baseurl).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{indexpage}}","false").replace("{{toptitle}}", self.shortenURI(str(subject))).replace(
-                        "{{startscriptpath}}", rellink4).replace(
-                        "{{epsgdefspath}}", rellink6).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}",itembibtex).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{title}}","<a href=\"" + str(subject) + "\">" + self.shortenURI(str(subject)) + "</a>").replace(
+                        "{{startscriptpath}}", rellink4).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}",itembibtex).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{title}}","<a href=\"" + str(subject) + "\">" + self.shortenURI(str(subject)) + "</a>").replace(
                         "{{baseurl}}", baseurl).replace("{{description}}",
                                                                                                    "").replace(
                         "{{scriptfolderpath}}", rellink).replace("{{classtreefolderpath}}", rellink2).replace("{{exports}}",myexports).replace("{{subject}}",str(subject)))
@@ -2738,9 +2680,10 @@ class OntDocGeneration:
                         epsgcode="EPSG:"+geojsonrep["crs"]
                     if len(hasnonns)>0:
                         self.geocache[str(subject)]=jsonfeat
-                    f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(jsonfeat)+"]").replace("{{epsg}}",epsgcode).replace("{{baselayers}}",json.dumps(baselayers)))
+                    f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(jsonfeat)+"]").replace("{{epsg}}",epsgcode).replace("{{baselayers}}",json.dumps(baselayers)).replace("{{epsgdefspath}}", epsgdefslink))
                 elif isgeocollection or nonns:
                     featcoll={"type":"FeatureCollection", "id":subject,"name":self.shortenURI(subject), "features":[]}
+                    dateatt=""
                     if isgeocollection and not nonns:
                         memberpred=URIRef("http://www.w3.org/2000/01/rdf-schema#member")
                         for memberid in graph.objects(subject,memberpred,True):
@@ -2759,14 +2702,18 @@ class OntDocGeneration:
                                         featcoll["features"].append({"type": "Feature", 'id': str(memberid), 'label': uritotreeitem[str(memberid)][-1]["text"],'dateprops':dateprops, 'properties': {},"geometry": geojsonrep})
                                     else:
                                         featcoll["features"].append({"type": "Feature", 'id': str(memberid),'label': str(memberid),'dateprops':dateprops, 'properties': {}, "geometry": geojsonrep})
+                                if len(self.geocache[item]["dateprops"])>0:
+                                    dateatt=self.geocache[item]["dateprops"][0]                               
                         if len(hasnonns)>0:
                             self.geocache[str(subject)]=featcoll
                     elif nonns:
                         for item in hasnonns:
                             if item in self.geocache:
                                 featcoll["features"].append(self.geocache[item])
+                                if len(self.geocache[item]["dateprops"])>0:
+                                    dateatt=self.geocache[item]["dateprops"][0]
                     if len(featcoll["features"])>0:
-                        f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(featcoll)+"]").replace("{{baselayers}}",json.dumps(baselayers)))
+                        f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(featcoll)+"]").replace("{{baselayers}}",json.dumps(baselayers)).replace("{{epsgdefspath}}", epsgdefslink).replace("{{dateatt}}", dateatt))
                         with open(completesavepath.replace(".html",".geojson"), 'w', encoding='utf-8') as fgeo:
                             featurecollectionspaths.add(completesavepath.replace(".html",".geojson"))
                             fgeo.write(json.dumps(featcoll))
