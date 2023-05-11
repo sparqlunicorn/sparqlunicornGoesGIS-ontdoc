@@ -2490,7 +2490,7 @@ class OntDocGeneration:
                         textannos=res["textannos"]
                         image3dannos=res["image3dannos"]
                         if res["timeobj"]!=None and res["timeobj"]!=[]:
-                            print("RESTIMEOBJ: "+str(timeobj))
+                            #print("RESTIMEOBJ: "+str(timeobj))
                             timeobj=res["timeobj"]
                         if res["label"] not in labelmap:
                             labelmap[res["label"]]=""
@@ -2666,8 +2666,6 @@ class OntDocGeneration:
                     if uritotreeitem!=None and str(subject) in uritotreeitem:
                         uritotreeitem[str(subject)][-1]["type"]="geoinstance"
                     props=predobjmap
-                    if timeobj!=None and timeobj!=[]:
-                        print("TIMEOBJ: "+str(timeobj))
                     if timeobj!=None:
                         for item in timeobj:
                             dateprops.append(item)
@@ -2702,8 +2700,8 @@ class OntDocGeneration:
                                         featcoll["features"].append({"type": "Feature", 'id': str(memberid), 'label': uritotreeitem[str(memberid)][-1]["text"],'dateprops':dateprops, 'properties': {},"geometry": geojsonrep})
                                     else:
                                         featcoll["features"].append({"type": "Feature", 'id': str(memberid),'label': str(memberid),'dateprops':dateprops, 'properties': {}, "geometry": geojsonrep})
-                                if len(featcoll["features"][-1]["dateprops"])>0:
-                                    dateatt=featcoll["features"][-1]["dateprops"][0]                               
+                                    if len(featcoll["features"][-1]["dateprops"])>0:
+                                        dateatt=featcoll["features"][-1]["dateprops"][0]                             
                         if len(hasnonns)>0:
                             self.geocache[str(subject)]=featcoll
                     elif nonns:
