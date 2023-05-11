@@ -2703,7 +2703,7 @@ class OntDocGeneration:
                                     else:
                                         featcoll["features"].append({"type": "Feature", 'id': str(memberid),'label': str(memberid),'dateprops':dateprops, 'properties': {}, "geometry": geojsonrep})
                                 if len(featcoll["features"][-1]["dateprops"])>0:
-                                    dateatt=self.geocache[item]["dateprops"][0]                               
+                                    dateatt=featcoll["features"][-1]["dateprops"][0]                               
                         if len(hasnonns)>0:
                             self.geocache[str(subject)]=featcoll
                     elif nonns:
