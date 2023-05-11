@@ -1078,6 +1078,7 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,dateatt=""){
 			layer: layerr,
 			range: true,
 			rezoom: 10,
+			showAllOnStart: true,
 			timeAttribute: dateatt
 		});
 		map.addControl(sliderControl);

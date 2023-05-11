@@ -2679,7 +2679,10 @@ class OntDocGeneration:
                         self.geocache[str(subject)]=jsonfeat
                     f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(jsonfeat)+"]").replace("{{epsg}}",epsgcode).replace("{{baselayers}}",json.dumps(baselayers)).replace("{{epsgdefspath}}", epsgdefslink))
                 elif isgeocollection or nonns:
-                    featcoll={"type":"FeatureCollection", "id":subject,"name":self.shortenURI(subject), "features":[]}
+                    if foundlabel!=None and foundlabel!="":
+                        featcoll={"type":"FeatureCollection", "id":subject,"name":str(foundlabel), "features":[]}
+                    else:
+                        featcoll={"type":"FeatureCollection", "id":subject,"name":self.shortenURI(subject), "features":[]}
                     dateatt=""
                     if isgeocollection and not nonns:
                         memberpred=URIRef("http://www.w3.org/2000/01/rdf-schema#member")
