@@ -1295,6 +1295,7 @@ maptemplate="""
 <script src="https://unpkg.com/leaflet.markercluster@1.0.6/dist/leaflet.markercluster-src.js"></script>
 <script src="https://unpkg.com/leaflet.featuregroup.subgroup@1.0.2/dist/leaflet.featuregroup.subgroup.js"></script>
 <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/dwilhelm89/LeafletSlider@master/dist/leaflet.SliderControl.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.1/proj4.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/albburtsev/Leaflet.geojsonCSS/leaflet.geojsoncss.min.js"></script>
 <script src="{{epsgdefspath}}"></script>
@@ -1308,10 +1309,11 @@ var overlayMaps={}
 var baselayers={{baselayers}}
 var featurecolls = {{myfeature}}
 var epsg="{{epsg}}"
+var dateatt="{{dateatt}}"
 var map = L.map('map',{fullscreenControl: true,fullscreenControlOptions: {position: 'topleft'}}).setView([51.505, -0.09], 13);
 var baseMaps = {};
 props={}
-setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map)
+setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,dateatt)
 </script>
 """
 
