@@ -965,8 +965,8 @@ function createColorRangeByAttribute(propertyName,geojsonlayer){
 
 function generateLeafletPopup(feature, layer){
     var popup="<b>"
-    if("label" in feature && feature.label!=""){
-        popup+="<a href=\""+rewriteLink(feature.id)+"\" class=\"footeruri\" target=\"_blank\">"+feature.label+"</a></b><br/><ul>"
+    if("name" in feature && feature.name!=""){
+        popup+="<a href=\""+rewriteLink(feature.id)+"\" class=\"footeruri\" target=\"_blank\">"+feature.name+"</a></b><br/><ul>"
     }else{
         popup+="<a href=\""+rewriteLink(feature.id)+"\" class=\"footeruri\" target=\"_blank\">"+feature.id.substring(feature.id.lastIndexOf('/')+1)+"</a></b><br/><ul>"
     }
@@ -993,7 +993,7 @@ function generateLeafletPopup(feature, layer){
         }else if(Array.isArray(feature.properties[prop]) && (feature.properties[prop][0]+"").startsWith("http")){
             popup+="<a href=\""+rewriteLink(feature.properties[prop][0])+"\" target=\"_blank\">"+feature.properties[prop][0].substring(feature.properties[prop][0].lastIndexOf('/')+1)+"</a>"
         }else{
-            popup+=feature.properties[prop]
+            popup+=feature.properties[prop]+""
         }
         popup+="</li>"
     }
