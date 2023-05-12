@@ -1038,10 +1038,10 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,dateatt=""){
         setLatLng: function () {} // Dummy method.
     });
 	var bounds = L.latLngBounds([]);
-    var markercluster = L.markerClusterGroup.layerSupport({})
     first=true
     counter=1
     for(feature of featurecolls){
+        var markercluster = L.markerClusterGroup.layerSupport({})
         if(epsg!="" && epsg!="EPSG:4326" && epsg in epsgdefs){
             feature=convertGeoJSON(feature,epsgdefs[epsg],null)
         }
@@ -1060,9 +1060,8 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,dateatt=""){
         }else {
             counter += 1
         }
-        //overlayMaps[layername]=L.featureGroup.subGroup(markercluster,[layerr])
 		markercluster.checkIn(layerr);
-		overlayMaps[layername]=markercluster
+        overlayMaps[layername]=L.featureGroup.subGroup(markercluster,[layerr])
         if(first) {
             overlayMaps[layername].addTo(map);
             var layerBounds = layerr.getBounds();
