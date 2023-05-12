@@ -1405,12 +1405,13 @@ def resolveTemplate(templatename):
 
 class OntDocGeneration:
 
-    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,logoname="",templatename="default"):
+    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,startconcept=None,logoname="",templatename="default"):
         self.prefixes=prefixes
         self.prefixnamespace = prefixnamespace
         self.namespaceshort = prefixnsshort.replace("/","")
         self.outpath=outpath
         self.logoname=logoname
+        self.startconcept=startconcept
         self.createVOWL=createVOWL
         self.geocache={}
         self.generatePagesForNonNS=generatePagesForNonNS
@@ -1690,6 +1691,11 @@ class OntDocGeneration:
                 else:
                     indexhtml = indexhtml.replace("{{indexpage}}", "false")
                 indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"+vowltemplate.replace("{{vowlpath}}", "minivowl_result.js")
+                if startconcept!=None and path=="" and startconcept in uritotreeitem:
+                    if self.createColl:
+                        indexhtml+="<p>Start exploring the graph here: <img src=\""+tree["types"][uritotreeitem[startconcept]["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+uritotreeitem[startconcept]["type"]+"\"/><a href=\""+str(startconcept)+"\">"+self.shortenURI(startconcept)+"</a></p>"                    
+                    else:
+                        indexhtml+="<p>Start exploring the graph here: <img src=\""+tree["types"][uritotreeitem[startconcept]["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+uritotreeitem[startconcept]["type"]+"\"/><a href=\""+str(startconcept)+"\">"+self.shortenURI(startconcept)+"</a></p>"
                 indexhtml+="<table class=\"description\" style =\"height: 100%; overflow: auto\" border=1 id=indextable><thead><tr><th>Class</th><th>Number of instances</th><th>Instance Example</th></tr></thead><tbody>"
                 for item in tree["core"]["data"]:
                     if (item["type"]=="geoclass" or item["type"]=="class" or item["type"]=="featurecollection" or item["type"]=="geocollection") and "instancecount" in item and item["instancecount"]>0:
@@ -2784,6 +2790,7 @@ templatename="default"
 createColl=False
 createIndexPages=True
 createVOWL=False
+startconcept=None
 filestoprocess=[]
 if len(sys.argv)<=1:
     print("No TTL file to process has been given as a parameter")
@@ -2832,7 +2839,9 @@ if len(sys.argv)>12:
     if crvowl.lower()=="true":
         createVOWL=True
 if len(sys.argv)>13:
-    templatepath=sys.argv[13]
+    startconcept=sys.argv[13]
+if len(sys.argv)>14:
+    templatepath=sys.argv[14]
     if templatepath.startswith("http") and templatepath.endswith(".zip"):
         with urlopen(templatepath) as zipresp:
             with ZipFile(BytesIO(zipresp.read())) as zfile:
@@ -2848,22 +2857,25 @@ if len(sys.argv)>13:
                 print(templatepath)
                 print(subfoldername)
                 print(templatename)
-if len(sys.argv)>14:
-    templatename=sys.argv[14]
+if len(sys.argv)>15:
+    templatename=sys.argv[15]
 fcounter=0
 for fp in filestoprocess:
     #try:
     g = Graph()
     g.parse(fp)
     if fcounter<len(outpath):
-        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,logourl,templatename)
+        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,startconcept,logourl,templatename)
     else:
-        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,logourl,templatename)
+        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,startconcept,logourl,templatename)
     docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
     #except Exception as inst:
     # 	print("Could not parse "+str(fp))
     # 	print(inst)
     fcounter+=1
+curlicense=license
+if docgen!=None:
+    curlicense=docgen.curlicense
 print("Path exists? "+outpath[0]+'/index.html '+str(os.path.exists(outpath[0]+'/index.html')))
 if not os.path.exists(outpath[0]+'/index.html'):
     indexf=open(outpath[0]+"/index.html","w",encoding="utf-8")
@@ -2877,7 +2889,7 @@ if not os.path.exists(outpath[0]+'/index.html'):
     for path in subfolders:
         indexhtml+="<tr><td><a href=\""+path.replace(outpath[0]+"/","")+"/index.html\">"+path.replace(outpath[0]+"/","")+"</a></td></tr>"
     indexhtml+="</tbody></table>"
-    indexhtml+=htmlfooter.replace("{{license}}",license).replace("{{exports}}",nongeoexports).replace("{{bibtex}}","")
+    indexhtml+=htmlfooter.replace("{{license}}",curlicense).replace("{{exports}}",nongeoexports).replace("{{bibtex}}","")
     #print(indexhtml)
     indexf.write(indexhtml)
     indexf.close()
