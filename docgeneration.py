@@ -1420,6 +1420,7 @@ class OntDocGeneration:
         resolveTemplate(templatename)
         self.license=license
         self.licenseuri=None
+        self.licensehtml=None
         self.createColl=createColl
         self.labellang=labellang
         self.typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
@@ -1571,6 +1572,7 @@ class OntDocGeneration:
         uritolabel = {}
         uritotreeitem={}
         curlicense=self.processLicense()
+        self.licensehtml=curlicense
         self.getPropertyRelations(self.graph, outpath)
         if self.createColl:
             self.graph=self.createCollections(self.graph,prefixnamespace)
@@ -2876,7 +2878,7 @@ for fp in filestoprocess:
     fcounter+=1
 curlicense=license
 if docgen!=None:
-    curlicense=docgen.curlicense
+    curlicense=docgen.licensehtml
 print("Path exists? "+outpath[0]+'/index.html '+str(os.path.exists(outpath[0]+'/index.html')))
 if not os.path.exists(outpath[0]+'/index.html'):
     indexf=open(outpath[0]+"/index.html","w",encoding="utf-8")
