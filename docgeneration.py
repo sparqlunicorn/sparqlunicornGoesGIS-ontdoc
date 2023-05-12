@@ -2314,7 +2314,7 @@ class OntDocGeneration:
                 if str(tup[0]) in labelproperties:	
                     label = str(tup[1])	
             if uri in uritotreeitem:
-                uritotreeitem[uri]["text"]=self.getLabelForObject(URIRef(str(uri)), graph,self.labellang)
+                uritotreeitem[uri][-1]["text"]=self.getLabelForObject(URIRef(str(uri)), graph,self.labellang)
             if counter%50==0:
                 print("NonNS Counter " +str(counter)+"/"+str(nonnsuris)+" "+ str(uri))	
             self.createHTML(outpath+"nonns_"+self.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri),True), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, None, Graph(),uristorender,True,label)	

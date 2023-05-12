@@ -1061,6 +1061,7 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,dateatt=""){
             counter += 1
         }
         //overlayMaps[layername]=L.featureGroup.subGroup(markercluster,[layerr])
+		markercluster.checkIn(layerr);
 		overlayMaps[layername]=markercluster
         if(first) {
             overlayMaps[layername].addTo(map);
@@ -1069,7 +1070,7 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,dateatt=""){
             map.fitBounds(bounds);
             first = false
         }
-		markercluster.checkIn(layerr);
+
     }
 	layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map)
 	if(dateatt!=null && dateatt!=""){
