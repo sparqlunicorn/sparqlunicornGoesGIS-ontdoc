@@ -2317,9 +2317,9 @@ class OntDocGeneration:
                 res = self.replaceNameSpacesInLabel(str(uri))
                 label=self.getLabelForObject(URIRef(str(uri)), graph,self.labellang)
                 if res!=None and label!="":
-                    label+= " (" + res["uri"] + ")"
+                    uritotreeitem[uri][-1]["text"]=label+" (" + res["uri"] + ")"
                 elif label!="":
-                    uritotreeitem[uri][-1]["text"]=label+"("+self.shortenURI(uri)+")"
+                    uritotreeitem[uri][-1]["text"]=label+" ("+self.shortenURI(uri)+")"
                 else:
                     uritotreeitem[uri][-1]["text"]=self.shortenURI(uri)
             if counter%50==0:
