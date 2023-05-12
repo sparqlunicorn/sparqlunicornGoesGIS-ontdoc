@@ -56,9 +56,10 @@ var baseurl="{{baseurl}}"
   $( function() {
     var availableTags = Object.keys(search)
     $( "#search" ).autocomplete({
-      source: availableTags
+      source: availableTags,
+      delay: 300
     });
-    console.log(availableTags)
+    //console.log(availableTags)
     setupJSTree()
   } );
 
@@ -965,8 +966,8 @@ function createColorRangeByAttribute(propertyName,geojsonlayer){
 
 function generateLeafletPopup(feature, layer){
     var popup="<b>"
-    if("label" in feature && feature.label!=""){
-        popup+="<a href=\""+rewriteLink(feature.id)+"\" class=\"footeruri\" target=\"_blank\">"+feature.label+"</a></b><br/><ul>"
+    if("name" in feature && feature.name!=""){
+        popup+="<a href=\""+rewriteLink(feature.id)+"\" class=\"footeruri\" target=\"_blank\">"+feature.name+"</a></b><br/><ul>"
     }else{
         popup+="<a href=\""+rewriteLink(feature.id)+"\" class=\"footeruri\" target=\"_blank\">"+feature.id.substring(feature.id.lastIndexOf('/')+1)+"</a></b><br/><ul>"
     }
@@ -993,7 +994,7 @@ function generateLeafletPopup(feature, layer){
         }else if(Array.isArray(feature.properties[prop]) && (feature.properties[prop][0]+"").startsWith("http")){
             popup+="<a href=\""+rewriteLink(feature.properties[prop][0])+"\" target=\"_blank\">"+feature.properties[prop][0].substring(feature.properties[prop][0].lastIndexOf('/')+1)+"</a>"
         }else{
-            popup+=feature.properties[prop]
+            popup+=feature.properties[prop]+""
         }
         popup+="</li>"
     }
@@ -1038,10 +1039,10 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,dateatt=""){
         setLatLng: function () {} // Dummy method.
     });
 	var bounds = L.latLngBounds([]);
-    var markercluster = L.markerClusterGroup.layerSupport({})
     first=true
     counter=1
     for(feature of featurecolls){
+        var markercluster = L.markerClusterGroup.layerSupport({})
         if(epsg!="" && epsg!="EPSG:4326" && epsg in epsgdefs){
             feature=convertGeoJSON(feature,epsgdefs[epsg],null)
         }
@@ -1060,8 +1061,8 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,dateatt=""){
         }else {
             counter += 1
         }
-        //overlayMaps[layername]=L.featureGroup.subGroup(markercluster,[layerr])
-		overlayMaps[layername]=markercluster
+		markercluster.checkIn(layerr);
+        overlayMaps[layername]=L.featureGroup.subGroup(markercluster,[layerr])
         if(first) {
             overlayMaps[layername].addTo(map);
             var layerBounds = layerr.getBounds();
@@ -1069,7 +1070,6 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,dateatt=""){
             map.fitBounds(bounds);
             first = false
         }
-		markercluster.checkIn(layerr);
     }
 	layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map)
 	if(dateatt!=null && dateatt!=""){

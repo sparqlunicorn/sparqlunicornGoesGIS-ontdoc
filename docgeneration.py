@@ -1661,12 +1661,12 @@ class OntDocGeneration:
                 print(str(subtorencounter) + "/" + str(subtorenderlen) + " " + str(outpath + path))
         self.checkGeoInstanceAssignment(uritotreeitem)
         self.assignGeoClassesToTree(tree)
+        if self.generatePagesForNonNS:
+            #self.detectURIsConnectedToSubjects(subjectstorender, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace)
+            self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace,uritotreeitem)
         with open(outpath + corpusid + "_classtree.js", 'w', encoding='utf-8') as f:
             f.write("var tree=" + json.dumps(tree, indent=2))
             f.close()
-        if self.generatePagesForNonNS:
-            #self.detectURIsConnectedToSubjects(subjectstorender, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace)
-            self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace)
         if self.createIndexPages:
             for path in paths:
                 subgraph=Graph(bind_namespaces="rdflib")
@@ -2308,7 +2308,7 @@ class OntDocGeneration:
         tablecontents += "</td>"
         return tablecontents
 
-    def getSubjectPagesForNonGraphURIs(self,uristorender,graph,prefixnamespace,corpusid,outpath,nonnsmap,baseurl):	
+    def getSubjectPagesForNonGraphURIs(self,uristorender,graph,prefixnamespace,corpusid,outpath,nonnsmap,baseurl,uritotreeitem):
         nonnsuris=len(uristorender)	
         counter=0	
         for uri in uristorender:	
@@ -2316,6 +2316,15 @@ class OntDocGeneration:
             for tup in graph.predicate_objects(URIRef(uri)):
                 if str(tup[0]) in labelproperties:	
                     label = str(tup[1])	
+            if uri in uritotreeitem:
+                res = self.replaceNameSpacesInLabel(str(uri))
+                label=self.getLabelForObject(URIRef(str(uri)), graph,self.labellang)
+                if res!=None and label!="":
+                    uritotreeitem[uri][-1]["text"]=label+" (" + res["uri"] + ")"
+                elif label!="":
+                    uritotreeitem[uri][-1]["text"]=label+" ("+self.shortenURI(uri)+")"
+                else:
+                    uritotreeitem[uri][-1]["text"]=self.shortenURI(uri)
             if counter%50==0:
                 print("NonNS Counter " +str(counter)+"/"+str(nonnsuris)+" "+ str(uri))	
             self.createHTML(outpath+"nonns_"+self.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri),True), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, None, Graph(),uristorender,True,label)	
@@ -2702,7 +2711,7 @@ class OntDocGeneration:
                                     if uritotreeitem !=None and str(memberid) in uritotreeitem:
                                         featcoll["features"].append({"type": "Feature", 'id': str(memberid), 'name': uritotreeitem[str(memberid)][-1]["text"],'dateprops':dateprops, 'properties': {},"geometry": geojsonrep})
                                     else:
-                                        featcoll["features"].append({"type": "Feature", 'id': str(memberid),'name': str(memberid),'dateprops':dateprops, 'properties': {}, "geometry": geojsonrep})
+                                        featcoll["features"].append({"type": "Feature", 'id': str(memberid), 'name': str(memberid),'dateprops':dateprops, 'properties': {}, "geometry": geojsonrep})
                                     if len(featcoll["features"][-1]["dateprops"])>0:
                                         dateatt=featcoll["features"][-1]["dateprops"][0]                             
                         if len(hasnonns)>0:
