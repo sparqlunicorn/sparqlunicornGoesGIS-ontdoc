@@ -1069,7 +1069,6 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,dateatt=""){
             map.fitBounds(bounds);
             first = false
         }
-
     }
 	layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map)
 	if(dateatt!=null && dateatt!=""){
