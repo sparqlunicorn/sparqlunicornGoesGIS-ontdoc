@@ -1975,9 +1975,9 @@ class OntDocGeneration:
                 bibtexitem["type"]=bibtextypemappings[str(tup[1])]	             
             elif str(tup[0]) in bibtexmappings:	
                 if isinstance(tup[1],URIRef):	
-                    bibtexitem[bibtexmappings[str(tup[0])]].append(self.getLabelForObject(tup[1],graph))	
+                    bibtexitem[bibtexmappings[str(tup[0])]]=self.getLabelForObject(tup[1],graph)	
                 else:	
-                    bibtexitem[bibtexmappings[str(tup[0])]].append(str(tup[1]))            	
+                    bibtexitem[bibtexmappings[str(tup[0])]]=append(str(tup[1])          	
         res=bibtexitem["type"]+"{"+self.shortenURI(item)+",\n"	
         for bibpart in sorted(bibtexitem):
             if bibpart=="type":
