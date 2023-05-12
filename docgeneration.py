@@ -1974,7 +1974,10 @@ class OntDocGeneration:
             elif str(tup[0]) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" and str(tup[1]) in bibtextypemappings:	
                 bibtexitem["type"]=bibtextypemappings[str(tup[1])]	             
             elif str(tup[0]) in bibtexmappings:	
-                bibtexitem[bibtexmappings[str(tup[0])]] = str(tup[1])	
+                if isinstance(tup[1],URIRef):	
+                    bibtexitem[bibtexmappings[str(tup[0])]].append(self.getLabelForObject(tup[1],graph))	
+                else:	
+                    bibtexitem[bibtexmappings[str(tup[0])]].append(str(tup[1]))            	
         res=bibtexitem["type"]+"{"+self.shortenURI(item)+",\n"	
         for bibpart in sorted(bibtexitem):
             if bibpart=="type":
@@ -2670,7 +2673,7 @@ class OntDocGeneration:
                         for item in timeobj:
                             dateprops.append(item)
                             props[item]=str(timeobj[item])
-                    jsonfeat={"type": "Feature", 'id':str(subject),'label':foundlabel,'dateprops':dateprops, 'properties': props, "geometry": geojsonrep}
+                    jsonfeat={"type": "Feature", 'id':str(subject),'name':foundlabel,'dateprops':dateprops, 'properties': props, "geometry": geojsonrep}
                     if epsgcode=="" and "crs" in geojsonrep:
                         epsgcode="EPSG:"+geojsonrep["crs"]
                     if len(hasnonns)>0:
@@ -2697,9 +2700,9 @@ class OntDocGeneration:
                                             geojsonrep = self.processLiteral(str(geotup[1]), str(geotup[1].datatype), "")
                                 if geojsonrep!=None:
                                     if uritotreeitem !=None and str(memberid) in uritotreeitem:
-                                        featcoll["features"].append({"type": "Feature", 'id': str(memberid), 'label': uritotreeitem[str(memberid)][-1]["text"],'dateprops':dateprops, 'properties': {},"geometry": geojsonrep})
+                                        featcoll["features"].append({"type": "Feature", 'id': str(memberid), 'name': uritotreeitem[str(memberid)][-1]["text"],'dateprops':dateprops, 'properties': {},"geometry": geojsonrep})
                                     else:
-                                        featcoll["features"].append({"type": "Feature", 'id': str(memberid),'label': str(memberid),'dateprops':dateprops, 'properties': {}, "geometry": geojsonrep})
+                                        featcoll["features"].append({"type": "Feature", 'id': str(memberid),'name': str(memberid),'dateprops':dateprops, 'properties': {}, "geometry": geojsonrep})
                                     if len(featcoll["features"][-1]["dateprops"])>0:
                                         dateatt=featcoll["features"][-1]["dateprops"][0]                             
                         if len(hasnonns)>0:
