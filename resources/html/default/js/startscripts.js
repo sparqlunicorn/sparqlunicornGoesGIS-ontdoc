@@ -56,9 +56,10 @@ var baseurl="{{baseurl}}"
   $( function() {
     var availableTags = Object.keys(search)
     $( "#search" ).autocomplete({
-      source: availableTags
+      source: availableTags,
+      delay: 300
     });
-    console.log(availableTags)
+    //console.log(availableTags)
     setupJSTree()
   } );
 
