@@ -2334,6 +2334,7 @@ class OntDocGeneration:
                     uritotreeitem[uri][-1]["text"]=label+" ("+self.shortenURI(uri)+")"
                 else:
                     uritotreeitem[uri][-1]["text"]=self.shortenURI(uri)
+                uritotreeitem[uri][-1]["id"]=outpath+"nonns_"+self.shortenURI(uri)+".html"
             if counter%50==0:
                 print("NonNS Counter " +str(counter)+"/"+str(nonnsuris)+" "+ str(uri))	
             self.createHTML(outpath+"nonns_"+self.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri),True), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, None, Graph(),uristorender,True,label)	
