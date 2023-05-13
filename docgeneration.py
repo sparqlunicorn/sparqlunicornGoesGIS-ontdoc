@@ -2594,7 +2594,7 @@ class OntDocGeneration:
         nonnslink=""
         if nonns:
             completesavepath = savepath.replace(":","_")
-            nonnslink="<div>This page describes linked instances to the concept  <a href=\"" + str(subject) + "\">" + str(foundlabel) + "("+str(self.shortenURI(subject))+") </a> in this knowledge graph.<br> For the concept definition of <a href=\"" + str(subject) + "\">" + str(foundlabel) + "("+str(self.shortenURI(subject))+") </a> click <a target=\"_blank\" href=\""+str(subject)+"\">here</a></div>"
+            nonnslink="<div>This page describes linked instances to the concept  <a target=\"_blank\" href=\"" + str(subject) + "\">" + str(foundlabel) + " ("+str(self.shortenURI(subject))+") </a> in this knowledge graph. For the concept definition of <a target=\"_blank\" href=\"" + str(subject) + "\">" + str(foundlabel) + " ("+str(self.shortenURI(subject))+") </a> click <a target=\"_blank\" href=\""+str(subject)+"\">here</a></div>"
         else:
             completesavepath=savepath.replace(":","_") + "/index.html"
         if not nonns:
