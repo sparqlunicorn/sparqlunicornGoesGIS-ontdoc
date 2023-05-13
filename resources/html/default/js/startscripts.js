@@ -74,6 +74,8 @@ function closeNav() {
 function exportGeoJSON(){
     if(typeof(feature) !== "undefined"){
         saveTextAsFile(JSON.stringify(feature),"geojson")
+    }else if(window.location.href.includes("_nonns")){
+        downloadFile(window.location.href.replace(".html",".geojson"))
     }
 }
 
@@ -311,9 +313,9 @@ function download(){
     if(format=="geojson"){
         exportGeoJSON()
     }else if(format=="ttl"){
-        downloadFile("index.ttl")
+        downloadFile(window.location.href.replace(".html",".ttl"))
     }else if(format=="json"){
-        downloadFile("index.json")
+        downloadFile(window.location.href.replace(".html",".json"))
     }else if(format=="wkt"){
         exportWKT()
     }else if(format=="csv"){
