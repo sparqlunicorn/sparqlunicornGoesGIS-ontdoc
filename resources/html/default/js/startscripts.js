@@ -350,7 +350,9 @@ function rewriteLink(thelink){
     }
     //console.log(rest)
     //console.log(rest.endsWith("index.html"))
-    rest+="index.html"
+	if(!rest.includes("nonns_") && !rest.endsWith(".html")){
+		rest+="index.html"
+	}
     console.log(rest)
     return rest
 }
