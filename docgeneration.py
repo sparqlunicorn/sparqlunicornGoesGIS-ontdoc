@@ -2376,7 +2376,7 @@ class OntDocGeneration:
         if not os.path.exists(outpath+"/collections/"):
             os.mkdir(outpath + "/collections/")
         f=open(outpath + "/index.json","w",encoding="utf-8")
-        f.write(json.dumps(collectionsjson))
+        f.write(json.dumps(landingpagejson))
         f.close() 
         f=open(outpath + "/collections/index.json","w",encoding="utf-8")
         f.write(json.dumps(collectionsjson))
