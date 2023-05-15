@@ -2349,11 +2349,35 @@ class OntDocGeneration:
         return labeltouri
 
     def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths):
+            landingpagejson={"title":"Landing Page","description":"Landing Page","links":[{
+            "href": outpath+"/index.json",
+            "rel": "self",
+            "type": "application/json",
+            "title": "this document as JSON"
+        }, {
+            "href": outpath+"/index.html",
+            "rel": "alternate",
+            "type": "text/html",
+            "title": "this document as HTML"
+        },, {
+            "href": outpath+"/collections/index.json",
+            "rel": "data",
+            "type": "application/json",
+            "title": "Supported Feature Collections as JSON"
+        }, {
+            "href": outpath+"/collections/index.html",
+            "rel": "data",
+            "type": "text/html",
+            "title": "Supported Feature Collections as HTML"
+        }]}
         collectionsjson={"collections":[],"links":[{"href":outpath+"collections/index.json","rel":"self","type":"application/json","title":"this document as JSON"},{"href":outpath+"collections/index.html","rel":"self","type":"text/html","title":"this document as HTML"}]}
         for coll in featurecollectionspaths:
-            collectionsjson["collections"].append({"id":self.shortenURI(coll),"title":self.shortenURI(coll),"links":[{"href":coll+".geojson","rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":coll+".html","rel":"collection","type":"text/html","title":"Collection as HTML"}]})
+            collectionsjson["collections"].append({"id":self.shortenURI(coll),"title":self.shortenURI(coll),"links":[{"href":coll,"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":coll.replace(".geojson",".html"),"rel":"collection","type":"text/html","title":"Collection as HTML"}]})
         if not os.path.exists(outpath+"/collections/"):
             os.mkdir(outpath + "/collections/")
+        f=open(outpath + "/index.json","w",encoding="utf-8")
+        f.write(json.dumps(collectionsjson))
+        f.close() 
         f=open(outpath + "/collections/index.json","w",encoding="utf-8")
         f.write(json.dumps(collectionsjson))
         f.close()            
