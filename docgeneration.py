@@ -1723,7 +1723,7 @@ class OntDocGeneration:
                     f.write(indexhtml)
                     f.close()
         if len(featurecollectionspaths)>0:
-            self.generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths)
+            self.generateOGCAPIFeaturesPages(outpath,featurecollectionspaths)
             indexhtml = htmltemplate.replace("{{logo}}",self.logoname).replace("{{relativedepth}}","0").replace("{{baseurl}}", prefixnamespace).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}", "vowl_result.js")\
                     .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{nonnslink}}","").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
             indexhtml = indexhtml.replace("{{indexpage}}", "true")
