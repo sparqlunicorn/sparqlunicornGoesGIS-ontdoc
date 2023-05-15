@@ -1666,9 +1666,12 @@ class OntDocGeneration:
         self.assignGeoClassesToTree(tree)
         if self.generatePagesForNonNS:
             #self.detectURIsConnectedToSubjects(subjectstorender, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace)
-            self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace,uritotreeitem)
+            labeltouri=self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace,uritotreeitem,labeltouri)
         with open(outpath + corpusid + "_classtree.js", 'w', encoding='utf-8') as f:
             f.write("var tree=" + json.dumps(tree, indent=2))
+            f.close()
+        with open(outpath + corpusid + '_search.js', 'w', encoding='utf-8') as f:
+            f.write("var search=" + json.dumps(labeltouri, indent=2, sort_keys=True))
             f.close()
         if self.createIndexPages:
             for path in paths:
@@ -2320,7 +2323,7 @@ class OntDocGeneration:
         tablecontents += "</td>"
         return tablecontents
 
-    def getSubjectPagesForNonGraphURIs(self,uristorender,graph,prefixnamespace,corpusid,outpath,nonnsmap,baseurl,uritotreeitem):
+    def getSubjectPagesForNonGraphURIs(self,uristorender,graph,prefixnamespace,corpusid,outpath,nonnsmap,baseurl,uritotreeitem,labeltouri):
         nonnsuris=len(uristorender)	
         counter=0	
         for uri in uristorender:	
@@ -2338,10 +2341,12 @@ class OntDocGeneration:
                 else:
                     uritotreeitem[uri][-1]["text"]=self.shortenURI(uri)
                 uritotreeitem[uri][-1]["id"]=prefixnamespace+"nonns_"+self.shortenURI(uri)+".html"
+                labeltouri[label]=prefixnamespace+"nonns_"+self.shortenURI(uri)+".html"
             if counter%50==0:
                 print("NonNS Counter " +str(counter)+"/"+str(nonnsuris)+" "+ str(uri))	
             self.createHTML(outpath+"nonns_"+self.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri),True), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, None, Graph(),uristorender,True,label)	
             counter+=1	
+        return labeltouri
 
     def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths):
         collectionsjson={"collections":[],"links":[{"href":outpath+"collections/index.json","rel":"self","type":"application/json","title":"this document as JSON"},{"href":outpath+"collections/index.html","rel":"self","type":"text/html","title":"this document as HTML"},]}
@@ -2605,7 +2610,7 @@ class OntDocGeneration:
         nonnslink=""
         if nonns:
             completesavepath = savepath.replace(":","_")
-            nonnslink="<div>This page describes the instances of the concept "+str(subject)+" in this knowledge graph. For the concept definition of "+str(subject)+" click <a target=\"_blank\" href=\""+str(subject)+"\">here</a></div>" 
+            nonnslink="<div>This page describes linked instances to the concept  <a target=\"_blank\" href=\"" + str(subject) + "\">" + str(foundlabel) + " ("+str(self.shortenURI(subject))+") </a> in this knowledge graph. It is defined <a target=\"_blank\" href=\""+str(subject)+"\">here</a></div>"
         else:
             completesavepath=savepath.replace(":","_") + "/index.html"
         if not nonns:
