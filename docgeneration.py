@@ -1720,6 +1720,7 @@ class OntDocGeneration:
                     f.write(indexhtml)
                     f.close()
         if len(featurecollectionspaths)>0:
+            self.generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths)
             indexhtml = htmltemplate.replace("{{logo}}",self.logoname).replace("{{relativedepth}}","0").replace("{{baseurl}}", prefixnamespace).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}", "vowl_result.js")\
                     .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{nonnslink}}","").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
             indexhtml = indexhtml.replace("{{indexpage}}", "true")
@@ -2342,7 +2343,17 @@ class OntDocGeneration:
             self.createHTML(outpath+"nonns_"+self.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri),True), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, None, Graph(),uristorender,True,label)	
             counter+=1	
 
-                
+    def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths):
+        collectionsjson={"collections":[],"links":[{"href":outpath+"collections/index.json","rel":"self","type":"application/json","title":"this document as JSON"},{"href":outpath+"collections/index.html","rel":"self","type":"text/html","title":"this document as HTML"},]}
+        for coll in featurecollectionspaths:
+            collectionsjson["collections"].append({"id":self.shortenURI(coll),"title":self.shortenURI(coll),"links":[{"href":coll+".geojson","rel":"collection":,"type":"application/json","title":"Collection as JSON"},{"href":coll+".html","rel":"collection":,"type":"text/html","title":"Collection as HTML"}]})
+        if not os.path.exists(outpath+"/collections/"):
+            os.mkdir(outpath + "/collections/")
+        f=open(outpath + "/collections/index.json","w",encoding="utf-8")
+        f.write(json.dumps(collectionsjson))
+        f.close()            
+            
+            
     def detectURIsConnectedToSubjects(self,subjectstorender,graph,prefixnamespace,corpusid,outpath,curlicense,baseurl):
         uristorender={}
         uritolabel={}
