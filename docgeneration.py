@@ -2349,7 +2349,7 @@ class OntDocGeneration:
         return labeltouri
 
     def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths):
-            landingpagejson={"title":"Landing Page","description":"Landing Page","links":[{
+        landingpagejson={"title":"Landing Page","description":"Landing Page","links":[{
             "href": outpath+"/index.json",
             "rel": "self",
             "type": "application/json",
