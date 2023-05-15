@@ -2359,7 +2359,7 @@ class OntDocGeneration:
             "rel": "alternate",
             "type": "text/html",
             "title": "this document as HTML"
-        },, {
+        }, {
             "href": outpath+"/collections/index.json",
             "rel": "data",
             "type": "application/json",
