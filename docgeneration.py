@@ -2360,12 +2360,12 @@ class OntDocGeneration:
             "type": "text/html",
             "title": "this document as HTML"
         }, {
-            "href": outpath+"/collections/index.json",
+            "href": "/collections/index.json",
             "rel": "data",
             "type": "application/json",
             "title": "Supported Feature Collections as JSON"
         }, {
-            "href": outpath+"/collections/index.html",
+            "href": "/collections/index.html",
             "rel": "data",
             "type": "text/html",
             "title": "Supported Feature Collections as HTML"
