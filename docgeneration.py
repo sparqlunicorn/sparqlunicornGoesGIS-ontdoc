@@ -2374,7 +2374,7 @@ class OntDocGeneration:
         conformancejson={"conformsTo":["http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson"]}
         collectionsjson={"collections":[],"links":[{"href":outpath+"collections/index.json","rel":"self","type":"application/json","title":"this document as JSON"},{"href":outpath+"collections/index.html","rel":"self","type":"text/html","title":"this document as HTML"}]}
         for coll in featurecollectionspaths:
-            collectionsjson["collections"].append({"id":featurecollectionspaths[coll]["id"],"title":featurecollectionspaths[coll]["name"],"links":[{"href":str(self.deploypath)+"/"+coll.replace(outpath,""),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":str(self.deploypath)++"/"+coll.replace(outpath,"").replace(".geojson",".html"),"rel":"collection","type":"text/html","title":"Collection as HTML"}]})
+            collectionsjson["collections"].append({"id":featurecollectionspaths[coll]["id"],"title":featurecollectionspaths[coll]["name"],"links":[{"href":str(self.deploypath)+"/"+coll.replace(outpath,""),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":str(self.deploypath)+"/"+coll.replace(outpath,"").replace(".geojson",".html"),"rel":"collection","type":"text/html","title":"Collection as HTML"}]})
         if not os.path.exists(outpath+"/collections/"):
             os.mkdir(outpath + "/collections/")
         if not os.path.exists(outpath+"/conformance/"):
