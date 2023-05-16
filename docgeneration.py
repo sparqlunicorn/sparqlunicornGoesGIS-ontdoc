@@ -2391,7 +2391,7 @@ class OntDocGeneration:
             op=op.replace("//","/")
             if not os.path.exists(op):
                 os.mkdir(op)
-            currentcollection={"title":featurecollectionspaths[coll]["name"],"id":+coll.replace(outpath,"").replace("index.geojson",""),"links":[]}
+            currentcollection={"title":featurecollectionspaths[coll]["name"],"id":coll.replace(outpath,"").replace("index.geojson",""),"links":[]}
             currentcollection["links"]=[{"href":str(self.deploypath)+"/"+coll.replace(outpath,""),"rel":"items","type":"application/json","title":"Collection as JSON"},{"href":str(self.deploypath)+"/"+coll.replace(outpath,"").replace(".geojson",".html"),"rel":"items","type":"text/html","title":"Collection as HTML"}]
             f=open(op+"index.json","w",encoding="utf-8")
             f.write(json.dumps(currentcollection))
