@@ -78,6 +78,8 @@ jobs:
   sample-action:
     name: Ontology Documentation
     runs-on: ubuntu-latest
+    env: 
+        
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -94,7 +96,7 @@ jobs:
           sudo pip3 install wheel pylode==2.13.2 rdflib shapely
           cp ontdocscript/docgeneration.py .
           cp ontdocscript/prefixes.json .
-          python3 docgeneration.py "${{inputs.rdffilepath}}" "${{inputs.docpath}}" "${{inputs.prefixns}}" "${{inputs.prefixnsshort}}" "${{inputs.indexpages}}" "${{inputs.createcollections}}" "${{inputs.preferredlang}}" "${{inputs.license}}" "${{inputs.logourl}}" "${{inputs.metadatatable}}" "${{inputs.createnonNSPages}}" "${{inputs.createVOWL}}" "${{inputs.startconcept}}" "https://${{vars.GITHUB_REPOSITORY_OWNER}}.github.io/${{ vars.REPOSITORY_VAR }}" "${{inputs.templatedir}}" 
+          python3 docgeneration.py "${{inputs.rdffilepath}}" "${{inputs.docpath}}" "${{inputs.prefixns}}" "${{inputs.prefixnsshort}}" "${{inputs.indexpages}}" "${{inputs.createcollections}}" "${{inputs.preferredlang}}" "${{inputs.license}}" "${{inputs.logourl}}" "${{inputs.metadatatable}}" "${{inputs.createnonNSPages}}" "${{inputs.createVOWL}}" "${{inputs.startconcept}}" "https://${{github.repository_owner}}.github.io/${{ github.event.repository.name }}" "${{inputs.templatedir}}" 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         if: ${{ inputs.ghpages }}
