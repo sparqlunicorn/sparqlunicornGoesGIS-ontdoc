@@ -2369,18 +2369,24 @@ class OntDocGeneration:
             "rel": "data",
             "type": "text/html",
             "title": "Supported Feature Collections as HTML"
-        }]}
+        },{"href":"/conformance","rel":"conformance","type":"application/json","title":"OGC API conformance classes as Json"},{"href":"/conformance","rel":"conformance","type":"text/html","title":"OGC API conformance classes as HTML"}]}
+        conformancejson={"conformsTo":["http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson"]}
         collectionsjson={"collections":[],"links":[{"href":outpath+"collections/index.json","rel":"self","type":"application/json","title":"this document as JSON"},{"href":outpath+"collections/index.html","rel":"self","type":"text/html","title":"this document as HTML"}]}
         for coll in featurecollectionspaths:
             collectionsjson["collections"].append({"id":self.shortenURI(coll),"title":self.shortenURI(coll),"links":[{"href":coll,"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":coll.replace(".geojson",".html"),"rel":"collection","type":"text/html","title":"Collection as HTML"}]})
         if not os.path.exists(outpath+"/collections/"):
             os.mkdir(outpath + "/collections/")
+        if not os.path.exists(outpath+"/conformance/"):
+            os.mkdir(outpath + "/conformance/")
         f=open(outpath + "/index.json","w",encoding="utf-8")
         f.write(json.dumps(landingpagejson))
         f.close() 
         f=open(outpath + "/collections/index.json","w",encoding="utf-8")
         f.write(json.dumps(collectionsjson))
-        f.close()            
+        f.close()  
+        f=open(outpath + "/conformance/index.json","w",encoding="utf-8")
+        f.write(json.dumps(conformancejson))
+        f.close()         
             
             
     def detectURIsConnectedToSubjects(self,subjectstorender,graph,prefixnamespace,corpusid,outpath,curlicense,baseurl):
