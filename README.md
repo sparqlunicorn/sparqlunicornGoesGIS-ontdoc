@@ -13,3 +13,16 @@ Deviations from the SPARQLing Unicorn Plugin are listed as follows:
 
 For a usage example please refer to this repository:
 https://github.com/sparqlunicorn/sparqlunicornGoesGIS_testdata
+
+### Supported vocabularies
+
+The following vocabularies are supported by the ontology documentation tool and may be rendered in a specific way in HTML:
+
+* [BIBO Vocbulary](http://purl.org/ontology/bibo/)
+* [Dublin Core DCTerms](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/)
+* [FOAF Vocabulary](http://xmlns.com/foaf/0.1/)
+* [GeoSPARQL 1.0 and 1.1 vocabulary](https://github.com/opengeospatial/ogc-geosparql)
+* [SKOS Vocabulary](https://www.w3.org/TR/swbp-skos-core-spec/)
+* [Unit of Measurements Ontology](https://github.com/HajoRijgersberg/OM)
+* [W3C Web Annotation Data Model](https://www.w3.org/TR/annotation-model/)
+* [W3C Geo Vocabulary](https://www.w3.org/2003/01/geo/)
