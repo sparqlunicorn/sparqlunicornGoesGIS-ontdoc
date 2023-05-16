@@ -2369,7 +2369,7 @@ class OntDocGeneration:
             "rel": "data",
             "type": "text/html",
             "title": "Supported Feature Collections as HTML"
-        },{"href":"/conformance","rel":"conformance","type":"application/json","title":"OGC API conformance classes as Json"},{"href":"/conformance","rel":"conformance","type":"text/html","title":"OGC API conformance classes as HTML"}]}
+        },{"href":"/api","rel":"service-desc","type":"application/vnd.oai.openapi+json;version=3.0","title":"API definition"},{"href":"/api","rel":"service-desc","type":"text/html","title":"API definition as HTML"},{"href":"/conformance","rel":"conformance","type":"application/json","title":"OGC API conformance classes as Json"},{"href":"/conformance","rel":"conformance","type":"text/html","title":"OGC API conformance classes as HTML"}]}
         conformancejson={"conformsTo":["http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson"]}
         collectionsjson={"collections":[],"links":[{"href":outpath+"collections/index.json","rel":"self","type":"application/json","title":"this document as JSON"},{"href":outpath+"collections/index.html","rel":"self","type":"text/html","title":"this document as HTML"}]}
         for coll in featurecollectionspaths:
