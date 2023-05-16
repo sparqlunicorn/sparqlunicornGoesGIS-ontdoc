@@ -2375,10 +2375,12 @@ class OntDocGeneration:
         },{"href":str(self.deploypath)+"/api","rel":"service-desc","type":"application/vnd.oai.openapi+json;version=3.0","title":"API definition"},{"href":str(self.deploypath)+"/api","rel":"service-desc","type":"text/html","title":"API definition as HTML"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"application/json","title":"OGC API conformance classes as Json"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"text/html","title":"OGC API conformance classes as HTML"}]}
         conformancejson={"conformsTo":["http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson"]}
         collectionsjson={"collections":[],"links":[{"href":outpath+"collections/index.json","rel":"self","type":"application/json","title":"this document as JSON"},{"href":outpath+"collections/index.html","rel":"self","type":"text/html","title":"this document as HTML"}]}
+        if outpath.endswith("/"):
+            outpath=outpath[0:-1]
         if not os.path.exists(outpath+"/api/"):
             os.mkdir(outpath + "/api/")
         if not os.path.exists(outpath+"/collections/"):
-            os.mkdir(outpath + "/collections/")
+            os.mkdir(outpath+"/collections/")
         if not os.path.exists(outpath+"/conformance/"):
             os.mkdir(outpath + "/conformance/")
         for coll in featurecollectionspaths:
@@ -2387,7 +2389,7 @@ class OntDocGeneration:
                 os.mkdir(outpath+"/collections/"+coll.replace(outpath,"").replace("index.geojson","")+"/")
             currentcollection={"title":featurecollectionspaths[coll]["name"],"id":featurecollectionspaths[coll]["id"],"links":[]}
             currentcollection["links"]=[{"href":str(self.deploypath)+"/"+coll.replace(outpath,""),"rel":"items","type":"application/json","title":"Collection as JSON"},{"href":str(self.deploypath)+"/"+coll.replace(outpath,"").replace(".geojson",".html"),"rel":"items","type":"text/html","title":"Collection as HTML"}]
-            f=open(outpath+"/collections/"+coll.replace(outpath,"")+"/index.json","w",encoding="utf-8")
+            f=open(outpath+"/collections/"+coll.replace(outpath,""),"w",encoding="utf-8")
             f.write(json.dumps(currentcollection))
             f.close()  
         f=open(outpath + "/index.json","w",encoding="utf-8")
