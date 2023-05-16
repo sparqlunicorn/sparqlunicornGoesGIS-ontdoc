@@ -2385,7 +2385,7 @@ class OntDocGeneration:
             os.mkdir(outpath + "/conformance/")
         for coll in featurecollectionspaths:
             collectionsjson["collections"].append({"id":featurecollectionspaths[coll]["id"],"title":featurecollectionspaths[coll]["name"],"links":[{"href":str(self.deploypath)+"/collections/"+str(coll.replace(outpath,"")).replace(".geojson","")+"/","rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":str(self.deploypath)+"/collections/"+str(coll.replace(outpath,"")).replace(".geojson","")+"/","rel":"collection","type":"text/html","title":"Collection as HTML"}]})
-            op=outpath+"/collections/"+coll.replace(outpath,"").replace("index.geojson","")+"/"
+            op=outpath+"/collections/"+coll.replace(outpath,"").replace(".geojson","")+"/"
             op=op.replace("//","/")
             if not os.path.exists(op):
                 os.mkdir(op)
