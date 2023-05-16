@@ -2790,7 +2790,7 @@ class OntDocGeneration:
                                     feat["properties"][dateatt]=""
                         f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(featcoll)+"]").replace("{{baselayers}}",json.dumps(baselayers)).replace("{{epsgdefspath}}", epsgdefslink).replace("{{dateatt}}", dateatt))
                         with open(completesavepath.replace(".html",".geojson"), 'w', encoding='utf-8') as fgeo:
-                            featurecollectionspaths[completesavepath.replace(".html",".geojson")]={"name":featcoll["name"],"id":featcoll["id"]})
+                            featurecollectionspaths[completesavepath.replace(".html",".geojson")]={"name":featcoll["name"],"id":featcoll["id"]}
                             fgeo.write(json.dumps(featcoll))
                             fgeo.close()
                 f.write(htmltabletemplate.replace("{{tablecontent}}", tablecontents))	
