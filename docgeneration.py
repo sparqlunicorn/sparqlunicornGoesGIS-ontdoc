@@ -2385,7 +2385,7 @@ class OntDocGeneration:
                 os.mkdir(outpath+"/collections/"+featurecollectionspaths[coll]["id"]+"/")
             currentcollection={"title":featurecollectionspaths[coll]["name"],"id":featurecollectionspaths[coll]["id"],"links":[]}
             currentcollection["links"]=[{"href":str(self.deploypath)+"/"+coll.replace(outpath,""),"rel":"items","type":"application/json","title":"Collection as JSON"},{"href":str(self.deploypath)+"/"+coll.replace(outpath,"").replace(".geojson",".html"),"rel":"items","type":"text/html","title":"Collection as HTML"}]
-            f=open(outpath+"/collections/"+featurecollectionspaths[coll]["id"]+"/index.json","w",encoding="utf-8")
+            f=open(outpath+"/collections/"+featurecollectionspaths[coll]["name"]+"/index.json","w",encoding="utf-8")
             f.write(json.dumps(currentcollection))
             f.close()  
         f=open(outpath + "/index.json","w",encoding="utf-8")
