@@ -1697,7 +1697,7 @@ class OntDocGeneration:
                 else:
                     indexhtml = indexhtml.replace("{{indexpage}}", "false")
                 indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"+vowltemplate.replace("{{vowlpath}}", "minivowl_result.js")
-                if startconcept!=None and path=="" and startconcept in uritotreeitem:
+                if startconcept!=None and path==outpath and startconcept in uritotreeitem:
                     if self.createColl:
                         indexhtml+="<p>Start exploring the graph here: <img src=\""+tree["types"][uritotreeitem[startconcept]["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+uritotreeitem[startconcept]["type"]+"\"/><a href=\""+str(startconcept)+"\">"+self.shortenURI(startconcept)+"</a></p>"                    
                     else:
