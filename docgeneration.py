@@ -2384,7 +2384,7 @@ class OntDocGeneration:
         if not os.path.exists(outpath+"/conformance/"):
             os.mkdir(outpath + "/conformance/")
         for coll in featurecollectionspaths:
-            collectionsjson["collections"].append({"id":featurecollectionspaths[coll]["id"],"title":featurecollectionspaths[coll]["name"],"links":[{"href":str(self.deploypath)+"/collections/"+str(featurecollectionspaths[coll]["id"]),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":str(self.deploypath)+"/collections/"+str(featurecollectionspaths[coll]["id"]),"rel":"collection","type":"text/html","title":"Collection as HTML"}]})
+            collectionsjson["collections"].append({"id":featurecollectionspaths[coll]["id"],"title":featurecollectionspaths[coll]["name"],"links":[{"href":str(self.deploypath)+"/collections/"+str(coll.replace(outpath,"")),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":str(self.deploypath)+"/collections/"+str(coll.replace(outpath,"")),"rel":"collection","type":"text/html","title":"Collection as HTML"}]})
             if not os.path.exists(outpath+"/collections/"+coll.replace(outpath,"").replace("index.geojson","")+"/"):
                 os.mkdir(outpath+"/collections/"+coll.replace(outpath,"").replace("index.geojson","")+"/")
             currentcollection={"title":featurecollectionspaths[coll]["name"],"id":featurecollectionspaths[coll]["id"],"links":[]}
