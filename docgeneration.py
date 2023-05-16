@@ -1355,7 +1355,7 @@ classtreequery="""PREFIX owl: <http://www.w3.org/2002/07/owl#>\n
                 ?subject != owl:Ontology) )\n
         }"""
 
-featurecollectionspaths=set()
+featurecollectionspaths={}
 
 def resolveTemplate(templatename):
     print(templatepath+"/"+templatename)
@@ -2370,11 +2370,11 @@ class OntDocGeneration:
             "rel": "data",
             "type": "text/html",
             "title": "Supported Feature Collections as HTML"
-        },{"href":str(self.deploypath)+"/api","rel":"service-desc","type":"application/vnd.oai.openapi+json;version=3.0","title":"API definition"},{"href":"/api","rel":"service-desc","type":"text/html","title":"API definition as HTML"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"application/json","title":"OGC API conformance classes as Json"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"text/html","title":"OGC API conformance classes as HTML"}]}
+        },{"href":str(self.deploypath)+"/api","rel":"service-desc","type":"application/vnd.oai.openapi+json;version=3.0","title":"API definition"},{"href":str(self.deploypath)+"/api","rel":"service-desc","type":"text/html","title":"API definition as HTML"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"application/json","title":"OGC API conformance classes as Json"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"text/html","title":"OGC API conformance classes as HTML"}]}
         conformancejson={"conformsTo":["http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson"]}
         collectionsjson={"collections":[],"links":[{"href":outpath+"collections/index.json","rel":"self","type":"application/json","title":"this document as JSON"},{"href":outpath+"collections/index.html","rel":"self","type":"text/html","title":"this document as HTML"}]}
         for coll in featurecollectionspaths:
-            collectionsjson["collections"].append({"id":self.shortenURI(coll),"title":self.shortenURI(coll),"links":[{"href":str(self.deploypath)+coll,"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":str(self.deploypath)+coll.replace(".geojson",".html"),"rel":"collection","type":"text/html","title":"Collection as HTML"}]})
+            collectionsjson["collections"].append({"id":featurecollectionspaths[coll]["id"],"title":featurecollectionspaths[coll]["name"],"links":[{"href":str(self.deploypath)+"/"+coll.replace(outpath,""),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":str(self.deploypath)++"/"+coll.replace(outpath,"").replace(".geojson",".html"),"rel":"collection","type":"text/html","title":"Collection as HTML"}]})
         if not os.path.exists(outpath+"/collections/"):
             os.mkdir(outpath + "/collections/")
         if not os.path.exists(outpath+"/conformance/"):
@@ -2790,7 +2790,7 @@ class OntDocGeneration:
                                     feat["properties"][dateatt]=""
                         f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(featcoll)+"]").replace("{{baselayers}}",json.dumps(baselayers)).replace("{{epsgdefspath}}", epsgdefslink).replace("{{dateatt}}", dateatt))
                         with open(completesavepath.replace(".html",".geojson"), 'w', encoding='utf-8') as fgeo:
-                            featurecollectionspaths.add(completesavepath.replace(".html",".geojson"))
+                            featurecollectionspaths[completesavepath.replace(".html",".geojson")]={"name":featcoll["name"],"id":featcoll["id"]})
                             fgeo.write(json.dumps(featcoll))
                             fgeo.close()
                 f.write(htmltabletemplate.replace("{{tablecontent}}", tablecontents))	
