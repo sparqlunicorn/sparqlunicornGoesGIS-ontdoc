@@ -1405,7 +1405,7 @@ def resolveTemplate(templatename):
 
 class OntDocGeneration:
 
-    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,startconcept=None,logoname="",templatename="default"):
+    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,startconcept=None,deploypath="",logoname="",templatename="default"):
         self.prefixes=prefixes
         self.prefixnamespace = prefixnamespace
         self.namespaceshort = prefixnsshort.replace("/","")
@@ -1414,6 +1414,7 @@ class OntDocGeneration:
         self.startconcept=startconcept
         self.createVOWL=createVOWL
         self.geocache={}
+        self.deploypath=deploypath
         self.generatePagesForNonNS=generatePagesForNonNS
         self.geocollectionspaths=[]
         self.metadatatable=metadatatable
@@ -2360,20 +2361,20 @@ class OntDocGeneration:
             "type": "text/html",
             "title": "this document as HTML"
         }, {
-            "href": "/collections/index.json",
+            "href": str(self.deploypath)+"/collections/index.json",
             "rel": "data",
             "type": "application/json",
             "title": "Supported Feature Collections as JSON"
         }, {
-            "href": "/collections/index.html",
+            "href": str(self.deploypath)+"/collections/index.html",
             "rel": "data",
             "type": "text/html",
             "title": "Supported Feature Collections as HTML"
-        },{"href":"/api","rel":"service-desc","type":"application/vnd.oai.openapi+json;version=3.0","title":"API definition"},{"href":"/api","rel":"service-desc","type":"text/html","title":"API definition as HTML"},{"href":"/conformance","rel":"conformance","type":"application/json","title":"OGC API conformance classes as Json"},{"href":"/conformance","rel":"conformance","type":"text/html","title":"OGC API conformance classes as HTML"}]}
+        },{"href":str(self.deploypath)+"/api","rel":"service-desc","type":"application/vnd.oai.openapi+json;version=3.0","title":"API definition"},{"href":"/api","rel":"service-desc","type":"text/html","title":"API definition as HTML"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"application/json","title":"OGC API conformance classes as Json"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"text/html","title":"OGC API conformance classes as HTML"}]}
         conformancejson={"conformsTo":["http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson"]}
         collectionsjson={"collections":[],"links":[{"href":outpath+"collections/index.json","rel":"self","type":"application/json","title":"this document as JSON"},{"href":outpath+"collections/index.html","rel":"self","type":"text/html","title":"this document as HTML"}]}
         for coll in featurecollectionspaths:
-            collectionsjson["collections"].append({"id":self.shortenURI(coll),"title":self.shortenURI(coll),"links":[{"href":coll,"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":coll.replace(".geojson",".html"),"rel":"collection","type":"text/html","title":"Collection as HTML"}]})
+            collectionsjson["collections"].append({"id":self.shortenURI(coll),"title":self.shortenURI(coll),"links":[{"href":str(self.deploypath)+coll,"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":str(self.deploypath)+coll.replace(".geojson",".html"),"rel":"collection","type":"text/html","title":"Collection as HTML"}]})
         if not os.path.exists(outpath+"/collections/"):
             os.mkdir(outpath + "/collections/")
         if not os.path.exists(outpath+"/conformance/"):
@@ -2892,7 +2893,9 @@ if len(sys.argv)>12:
 if len(sys.argv)>13:
     startconcept=sys.argv[13]
 if len(sys.argv)>14:
-    templatepath=sys.argv[14]
+    deploypath=sys.argv[14]
+if len(sys.argv)>15:
+    templatepath=sys.argv[15]
     if templatepath.startswith("http") and templatepath.endswith(".zip"):
         with urlopen(templatepath) as zipresp:
             with ZipFile(BytesIO(zipresp.read())) as zfile:
@@ -2908,17 +2911,17 @@ if len(sys.argv)>14:
                 print(templatepath)
                 print(subfoldername)
                 print(templatename)
-if len(sys.argv)>15:
-    templatename=sys.argv[15]
+if len(sys.argv)>16:
+    templatename=sys.argv[16]
 fcounter=0
 for fp in filestoprocess:
     #try:
     g = Graph()
     g.parse(fp)
     if fcounter<len(outpath):
-        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,startconcept,logourl,templatename)
+        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,startconcept,deploypath,logourl,templatename)
     else:
-        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,startconcept,logourl,templatename)
+        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,startconcept,deploypath,logourl,templatename)
     docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
     #except Exception as inst:
     # 	print("Could not parse "+str(fp))
