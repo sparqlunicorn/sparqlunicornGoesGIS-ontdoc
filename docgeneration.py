@@ -2364,12 +2364,12 @@ class OntDocGeneration:
             "type": "text/html",
             "title": "this document as HTML"
         }, {
-            "href": str(self.deploypath)+"/collections/index.json",
+            "href": str(self.deploypath)+"/collections/",
             "rel": "data",
             "type": "application/json",
             "title": "Supported Feature Collections as JSON"
         }, {
-            "href": str(self.deploypath)+"/collections/index.html",
+            "href": str(self.deploypath)+"/collections/",
             "rel": "data",
             "type": "text/html",
             "title": "Supported Feature Collections as HTML"
@@ -2391,7 +2391,7 @@ class OntDocGeneration:
             if not os.path.exists(op):
                 os.mkdir(op)
             opweb=op.replace(outpath,self.deploypath)
-            collectionsjson["collections"].append({"id":coll.replace(outpath,"").replace("index.geojson","")[1:],"title":featurecollectionspaths[coll]["name"],"links":[{"href":opweb.replace(".geojson",""),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":opweb.replace(".geojson",""),"rel":"collection","type":"text/html","title":"Collection as HTML"}]})
+            collectionsjson["collections"].append({"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"title":featurecollectionspaths[coll]["name"],"links":[{"href":opweb.replace(".geojson",""),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":opweb.replace(".geojson",""),"rel":"collection","type":"text/html","title":"Collection as HTML"}]})
             currentcollection={"title":featurecollectionspaths[coll]["name"],"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"links":[]}
             currentcollection["links"]=[{"href":opweb.replace(".geojson",""),"rel":"items","type":"application/json","title":"Collection as JSON"},{"href":opweb.replace(".geojson",""),"rel":"items","type":"text/html","title":"Collection as HTML"}]
             f=open(op+"index.json","w",encoding="utf-8")
