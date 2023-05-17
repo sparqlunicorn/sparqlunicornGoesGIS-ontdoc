@@ -2385,13 +2385,13 @@ class OntDocGeneration:
         if not os.path.exists(outpath+"/conformance/"):
             os.mkdir(outpath + "/conformance/")
         for coll in featurecollectionspaths:
-            op=outpath+"/collections/"+coll.replace(outpath,"").replace("index.geojson","")+"/"
+            op=str(self.deploypath)+"/collections/"+coll.replace(outpath,"").replace("index.geojson","")+"/"
             op=op.replace(".geojson","")
             op=op.replace("//","/")
-            collectionsjson["collections"].append({"id":coll.replace(outpath,"").replace("index.geojson",""),"title":featurecollectionspaths[coll]["name"],"links":[{"href":op+"/","rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":op+"/","rel":"collection","type":"text/html","title":"Collection as HTML"}]})
+            collectionsjson["collections"].append({"id":coll[1:].replace(outpath,"").replace("index.geojson",""),"title":featurecollectionspaths[coll]["name"],"links":[{"href":op,"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":op,"rel":"collection","type":"text/html","title":"Collection as HTML"}]})
             if not os.path.exists(op):
                 os.mkdir(op)
-            currentcollection={"title":featurecollectionspaths[coll]["name"],"id":coll.replace(outpath,"").replace("index.geojson",""),"links":[]}
+            currentcollection={"title":featurecollectionspaths[coll]["name"],"id":coll[1:].replace(outpath,"").replace("index.geojson",""),"links":[]}
             currentcollection["links"]=[{"href":str(self.deploypath)+"/"+coll.replace(outpath,""),"rel":"items","type":"application/json","title":"Collection as JSON"},{"href":str(self.deploypath)+"/"+coll.replace(outpath,"").replace(".geojson",".html"),"rel":"items","type":"text/html","title":"Collection as HTML"}]
             f=open(op+"index.json","w",encoding="utf-8")
             f.write(json.dumps(currentcollection))
