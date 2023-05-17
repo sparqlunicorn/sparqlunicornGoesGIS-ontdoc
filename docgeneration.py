@@ -2352,12 +2352,12 @@ class OntDocGeneration:
     def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths):
         apijson={}
         landingpagejson={"title":"Landing Page","description":"Landing Page","links":[{
-            "href": outpath+"/index.json",
+            "href": str(self.deploypath)+"/index.json",
             "rel": "self",
             "type": "application/json",
             "title": "this document as JSON"
         }, {
-            "href": outpath+"/index.html",
+            "href": str(self.deploypath)+"/index.html",
             "rel": "alternate",
             "type": "text/html",
             "title": "this document as HTML"
