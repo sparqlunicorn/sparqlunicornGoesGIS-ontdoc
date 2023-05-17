@@ -2396,7 +2396,7 @@ class OntDocGeneration:
             opwebcoll=opwebcoll.replace("//","/")
             collectionsjson["collections"].append({"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"title":featurecollectionspaths[coll]["name"],"links":[{"href":opweb.replace(".geojson",""),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":opweb.replace(".geojson",""),"rel":"collection","type":"text/html","title":"Collection as HTML"}]})
             currentcollection={"title":featurecollectionspaths[coll]["name"],"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"links":[]}
-            currentcollection["links"]=[{"href":opwebcoll+".geojson","rel":"items","type":"application/json","title":"Collection as JSON"},{"href":opwebcoll+".geojson","rel":"items","type":"text/html","title":"Collection as HTML"}]
+            currentcollection["links"]=[{"href":opwebcoll+"/items/","rel":"items","type":"application/json","title":"Collection as JSON"},{"href":opwebcoll+"/items/,"rel":"items","type":"text/html","title":"Collection as HTML"}]
             f=open(op+"index.json","w",encoding="utf-8")
             f.write(json.dumps(currentcollection))
             f.close() 
