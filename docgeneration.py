@@ -1724,11 +1724,11 @@ class OntDocGeneration:
                     f.write(indexhtml)
                     f.close()
         if len(featurecollectionspaths)>0:
-            self.generateOGCAPIFeaturesPages(outpath,featurecollectionspaths)
             indexhtml = htmltemplate.replace("{{logo}}",self.logoname).replace("{{relativedepth}}","0").replace("{{baseurl}}", prefixnamespace).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}", "vowl_result.js")\
                     .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{nonnslink}}","").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
             indexhtml = indexhtml.replace("{{indexpage}}", "true")
             self.merge_JsonFiles(featurecollectionspaths,str(outpath)+"features.js")
+            self.generateOGCAPIFeaturesPages(outpath,featurecollectionspaths)
             indexhtml += "<p>This page shows feature collections present in the linked open data export</p>"
             indexhtml+="<script src=\"features.js\"></script>"
             indexhtml+=maptemplate.replace("var featurecolls = {{myfeature}}","").replace("{{baselayers}}",json.dumps(baselayers).replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{dateatt}}", ""))
