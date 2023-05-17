@@ -2350,9 +2350,6 @@ class OntDocGeneration:
         return labeltouri
 
     def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths):
-        apipagejson={
-            
-        }
         landingpagejson={"title":"Landing Page","description":"Landing Page","links":[{
             "href": outpath+"/index.json",
             "rel": "self",
@@ -2390,22 +2387,23 @@ class OntDocGeneration:
             op=op.replace("//","/")
             if not os.path.exists(op):
                 os.mkdir(op)
+            if not os.path.exists(op+"/items/"):
+                os.mkdir(op+"/items/")
             opweb=op.replace(outpath,self.deploypath)
             opwebcoll=opweb
             if opwebcoll.endswith("/"):
                 opwebcoll=opwebcoll[0:-1]
+            opwebcoll=opwebcoll.replace("//","/")
             collectionsjson["collections"].append({"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"title":featurecollectionspaths[coll]["name"],"links":[{"href":opweb.replace(".geojson",""),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":opweb.replace(".geojson",""),"rel":"collection","type":"text/html","title":"Collection as HTML"}]})
             currentcollection={"title":featurecollectionspaths[coll]["name"],"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"links":[]}
             currentcollection["links"]=[{"href":opwebcoll+".geojson","rel":"items","type":"application/json","title":"Collection as JSON"},{"href":opwebcoll+".geojson","rel":"items","type":"text/html","title":"Collection as HTML"}]
             f=open(op+"index.json","w",encoding="utf-8")
             f.write(json.dumps(currentcollection))
-            f.close()  
+            f.close() 
+            shutil.move(coll, op+"/items/index.json")            
         f=open(outpath + "/index.json","w",encoding="utf-8")
         f.write(json.dumps(landingpagejson))
-        f.close()
-        f=open(outpath + "/api/index.json","w",encoding="utf-8")
-        f.write(json.dumps(apipagejson))
-        f.close()         
+        f.close()       
         f=open(outpath + "/collections/index.json","w",encoding="utf-8")
         f.write(json.dumps(collectionsjson))
         f.close()  
@@ -2794,7 +2792,7 @@ class OntDocGeneration:
                                             geojsonrep = self.processLiteral(str(geotup[1]), str(geotup[1].datatype), "")
                                 if geojsonrep!=None:
                                     if uritotreeitem !=None and str(memberid) in uritotreeitem:
-                                        featcoll["features"].append({"type": "Feature", 'id': str(memberid), 'name': uritotreeitem[str(memberid)][-1]["text"],'dateprops':dateprops, 'properties': {},"geometry": geojsonrep})
+                                        featcoll["features"].append({"type": "Feature", 'id': str(memberid), 'name': uritotreeitem[str(memberid)][-1]["text"], 'dateprops':dateprops, 'properties': {},"geometry": geojsonrep})
                                     else:
                                         featcoll["features"].append({"type": "Feature", 'id': str(memberid), 'name': str(memberid),'dateprops':dateprops, 'properties': {}, "geometry": geojsonrep})
                                     if len(featcoll["features"][-1]["dateprops"])>0:
