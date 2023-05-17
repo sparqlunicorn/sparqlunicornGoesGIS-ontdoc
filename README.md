@@ -17,8 +17,8 @@ https://github.com/sparqlunicorn/sparqlunicornGoesGIS_testdata
 ### Supported vocabularies
 
 The following vocabularies are supported by the ontology documentation tool and may be rendered in a specific way in HTML:
-
-* [BIBO Vocbulary](http://purl.org/ontology/bibo/)
+ 
+* [BIBO Vocabulary](http://purl.org/ontology/bibo/)
 * [Dublin Core DCTerms](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/)
 * [FOAF Vocabulary](http://xmlns.com/foaf/0.1/)
 * [GeoSPARQL 1.0 and 1.1 vocabulary](https://github.com/opengeospatial/ogc-geosparql)
