@@ -2810,6 +2810,8 @@ class OntDocGeneration:
                                 if len(self.geocache[item]["dateprops"])>0:
                                     dateatt=self.geocache[item]["dateprops"][0]
                     if len(featcoll["features"])>0:
+                        featcoll["numberMatched"]=len(featcoll["features"])
+                        featcoll["numberReturned"]=len(featcoll["features"])
                         if dateatt!="":
                             for feat in featcoll["features"]:
                                 if dateatt not in feat["properties"]:
