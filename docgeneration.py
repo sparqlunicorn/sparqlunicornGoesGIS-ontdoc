@@ -2377,19 +2377,19 @@ class OntDocGeneration:
         if outpath.endswith("/"):
             outpath=outpath[0:-1]
         if not os.path.exists(outpath+"/api/"):
-            os.mkdir(outpath + "/api/")
+            os.mkdirs(outpath + "/api/")
         if not os.path.exists(outpath+"/collections/"):
-            os.mkdir(outpath+"/collections/")
+            os.mkdirs(outpath+"/collections/")
         if not os.path.exists(outpath+"/conformance/"):
-            os.mkdir(outpath + "/conformance/")
+            os.mkdirs(outpath + "/conformance/")
         for coll in featurecollectionspaths:
             op=outpath+"/collections/"+coll.replace(outpath,"").replace("index.geojson","")+"/"
             op=op.replace(".geojson","")
             op=op.replace("//","/")
             if not os.path.exists(op):
-                os.mkdir(op)
+                os.mkdirs(op)
             if not os.path.exists(op+"/items/"):
-                os.mkdir(op+"/items/")
+                os.mkdirs(op+"/items/")
             opweb=op.replace(outpath,self.deploypath)
             opwebcoll=opweb
             if opwebcoll.endswith("/"):
