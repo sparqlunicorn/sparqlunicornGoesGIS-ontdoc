@@ -1742,8 +1742,9 @@ class OntDocGeneration:
         #print("Merging....."+str(files))
         result = list()
         for f1 in files:
-            with open(f1, 'r',encoding="utf-8") as infile:
-                result.append(json.load(infile))
+            if os.path.exists(f1):
+                with open(f1, 'r',encoding="utf-8") as infile:
+                    result.append(json.load(infile))
         with open(outpath, 'w',encoding="utf-8") as output_file:
             output_file.write("var featurecolls="+json.dumps(result))
 
