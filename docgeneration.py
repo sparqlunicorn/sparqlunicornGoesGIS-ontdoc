@@ -2402,7 +2402,8 @@ class OntDocGeneration:
             f=open(op+"index.json","w",encoding="utf-8")
             f.write(json.dumps(currentcollection))
             f.close() 
-            shutil.move(coll, op+"/items/index.json")            
+            if os.path.exists(coll):
+                shutil.move(coll, op+"/items/index.json")
         f=open(outpath + "/index.json","w",encoding="utf-8")
         f.write(json.dumps(landingpagejson))
         f.close()   
