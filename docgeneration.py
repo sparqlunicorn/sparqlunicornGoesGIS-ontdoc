@@ -2406,11 +2406,11 @@ class OntDocGeneration:
             if os.path.exists(coll):
                 if os.path.exists(op+"/items/index.json"):
                     os.remove(op+"/items/index.json")
-                print(op+"/items"+" "+str(os.path.exists(str(op+"/items").replace("//","/"))))
-                print(op+"/items/index.json"+" "+str(os.path.exists(op+"/items/index.json")))
-                print(coll+" "+str(os.path.exists(str(coll).replace("//","/"))))
-                print(op+"/items/index.html"+" "+str(os.path.exists(str(op+"/items/index.html").replace("//","/"))))
-                print(str(coll.replace(".geojson",".html"))+" "+str(os.path.exists(coll.replace(".geojson",".html").replace("//","/"))))
+                print(str(op+"/items").replace("//","/")+" "+str(os.path.exists(str(op+"/items").replace("//","/"))))
+                print(str(op+"/items/index.json").replace("//","/")+" "+str(os.path.exists(op+"/items/index.json")))
+                print(str(coll).replace("//","/")+" "+str(os.path.exists(str(coll).replace("//","/"))))
+                print(str(op+"/items/index.html").replace("//","/")+" "+str(os.path.exists(str(op+"/items/index.html").replace("//","/"))))
+                print(str(coll.replace(".geojson",".html").replace("//","/"))+" "+str(os.path.exists(coll.replace(".geojson",".html").replace("//","/"))))
                 #print(coll+" "+str(coll.replace(".geojson",".html")))
                 p = Path( str(op+"/items/index.json").replace("//","/") )
                 p.symlink_to(coll.replace("//","/"))
