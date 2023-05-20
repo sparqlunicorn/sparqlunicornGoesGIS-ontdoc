@@ -2406,8 +2406,10 @@ class OntDocGeneration:
             if os.path.exists(coll):
                 if os.path.exists(op+"/items/index.json"):
                     os.remove(op+"/items/index.json")
-                os.symlink(coll,op+"/items/index.json")
-                os.symlink(coll.replace(".geojson",".html"),op+"/items/index.html")
+                p = Path( op+"/items/index.json" )
+                p.symlink_to(coll)
+                p = Path( op+"/items/index.html" )
+                p.symlink_to(coll.replace(".geojson",".html"))
                 #shutil.move(coll, op+"/items/index.json")
         f=open(outpath + "/index.json","w",encoding="utf-8")
         f.write(json.dumps(landingpagejson))
