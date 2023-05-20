@@ -2405,10 +2405,10 @@ class OntDocGeneration:
             f.close() 
             if os.path.exists(coll):
                 target = Path(coll)
-                my_symlink = Path(op+"items/index.json")
+                my_symlink = Path(op+"/items/index.json")
                 my_symlink.symlink_to(target)
                 target2 = Path(coll.replace(".geojson",".html"))
-                my_symlink2 = Path(op+"items/index.html")
+                my_symlink2 = Path(op+"/items/index.html")
                 my_symlink2.symlink_to(target2)
                 #shutil.move(coll, op+"/items/index.json")
         f=open(outpath + "/index.json","w",encoding="utf-8")
