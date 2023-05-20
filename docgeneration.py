@@ -6,6 +6,7 @@ from urllib.request import urlopen
 from io import BytesIO
 from urllib.request import urlopen
 from zipfile import ZipFile
+from pathlib import Path
 import shapely.wkt
 import shapely.geometry
 import os
@@ -2403,7 +2404,13 @@ class OntDocGeneration:
             f.write(json.dumps(currentcollection))
             f.close() 
             if os.path.exists(coll):
-                shutil.move(coll, op+"/items/index.json")
+                target = Path(coll)
+                my_symlink = Path(op+"items/index.json")
+                my_symlink.symlink_to(target)
+                target = Path(coll.replace(".geojson",".html"))
+                my_symlink2 = Path(op+"items/index.html")
+                my_symlink2.symlink_to(target2)
+                #shutil.move(coll, op+"/items/index.json")
         f=open(outpath + "/index.json","w",encoding="utf-8")
         f.write(json.dumps(landingpagejson))
         f.close()   
