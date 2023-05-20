@@ -2406,9 +2406,11 @@ class OntDocGeneration:
             if os.path.exists(coll):
                 if os.path.exists(op+"/items/index.json"):
                     os.remove(op+"/items/index.json")
+                print(coll+" "+str(os.path.exists(op+"/items")))
                 print(op+"/items/index.json"+" "+str(os.path.exists(op+"/items/index.json")))
                 print(coll+" "+str(os.path.exists(coll)))
                 print(op+"/items/index.html"+" "+str(os.path.exists(op+"/items/index.html")))
+                print(str(coll.replace(".geojson",".html"))+" "+str(os.path.exists(coll.replace(".geojson",".html"))))
                 print(coll+" "+str(coll.replace(".geojson",".html")))
                 p = Path( op+"/items/index.json" )
                 p.symlink_to(coll)
