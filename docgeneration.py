@@ -2406,6 +2406,10 @@ class OntDocGeneration:
             if os.path.exists(coll):
                 if os.path.exists(op+"/items/index.json"):
                     os.remove(op+"/items/index.json")
+                print(op+"/items/index.json"+" "+str(os.path.exists(op+"/items/index.json")))
+                print(coll+" "+str(os.path.exists(coll)))
+                print(op+"/items/index.html"+" "+str(os.path.exists(op+"/items/index.html")))
+                print(coll+" "+str(coll.replace(".geojson",".html")))
                 p = Path( op+"/items/index.json" )
                 p.symlink_to(coll)
                 p = Path( op+"/items/index.html" )
@@ -2454,7 +2458,7 @@ class OntDocGeneration:
                     item["label"]=label
                 else:
                     item["label"]=onelabel
-        print(uristorender)
+        #print(uristorender)
         for uri in uristorender:
             self.createHTML(outpath+"nonns_"+self.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri)), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, subjectstorender, Graph(),None,True,thelabel)
 
