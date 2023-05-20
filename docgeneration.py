@@ -2404,6 +2404,8 @@ class OntDocGeneration:
             f.write(json.dumps(currentcollection))
             f.close() 
             if os.path.exists(coll):
+                if os.path.exists(op+"/items/index.json"):
+                    os.remove(op+"/items/index.json")
                 target = Path(coll)
                 my_symlink = Path(op+"/items/index.json")
                 my_symlink.symlink_to(target)
