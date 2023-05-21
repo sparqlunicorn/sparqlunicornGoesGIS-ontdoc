@@ -2442,7 +2442,7 @@ class OntDocGeneration:
             with open(outpath, 'w',encoding="utf-8") as output_file:
                 output_file.write("var featurecolls="+json.dumps(result))
                 #shutil.move(coll, op+"/items/index.json")
-        if ogcapi
+        if ogcapi:
             f=open(outpath + "/index.json","w",encoding="utf-8")
             f.write(json.dumps(landingpagejson))
             f.close()
