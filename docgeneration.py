@@ -2361,7 +2361,7 @@ class OntDocGeneration:
         print("Target Rellink: "+str(targetrellink))
         print("Linkpath: "+str(linkpath))
         targetrellink=targetrellink.replace(outpath,"")
-        return targetrellink
+        return targetrellink.replace("//","/")
 
     def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths):
         apijson={}
