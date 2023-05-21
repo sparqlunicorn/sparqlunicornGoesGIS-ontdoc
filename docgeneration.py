@@ -1729,7 +1729,7 @@ class OntDocGeneration:
                     .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{nonnslink}}","").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
             indexhtml = indexhtml.replace("{{indexpage}}", "true")
             self.merge_JsonFiles(featurecollectionspaths,str(outpath)+"features.js")
-            self.generateOGCAPIFeaturesPages(outpath,featurecollectionspaths)
+            self.generateOGCAPIFeaturesPages(outpath,featurecollectionspaths,prefixnamespace)
             indexhtml += "<p>This page shows feature collections present in the linked open data export</p>"
             indexhtml+="<script src=\"features.js\"></script>"
             indexhtml+=maptemplate.replace("var featurecolls = {{myfeature}}","").replace("{{baselayers}}",json.dumps(baselayers).replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{dateatt}}", ""))
@@ -2351,7 +2351,18 @@ class OntDocGeneration:
             counter+=1	
         return labeltouri
 
-    def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths):
+    def generateRelativeSymlink(linkpath,targetpath,baseurl):
+        if "nonns" in targetpath:
+            checkdepthtarget=1
+        else:
+            checkdepthtarget=self.checkDepthFromPath(targetpath, linkpath, linkpath)
+        print("Checkdepthtarget: "+str(checkdepthtarget))
+        targetrellink=self.generateRelativeLinkFromGivenDepth(linkpath,checkdepthtarget,targetpath,False)
+        print("Target Rellink: "+str(targetrellink))
+        print("Linkpath: "+str(linkpath))
+        return targetrellink
+
+    def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths,baseurl):
         apijson={}
         landingpagejson={"title":"Landing Page","description":"Landing Page","links":[{
             "href": str(self.deploypath)+"/index.json",
@@ -2406,9 +2417,11 @@ class OntDocGeneration:
             if os.path.exists(coll):
                 if os.path.exists(op+"/items/index.json"):
                     os.remove(op+"/items/index.json")
-                p = Path( op+"/items/index.json" )
+                targetpath=self.generateRelativeSymlink(op+"/items/index.json",coll,baseurl)
+                p = Path( targetpath )
                 p.symlink_to(coll)
-                p = Path( op+"/items/index.html" )
+                targetpath=self.generateRelativeSymlink(op+"/items/index.html",coll,baseurl)
+                p = Path( targetpath )
                 p.symlink_to(coll.replace(".geojson",".html"))
                 #shutil.move(coll, op+"/items/index.json")
         f=open(outpath + "/index.json","w",encoding="utf-8")
