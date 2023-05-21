@@ -2417,12 +2417,21 @@ class OntDocGeneration:
             if os.path.exists(coll):
                 if os.path.exists(op+"/items/index.json"):
                     os.remove(op+"/items/index.json")
-                targetpath=self.generateRelativeSymlink(op+"/items/index.json",coll,baseurl)
-                p = Path( targetpath )
-                p.symlink_to(coll)
-                targetpath=self.generateRelativeSymlink(op+"/items/index.html",coll,baseurl)
-                p = Path( targetpath )
-                p.symlink_to(coll.replace(".geojson",".html"))
+                try:
+                    print(str(op+"/items").replace("//","/")+" "+str(os.path.exists(str(op+"/items").replace("//","/"))))
+                    print(str(op+"/items/index.json").replace("//","/")+" "+str(os.path.exists(op+"/items/index.json")))
+                    print(str(coll).replace("//","/")+" "+str(os.path.exists(str(coll).replace("//","/"))))
+                    print(str(op+"/items/index.html").replace("//","/")+" "+str(os.path.exists(str(op+"/items/index.html").replace("//","/"))))
+                    print(str(coll.replace(".geojson",".html").replace("//","/"))+" "+str(os.path.exists(coll.replace(".geojson",".html").replace("//","/"))))
+                    targetpath=self.generateRelativeSymlink(op+"/items/index.json",coll,baseurl)
+                    p = Path( targetpath )
+                    p.symlink_to(coll)
+                    targetpath=self.generateRelativeSymlink(op+"/items/index.html",coll,baseurl)
+                    p = Path( targetpath )
+                    p.symlink_to(coll.replace(".geojson",".html"))
+                    print("symlinks created")
+                except:
+                    print("symlink creation error")
                 #shutil.move(coll, op+"/items/index.json")
         f=open(outpath + "/index.json","w",encoding="utf-8")
         f.write(json.dumps(landingpagejson))
@@ -2467,7 +2476,7 @@ class OntDocGeneration:
                     item["label"]=label
                 else:
                     item["label"]=onelabel
-        print(uristorender)
+        #print(uristorender)
         for uri in uristorender:
             self.createHTML(outpath+"nonns_"+self.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri)), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, subjectstorender, Graph(),None,True,thelabel)
 
