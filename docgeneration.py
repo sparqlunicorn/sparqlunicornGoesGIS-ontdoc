@@ -2418,7 +2418,7 @@ class OntDocGeneration:
                         targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+"/items/index.json").replace("//","/"),outpath)
                         p = Path( str(op+"/items/index.json").replace("//","/") )
                         p.symlink_to(targetpath)
-                        targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+"/items/index.html").replace("//","/"),outpath)
+                        targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","index.html"),str(op+"/items/index.html").replace("//","/"),outpath)
                         f=open(str(op+"/items/index.html"),"w")
                         f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+"\" /></head></html>")
                         f.close()
