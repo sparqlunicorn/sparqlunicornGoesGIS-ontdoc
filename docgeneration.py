@@ -2409,7 +2409,7 @@ class OntDocGeneration:
                 collectionsjson["collections"].append({"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"title":featurecollectionspaths[coll]["name"],"links":[{"href":opweb.replace(".geojson",""),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":opweb.replace(".geojson",""),"rel":"collection","type":"text/html","title":"Collection as HTML"}]})
                 currentcollection={"title":featurecollectionspaths[coll]["name"],"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"links":[]}
                 currentcollection["links"]=[{"href":opwebcoll+"/items/","rel":"items","type":"application/json","title":"Collection as JSON"},{"href":opwebcoll+"/items/","rel":"items","type":"text/html","title":"Collection as HTML"}]
-                collectiontable+="<tr><td><a href=\""+opwebcoll+"/items/index.html"\">"+str(featurecollectionspaths[coll]["name"])+"</a></td><td><a href=\""+opwebcoll+"/items/index.html"\">[Collection as HTML]</a>&nbsp;<a href=\""+opwebcoll+"/items/index.json\">[Collection as JSON]</a></td></tr>"
+                collectiontable+="<tr><td><a href=\""+opwebcoll+"/items/index.html"\">"+str(featurecollectionspaths[coll]["name"])+"</a></td><td><a href=\""+opwebcoll+"/items/index.html\">[Collection as HTML]</a>&nbsp;<a href=\""+opwebcoll+"/items/index.json\">[Collection as JSON]</a></td></tr>"
                 f=open(op+"index.json","w",encoding="utf-8")
                 f.write(json.dumps(currentcollection))
                 f.close()
