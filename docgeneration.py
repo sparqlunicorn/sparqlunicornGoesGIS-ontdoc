@@ -2437,7 +2437,7 @@ class OntDocGeneration:
                             p.symlink_to(targetpath)
                             targetpath=self.generateRelativeSymlink(featpath+"/index.html",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/"),outpath)
                             f=open(str(op+"/items/"+str(self.shortenURI(feat["id"])))+"/index.html","w")
-                            f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+" /></head></html>")
+                            f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+"\" /></head></html>")
                             f.close()
                             #p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/") )
                             #p.symlink_to(targetpath)
