@@ -2355,9 +2355,9 @@ class OntDocGeneration:
         if "nonns" in targetpath:
             checkdepthtarget=1
         else:
-            checkdepthtarget=self.checkDepthFromPath(targetpath, linkpath, linkpath)
+            checkdepthtarget=checkdepthtarget=linkpath.count("/")#self.checkDepthFromPath(targetpath, linkpath, linkpath)
         print("Checkdepthtarget: "+str(checkdepthtarget))
-        targetrellink=self.generateRelativeLinkFromGivenDepth(linkpath,checkdepthtarget,targetpath,False)
+        targetrellink=self.generateRelativeLinkFromGivenDepth(targetpath,checkdepthtarget,linkpath,False)
         print("Target Rellink: "+str(targetrellink))
         print("Linkpath: "+str(linkpath))
         return targetrellink
