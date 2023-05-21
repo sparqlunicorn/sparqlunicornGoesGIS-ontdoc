@@ -2439,7 +2439,7 @@ class OntDocGeneration:
                     if mergeJSON:
                         result.append(curcoll)
         if mergeJSON:
-            with open(outpath, 'w',encoding="utf-8") as output_file:
+            with open(outpath+"/features.js", 'w',encoding="utf-8") as output_file:
                 output_file.write("var featurecolls="+json.dumps(result))
                 #shutil.move(coll, op+"/items/index.json")
         if ogcapi:
