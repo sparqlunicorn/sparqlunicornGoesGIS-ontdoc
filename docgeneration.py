@@ -2353,7 +2353,7 @@ class OntDocGeneration:
 
     def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths,prefixnamespace,ogcapi,mergeJSON):
         if ogcapi:
-            apijson={}
+            apijson={"openapi":"3.0.1","info":{"title":str(self.deploypath)+" Feature Collections","description":"Feature Collections of "+str(self.deploypath)},"servers":[{"url":str(self.deploypath)}],"paths":{}}
             landingpagejson={"title":"Landing Page","description":"Landing Page","links":[{
                 "href": str(self.deploypath)+"/index.json",
                 "rel": "self",
@@ -2406,9 +2406,10 @@ class OntDocGeneration:
                 if opwebcoll.endswith("/"):
                     opwebcoll=opwebcoll[0:-1]
                 opwebcoll=opwebcoll.replace("//","/")
-                collectionsjson["collections"].append({"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"title":featurecollectionspaths[coll]["name"],"links":[{"href":opweb.replace(".geojson","")+"/index.json","rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":opweb.replace(".geojson","")+"/index.html","rel":"collection","type":"text/html","title":"Collection as HTML"}]})
+                collectionsjson["collections"].append({"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"title":featurecollectionspaths[coll]["name"],"links":[{"href":str(opweb.replace(".geojson","")+"/index.json").replace("//","/"),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":str(opweb.replace(".geojson","")+"/index.html").replace("//","/"),"rel":"collection","type":"text/html","title":"Collection as HTML"}]})
                 currentcollection={"title":featurecollectionspaths[coll]["name"],"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"links":[]}
                 currentcollection["links"]=[{"href":opwebcoll+"/items/index.json","rel":"items","type":"application/json","title":"Collection as JSON"},{"href":opwebcoll+"/items/index.html","rel":"items","type":"text/html","title":"Collection as HTML"}]
+                #apijson["paths"][]
                 collectiontable+="<tr><td><a href=\""+opweb.replace(".geojson","")+"/items/index.html\">"+str(featurecollectionspaths[coll]["name"])+"</a></td><td><a href=\""+opweb.replace(".geojson","")+"/items/index.html\">[Collection as HTML]</a>&nbsp;<a href=\""+opweb.replace(".geojson","")+"/items/index.json\">[Collection as JSON]</a></td></tr>"
                 f=open(op+"index.json","w",encoding="utf-8")
                 f.write(json.dumps(currentcollection))
