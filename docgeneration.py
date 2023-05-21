@@ -2352,7 +2352,6 @@ class OntDocGeneration:
         return labeltouri
 
     def generateRelativeSymlink(self,linkpath,targetpath,outpath):
-        targetpath=targetpath.replace(outpath,"")
         if "nonns" in targetpath:
             checkdepthtarget=1
         else:
@@ -2361,6 +2360,7 @@ class OntDocGeneration:
         targetrellink=self.generateRelativeLinkFromGivenDepth(targetpath,checkdepthtarget,linkpath,False)
         print("Target Rellink: "+str(targetrellink))
         print("Linkpath: "+str(linkpath))
+        targetrellink=targetrellink.replace(outpath,"")
         return targetrellink
 
     def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths):
