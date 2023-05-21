@@ -2351,18 +2351,19 @@ class OntDocGeneration:
             counter+=1	
         return labeltouri
 
-    def generateRelativeSymlink(self,linkpath,targetpath,baseurl):
+    def generateRelativeSymlink(self,linkpath,targetpath,outpath):
+        targetpath=targetpath.replace(outpath,"")
         if "nonns" in targetpath:
             checkdepthtarget=1
         else:
-            checkdepthtarget=checkdepthtarget=linkpath.count("/")#self.checkDepthFromPath(targetpath, linkpath, linkpath)
+            checkdepthtarget=linkpath.count("/")
         print("Checkdepthtarget: "+str(checkdepthtarget))
         targetrellink=self.generateRelativeLinkFromGivenDepth(targetpath,checkdepthtarget,linkpath,False)
         print("Target Rellink: "+str(targetrellink))
         print("Linkpath: "+str(linkpath))
         return targetrellink
 
-    def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths,baseurl):
+    def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths):
         apijson={}
         landingpagejson={"title":"Landing Page","description":"Landing Page","links":[{
             "href": str(self.deploypath)+"/index.json",
@@ -2423,10 +2424,10 @@ class OntDocGeneration:
                     print(str(coll).replace("//","/")+" "+str(os.path.exists(str(coll).replace("//","/"))))
                     print(str(op+"/items/index.html").replace("//","/")+" "+str(os.path.exists(str(op+"/items/index.html").replace("//","/"))))
                     print(str(coll.replace(".geojson",".html").replace("//","/"))+" "+str(os.path.exists(coll.replace(".geojson",".html").replace("//","/"))))
-                    targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+"/items/index.json").replace("//","/"),baseurl)
+                    targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+"/items/index.json").replace("//","/"),outpath)
                     p = Path( str(op+"/items/index.json").replace("//","/") )
                     p.symlink_to(targetpath)
-                    targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+"/items/index.html").replace("//","/"),baseurl)
+                    targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+"/items/index.html").replace("//","/"),outpath)
                     p = Path( str(op+"/items/index.html").replace("//","/") )
                     p.symlink_to(targetpath)
                     print("symlinks created")
