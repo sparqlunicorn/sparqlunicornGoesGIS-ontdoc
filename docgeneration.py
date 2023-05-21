@@ -2425,11 +2425,11 @@ class OntDocGeneration:
                     for feat in curcoll["features"]:
                         featpath=feat["id"].replace(prefixnamespace,"").replace("//","/")
                         try:
-                            targetpath=self.generateRelativeSymlink(featpath+"/index.json",str(op+"/items/index.json").replace("//","/"),outpath)
+                            targetpath=self.generateRelativeSymlink(featpath+"/index.json",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.json").replace("//","/"),outpath)
                             os.makedirs(str(op+"/items/"+str(self.shortenURI(feat["id"]))))
                             p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.json").replace("//","/") )
                             p.symlink_to(targetpath)
-                            targetpath=self.generateRelativeSymlink(featpath+"/index.html",str(op+"/items/index.html").replace("//","/"),outpath)
+                            targetpath=self.generateRelativeSymlink(featpath+"/index.html",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/"),outpath)
                             p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/") )
                             p.symlink_to(targetpath)
                             print("symlinks created")
