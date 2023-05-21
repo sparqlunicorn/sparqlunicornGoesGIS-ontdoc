@@ -2430,8 +2430,9 @@ class OntDocGeneration:
                     p = Path( targetpath )
                     p.symlink_to(coll.replace(".geojson",".html"))
                     print("symlinks created")
-                except:
+                except Exception as e:
                     print("symlink creation error")
+                    print(e)
                 #shutil.move(coll, op+"/items/index.json")
         f=open(outpath + "/index.json","w",encoding="utf-8")
         f.write(json.dumps(landingpagejson))
