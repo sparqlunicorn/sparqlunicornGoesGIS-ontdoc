@@ -2377,6 +2377,8 @@ class OntDocGeneration:
             },{"href":str(self.deploypath)+"/api","rel":"service-desc","type":"application/vnd.oai.openapi+json;version=3.0","title":"API definition"},{"href":str(self.deploypath)+"/api","rel":"service-desc","type":"text/html","title":"API definition as HTML"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"application/json","title":"OGC API conformance classes as Json"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"text/html","title":"OGC API conformance classes as HTML"}]}
             conformancejson={"conformsTo":["http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson"]}
             collectionsjson={"collections":[],"links":[{"href":outpath+"collections/","rel":"self","type":"application/json","title":"this document as JSON"},{"href":outpath+"collections/","rel":"self","type":"text/html","title":"this document as HTML"}]}
+            collectionshtml="<html><head></head><body><header><h1>Collections of "+str(self.deploypath)+"</h1></head>{{collectiontable}}<footer><a href=\"index.json\">This page as JSON</a></footer></body></html>"
+            collectiontable="<table><thead><th>Collection</th><th>Links</th></thead><tbody>"
             if outpath.endswith("/"):
                 outpath=outpath[0:-1]
             if not os.path.exists(outpath+"/api/"):
@@ -2407,6 +2409,7 @@ class OntDocGeneration:
                 collectionsjson["collections"].append({"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"title":featurecollectionspaths[coll]["name"],"links":[{"href":opweb.replace(".geojson",""),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":opweb.replace(".geojson",""),"rel":"collection","type":"text/html","title":"Collection as HTML"}]})
                 currentcollection={"title":featurecollectionspaths[coll]["name"],"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"links":[]}
                 currentcollection["links"]=[{"href":opwebcoll+"/items/","rel":"items","type":"application/json","title":"Collection as JSON"},{"href":opwebcoll+"/items/","rel":"items","type":"text/html","title":"Collection as HTML"}]
+                collectiontable+="<tr><td><a href=\""+opwebcoll+"/items/index.html"\">"+str(featurecollectionspaths[coll]["name"])+"</a></td><td><a href=\""+opwebcoll+"/items/index.html"\">[Collection as HTML]</a>&nbsp;<a href=\""+opwebcoll+"/items/index.json"\">[Collection as JSON]</a></td></tr>"
                 f=open(op+"index.json","w",encoding="utf-8")
                 f.write(json.dumps(currentcollection))
                 f.close()
@@ -2416,8 +2419,11 @@ class OntDocGeneration:
                         p = Path( str(op+"/items/index.json").replace("//","/") )
                         p.symlink_to(targetpath)
                         targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+"/items/index.html").replace("//","/"),outpath)
-                        p = Path( str(op+"/items/index.html").replace("//","/") )
-                        p.symlink_to(targetpath)
+                        f=open(str(op+"/items/index.html","w")
+                        f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+" /></head></html>")
+                        f.close()
+                        #p = Path( str(op+"/items/index.html").replace("//","/") )
+                        #p.symlink_to(targetpath)
                         print("symlinks created")
                     except Exception as e:
                         print("symlink creation error")
@@ -2430,14 +2436,18 @@ class OntDocGeneration:
                             p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.json").replace("//","/") )
                             p.symlink_to(targetpath)
                             targetpath=self.generateRelativeSymlink(featpath+"/index.html",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/"),outpath)
-                            p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/") )
-                            p.symlink_to(targetpath)
+                            f=open(str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html","w")
+                            f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+" /></head></html>")
+                            f.close()
+                            #p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/") )
+                            #p.symlink_to(targetpath)
                             print("symlinks created")
                         except Exception as e:
                             print("symlink creation error")
                             print(e)
                     if mergeJSON:
                         result.append(curcoll)
+        collectiontable+="</tbody></table>"
         if mergeJSON:
             with open(outpath+"/features.js", 'w',encoding="utf-8") as output_file:
                 output_file.write("var featurecolls="+json.dumps(result))
@@ -2448,6 +2458,9 @@ class OntDocGeneration:
             f.close()
             f=open(outpath + "/api/index.json","w",encoding="utf-8")
             f.write(json.dumps(apijson))
+            f.close()
+            f=open(outpath + "/collections/index.html","w",encoding="utf-8")
+            f.write(collectionshtml.replace("{{collectiontable}}",collectiontable)
             f.close()
             f=open(outpath + "/collections/index.json","w",encoding="utf-8")
             f.write(json.dumps(collectionsjson))
