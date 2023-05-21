@@ -2351,7 +2351,7 @@ class OntDocGeneration:
             counter+=1	
         return labeltouri
 
-    def generateRelativeSymlink(linkpath,targetpath,baseurl):
+    def generateRelativeSymlink(self,linkpath,targetpath,baseurl):
         if "nonns" in targetpath:
             checkdepthtarget=1
         else:
