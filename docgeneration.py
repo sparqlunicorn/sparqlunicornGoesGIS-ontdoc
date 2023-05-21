@@ -1728,8 +1728,7 @@ class OntDocGeneration:
             indexhtml = htmltemplate.replace("{{logo}}",self.logoname).replace("{{relativedepth}}","0").replace("{{baseurl}}", prefixnamespace).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}", "vowl_result.js")\
                     .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{nonnslink}}","").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
             indexhtml = indexhtml.replace("{{indexpage}}", "true")
-            self.merge_JsonFiles(featurecollectionspaths,str(outpath)+"features.js")
-            self.generateOGCAPIFeaturesPages(outpath,featurecollectionspaths)
+            self.generateOGCAPIFeaturesPages(outpath,featurecollectionspaths,prefixnamespace,True,True)
             indexhtml += "<p>This page shows feature collections present in the linked open data export</p>"
             indexhtml+="<script src=\"features.js\"></script>"
             indexhtml+=maptemplate.replace("var featurecolls = {{myfeature}}","").replace("{{baselayers}}",json.dumps(baselayers).replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{dateatt}}", ""))
@@ -1738,17 +1737,6 @@ class OntDocGeneration:
                 f.write(indexhtml)
                 f.close()
                     
-
-    def merge_JsonFiles(self,files,outpath):
-        #print("Merging....."+str(files))
-        result = list()
-        for f1 in files:
-            if os.path.exists(f1):
-                with open(f1, 'r',encoding="utf-8") as infile:
-                    result.append(json.load(infile))
-        with open(outpath, 'w',encoding="utf-8") as output_file:
-            output_file.write("var featurecolls="+json.dumps(result))
-
     def getPropertyRelations(self,graph,outpath):
         predicates= {}
         predicatecounter=0
@@ -2363,90 +2351,110 @@ class OntDocGeneration:
         targetrellink=targetrellink.replace(outpath,"")
         return targetrellink.replace("//","/")
 
-    def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths):
-        apijson={}
-        landingpagejson={"title":"Landing Page","description":"Landing Page","links":[{
-            "href": str(self.deploypath)+"/index.json",
-            "rel": "self",
-            "type": "application/json",
-            "title": "this document as JSON"
-        }, {
-            "href": str(self.deploypath)+"/index.html",
-            "rel": "alternate",
-            "type": "text/html",
-            "title": "this document as HTML"
-        }, {
-            "href": str(self.deploypath)+"/collections/",
-            "rel": "data",
-            "type": "application/json",
-            "title": "Supported Feature Collections as JSON"
-        }, {
-            "href": str(self.deploypath)+"/collections/",
-            "rel": "data",
-            "type": "text/html",
-            "title": "Supported Feature Collections as HTML"
-        },{"href":str(self.deploypath)+"/api","rel":"service-desc","type":"application/vnd.oai.openapi+json;version=3.0","title":"API definition"},{"href":str(self.deploypath)+"/api","rel":"service-desc","type":"text/html","title":"API definition as HTML"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"application/json","title":"OGC API conformance classes as Json"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"text/html","title":"OGC API conformance classes as HTML"}]}
-        conformancejson={"conformsTo":["http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson"]}
-        collectionsjson={"collections":[],"links":[{"href":outpath+"collections/","rel":"self","type":"application/json","title":"this document as JSON"},{"href":outpath+"collections/","rel":"self","type":"text/html","title":"this document as HTML"}]}
-        if outpath.endswith("/"):
-            outpath=outpath[0:-1]
-        if not os.path.exists(outpath+"/api/"):
-            os.makedirs(outpath + "/api/")
-        if not os.path.exists(outpath+"/collections/"):
-            os.makedirs(outpath+"/collections/")
-        if not os.path.exists(outpath+"/conformance/"):
-            os.makedirs(outpath + "/conformance/")
+    def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths,prefixnamespace,ogcapi,mergeJSON):
+        if ogcapi:
+            apijson={}
+            landingpagejson={"title":"Landing Page","description":"Landing Page","links":[{
+                "href": str(self.deploypath)+"/index.json",
+                "rel": "self",
+                "type": "application/json",
+                "title": "this document as JSON"
+            }, {
+                "href": str(self.deploypath)+"/index.html",
+                "rel": "alternate",
+                "type": "text/html",
+                "title": "this document as HTML"
+            }, {
+                "href": str(self.deploypath)+"/collections/",
+                "rel": "data",
+                "type": "application/json",
+                "title": "Supported Feature Collections as JSON"
+            }, {
+                "href": str(self.deploypath)+"/collections/",
+                "rel": "data",
+                "type": "text/html",
+                "title": "Supported Feature Collections as HTML"
+            },{"href":str(self.deploypath)+"/api","rel":"service-desc","type":"application/vnd.oai.openapi+json;version=3.0","title":"API definition"},{"href":str(self.deploypath)+"/api","rel":"service-desc","type":"text/html","title":"API definition as HTML"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"application/json","title":"OGC API conformance classes as Json"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"text/html","title":"OGC API conformance classes as HTML"}]}
+            conformancejson={"conformsTo":["http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson"]}
+            collectionsjson={"collections":[],"links":[{"href":outpath+"collections/","rel":"self","type":"application/json","title":"this document as JSON"},{"href":outpath+"collections/","rel":"self","type":"text/html","title":"this document as HTML"}]}
+            if outpath.endswith("/"):
+                outpath=outpath[0:-1]
+            if not os.path.exists(outpath+"/api/"):
+                os.makedirs(outpath + "/api/")
+            if not os.path.exists(outpath+"/collections/"):
+                os.makedirs(outpath+"/collections/")
+            if not os.path.exists(outpath+"/conformance/"):
+                os.makedirs(outpath + "/conformance/")
+        result = list()
         for coll in featurecollectionspaths:
-            op=outpath+"/collections/"+coll.replace(outpath,"").replace("index.geojson","")+"/"
-            op=op.replace(".geojson","")
-            op=op.replace("//","/")
-            if not os.path.exists(op):
-                os.makedirs(op)
-            if not os.path.exists(op+"/items/"):
-                os.makedirs(op+"/items/")
-            opweb=op.replace(outpath,self.deploypath)
-            opwebcoll=opweb
-            if opwebcoll.endswith("/"):
-                opwebcoll=opwebcoll[0:-1]
-            opwebcoll=opwebcoll.replace("//","/")
-            collectionsjson["collections"].append({"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"title":featurecollectionspaths[coll]["name"],"links":[{"href":opweb.replace(".geojson",""),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":opweb.replace(".geojson",""),"rel":"collection","type":"text/html","title":"Collection as HTML"}]})
-            currentcollection={"title":featurecollectionspaths[coll]["name"],"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"links":[]}
-            currentcollection["links"]=[{"href":opwebcoll+"/items/","rel":"items","type":"application/json","title":"Collection as JSON"},{"href":opwebcoll+"/items/","rel":"items","type":"text/html","title":"Collection as HTML"}]
-            f=open(op+"index.json","w",encoding="utf-8")
-            f.write(json.dumps(currentcollection))
-            f.close() 
+            curcoll=None
             if os.path.exists(coll):
-                if os.path.exists(op+"/items/index.json"):
-                    os.remove(op+"/items/index.json")
-                try:
-                    print(str(op+"/items").replace("//","/")+" "+str(os.path.exists(str(op+"/items").replace("//","/"))))
-                    print(str(op+"/items/index.json").replace("//","/")+" "+str(os.path.exists(op+"/items/index.json")))
-                    print(str(coll).replace("//","/")+" "+str(os.path.exists(str(coll).replace("//","/"))))
-                    print(str(op+"/items/index.html").replace("//","/")+" "+str(os.path.exists(str(op+"/items/index.html").replace("//","/"))))
-                    print(str(coll.replace(".geojson",".html").replace("//","/"))+" "+str(os.path.exists(coll.replace(".geojson",".html").replace("//","/"))))
-                    targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+"/items/index.json").replace("//","/"),outpath)
-                    p = Path( str(op+"/items/index.json").replace("//","/") )
-                    p.symlink_to(targetpath)
-                    targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+"/items/index.html").replace("//","/"),outpath)
-                    p = Path( str(op+"/items/index.html").replace("//","/") )
-                    p.symlink_to(targetpath)
-                    print("symlinks created")
-                except Exception as e:
-                    print("symlink creation error")
-                    print(e)
+                with open(coll, 'r',encoding="utf-8") as infile:
+                    curcoll=json.load(infile)
+            if ogcapi:
+                op=outpath+"/collections/"+coll.replace(outpath,"").replace("index.geojson","")+"/"
+                op=op.replace(".geojson","")
+                op=op.replace("//","/")
+                if not os.path.exists(op):
+                    os.makedirs(op)
+                if not os.path.exists(op+"/items/"):
+                    os.makedirs(op+"/items/")
+                opweb=op.replace(outpath,self.deploypath)
+                opwebcoll=opweb
+                if opwebcoll.endswith("/"):
+                    opwebcoll=opwebcoll[0:-1]
+                opwebcoll=opwebcoll.replace("//","/")
+                collectionsjson["collections"].append({"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"title":featurecollectionspaths[coll]["name"],"links":[{"href":opweb.replace(".geojson",""),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":opweb.replace(".geojson",""),"rel":"collection","type":"text/html","title":"Collection as HTML"}]})
+                currentcollection={"title":featurecollectionspaths[coll]["name"],"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"links":[]}
+                currentcollection["links"]=[{"href":opwebcoll+"/items/","rel":"items","type":"application/json","title":"Collection as JSON"},{"href":opwebcoll+"/items/","rel":"items","type":"text/html","title":"Collection as HTML"}]
+                f=open(op+"index.json","w",encoding="utf-8")
+                f.write(json.dumps(currentcollection))
+                f.close()
+                if os.path.exists(coll):
+                    try:
+                        targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+"/items/index.json").replace("//","/"),outpath)
+                        p = Path( str(op+"/items/index.json").replace("//","/") )
+                        p.symlink_to(targetpath)
+                        targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+"/items/index.html").replace("//","/"),outpath)
+                        p = Path( str(op+"/items/index.html").replace("//","/") )
+                        p.symlink_to(targetpath)
+                        print("symlinks created")
+                    except Exception as e:
+                        print("symlink creation error")
+                        print(e)
+                    for feat in curcoll["features"]:
+                        featpath=feat["id"].replace(prefixnamespace,"").replace("//","/")
+                        try:
+                            targetpath=self.generateRelativeSymlink(featpath+"/index.json",str(op+"/items/index.json").replace("//","/"),outpath)
+                            os.makedirs(str(op+"/items/"+str(self.shortenURI(feat["id"])))
+                            p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.json").replace("//","/") )
+                            p.symlink_to(targetpath)
+                            targetpath=self.generateRelativeSymlink(featpath+"/index.html",str(op+"/items/index.html").replace("//","/"),outpath)
+                            p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/") )
+                            p.symlink_to(targetpath)
+                            print("symlinks created")
+                        except Exception as e:
+                            print("symlink creation error")
+                            print(e)
+                    if mergeJSON:
+                        result.append(json.load(infile))
+        if mergeJSON:
+            with open(outpath, 'w',encoding="utf-8") as output_file:
+                output_file.write("var featurecolls="+json.dumps(result))
                 #shutil.move(coll, op+"/items/index.json")
-        f=open(outpath + "/index.json","w",encoding="utf-8")
-        f.write(json.dumps(landingpagejson))
-        f.close()   
-        f=open(outpath + "/api/index.json","w",encoding="utf-8")
-        f.write(json.dumps(apijson))
-        f.close()          
-        f=open(outpath + "/collections/index.json","w",encoding="utf-8")
-        f.write(json.dumps(collectionsjson))
-        f.close()  
-        f=open(outpath + "/conformance/index.json","w",encoding="utf-8")
-        f.write(json.dumps(conformancejson))
-        f.close()         
+        if ogcapi
+            f=open(outpath + "/index.json","w",encoding="utf-8")
+            f.write(json.dumps(landingpagejson))
+            f.close()
+            f=open(outpath + "/api/index.json","w",encoding="utf-8")
+            f.write(json.dumps(apijson))
+            f.close()
+            f=open(outpath + "/collections/index.json","w",encoding="utf-8")
+            f.write(json.dumps(collectionsjson))
+            f.close()
+            f=open(outpath + "/conformance/index.json","w",encoding="utf-8")
+            f.write(json.dumps(conformancejson))
+            f.close()
             
             
     def detectURIsConnectedToSubjects(self,subjectstorender,graph,prefixnamespace,corpusid,outpath,curlicense,baseurl):
