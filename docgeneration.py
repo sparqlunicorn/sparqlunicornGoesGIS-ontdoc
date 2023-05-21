@@ -2437,7 +2437,7 @@ class OntDocGeneration:
                             print("symlink creation error")
                             print(e)
                     if mergeJSON:
-                        result.append(json.load(infile))
+                        result.append(curcoll)
         if mergeJSON:
             with open(outpath, 'w',encoding="utf-8") as output_file:
                 output_file.write("var featurecolls="+json.dumps(result))
