@@ -2376,7 +2376,7 @@ class OntDocGeneration:
                 "title": "Supported Feature Collections as HTML"
             },{"href":str(self.deploypath)+"/api","rel":"service-desc","type":"application/vnd.oai.openapi+json;version=3.0","title":"API definition"},{"href":str(self.deploypath)+"/api","rel":"service-desc","type":"text/html","title":"API definition as HTML"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"application/json","title":"OGC API conformance classes as Json"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"text/html","title":"OGC API conformance classes as HTML"}]}
             conformancejson={"conformsTo":["http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson"]}
-            collectionsjson={"collections":[],"links":[{"href":outpath+"collections/","rel":"self","type":"application/json","title":"this document as JSON"},{"href":outpath+"collections/","rel":"self","type":"text/html","title":"this document as HTML"}]}
+            collectionsjson={"collections":[],"links":[{"href":outpath+"collections/index.json","rel":"self","type":"application/json","title":"this document as JSON"},{"href":outpath+"collections/index.html","rel":"self","type":"text/html","title":"this document as HTML"}]}
             collectionshtml="<html><head></head><body><header><h1>Collections of "+str(self.deploypath)+"</h1></head>{{collectiontable}}<footer><a href=\"index.json\">This page as JSON</a></footer></body></html>"
             collectiontable="<table><thead><th>Collection</th><th>Links</th></thead><tbody>"
             if outpath.endswith("/"):
@@ -2408,8 +2408,8 @@ class OntDocGeneration:
                 opwebcoll=opwebcoll.replace("//","/")
                 collectionsjson["collections"].append({"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"title":featurecollectionspaths[coll]["name"],"links":[{"href":opweb.replace(".geojson",""),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":opweb.replace(".geojson",""),"rel":"collection","type":"text/html","title":"Collection as HTML"}]})
                 currentcollection={"title":featurecollectionspaths[coll]["name"],"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"links":[]}
-                currentcollection["links"]=[{"href":opwebcoll+"/items/","rel":"items","type":"application/json","title":"Collection as JSON"},{"href":opwebcoll+"/items/","rel":"items","type":"text/html","title":"Collection as HTML"}]
-                collectiontable+="<tr><td><a href=\""+opweb.replace(".geojson","")+"/index.html\">"+str(featurecollectionspaths[coll]["name"])+"</a></td><td><a href=\""+opweb.replace(".geojson","")+"/index.html\">[Collection as HTML]</a>&nbsp;<a href=\""+opweb.replace(".geojson","")+"/index.json\">[Collection as JSON]</a></td></tr>"
+                currentcollection["links"]=[{"href":opwebcoll+"/items/index.json","rel":"items","type":"application/json","title":"Collection as JSON"},{"href":opwebcoll+"/items/index.html","rel":"items","type":"text/html","title":"Collection as HTML"}]
+                collectiontable+="<tr><td><a href=\""+opweb.replace(".geojson","")+"/items/index.html\">"+str(featurecollectionspaths[coll]["name"])+"</a></td><td><a href=\""+opweb.replace(".geojson","")+"/items/index.html\">[Collection as HTML]</a>&nbsp;<a href=\""+opweb.replace(".geojson","")+"/items/index.json\">[Collection as JSON]</a></td></tr>"
                 f=open(op+"index.json","w",encoding="utf-8")
                 f.write(json.dumps(currentcollection))
                 f.close()
