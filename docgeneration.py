@@ -2365,12 +2365,12 @@ class OntDocGeneration:
                 "type": "text/html",
                 "title": "this document as HTML"
             }, {
-                "href": str(self.deploypath)+"/collections/index.json",
+                "href": str(self.deploypath)+"/collections/",
                 "rel": "data",
                 "type": "application/json",
                 "title": "Supported Feature Collections as JSON"
             }, {
-                "href": str(self.deploypath)+"/collections/index.html",
+                "href": str(self.deploypath)+"/collections/",
                 "rel": "data",
                 "type": "text/html",
                 "title": "Supported Feature Collections as HTML"
@@ -2460,7 +2460,7 @@ class OntDocGeneration:
             f=open(outpath + "/api/index.json","w",encoding="utf-8")
             f.write(json.dumps(apijson))
             f.close()
-            f=open(outpath + "/collections/index.html","w",encoding="utf-8")
+            f=open(outpath + "/collections/indexc.html","w",encoding="utf-8")
             f.write(collectionshtml.replace("{{collectiontable}}",collectiontable))
             f.close()
             f=open(outpath + "/collections/index.json","w",encoding="utf-8")
