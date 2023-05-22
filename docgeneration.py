@@ -2412,7 +2412,7 @@ class OntDocGeneration:
                 if opwebcoll.endswith("/"):
                     opwebcoll=opwebcoll[0:-1]
                 opwebcoll=opwebcoll.replace("//","/")
-                collectionsjson["collections"].append({"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"title":featurecollectionspaths[coll]["name"],"links":[{"href":str(opweb.replace(".geojson","")+"/index.json").replace("//","/"),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":str(opweb.replace(".geojson","")+"/index.html").replace("//","/"),"rel":"collection","type":"text/html","title":"Collection as HTML"},{"href":str(opweb.replace(".geojson","")+"/index.ttl").replace("//","/"),"rel":"collection","type":"text/ttl","title":"Collection as TTL"}]})
+                collectionsjson["collections"].append({"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"title":featurecollectionspaths[coll]["name"],"links":[{"href":str(opweb.replace(".geojson","")+"/index.json").replace("//","/"),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":str(opweb.replace(".geojson","")+"/index.xhtml").replace("//","/"),"rel":"collection","type":"text/html","title":"Collection as HTML"},{"href":str(opweb.replace(".geojson","")+"/index.ttl").replace("//","/"),"rel":"collection","type":"text/ttl","title":"Collection as TTL"}]})
                 currentcollection={"title":featurecollectionspaths[coll]["name"],"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"links":[]}
                 currentcollection["links"]=[{"href":opwebcoll+"/items/","rel":"items","type":"application/json","title":"Collection as JSON"},{"href":opwebcoll+"/items/","rel":"items","type":"text/html","title":"Collection as HTML"},{"href":opwebcoll+"/items/index.ttl","rel":"collection","type":"text/ttl","title":"Collection as TTL"}]
                 apijson["paths"]["/collections/"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:])]={"get":{"tags":["Collections"],"summary": "describes collection "+str(str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:])).rstrip("/"),"description": "Describes the collection with the id "+str(str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:])).rstrip("/"),"operationId": "collection-"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:]),"parameters":[],"responses": {"default": {"description": "default response","content": {"application/json": {"schema": {"$ref": "#/components/schemas/Collections"},"example": None}}}}}}
@@ -2429,8 +2429,8 @@ class OntDocGeneration:
                         targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","index.ttl"),str(op+"/items/index.ttl").replace("//","/"),outpath)
                         p = Path( str(op+"/items/index.ttl").replace("//","/") )
                         p.symlink_to(targetpath)
-                        targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","index.html"),str(op+"/items/index.html").replace("//","/"),outpath)
-                        f=open(str(op+"/items/index.html"),"w")
+                        targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","index.xhtml"),str(op+"/items/index.html").replace("//","/"),outpath)
+                        f=open(str(op+"/items/index.xhtml"),"w")
                         f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+"\" /></head></html>")
                         f.close()
                         #p = Path( str(op+"/items/index.html").replace("//","/") )
@@ -2450,8 +2450,8 @@ class OntDocGeneration:
                             targetpath=self.generateRelativeSymlink(featpath+"/index.ttl",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/"),outpath)
                             p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/") )
                             p.symlink_to(targetpath)
-                            targetpath=self.generateRelativeSymlink(featpath+"/index.html",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/"),outpath)
-                            f=open(str(op+"/items/"+str(self.shortenURI(feat["id"])))+"/index.html","w")
+                            targetpath=self.generateRelativeSymlink(featpath+"/index.xhtml",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/"),outpath)
+                            f=open(str(op+"/items/"+str(self.shortenURI(feat["id"])))+"/index.xhtml","w")
                             f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+"\" /></head></html>")
                             f.close()
                             #p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/") )
@@ -2477,7 +2477,7 @@ class OntDocGeneration:
             f=open(outpath + "/api/api.html","w",encoding="utf-8")
             f.write(apihtml)
             f.close()
-            f=open(outpath + "/collections/indexc.html","w",encoding="utf-8")
+            f=open(outpath + "/collections/index.xhtml","w",encoding="utf-8")
             f.write(collectionshtml.replace("{{collectiontable}}",collectiontable))
             f.close()
             f=open(outpath + "/collections/index.json","w",encoding="utf-8")
