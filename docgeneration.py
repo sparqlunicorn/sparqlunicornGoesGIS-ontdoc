@@ -2426,6 +2426,9 @@ class OntDocGeneration:
                         targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+"/items/index.json").replace("//","/"),outpath)
                         p = Path( str(op+"/items/index.json").replace("//","/") )
                         p.symlink_to(targetpath)
+                        targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","index.ttl"),str(op+"/items/index.ttl").replace("//","/"),outpath)
+                        p = Path( str(op+"/items/index.ttl").replace("//","/") )
+                        p.symlink_to(targetpath)
                         targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","index.html"),str(op+"/items/index.html").replace("//","/"),outpath)
                         f=open(str(op+"/items/indexc.html"),"w")
                         f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+"\" /></head></html>")
@@ -2436,13 +2439,16 @@ class OntDocGeneration:
                     except Exception as e:
                         print("symlink creation error")
                         print(e)
-                    apijson["paths"][str("/collections/"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:])+"/items/{featureId}/index.json").replace("//","/")]={"get":{"tags":["Data"]},"summary": "retrieves feature of collection {collectionId}","description": "Retrieves one single feature of the collection with the id {collectionId}","operationId": "feature-"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:]),"parameters":[{"name":"featureId","in": "path","required": True,"schema": {"type": "string"}}],"responses": {"default": {"description": "default response","content": {"application/geo+json": {"example": None }},"text/html": {"schema": {"example": None},"example": None}}}}
+                    apijson["paths"][str("/collections/"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:])+"/items/{featureId}/index.json").replace("//","/")]={"get":{"tags":["Data"]},"summary": "retrieves feature of collection {collectionId}","description": "Retrieves one single feature of the collection with the id {collectionId}","operationId": "feature-"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:]),"parameters":[{"name":"featureId","in": "path","required": True,"schema": {"type": "string"}}],"responses": {"default": {"description": "default response","content": {"application/geo+json": {"example": None }},"text/ttl": {"schema": {"example": None},"example": None},"text/html": {"schema": {"example": None},"example": None}}}}
                     for feat in curcoll["features"]:
                         featpath=feat["id"].replace(prefixnamespace,"").replace("//","/")
                         try:
-                            targetpath=self.generateRelativeSymlink(featpath+"/index.json",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.json").replace("//","/"),outpath)
                             os.makedirs(str(op+"/items/"+str(self.shortenURI(feat["id"]))))
+                            targetpath=self.generateRelativeSymlink(featpath+"/index.json",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.json").replace("//","/"),outpath)
                             p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.json").replace("//","/") )
+                            p.symlink_to(targetpath)
+                            targetpath=self.generateRelativeSymlink(featpath+"/index.ttl",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/"),outpath)
+                            p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/") )
                             p.symlink_to(targetpath)
                             targetpath=self.generateRelativeSymlink(featpath+"/index.html",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/"),outpath)
                             f=open(str(op+"/items/"+str(self.shortenURI(feat["id"])))+"/indexc.html","w")
