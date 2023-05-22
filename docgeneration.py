@@ -2351,6 +2351,9 @@ class OntDocGeneration:
             counter+=1	
         return labeltouri
 
+    def createRelativeSymlinkForPaths(targetpath,symlinkpath):
+        
+
     def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths):
         apijson={}
         landingpagejson={"title":"Landing Page","description":"Landing Page","links":[{
@@ -2403,6 +2406,12 @@ class OntDocGeneration:
             f=open(op+"index.json","w",encoding="utf-8")
             f.write(json.dumps(currentcollection))
             f.close() 
+            currcoll=None
+            if os.path.exists(coll):
+                with open(coll, 'r',encoding="utf-8") as infile:
+                    currcoll=json.load(infile)
+            for feat in currcoll["features"]:
+                
             if os.path.exists(coll):
                 if os.path.exists(op+"/items/index.json"):
                     os.remove(op+"/items/index.json")
