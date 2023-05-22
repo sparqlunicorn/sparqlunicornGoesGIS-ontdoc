@@ -2436,7 +2436,7 @@ class OntDocGeneration:
                     except Exception as e:
                         print("symlink creation error")
                         print(e)
-                    apijson["paths"]["/collections/"+str(self.shortenURI(coll))+"/items/{featureId}/index.json"]={"get":{"tags":["Data"]},"summary": "retrieves feature of collection {collectionId}","description": "Retrieves one single feature of the collection with the id {collectionId}","operationId": "feature-"+str(self.shortenURI(coll)),"parameters":[{"name":"featureId","in": "path","required": True,"schema": {"type": "string"}}],"responses": {"default": {"description": "default response","content": {"application/geo+json": {"example": None }},"text/html": {"schema": {"example": None},"example": None}}}}
+                    apijson["paths"]["/collections/"+str(self.shortenURI(coll.replace("index.geojson","index.html")))+"/items/{featureId}/index.json"]={"get":{"tags":["Data"]},"summary": "retrieves feature of collection {collectionId}","description": "Retrieves one single feature of the collection with the id {collectionId}","operationId": "feature-"+str(self.shortenURI(coll.replace("index.geojson","index.html"))),"parameters":[{"name":"featureId","in": "path","required": True,"schema": {"type": "string"}}],"responses": {"default": {"description": "default response","content": {"application/geo+json": {"example": None }},"text/html": {"schema": {"example": None},"example": None}}}}
                     for feat in curcoll["features"]:
                         featpath=feat["id"].replace(prefixnamespace,"").replace("//","/")
                         try:
