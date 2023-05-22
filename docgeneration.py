@@ -2469,7 +2469,7 @@ class OntDocGeneration:
             f.write(json.dumps(apijson))
             f.close()
             f=open(outpath + "/api/index.html","w",encoding="utf-8")
-            f.write(json.dumps(apihtml))
+            f.write(apihtml)
             f.close()
             f=open(outpath + "/collections/indexc.html","w",encoding="utf-8")
             f.write(collectionshtml.replace("{{collectiontable}}",collectiontable))
