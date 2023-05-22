@@ -2383,7 +2383,7 @@ class OntDocGeneration:
             collectionsjson={"collections":[],"links":[{"href":outpath+"collections/index.json","rel":"self","type":"application/json","title":"this document as JSON"},{"href":outpath+"collections/index.html","rel":"self","type":"text/html","title":"this document as HTML"}]}
             collectionshtml="<html><head></head><body><header><h1>Collections of "+str(self.deploypath)+"</h1></head>{{collectiontable}}<footer><a href=\"index.json\">This page as JSON</a></footer></body></html>"
             collectiontable="<table><thead><th>Collection</th><th>Links</th></thead><tbody>"
-            apijson["paths"]["/collections"]={"get": {"tags": ["Collections"],"summary": "describes collections","description": "Describes all collections provided by this service","operationId": "collections","parameters": [],"responses":{"default": {"description": "default response","content": {"application/json": {"schema": {"$ref": "#/components/schemas/Collections"}},"text/html": {"schema": {}}}}}}
+            apijson["paths"]["/collections"]={"get": {"tags": ["Collections"],"summary": "describes collections","description": "Describes all collections provided by this service","operationId": "collections","parameters": [],"responses":{"default": {"description": "default response","content": {"application/json": {"schema": {"$ref": "#/components/schemas/Collections"}},"text/html": {"schema": {}}}}}}}
             if outpath.endswith("/"):
                 outpath=outpath[0:-1]
             if not os.path.exists(outpath+"/api/"):
