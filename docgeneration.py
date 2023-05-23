@@ -2416,24 +2416,29 @@ class OntDocGeneration:
                 if opwebcoll.endswith("/"):
                     opwebcoll=opwebcoll[0:-1]
                 opwebcoll=opwebcoll.replace("//","/")
-                collectionsjson["collections"].append({"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"title":featurecollectionspaths[coll]["name"],"links":[{"href":str(opweb.replace(".geojson","")+"/index.json").replace("//","/"),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":str(opweb.replace(".geojson","")+"/index.html").replace("//","/"),"rel":"collection","type":"text/html","title":"Collection as HTML"},{"href":str(opweb.replace(".geojson","")+"/index.ttl").replace("//","/"),"rel":"collection","type":"text/ttl","title":"Collection as TTL"}]})
+                collectionsjson["collections"].append({"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"title":featurecollectionspaths[coll]["name"],"links":[{"href":str(opweb.replace(".geojson","")+"/index.json").replace("//","/"),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":str(opweb.replace(".geojson","")+"/").replace("//","/"),"rel":"collection","type":"text/html","title":"Collection as HTML"},{"href":str(opweb.replace(".geojson","")+"/index.ttl").replace("//","/"),"rel":"collection","type":"text/ttl","title":"Collection as TTL"}]})
                 currentcollection={"title":featurecollectionspaths[coll]["name"],"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"links":[]}
-                currentcollection["links"]=[{"href":opwebcoll+"/items/","rel":"items","type":"application/json","title":"Collection as JSON"},{"href":opwebcoll+"/items/","rel":"items","type":"text/html","title":"Collection as HTML"},{"href":opwebcoll+"/items/index.ttl","rel":"collection","type":"text/ttl","title":"Collection as TTL"}]
-                apijson["paths"]["/collections/"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:])]={"get":{"tags":["Collections"],"summary": "describes collection "+str(str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:])).rstrip("/"),"description": "Describes the collection with the id "+str(str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:])).rstrip("/"),"operationId": "collection-"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:]),"parameters":[],"responses": {"default": {"description": "default response","content": {"application/json": {"schema": {"$ref": "#/components/schemas/Collections"},"example": None}}}}}}
-                collectiontable+="<tr><td><a href=\""+opweb.replace(".geojson","")+"/items/index.html\">"+str(featurecollectionspaths[coll]["name"])+"</a></td><td><a href=\""+opweb.replace(".geojson","")+"/items/indexc.html\">[Collection as HTML]</a>&nbsp;<a href=\""+opweb.replace(".geojson","")+"/items/\">[Collection as JSON]</a>&nbsp;<a href=\""+opweb.replace(".geojson","")+"/items/index.ttl\">[Collection as TTL]</a></td></tr>"
+                currentcollection["links"]=[{"href":opwebcoll+"/items/index.json","rel":"items","type":"application/json","title":"Collection as JSON"},{"href":opwebcoll+"/items/indexc.html","rel":"items","type":"text/html","title":"Collection as HTML"},{"href":opwebcoll+"/items/index.ttl","rel":"collection","type":"text/ttl","title":"Collection as TTL"}]
+                apijson["paths"]["/collections/"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:]).rstrip("/")]={"get":{"tags":["Collections"],"summary": "describes collection "+str(str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:])).rstrip("/"),"description": "Describes the collection with the id "+str(str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:])).rstrip("/"),"operationId": "collection-"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:]),"parameters":[],"responses": {"default": {"description": "default response","content": {"application/json": {"schema": {"$ref": "#/components/schemas/Collections"},"example": None}}}}}}
+                curcollrow="<tr><td><a href=\""+opweb.replace(".geojson","")+"/items/index.html\">"+str(featurecollectionspaths[coll]["name"])+"</a></td><td><a href=\""+opweb.replace(".geojson","")+"/items/indexc.html\">[Collection as HTML]</a>&nbsp;<a href=\""+opweb.replace(".geojson","")+"/items/\">[Collection as JSON]</a>&nbsp;<a href=\""+opweb.replace(".geojson","")+"/items/index.ttl\">[Collection as TTL]</a></td></tr>"
                 "/collections/umring"
                 f=open(op+"index.json","w",encoding="utf-8")
                 f.write(json.dumps(currentcollection))
                 f.close()
+                f=open(op+"indexc.html","w",encoding="utf-8")
+                f.write("<html><head></head><body><h1>"+featurecollectionspaths[coll]["name"]+"</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>"+str(curcollrow)+"</tbody></table></html>")
+                f.close()
+                collectiontable+=curcollrow
                 if os.path.exists(coll):
                     try:
                         targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+"/items/index.json").replace("//","/"),outpath)
                         p = Path( str(op+"/items/index.json").replace("//","/") )
                         p.symlink_to(targetpath)
-                        targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","index.ttl"),str(op+"/items/index.ttl").replace("//","/"),outpath)
-                        p = Path( str(op+"/items/index.ttl").replace("//","/") )
-                        p.symlink_to(targetpath)
-                        targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","index.html"),str(op+"/items/index.html").replace("//","/"),outpath)
+                        if os.path.exists(coll.replace("//","/").replace("index.geojson","index.ttl")):
+                            targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","index.ttl"),str(op+"/items/index.ttl").replace("//","/"),outpath)
+                            p = Path( str(op+"/items/index.ttl").replace("//","/") )
+                            p.symlink_to(targetpath)
+                        targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","indexc.html"),str(op+"/items/index.html").replace("//","/"),outpath)
                         f=open(str(op+"/items/indexc.html"),"w")
                         f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+"\" /></head></html>")
                         f.close()
@@ -2443,7 +2448,8 @@ class OntDocGeneration:
                     except Exception as e:
                         print("symlink creation error")
                         print(e)
-                    apijson["paths"][str("/collections/"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:])+"/items/{featureId}/index.json").replace("//","/")]={"get":{"tags":["Data"]},"summary": "retrieves feature of collection "+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:]).rstrip("/"),"description": "Retrieves one single feature of the collection with the id "+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:]),"operationId": "feature-"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:]),"parameters":[{"name":"featureId","in": "path","required": True,"schema": {"type": "string"}}],"responses": {"default": {"description": "default response","content": {"application/geo+json": {"example": None }},"text/ttl": {"schema": {"example": None},"example": None},"text/html": {"schema": {"example": None},"example": None}}}}
+                    apijson["paths"][str("/collections/"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:])+"/items/index.json").replace("//","/")]={"get":{"tags":["Data"],"summary": "retrieves features of collection "+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:]).rstrip("/"),"description": "Retrieves features of collection  "+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:]),"operationId": "features-"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:]),"parameters":[],"responses": {"default": {"description": "default response","content": {"application/geo+json": {"example": None }},"text/ttl": {"schema": {"example": None},"example": None},"text/html": {"schema": {"example": None},"example": None}}}}}
+                    apijson["paths"][str("/collections/"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:])+"/items/{featureId}/index.json").replace("//","/")]={"get":{"tags":["Data"],"summary": "retrieves feature of collection "+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:]).rstrip("/"),"description": "Retrieves one single feature of the collection with the id "+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:]),"operationId": "feature-"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:]),"parameters":[{"name":"featureId","in": "path","required": True,"schema": {"type": "string"}}],"responses": {"default": {"description": "default response","content": {"application/geo+json": {"example": None }},"text/ttl": {"schema": {"example": None},"example": None},"text/html": {"schema": {"example": None},"example": None}}}}}
                     for feat in curcoll["features"]:
                         featpath=feat["id"].replace(prefixnamespace,"").replace("//","/")
                         try:
@@ -2451,11 +2457,12 @@ class OntDocGeneration:
                             targetpath=self.generateRelativeSymlink(featpath+"/index.json",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.json").replace("//","/"),outpath)
                             p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.json").replace("//","/") )
                             p.symlink_to(targetpath)
-                            targetpath=self.generateRelativeSymlink(featpath+"/index.ttl",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/"),outpath)
-                            p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/") )
-                            p.symlink_to(targetpath)
-                            targetpath=self.generateRelativeSymlink(featpath+"/index.html",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/"),outpath)
-                            f=open(str(op+"/items/"+str(self.shortenURI(feat["id"])))+"/index.html","w")
+                            if os.path.exists(featpath+"/index.ttl",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/")):
+                                targetpath=self.generateRelativeSymlink(featpath+"/index.ttl",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/"),outpath)
+                                p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/") )
+                                p.symlink_to(targetpath)
+                            targetpath=self.generateRelativeSymlink(featpath+"/indexc.html",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/"),outpath)
+                            f=open(str(op+"/items/"+str(self.shortenURI(feat["id"])))+"/indexc.html","w")
                             f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+"\" /></head></html>")
                             f.close()
                             #p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/") )
