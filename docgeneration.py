@@ -2356,6 +2356,8 @@ class OntDocGeneration:
             apihtml="<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><metaname=\"description\" content=\"SwaggerUI\"/><title>SwaggerUI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css\" /></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js\" crossorigin></script><script>const swaggerUrl = \""+str(self.deploypath)+"/api/index.json\"; const apiUrl = \""+str(self.deploypath)+"/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
             apijson={"openapi":"3.0.1","info":{"title":str(self.deploypath)+" Feature Collections","description":"Feature Collections of "+str(self.deploypath)},"servers":[{"url":str(self.deploypath)}],"paths":{}}
             apijson["paths"]["/api"]={"get": {"tags": ["Capabilities"],"summary": "api documentation","description": "api documentation","operationId": "openApi","parameters": [],"responses": {"default": {"description": "default response","content": {"application/vnd.oai.openapi+json;version=3.0": {},"application/json": {},"text/html": {"schema": {}}}}}}}
+            apijson["paths"]["/license/dataset"]=
+            
             apijson["components"]={"schemas":{"Conformance":{"type":"object","properties":{"conformsTo":{"type":"array","items":{"type":"string"}}},"xml":{"name":"ConformsTo","namespace":"http://www.opengis.net/ogcapi-features-1/1.0"}},"Collection":{"type":"object","properties":{"id":{"type":"string","xml":{"name":"Id","namespace":"http://www.opengis.net/ogcapi-features-1/1.0"}},"title":{"type":"string","xml":{"name":"Title","namespace":"http://www.opengis.net/ogcapi-features-1/1.0"}},"description":{"type":"string","xml":{"name":"Description","namespace":"http://www.opengis.net/ogcapi-features-1/1.0"}},"links":{"type":"array","xml":{"name":"link","namespace":"http://www.w3.org/2005/Atom"},"items":{"$ref":"#/components/schemas/Link"}},"extent":{"$ref":"#/components/schemas/Extent"},"itemType":{"type":"string"},"crs":{"type":"array","items":{"type":"string"}},"storageCrs":{"type":"string"}},"xml":{"name":"Collection","namespace":"http://www.opengis.net/ogcapi-features-1/1.0"}},"Collections":{"type":"object","properties":{"links":{"type":"array","xml":{"name":"link","namespace":"http://www.w3.org/2005/Atom"},"items":{"$ref":"#/components/schemas/Link"}},"collections":{"type":"array","xml":{"name":"Collection","namespace":"http://www.opengis.net/ogcapi-features-1/1.0"},"items":{"$ref":"#/components/schemas/Collection"}}},"xml":{"name":"Collections","namespace":"http://www.opengis.net/ogcapi-features-1/1.0"}},"Extent":{"type":"object","properties":{"spatial":{"$ref":"#/components/schemas/Spatial"},"temporal":{"$ref":"#/components/schemas/Temporal"}},"xml":{"name":"Extent","namespace":"http://www.opengis.net/ogcapi-features-1/1.0"}},"Link":{"type":"object","properties":{"href":{"type":"string","xml":{"attribute":True}},"rel":{"type":"string","xml":{"attribute":True}},"type":{"type":"string","xml":{"attribute":True}},"title":{"type":"string","xml":{"attribute":True}}},"xml":{"name":"link","namespace":"http://www.w3.org/2005/Atom"}},"Spatial":{"type":"object","properties":{"bbox":{"type":"array","items":{"type":"array","items":{"type":"number","format":"double"}}},"crs":{"type":"string","xml":{"attribute":True}}},"xml":{"name":"SpatialExtent","namespace":"http://www.opengis.net/ogcapi-features-1/1.0"}},"Temporal":{"type":"object","properties":{"interval":{"type":"array","items":{"type":"string","format":"date-time"}},"trs":{"type":"string","xml":{"attribute":True}}},"xml":{"name":"TemporalExtent","namespace":"http://www.opengis.net/ogcapi-features-1/1.0"}},"LandingPage":{"type":"object"}}}
             landingpagejson={"title":"Landing Page","description":"Landing Page","links":[{
                 "href": str(self.deploypath)+"/index.json",
@@ -2389,6 +2391,8 @@ class OntDocGeneration:
                 outpath=outpath[0:-1]
             if not os.path.exists(outpath+"/api/"):
                 os.makedirs(outpath + "/api/")
+            if not os.path.exists(outpath+"/license/"):
+                os.makedirs(outpath + "/license/")
             if not os.path.exists(outpath+"/collections/"):
                 os.makedirs(outpath+"/collections/")
             if not os.path.exists(outpath+"/conformance/"):
@@ -2430,7 +2434,7 @@ class OntDocGeneration:
                         p = Path( str(op+"/items/index.ttl").replace("//","/") )
                         p.symlink_to(targetpath)
                         targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","index.html"),str(op+"/items/index.html").replace("//","/"),outpath)
-                        f=open(str(op+"/items/index.html"),"w")
+                        f=open(str(op+"/items/indexc.html"),"w")
                         f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+"\" /></head></html>")
                         f.close()
                         #p = Path( str(op+"/items/index.html").replace("//","/") )
