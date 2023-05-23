@@ -2422,7 +2422,7 @@ class OntDocGeneration:
                 f.write(json.dumps(currentcollection))
                 f.close()
                 f=open(op+"indexc.html","w",encoding="utf-8")
-                f.write("<html><head></head><body><h1>"+featurecollectionspaths[coll]["name"]+"</h1><thead><th>Collection</th><th>Links</th></thead><tbody>"+str(curcollrow)+"</tbody></table></html>")
+                f.write("<html><head></head><body><h1>"+featurecollectionspaths[coll]["name"]+"</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>"+str(curcollrow)+"</tbody></table></html>")
                 f.close()
                 collectiontable+=curcollrow
                 if os.path.exists(coll):
@@ -2430,9 +2430,10 @@ class OntDocGeneration:
                         targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+"/items/index.json").replace("//","/"),outpath)
                         p = Path( str(op+"/items/index.json").replace("//","/") )
                         p.symlink_to(targetpath)
-                        targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","index.ttl"),str(op+"/items/index.ttl").replace("//","/"),outpath)
-                        p = Path( str(op+"/items/index.ttl").replace("//","/") )
-                        p.symlink_to(targetpath)
+                        if os.path.exists(coll.replace("//","/").replace("index.geojson","index.ttl")):
+                            targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","index.ttl"),str(op+"/items/index.ttl").replace("//","/"),outpath)
+                            p = Path( str(op+"/items/index.ttl").replace("//","/") )
+                            p.symlink_to(targetpath)
                         targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","indexc.html"),str(op+"/items/index.html").replace("//","/"),outpath)
                         f=open(str(op+"/items/indexc.html"),"w")
                         f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+"\" /></head></html>")
