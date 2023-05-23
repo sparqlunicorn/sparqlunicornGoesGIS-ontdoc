@@ -2430,19 +2430,19 @@ class OntDocGeneration:
                 collectiontable+=curcollrow
                 if os.path.exists(coll):
                     try:
-                        targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+"/items/index.json").replace("//","/"),outpath)
-                        p = Path( str(op+"/items/index.json").replace("//","/") )
-                        p.symlink_to(targetpath)
+                        if os.path.exists(str(op+"/items/index.json").replace("//","/")):
+                            targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+"/items/index.json").replace("//","/"),outpath)
+                            p = Path( str(op+"/items/index.json").replace("//","/") )
+                            p.symlink_to(targetpath)
                         if os.path.exists(str(op+"/items/index.ttl").replace("//","/")):
                             targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","index.ttl"),str(op+"/items/index.ttl").replace("//","/"),outpath)
                             p = Path( str(op+"/items/index.ttl").replace("//","/") )
                             p.symlink_to(targetpath)
-                        targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","indexc.html"),str(op+"/items/index.html").replace("//","/"),outpath)
-                        f=open(str(op+"/items/indexc.html"),"w")
-                        f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+"\" /></head></html>")
-                        f.close()
-                        #p = Path( str(op+"/items/index.html").replace("//","/") )
-                        #p.symlink_to(targetpath)
+                        if os.path.exists(str(op+"/items/index.html").replace("//","/")):
+                            targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","indexc.html"),str(op+"/items/index.html").replace("//","/"),outpath)
+                            f=open(str(op+"/items/indexc.html"),"w")
+                            f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+"\" /></head></html>")
+                            f.close()
                         print("symlinks created")
                     except Exception as e:
                         print("symlink creation error")
