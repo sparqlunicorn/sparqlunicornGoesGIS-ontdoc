@@ -2461,7 +2461,7 @@ class OntDocGeneration:
                                 targetpath=self.generateRelativeSymlink(featpath+"/index.ttl",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/"),outpath)
                                 p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/") )
                                 p.symlink_to(targetpath)
-                            if os.path.exists(str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/"):
+                            if os.path.exists(str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/")):
                                 targetpath=self.generateRelativeSymlink(featpath+"/indexc.html",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/"),outpath)
                                 f=open(str(op+"/items/"+str(self.shortenURI(feat["id"])))+"/indexc.html","w")
                                 f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+"\" /></head></html>")
