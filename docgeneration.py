@@ -2433,7 +2433,7 @@ class OntDocGeneration:
                         targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+"/items/index.json").replace("//","/"),outpath)
                         p = Path( str(op+"/items/index.json").replace("//","/") )
                         p.symlink_to(targetpath)
-                        if os.path.exists(coll.replace("//","/").replace("index.geojson","index.ttl")):
+                        if os.path.exists(str(op+"/items/index.ttl").replace("//","/")):
                             targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","index.ttl"),str(op+"/items/index.ttl").replace("//","/"),outpath)
                             p = Path( str(op+"/items/index.ttl").replace("//","/") )
                             p.symlink_to(targetpath)
@@ -2456,7 +2456,7 @@ class OntDocGeneration:
                             targetpath=self.generateRelativeSymlink(featpath+"/index.json",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.json").replace("//","/"),outpath)
                             p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.json").replace("//","/") )
                             p.symlink_to(targetpath)
-                            if os.path.exists(featpath+"/index.ttl",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/")):
+                            if os.path.exists(str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/")):
                                 targetpath=self.generateRelativeSymlink(featpath+"/index.ttl",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/"),outpath)
                                 p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/") )
                                 p.symlink_to(targetpath)
