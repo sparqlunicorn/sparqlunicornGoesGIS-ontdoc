@@ -2430,15 +2430,15 @@ class OntDocGeneration:
                 collectiontable+=curcollrow
                 if os.path.exists(coll):
                     try:
-                        if os.path.exists(str(op+"/items/index.json").replace("//","/")):
+                        if os.path.exists(coll.replace("//","/")):
                             targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+"/items/index.json").replace("//","/"),outpath)
                             p = Path( str(op+"/items/index.json").replace("//","/") )
                             p.symlink_to(targetpath)
-                        if os.path.exists(str(op+"/items/index.ttl").replace("//","/")):
+                        if os.path.exists(coll.replace("//","/").replace("index.geojson","index.ttl")):
                             targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","index.ttl"),str(op+"/items/index.ttl").replace("//","/"),outpath)
                             p = Path( str(op+"/items/index.ttl").replace("//","/") )
                             p.symlink_to(targetpath)
-                        if os.path.exists(str(op+"/items/index.html").replace("//","/")):
+                        if os.path.exists(coll.replace("//","/").replace("index.geojson","indexc.html")):
                             targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","indexc.html"),str(op+"/items/index.html").replace("//","/"),outpath)
                             f=open(str(op+"/items/indexc.html"),"w")
                             f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+"\" /></head></html>")
@@ -2453,6 +2453,7 @@ class OntDocGeneration:
                         featpath=feat["id"].replace(prefixnamespace,"").replace("//","/")
                         try:
                             os.makedirs(str(op+"/items/"+str(self.shortenURI(feat["id"]))))
+                            print("CHECKPATH: "+str(str(feat["id"].replace(prefixnamespace,outpath)+"/index.json").replace("//","/")))
                             if os.path.exists(str(feat["id"].replace(prefixnamespace,outpath)+"/index.json").replace("//","/")):
                                 targetpath=self.generateRelativeSymlink(featpath+"/index.json",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.json").replace("//","/"),outpath)
                                 p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.json").replace("//","/") )
