@@ -2341,7 +2341,7 @@ class OntDocGeneration:
 
     def generateRelativeSymlink(self,linkpath,targetpath,outpath):
         if "nonns" in targetpath:
-            checkdepthtarget=1
+            checkdepthtarget=3
         else:
             checkdepthtarget=targetpath.count("/")-1
         print("Checkdepthtarget: "+str(checkdepthtarget))
