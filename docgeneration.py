@@ -2440,7 +2440,7 @@ class OntDocGeneration:
                             targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","index.ttl"),str(op+"/items/index.ttl").replace("//","/"),outpath)
                             p = Path( str(op+"/items/index.ttl").replace("//","/") )
                             p.symlink_to(targetpath)
-                        if os.path.exists(coll.replace("//","/").replace("index.geojson","indexc.html")):
+                        if os.path.exists(coll.replace("//","/").replace("index.geojson","index.html")):
                             targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","indexc.html"),str(op+"/items/index.html").replace("//","/"),outpath)
                             f=open(str(op+"/items/indexc.html"),"w")
                             f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+"\" /></head></html>")
@@ -3028,17 +3028,17 @@ if len(sys.argv)>16:
     templatename=sys.argv[16]
 fcounter=0
 for fp in filestoprocess:
-    #try:
-    g = Graph()
-    g.parse(fp)
-    if fcounter<len(outpath):
-        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,startconcept,deploypath,logourl,templatename)
-    else:
-        docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,startconcept,deploypath,logourl,templatename)
-    docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
-    #except Exception as inst:
-    # 	print("Could not parse "+str(fp))
-    # 	print(inst)
+    try:
+        g = Graph()
+        g.parse(fp)
+        if fcounter<len(outpath):
+            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,startconcept,deploypath,logourl,templatename)
+        else:
+            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,startconcept,deploypath,logourl,templatename)
+        docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
+    except Exception as inst:
+     	print("Could not parse "+str(fp))
+     	print(inst)
     fcounter+=1
 curlicense=license
 if docgen!=None:
