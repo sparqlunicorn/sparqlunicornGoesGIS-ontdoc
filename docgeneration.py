@@ -2436,12 +2436,12 @@ class OntDocGeneration:
                             targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+"/items/index.json").replace("//","/"),outpath)
                             p = Path( str(op+"/items/index.json").replace("//","/") )
                             p.symlink_to(targetpath)
-                        if os.path.exists(coll.replace("//","/").replace("index.geojson","index.ttl")):
-                            targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","index.ttl"),str(op+"/items/index.ttl").replace("//","/"),outpath)
+                        if os.path.exists(coll.replace("//","/").replace("index.geojson","index.ttl").replace("nonns_"+featurecollectionspaths[coll]["id"]+".geojson","nonns_"+featurecollectionspaths[coll]["id"]+".ttl")):
+                            targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","index.ttl").replace("nonns_"+featurecollectionspaths[coll]["id"]+".geojson","nonns_"+featurecollectionspaths[coll]["id"]+".ttl"),str(op+"/items/index.ttl").replace("//","/"),outpath)
                             p = Path( str(op+"/items/index.ttl").replace("//","/") )
                             p.symlink_to(targetpath)
-                        if os.path.exists(coll.replace("//","/").replace("index.geojson","index.html")):
-                            targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","index.html"),str(op+"/items/indexc.html").replace("//","/"),outpath)
+                        if os.path.exists(coll.replace("//","/").replace("index.geojson","index.html").replace("nonns_"+featurecollectionspaths[coll]["id"]+".geojson","nonns_"+featurecollectionspaths[coll]["id"]+".html")):
+                            targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","index.html").replace("nonns_"+featurecollectionspaths[coll]["id"]+".geojson","nonns_"+featurecollectionspaths[coll]["id"]+".html"),str(op+"/items/indexc.html").replace("//","/"),outpath)
                             f=open(str(op+"/items/indexc.html"),"w")
                             f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+"\" /></head></html>")
                             f.close()
