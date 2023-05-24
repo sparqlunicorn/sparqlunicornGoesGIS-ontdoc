@@ -2453,16 +2453,16 @@ class OntDocGeneration:
                         featpath=feat["id"].replace(prefixnamespace,"").replace("//","/")
                         try:
                             os.makedirs(str(op+"/items/"+str(self.shortenURI(feat["id"]))))
-                            print("CHECKPATH: "+str(str(feat["id"].replace(prefixnamespace,outpath)+"/index.json").replace("//","/")))
-                            if os.path.exists(str(feat["id"].replace(prefixnamespace,outpath)+"/index.json").replace("//","/")):
+                            print("CHECKPATH: "+str(str(featpath+"/index.json").replace("//","/")))
+                            if os.path.exists(featpath+"/index.json"):
                                 targetpath=self.generateRelativeSymlink(featpath+"/index.json",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.json").replace("//","/"),outpath)
                                 p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.json").replace("//","/") )
                                 p.symlink_to(targetpath)
-                            if os.path.exists(str(feat["id"].replace(prefixnamespace,outpath)+"/index.ttl").replace("//","/")):
+                            if os.path.exists(featpath+"/index.ttl"):
                                 targetpath=self.generateRelativeSymlink(featpath+"/index.ttl",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/"),outpath)
                                 p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/") )
                                 p.symlink_to(targetpath)
-                            if os.path.exists(str(feat["id"].replace(prefixnamespace,outpath)+"/index.html").replace("//","/")):
+                            if os.path.exists(featpath+"/index.html"):
                                 targetpath=self.generateRelativeSymlink(featpath+"/index.html",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/"),outpath)
                                 f=open(str(op+"/items/"+str(self.shortenURI(feat["id"])))+"/indexc.html","w")
                                 f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+"\" /></head></html>")
