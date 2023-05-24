@@ -2373,11 +2373,11 @@ class OntDocGeneration:
                 "type": "application/json",
                 "title": "Supported Feature Collections as JSON"
             }, {
-                "href": str(self.deploypath)+"/collections/",
+                "href": str(self.deploypath)+"/collections/indexc.html",
                 "rel": "data",
                 "type": "text/html",
                 "title": "Supported Feature Collections as HTML"
-            },{"href":str(self.deploypath)+"/api","rel":"service-desc","type":"application/vnd.oai.openapi+json;version=3.0","title":"API definition"},{"href":str(self.deploypath)+"/api","rel":"service-desc","type":"text/html","title":"API definition as HTML"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"application/json","title":"OGC API conformance classes as Json"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"text/html","title":"OGC API conformance classes as HTML"}]}
+            },{"href":str(self.deploypath)+"/api/index.json","rel":"service-desc","type":"application/vnd.oai.openapi+json;version=3.0","title":"API definition"},{"href":str(self.deploypath)+"/api","rel":"service-desc","type":"text/html","title":"API definition as HTML"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"application/json","title":"OGC API conformance classes as Json"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"text/html","title":"OGC API conformance classes as HTML"}]}
             conformancejson={"conformsTo":["http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson"]}
             apijson["paths"]["/"]={"get": {"tags": ["Capabilities"],"summary": "landing page","description": "Landing page of this dataset","operationId": "landingPage","parameters": [],"responses": {"default": {"description": "default response","content": {"application/json": {"schema": {"$ref": "#/components/schemas/LandingPage"}},"text/html": {"schema": {}}}}}}}
             apijson["paths"]["/conformance"]={"get": {"tags": ["Capabilities"],"summary": "supported conformance classes","description": "Retrieves the supported conformance classes","operationId": "conformance","parameters": [],"responses": {"default": {"description": "default response","content": {"application/json": {"schema": {"$ref": "#/components/schemas/Conformance"}},"text/ttl": {"schema":{}},"text/html": {"schema":{}}}}}}}
