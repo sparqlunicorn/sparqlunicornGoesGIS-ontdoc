@@ -2339,9 +2339,11 @@ class OntDocGeneration:
             counter+=1	
         return labeltouri
 
-    def generateRelativeSymlink(self,linkpath,targetpath,outpath):
-        if "nonns" in targetpath:
+    def generateRelativeSymlink(self,linkpath,targetpath,outpath,items=False):
+        if "nonns" in targetpath and not items:
             checkdepthtarget=3
+        elif "nonns" in targetpath and items:
+            checkdepthtarget=4
         else:
             checkdepthtarget=targetpath.count("/")-1
         print("Checkdepthtarget: "+str(checkdepthtarget))
@@ -2455,15 +2457,15 @@ class OntDocGeneration:
                             os.makedirs(str(op+"/items/"+str(self.shortenURI(feat["id"]))))
                             print("CHECKPATH: "+str(str(feat["id"].replace(prefixnamespace,outpath+"/")+"/index.json").replace("//","/")))
                             if os.path.exists(feat["id"].replace(prefixnamespace,outpath+"/")+"/index.json"):
-                                targetpath=self.generateRelativeSymlink(featpath+"/index.json",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.json").replace("//","/"),outpath)
+                                targetpath=self.generateRelativeSymlink(featpath+"/index.json",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.json").replace("//","/"),outpath,True)
                                 p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.json").replace("//","/") )
                                 p.symlink_to(targetpath)
                             if os.path.exists(feat["id"].replace(prefixnamespace,outpath+"/")+"/index.ttl"):
-                                targetpath=self.generateRelativeSymlink(featpath+"/index.ttl",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/"),outpath)
+                                targetpath=self.generateRelativeSymlink(featpath+"/index.ttl",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/"),outpath,True)
                                 p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/") )
                                 p.symlink_to(targetpath)
                             if os.path.exists(feat["id"].replace(prefixnamespace,outpath+"/")+"/index.html"):
-                                targetpath=self.generateRelativeSymlink(featpath+"/index.html",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/"),outpath)
+                                targetpath=self.generateRelativeSymlink(featpath+"/index.html",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/"),outpath,True)
                                 f=open(str(op+"/items/"+str(self.shortenURI(feat["id"])))+"/indexc.html","w")
                                 f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+"\" /></head></html>")
                                 f.close()
