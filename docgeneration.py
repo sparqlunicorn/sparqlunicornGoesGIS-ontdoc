@@ -2441,7 +2441,7 @@ class OntDocGeneration:
                             p = Path( str(op+"/items/index.ttl").replace("//","/") )
                             p.symlink_to(targetpath)
                         if os.path.exists(coll.replace("//","/").replace("index.geojson","index.html")):
-                            targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","indexc.html"),str(op+"/items/index.html").replace("//","/"),outpath)
+                            targetpath=self.generateRelativeSymlink(coll.replace("//","/").replace("index.geojson","index.html"),str(op+"/items/indexc.html").replace("//","/"),outpath)
                             f=open(str(op+"/items/indexc.html"),"w")
                             f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+"\" /></head></html>")
                             f.close()
@@ -2466,7 +2466,7 @@ class OntDocGeneration:
                                 p.symlink_to(targetpath)
                             if os.path.exists(feat["id"].replace(prefixnamespace,outpath+"/")+"/index.html"):
                                 targetpath=self.generateRelativeSymlink(featpath+"/index.html",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/"),outpath,True)
-                                f=open(str(op+"/items/"+str(self.shortenURI(feat["id"])))+"/indexc.html","w")
+                                f=open(str(op+"/items/"+str(self.shortenURI(feat["id"])))+"/index.html","w")
                                 f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url="+targetpath+"\" /></head></html>")
                                 f.close()
                             print("symlinks created")
