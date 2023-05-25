@@ -1406,7 +1406,7 @@ def resolveTemplate(templatename):
 
 class OntDocGeneration:
 
-    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,startconcept=None,deploypath="",logoname="",templatename="default"):
+    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,localOptimized=False,startconcept=None,deploypath="",logoname="",templatename="default"):
         self.prefixes=prefixes
         self.prefixnamespace = prefixnamespace
         self.namespaceshort = prefixnsshort.replace("/","")
@@ -1414,6 +1414,7 @@ class OntDocGeneration:
         self.logoname=logoname
         self.startconcept=startconcept
         self.createVOWL=createVOWL
+        self.localOptimized=localOptimized
         self.geocache={}
         self.deploypath=deploypath
         self.generatePagesForNonNS=generatePagesForNonNS
@@ -1731,7 +1732,7 @@ class OntDocGeneration:
             self.generateOGCAPIFeaturesPages(outpath,featurecollectionspaths,prefixnamespace,True,True)
             indexhtml += "<p>This page shows feature collections present in the linked open data export</p>"
             indexhtml+="<script src=\"features.js\"></script>"
-            indexhtml+=maptemplate.replace("var featurecolls = {{myfeature}}","").replace("{{baselayers}}",json.dumps(baselayers).replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{dateatt}}", ""))
+            indexhtml+=maptemplate.replace("var ajax=true","var ajax=false").replace("var featurecolls = {{myfeature}}","").replace("{{baselayers}}",json.dumps(baselayers).replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{dateatt}}", ""))
             indexhtml += htmlfooter.replace("{{license}}", curlicense).replace("{{exports}}", nongeoexports).replace("{{bibtex}}","")
             with open(outpath + "featurecollections.html", 'w', encoding='utf-8') as f:
                 f.write(indexhtml)
@@ -2376,11 +2377,11 @@ class OntDocGeneration:
                 "type": "application/json",
                 "title": "Supported Feature Collections as JSON"
             }, {
-                "href": str(self.deploypath)+"/collections/",
+                "href": str(self.deploypath)+"/collections/indexc.html",
                 "rel": "data",
                 "type": "text/html",
                 "title": "Supported Feature Collections as HTML"
-            },{"href":str(self.deploypath)+"/api","rel":"service-desc","type":"application/vnd.oai.openapi+json;version=3.0","title":"API definition"},{"href":str(self.deploypath)+"/api","rel":"service-desc","type":"text/html","title":"API definition as HTML"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"application/json","title":"OGC API conformance classes as Json"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"text/html","title":"OGC API conformance classes as HTML"}]}
+            },{"href":str(self.deploypath)+"/api/index.json","rel":"service-desc","type":"application/vnd.oai.openapi+json;version=3.0","title":"API definition"},{"href":str(self.deploypath)+"/api","rel":"service-desc","type":"text/html","title":"API definition as HTML"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"application/json","title":"OGC API conformance classes as Json"},{"href":str(self.deploypath)+"/conformance","rel":"conformance","type":"text/html","title":"OGC API conformance classes as HTML"}]}
             conformancejson={"conformsTo":["http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson"]}
             apijson["paths"]["/"]={"get": {"tags": ["Capabilities"],"summary": "landing page","description": "Landing page of this dataset","operationId": "landingPage","parameters": [],"responses": {"default": {"description": "default response","content": {"application/json": {"schema": {"$ref": "#/components/schemas/LandingPage"}},"text/html": {"schema": {}}}}}}}
             apijson["paths"]["/conformance"]={"get": {"tags": ["Capabilities"],"summary": "supported conformance classes","description": "Retrieves the supported conformance classes","operationId": "conformance","parameters": [],"responses": {"default": {"description": "default response","content": {"application/json": {"schema": {"$ref": "#/components/schemas/Conformance"}},"text/ttl": {"schema":{}},"text/html": {"schema":{}}}}}}}
@@ -2859,7 +2860,7 @@ class OntDocGeneration:
                         epsgcode="EPSG:"+geojsonrep["crs"]
                     if len(hasnonns)>0:
                         self.geocache[str(subject)]=jsonfeat
-                    f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(jsonfeat)+"]").replace("{{epsg}}",epsgcode).replace("{{baselayers}}",json.dumps(baselayers)).replace("{{epsgdefspath}}", epsgdefslink).replace("{{dateatt}}", ""))
+                    f.write(maptemplate.replace("var ajax=true","var ajax=false").replace("{{myfeature}}","["+json.dumps(jsonfeat)+"]").replace("{{epsg}}",epsgcode).replace("{{baselayers}}",json.dumps(baselayers)).replace("{{epsgdefspath}}", epsgdefslink).replace("{{dateatt}}", ""))
                 elif isgeocollection or nonns:
                     if foundlabel!=None and foundlabel!="":
                         featcoll={"type":"FeatureCollection", "id":subject,"name":str(foundlabel), "features":[]}
@@ -2901,7 +2902,10 @@ class OntDocGeneration:
                             for feat in featcoll["features"]:
                                 if dateatt not in feat["properties"]:
                                     feat["properties"][dateatt]=""
-                        f.write(maptemplate.replace("{{myfeature}}","["+json.dumps(featcoll)+"]").replace("{{baselayers}}",json.dumps(baselayers)).replace("{{epsgdefspath}}", epsgdefslink).replace("{{dateatt}}", dateatt))
+                        if self.localOptimized:
+                            f.write(maptemplate.replace("var ajax=true","var ajax=false").replace("{{myfeature}}","["+json.dumps(featcoll)+"]").replace("{{baselayers}}",json.dumps(baselayers)).replace("{{epsgdefspath}}", epsgdefslink).replace("{{dateatt}}", dateatt))
+                        else:
+                            f.write(maptemplate.replace("{{myfeature}}","[\""+self.shortenURI(str(completesavepath.replace(".html",".geojson")))+"\"]").replace("{{baselayers}}",json.dumps(baselayers)).replace("{{epsgdefspath}}", epsgdefslink).replace("{{dateatt}}", dateatt))
                         with open(completesavepath.replace(".html",".geojson"), 'w', encoding='utf-8') as fgeo:
                             featurecollectionspaths[completesavepath.replace(".html",".geojson")]={"name":featcoll["name"],"id":featcoll["id"]}
                             fgeo.write(json.dumps(featcoll))
@@ -2955,6 +2959,7 @@ templatename="default"
 createColl=False
 createIndexPages=True
 createVOWL=False
+localOptimized=False
 startconcept=None
 filestoprocess=[]
 if len(sys.argv)<=1:
@@ -3032,9 +3037,9 @@ for fp in filestoprocess:
         g = Graph()
         g.parse(fp)
         if fcounter<len(outpath):
-            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,startconcept,deploypath,logourl,templatename)
+            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,localOptimized,startconcept,deploypath,logourl,templatename)
         else:
-            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,startconcept,deploypath,logourl,templatename)
+            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,localOptimized,startconcept,deploypath,logourl,templatename)
         docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
     except Exception as inst:
      	print("Could not parse "+str(fp))
