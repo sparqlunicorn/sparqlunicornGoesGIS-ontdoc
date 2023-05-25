@@ -2905,7 +2905,7 @@ class OntDocGeneration:
                         if self.localOptimized:
                             f.write(maptemplate.replace("var ajax=true","var ajax=false").replace("{{myfeature}}","["+json.dumps(featcoll)+"]").replace("{{baselayers}}",json.dumps(baselayers)).replace("{{epsgdefspath}}", epsgdefslink).replace("{{dateatt}}", dateatt))
                         else:
-                            f.write(maptemplate.replace("[\""+str(completesavepath.replace(".html",".geojson"))+"\"]").replace("{{baselayers}}",json.dumps(baselayers)).replace("{{epsgdefspath}}", epsgdefslink).replace("{{dateatt}}", dateatt))
+                            f.write(maptemplate.replace("{{myfeature}}","[\""+str(completesavepath.replace(".html",".geojson"))+"\"]").replace("{{baselayers}}",json.dumps(baselayers)).replace("{{epsgdefspath}}", epsgdefslink).replace("{{dateatt}}", dateatt))
                         with open(completesavepath.replace(".html",".geojson"), 'w', encoding='utf-8') as fgeo:
                             featurecollectionspaths[completesavepath.replace(".html",".geojson")]={"name":featcoll["name"],"id":featcoll["id"]}
                             fgeo.write(json.dumps(featcoll))
