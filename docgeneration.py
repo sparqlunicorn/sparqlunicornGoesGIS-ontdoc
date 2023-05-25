@@ -2899,7 +2899,7 @@ class OntDocGeneration:
                     if len(featcoll["features"])>0:
                         featcoll["numberMatched"]=len(featcoll["features"])
                         featcoll["numberReturned"]=len(featcoll["features"])
-                        featcoll["bbox"]=shapely.geometry.GeometryCollection([shapely.geometry.shape(feature["geometry"]).buffer(0) for feature in featcoll["features"]]).bounds
+                        featcoll["bbox"]=shapely.geometry.GeometryCollection([shapely.geometry.shape(feature["geometry"]) for feature in featcoll["features"]]).bounds
                         if dateatt!="":
                             for feat in featcoll["features"]:
                                 if dateatt not in feat["properties"]:
