@@ -1014,7 +1014,7 @@ function fetchLayersFromList(thelist){
 	fcolls=[]
 	for(url in thelist){
 		$.ajax({
-			url:url, 
+			url:thelist[url], 
 			dataType : 'json',
 			async : false,
 			success : function(data) { 
