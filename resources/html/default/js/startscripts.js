@@ -1018,7 +1018,7 @@ function fetchLayersFromList(thelist){
 			dataType : 'json',
 			async : false,
 			success : function(data) { 
-				fcolls.append(data)
+				fcolls.push(data)
 			}
 		});	
 	}
