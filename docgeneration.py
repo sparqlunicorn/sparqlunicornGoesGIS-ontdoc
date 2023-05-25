@@ -1406,7 +1406,7 @@ def resolveTemplate(templatename):
 
 class OntDocGeneration:
 
-    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,localOptimized=False,startconcept=None,deploypath="",logoname="",templatename="default"):
+    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,localOptimized=False,startconcept=None,deploypath="",logoname="",templatename="default"):
         self.prefixes=prefixes
         self.prefixnamespace = prefixnamespace
         self.namespaceshort = prefixnsshort.replace("/","")
@@ -1414,6 +1414,7 @@ class OntDocGeneration:
         self.logoname=logoname
         self.startconcept=startconcept
         self.createVOWL=createVOWL
+        self.ogcapifeatures=ogcapifeatures
         self.localOptimized=localOptimized
         self.geocache={}
         self.deploypath=deploypath
@@ -1729,7 +1730,7 @@ class OntDocGeneration:
             indexhtml = htmltemplate.replace("{{logo}}",self.logoname).replace("{{relativedepth}}","0").replace("{{baseurl}}", prefixnamespace).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}", "vowl_result.js")\
                     .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{nonnslink}}","").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
             indexhtml = indexhtml.replace("{{indexpage}}", "true")
-            self.generateOGCAPIFeaturesPages(outpath,featurecollectionspaths,prefixnamespace,True,True)
+            self.generateOGCAPIFeaturesPages(outpath,featurecollectionspaths,prefixnamespace,self.ogcapifeatures,True)
             indexhtml += "<p>This page shows feature collections present in the linked open data export</p>"
             indexhtml+="<script src=\"features.js\"></script>"
             indexhtml+=maptemplate.replace("var ajax=true","var ajax=false").replace("var featurecolls = {{myfeature}}","").replace("{{baselayers}}",json.dumps(baselayers).replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{dateatt}}", ""))
@@ -2964,6 +2965,7 @@ createIndexPages=True
 createVOWL=False
 localOptimized=False
 startconcept=None
+ogcapifeatures=False
 filestoprocess=[]
 if len(sys.argv)<=1:
     print("No TTL file to process has been given as a parameter")
@@ -3012,11 +3014,15 @@ if len(sys.argv)>12:
     if crvowl.lower()=="true":
         createVOWL=True
 if len(sys.argv)>13:
-    startconcept=sys.argv[13]
+    ogcapi=sys.argv[13]
+    if ogcapi.lower()=="true":
+        ogcapifeatures=True
 if len(sys.argv)>14:
-    deploypath=sys.argv[14]
+    startconcept=sys.argv[14]
 if len(sys.argv)>15:
-    templatepath=sys.argv[15]
+    deploypath=sys.argv[15]
+if len(sys.argv)>16:
+    templatepath=sys.argv[16]
     if templatepath.startswith("http") and templatepath.endswith(".zip"):
         with urlopen(templatepath) as zipresp:
             with ZipFile(BytesIO(zipresp.read())) as zfile:
@@ -3032,17 +3038,17 @@ if len(sys.argv)>15:
                 print(templatepath)
                 print(subfoldername)
                 print(templatename)
-if len(sys.argv)>16:
-    templatename=sys.argv[16]
+if len(sys.argv)>17:
+    templatename=sys.argv[17]
 fcounter=0
 for fp in filestoprocess:
     try:
         g = Graph()
         g.parse(fp)
         if fcounter<len(outpath):
-            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,localOptimized,startconcept,deploypath,logourl,templatename)
+            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,ogcapifeatures,localOptimized,startconcept,deploypath,logourl,templatename)
         else:
-            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,localOptimized,startconcept,deploypath,logourl,templatename)
+            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,ogcapifeatures,localOptimized,startconcept,deploypath,logourl,templatename)
         docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
     except Exception as inst:
      	print("Could not parse "+str(fp))
