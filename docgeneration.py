@@ -2425,7 +2425,6 @@ class OntDocGeneration:
                     currentcollection["extent"]={"spatial":{"bbox":curcoll["bbox"]}}
                 apijson["paths"]["/collections/"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:]).rstrip("/")]={"get":{"tags":["Collections"],"summary": "describes collection "+str(str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:])).rstrip("/"),"description": "Describes the collection with the id "+str(str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:])).rstrip("/"),"operationId": "collection-"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:]),"parameters":[],"responses": {"default": {"description": "default response","content": {"application/json": {"schema": {"$ref": "#/components/schemas/Collections"},"example": None}}}}}}
                 curcollrow="<tr><td><a href=\""+opweb.replace(".geojson","")+"/items/indexc.html\">"+str(featurecollectionspaths[coll]["name"])+"</a></td><td><a href=\""+opweb.replace(".geojson","")+"/items/indexc.html\">[Collection as HTML]</a>&nbsp;<a href=\""+opweb.replace(".geojson","")+"/items/\">[Collection as JSON]</a>&nbsp;<a href=\""+opweb.replace(".geojson","")+"/items/index.ttl\">[Collection as TTL]</a></td></tr>"
-                "/collections/umring"
                 f=open(op+"index.json","w",encoding="utf-8")
                 f.write(json.dumps(currentcollection))
                 f.close()
@@ -2900,7 +2899,7 @@ class OntDocGeneration:
                     if len(featcoll["features"])>0:
                         featcoll["numberMatched"]=len(featcoll["features"])
                         featcoll["numberReturned"]=len(featcoll["features"])
-                        featcoll["bbox"]=str(shapely.geometry.GeometryCollection([shapely.geometry.shape(feature["geometry"]).buffer(0) for feature in featcoll]).bounds)
+                        featcoll["bbox"]=shapely.geometry.GeometryCollection([shapely.geometry.shape(feature["geometry"]).buffer(0) for feature in featcoll]).bounds
                         if dateatt!="":
                             for feat in featcoll["features"]:
                                 if dateatt not in feat["properties"]:
