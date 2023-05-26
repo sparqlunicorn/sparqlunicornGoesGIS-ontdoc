@@ -1406,7 +1406,7 @@ def resolveTemplate(templatename):
 
 class OntDocGeneration:
 
-    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,localOptimized=False,startconcept=None,deploypath="",logoname="",templatename="default"):
+    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,localOptimized=False,startconcept=None,deploypath="",logoname="",templatename="default"):
         self.prefixes=prefixes
         self.prefixnamespace = prefixnamespace
         self.namespaceshort = prefixnsshort.replace("/","")
@@ -1414,6 +1414,7 @@ class OntDocGeneration:
         self.logoname=logoname
         self.startconcept=startconcept
         self.createVOWL=createVOWL
+        self.ogcapifeatures=ogcapifeatures
         self.localOptimized=localOptimized
         self.geocache={}
         self.deploypath=deploypath
@@ -1729,7 +1730,7 @@ class OntDocGeneration:
             indexhtml = htmltemplate.replace("{{logo}}",self.logoname).replace("{{relativedepth}}","0").replace("{{baseurl}}", prefixnamespace).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}", "vowl_result.js")\
                     .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{nonnslink}}","").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
             indexhtml = indexhtml.replace("{{indexpage}}", "true")
-            self.generateOGCAPIFeaturesPages(outpath,featurecollectionspaths,prefixnamespace,True,True)
+            self.generateOGCAPIFeaturesPages(outpath,featurecollectionspaths,prefixnamespace,self.ogcapifeatures,True)
             indexhtml += "<p>This page shows feature collections present in the linked open data export</p>"
             indexhtml+="<script src=\"features.js\"></script>"
             indexhtml+=maptemplate.replace("var ajax=true","var ajax=false").replace("var featurecolls = {{myfeature}}","").replace("{{baselayers}}",json.dumps(baselayers).replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{dateatt}}", ""))
@@ -2419,11 +2420,17 @@ class OntDocGeneration:
                     opwebcoll=opwebcoll[0:-1]
                 opwebcoll=opwebcoll.replace("//","/")
                 collectionsjson["collections"].append({"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"title":featurecollectionspaths[coll]["name"],"links":[{"href":str(opweb.replace(".geojson","")+"/index.json").replace("//","/"),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":str(opweb.replace(".geojson","")+"/").replace("//","/"),"rel":"collection","type":"text/html","title":"Collection as HTML"},{"href":str(opweb.replace(".geojson","")+"/index.ttl").replace("//","/"),"rel":"collection","type":"text/ttl","title":"Collection as TTL"}]})
-                currentcollection={"title":featurecollectionspaths[coll]["name"],"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"links":[]}
+                currentcollection={"title":featurecollectionspaths[coll]["name"],"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"links":[],"itemType":"feature"}
                 currentcollection["links"]=[{"href":opwebcoll+"/items/index.json","rel":"items","type":"application/json","title":"Collection as JSON"},{"href":opwebcoll+"/items/indexc.html","rel":"items","type":"text/html","title":"Collection as HTML"},{"href":opwebcoll+"/items/index.ttl","rel":"collection","type":"text/ttl","title":"Collection as TTL"}]
+                if "bbox" in curcoll:
+                    currentcollection["extent"]={"spatial":{"bbox":curcoll["bbox"]}}
+                    collectionsjson["collections"][-1]["extent"]={"spatial":{"bbox":curcoll["bbox"]}}
+                if "crs" in curcoll:
+                    currentcollection["crs"]=curcoll["crs"]
+                    collectionsjson["collections"][-1]["crs"]=curcoll["crs"]
+                    currentcollection["extent"]["spatial"]["crs"]=curcoll["crs"]
                 apijson["paths"]["/collections/"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:]).rstrip("/")]={"get":{"tags":["Collections"],"summary": "describes collection "+str(str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:])).rstrip("/"),"description": "Describes the collection with the id "+str(str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:])).rstrip("/"),"operationId": "collection-"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:]),"parameters":[],"responses": {"default": {"description": "default response","content": {"application/json": {"schema": {"$ref": "#/components/schemas/Collections"},"example": None}}}}}}
-                curcollrow="<tr><td><a href=\""+opweb.replace(".geojson","")+"/items/index.html\">"+str(featurecollectionspaths[coll]["name"])+"</a></td><td><a href=\""+opweb.replace(".geojson","")+"/items/indexc.html\">[Collection as HTML]</a>&nbsp;<a href=\""+opweb.replace(".geojson","")+"/items/\">[Collection as JSON]</a>&nbsp;<a href=\""+opweb.replace(".geojson","")+"/items/index.ttl\">[Collection as TTL]</a></td></tr>"
-                "/collections/umring"
+                curcollrow="<tr><td><a href=\""+opweb.replace(".geojson","")+"/items/indexc.html\">"+str(featurecollectionspaths[coll]["name"])+"</a></td><td><a href=\""+opweb.replace(".geojson","")+"/items/indexc.html\">[Collection as HTML]</a>&nbsp;<a href=\""+opweb.replace(".geojson","")+"/items/\">[Collection as JSON]</a>&nbsp;<a href=\""+opweb.replace(".geojson","")+"/items/index.ttl\">[Collection as TTL]</a></td></tr>"
                 f=open(op+"index.json","w",encoding="utf-8")
                 f.write(json.dumps(currentcollection))
                 f.close()
@@ -2866,6 +2873,7 @@ class OntDocGeneration:
                         featcoll={"type":"FeatureCollection", "id":subject,"name":str(foundlabel), "features":[]}
                     else:
                         featcoll={"type":"FeatureCollection", "id":subject,"name":self.shortenURI(subject), "features":[]}
+                    thecrs=set()
                     dateatt=""
                     if isgeocollection and not nonns:
                         memberpred=URIRef("http://www.w3.org/2000/01/rdf-schema#member")
@@ -2895,9 +2903,16 @@ class OntDocGeneration:
                                 featcoll["features"].append(self.geocache[item])
                                 if len(self.geocache[item]["dateprops"])>0:
                                     dateatt=self.geocache[item]["dateprops"][0]
+                                if "crs" in self.geocache[item]:
+                                    thecrs.add(self.geocache[item]["crs"])
                     if len(featcoll["features"])>0:
                         featcoll["numberMatched"]=len(featcoll["features"])
                         featcoll["numberReturned"]=len(featcoll["features"])
+                        featcoll["bbox"]=shapely.geometry.GeometryCollection([shapely.geometry.shape(feature["geometry"]) for feature in featcoll["features"]]).bounds
+                        if len(thecrs)>0:
+                            featcoll["crs"]="http://www.opengis.net/def/crs/EPSG/0/"+str(next(iter(thecrs)))
+                        else:
+                            featcoll["crs"]="http://www.opengis.net/def/crs/OGC/1.3/CRS84"
                         if dateatt!="":
                             for feat in featcoll["features"]:
                                 if dateatt not in feat["properties"]:
@@ -2961,6 +2976,7 @@ createIndexPages=True
 createVOWL=False
 localOptimized=False
 startconcept=None
+ogcapifeatures=False
 filestoprocess=[]
 if len(sys.argv)<=1:
     print("No TTL file to process has been given as a parameter")
@@ -3009,11 +3025,15 @@ if len(sys.argv)>12:
     if crvowl.lower()=="true":
         createVOWL=True
 if len(sys.argv)>13:
-    startconcept=sys.argv[13]
+    ogcapi=sys.argv[13]
+    if ogcapi.lower()=="true":
+        ogcapifeatures=True
 if len(sys.argv)>14:
-    deploypath=sys.argv[14]
+    startconcept=sys.argv[14]
 if len(sys.argv)>15:
-    templatepath=sys.argv[15]
+    deploypath=sys.argv[15]
+if len(sys.argv)>16:
+    templatepath=sys.argv[16]
     if templatepath.startswith("http") and templatepath.endswith(".zip"):
         with urlopen(templatepath) as zipresp:
             with ZipFile(BytesIO(zipresp.read())) as zfile:
@@ -3029,17 +3049,17 @@ if len(sys.argv)>15:
                 print(templatepath)
                 print(subfoldername)
                 print(templatename)
-if len(sys.argv)>16:
-    templatename=sys.argv[16]
+if len(sys.argv)>17:
+    templatename=sys.argv[17]
 fcounter=0
 for fp in filestoprocess:
     try:
         g = Graph()
         g.parse(fp)
         if fcounter<len(outpath):
-            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,localOptimized,startconcept,deploypath,logourl,templatename)
+            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,ogcapifeatures,localOptimized,startconcept,deploypath,logourl,templatename)
         else:
-            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,localOptimized,startconcept,deploypath,logourl,templatename)
+            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,ogcapifeatures,localOptimized,startconcept,deploypath,logourl,templatename)
         docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
     except Exception as inst:
      	print("Could not parse "+str(fp))
