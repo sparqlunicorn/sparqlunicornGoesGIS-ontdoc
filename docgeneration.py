@@ -2355,6 +2355,25 @@ class OntDocGeneration:
         targetrellink=targetrellink.replace(outpath,"")
         return targetrellink.replace("//","/")
 
+    def generateIIIFManifests(self,outpath,imagespaths,prefixnamespace):
+        iiifcollection={"@context":"http://iiif.io/api/presentation/3/context.json","@id":outpath+"/iiif/collection/iiifcoll.json","@type": "Collection", "label": "qatar","manifests": []}
+        os.makedirs(outpath + "/iiif/")
+        os.makedirs(outpath + "/iiif/collection/")
+        os.makedirs(outpath + "/iiif/mf/")
+        os.makedirs(outpath + "/iiif/images/")
+        for imgpath in imagespaths:
+            curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","@id":imgpath+"/manifest.json", "@type": "Manifest","label":{"en":[self.shortenURI(imgpath)]},"items":[{"id":imgpath+"/canvas/p1","type":"Canvas","height":100,"width":100,"items":[{"id":imgpath+"/canvas/p1/1","type":"AnnotationPage","items":[]}]}],"annotations":[]}
+            iiifcollection["manifests"].append({"full":outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/full/0/default.jpg","@id":imgpath+"/manifest.json","@type": "Manifest","label":{"en":[self.shortenURI(imgpath)]}})
+            os.makedirs(outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/")
+            os.makedirs(outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/full/")
+            os.makedirs(outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/full/0/")
+            f=open(outpath+"/iiif/mf/"+self.shortenURI(imgpath)+"/manifest.json","w",encoding="utf-8")
+            f.write(json.dumps(curiiifmanifest))
+            f.close()
+        f=open(outpath+"/iiif/collection/iiifcoll.json","w",encoding="utf-8")
+        f.write(json.dumps(iiifcollection))
+        f.close()
+
     def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths,prefixnamespace,ogcapi,mergeJSON):
         if ogcapi:
             apihtml="<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><metaname=\"description\" content=\"SwaggerUI\"/><title>SwaggerUI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css\" /></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js\" crossorigin></script><script>const swaggerUrl = \""+str(self.deploypath)+"/api/index.json\"; const apiUrl = \""+str(self.deploypath)+"/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
@@ -2429,6 +2448,7 @@ class OntDocGeneration:
                     currentcollection["crs"]=curcoll["crs"]
                     collectionsjson["collections"][-1]["crs"]=curcoll["crs"]
                     currentcollection["extent"]["spatial"]["crs"]=curcoll["crs"]
+                    collectionsjson["collections"][-1]["extent"]["spatial"]["crs"]=curcoll["crs"]
                 apijson["paths"]["/collections/"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:]).rstrip("/")]={"get":{"tags":["Collections"],"summary": "describes collection "+str(str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:])).rstrip("/"),"description": "Describes the collection with the id "+str(str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:])).rstrip("/"),"operationId": "collection-"+str(coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:]),"parameters":[],"responses": {"default": {"description": "default response","content": {"application/json": {"schema": {"$ref": "#/components/schemas/Collections"},"example": None}}}}}}
                 curcollrow="<tr><td><a href=\""+opweb.replace(".geojson","")+"/items/indexc.html\">"+str(featurecollectionspaths[coll]["name"])+"</a></td><td><a href=\""+opweb.replace(".geojson","")+"/items/indexc.html\">[Collection as HTML]</a>&nbsp;<a href=\""+opweb.replace(".geojson","")+"/items/\">[Collection as JSON]</a>&nbsp;<a href=\""+opweb.replace(".geojson","")+"/items/index.ttl\">[Collection as TTL]</a></td></tr>"
                 f=open(op+"index.json","w",encoding="utf-8")
