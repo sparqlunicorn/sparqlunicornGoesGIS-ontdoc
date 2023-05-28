@@ -1612,7 +1612,7 @@ class OntDocGeneration:
                 with open(outpath + corpusid + '_classtree.js', 'r', encoding='utf-8') as f:
                     prevtree = json.loads(f.read().replace("var tree=",""))["core"]["data"]
             except Exception as e:
-                print("Exception occured " + str(e))
+                print("Exception occurred " + str(e))
         classidset=set()
         tree=self.getClassTree(self.graph, uritolabel,classidset,uritotreeitem)
         for tr in prevtree:
@@ -1727,6 +1727,8 @@ class OntDocGeneration:
                 with open(path + "index.html", 'w', encoding='utf-8') as f:
                     f.write(indexhtml)
                     f.close()
+        if len(iiifmanifestpaths["default"])>0:
+            self.generateIIIFCollections(self.outpath,iiifmanifestpaths["default"],prefixnamespace))
         if len(featurecollectionspaths)>0:
             indexhtml = htmltemplate.replace("{{logo}}",self.logoname).replace("{{relativedepth}}","0").replace("{{baseurl}}", prefixnamespace).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}", "vowl_result.js")\
                     .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{nonnslink}}","").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
@@ -2381,14 +2383,7 @@ class OntDocGeneration:
         os.makedirs(outpath + "/iiif/mf/")
         os.makedirs(outpath + "/iiif/images/")
         for imgpath in imagespaths:
-            curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","@id":imgpath+"/manifest.json", "@type": "Manifest","label":{"en":[self.shortenURI(imgpath)]},"items":[{"id":imgpath+"/canvas/p1","type":"Canvas","height":100,"width":100,"items":[{"id":imgpath+"/canvas/p1/1","type":"AnnotationPage","items":[]}]}],"annotations":[]}
             iiifcollection["manifests"].append({"full":outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/full/0/default.jpg","@id":imgpath+"/manifest.json","@type": "Manifest","label":{"en":[self.shortenURI(imgpath)]}})
-            os.makedirs(outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/")
-            os.makedirs(outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/full/")
-            os.makedirs(outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/full/0/")
-            f=open(outpath+"/iiif/mf/"+self.shortenURI(imgpath)+"/manifest.json","w",encoding="utf-8")
-            f.write(json.dumps(curiiifmanifest))
-            f.close()
         f=open(outpath+"/iiif/collection/iiifcoll.json","w",encoding="utf-8")
         f.write(json.dumps(iiifcollection))
         f.close()
@@ -2857,7 +2852,7 @@ class OntDocGeneration:
                     f.write(imagecarouselheader)
                 if len(imageannos)>0 and len(foundmedia["image"])>0:
                     for image in foundmedia["image"]:
-                        self.generateIIIFManifest(outpath,image,str(subject),prefixnamespace)
+                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,image,str(subject),prefixnamespace))
                         annostring=""
                         for anno in imageannos:
                             annostring+=anno.replace("<svg>","<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
@@ -2866,7 +2861,7 @@ class OntDocGeneration:
                             carousel="carousel-item"                  
                 else:
                     for image in foundmedia["image"]:
-                        self.generateIIIFManifest(outpath,image,str(subject),prefixnamespace)
+                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,image,str(subject),prefixnamespace))
                         if image=="<svg width=":
                             continue
                         if "<svg" in image:
