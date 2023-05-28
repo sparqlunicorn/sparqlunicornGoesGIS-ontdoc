@@ -2355,7 +2355,8 @@ class OntDocGeneration:
         targetrellink=targetrellink.replace(outpath,"")
         return targetrellink.replace("//","/")
 
-    def generateIIIFManifest(self,outpath,imgpath,prefixnamespace):
+    def generateIIIFManifest(self,outpath,imgpath,,curind,prefixnamespace):
+        print("GENERATE IIIF Manifest for "+str(imgpath)+" "+str(curind))
         if not os.path.exists(outpath + "/iiif/mf/"):
             os.makedirs(outpath + "/iiif/mf/")
         curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","@id":imgpath+"/manifest.json", "@type": "Manifest","label":{"en":[self.shortenURI(imgpath)]},"items":[{"id":imgpath+"/canvas/p1","type":"Canvas","height":100,"width":100,"items":[{"id":imgpath+"/canvas/p1/1","type":"AnnotationPage","items":[]}]}],"annotations":[]}
@@ -2852,7 +2853,7 @@ class OntDocGeneration:
                     f.write(imagecarouselheader)
                 if len(imageannos)>0 and len(foundmedia["image"])>0:
                     for image in foundmedia["image"]:
-                        self.generateIIIFManifest(outpath,image,prefixnamespace)
+                        self.generateIIIFManifest(outpath,image,str(subject),prefixnamespace)
                         annostring=""
                         for anno in imageannos:
                             annostring+=anno.replace("<svg>","<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
@@ -2861,7 +2862,7 @@ class OntDocGeneration:
                             carousel="carousel-item"                  
                 else:
                     for image in foundmedia["image"]:
-                        self.generateIIIFManifest(outpath,image,prefixnamespace)
+                        self.generateIIIFManifest(outpath,image,str(subject),prefixnamespace)
                         if image=="<svg width=":
                             continue
                         if "<svg" in image:
