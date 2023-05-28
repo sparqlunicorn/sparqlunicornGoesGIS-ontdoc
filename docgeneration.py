@@ -2377,11 +2377,11 @@ class OntDocGeneration:
 
 
     def generateIIIFCollections(self,outpath,imagespaths,prefixnamespace):
-        iiifcollection={"@context":"http://iiif.io/api/presentation/3/context.json","@id":outpath+"/iiif/collection/iiifcoll.json","@type": "Collection", "label": "qatar","manifests": []}
+        iiifcollection={"@context":"http://iiif.io/api/presentation/3/context.json","id":outpath+"/iiif/collection/iiifcoll.json","type": "Collection", "label": {"en":["qatar"]},"manifests": []}
         if not os.path.exists(outpath + "/iiif/collection/"):
             os.makedirs(outpath + "/iiif/collection/")
         for imgpath in imagespaths:
-            iiifcollection["manifests"].append({"full":outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/full/0/default.jpg","@id":imgpath+"/manifest.json","@type": "Manifest","label":{"en":[self.shortenURI(imgpath)]}})
+            iiifcollection["manifests"].append({"full":outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/full/0/default.jpg","id":imgpath+"/manifest.json","type": "Manifest","label":{"en":[self.shortenURI(imgpath)]}})
         f=open(outpath+"/iiif/collection/iiifcoll.json","w",encoding="utf-8")
         f.write(json.dumps(iiifcollection))
         f.close()
