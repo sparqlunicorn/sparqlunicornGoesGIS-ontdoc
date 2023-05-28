@@ -2378,10 +2378,7 @@ class OntDocGeneration:
 
     def generateIIIFCollections(self,outpath,imagespaths,prefixnamespace):
         iiifcollection={"@context":"http://iiif.io/api/presentation/3/context.json","@id":outpath+"/iiif/collection/iiifcoll.json","@type": "Collection", "label": "qatar","manifests": []}
-        os.makedirs(outpath + "/iiif/")
         os.makedirs(outpath + "/iiif/collection/")
-        os.makedirs(outpath + "/iiif/mf/")
-        os.makedirs(outpath + "/iiif/images/")
         for imgpath in imagespaths:
             iiifcollection["manifests"].append({"full":outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/full/0/default.jpg","@id":imgpath+"/manifest.json","@type": "Manifest","label":{"en":[self.shortenURI(imgpath)]}})
         f=open(outpath+"/iiif/collection/iiifcoll.json","w",encoding="utf-8")
