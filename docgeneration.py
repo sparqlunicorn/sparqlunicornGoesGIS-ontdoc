@@ -2355,7 +2355,7 @@ class OntDocGeneration:
         targetrellink=targetrellink.replace(outpath,"")
         return targetrellink.replace("//","/")
 
-    def generateIIIFManifest(self,outpath,imgpath,,curind,prefixnamespace):
+    def generateIIIFManifest(self,outpath,imgpath,curind,prefixnamespace):
         print("GENERATE IIIF Manifest for "+str(imgpath)+" "+str(curind))
         if not os.path.exists(outpath + "/iiif/mf/"):
             os.makedirs(outpath + "/iiif/mf/")
