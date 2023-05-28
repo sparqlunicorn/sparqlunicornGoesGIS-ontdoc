@@ -2356,14 +2356,17 @@ class OntDocGeneration:
         return targetrellink.replace("//","/")
 
     def generateIIIFManifest(self,outpath,imgpath,curind,prefixnamespace):
-        print("GENERATE IIIF Manifest for "+str(imgpath)+" "+str(curind))
+        print("GENERATE IIIF Manifest for "+str(outpath)+" "+str(imgpath)+" "+str(curind))
         if not os.path.exists(outpath + "/iiif/mf/"):
             os.makedirs(outpath + "/iiif/mf/")
+        if not os.path.exists(outpath + "/iiif/images/"):
+            os.makedirs(outpath + "/iiif/images/")
         curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","@id":imgpath+"/manifest.json", "@type": "Manifest","label":{"en":[self.shortenURI(imgpath)]},"items":[{"id":imgpath+"/canvas/p1","type":"Canvas","height":100,"width":100,"items":[{"id":imgpath+"/canvas/p1/1","type":"AnnotationPage","items":[]}]}],"annotations":[]}
-        iiifcollection["manifests"].append({"full":outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/full/0/default.jpg","@id":imgpath+"/manifest.json","@type": "Manifest","label":{"en":[self.shortenURI(imgpath)]}})
+        #iiifcollection["manifests"].append({"full":outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/full/0/default.jpg","@id":imgpath+"/manifest.json","@type": "Manifest","label":{"en":[self.shortenURI(imgpath)]}})
         os.makedirs(outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/")
         os.makedirs(outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/full/")
         os.makedirs(outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/full/0/")
+        os.makedirs(outpath + "/iiif/mf/"+self.shortenURI(imgpath))
         f=open(outpath+"/iiif/mf/"+self.shortenURI(imgpath)+"/manifest.json","w",encoding="utf-8")
         f.write(json.dumps(curiiifmanifest))
         f.close()
