@@ -2385,7 +2385,7 @@ class OntDocGeneration:
         if not os.path.exists(outpath + "/iiif/collection/"):
             os.makedirs(outpath + "/iiif/collection/")
         seenurls=set()
-        collections={"main":{"@context":"http://iiif.io/api/presentation/3/context.json","id":outpath+"/iiif/collection/iiifcoll.json","type": "Collection", "label": {"en":["Collection: "+self.shortenURI(str(prefixnamespace))]},"items": []}}
+        collections={"main":{"@context":"http://iiif.io/api/presentation/3/context.json","id":outpath+"/iiif/collection/iiifcoll.json","type": "Collection", "label": {"en":["Collection: Main"]},"items": []}}
         for imgpath in  sorted(imagespaths, key=lambda k: k['label'], reverse=False):
             curclass="main"
             if "class" in imgpath and imgpath["class"]!="":
