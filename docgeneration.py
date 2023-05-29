@@ -2358,7 +2358,7 @@ class OntDocGeneration:
         targetrellink=targetrellink.replace(outpath,"")
         return targetrellink.replace("//","/")
 
-    def generateIIIFManifest(self,outpath,imgpath,curind,prefixnamespace):
+    def generateIIIFManifest(self,outpath,imgpath,curind,prefixnamespace,label=""):
         print("GENERATE IIIF Manifest for "+str(self.outpath)+" "+str(imgpath)+" "+str(curind))
         if not os.path.exists(self.outpath + "/iiif/mf/"):
             os.makedirs(self.outpath + "/iiif/mf/")
@@ -2373,7 +2373,7 @@ class OntDocGeneration:
         f=open(self.outpath+"/iiif/mf/"+self.shortenURI(imgpath)+"/manifest.json","w",encoding="utf-8")
         f.write(json.dumps(curiiifmanifest))
         f.close()
-        return self.outpath+"/iiif/mf/"+self.shortenURI(imgpath)+"/manifest.json"
+        return {"url":self.outpath+"/iiif/mf/"+self.shortenURI(imgpath)+"/manifest.json","label":label,"class":""}
 
 
     def generateIIIFCollections(self,outpath,imagespaths,prefixnamespace):
@@ -2381,7 +2381,7 @@ class OntDocGeneration:
         if not os.path.exists(outpath + "/iiif/collection/"):
             os.makedirs(outpath + "/iiif/collection/")
         for imgpath in imagespaths:
-            iiifcollection["items"].append({"full":outpath + "/iiif/images/"+self.shortenURI(imgpath.replace("/manifest.json",""))+"/full/full/0/default.jpg","id":imgpath.replace(self.outpath,self.deploypath),"type": "Manifest","label":{"en":[self.shortenURI(imgpath.replace("/manifest.json",""))]}})
+            iiifcollection["items"].append({"full":outpath + "/iiif/images/"+self.shortenURI(imgpath["url"].replace("/manifest.json",""))+"/full/full/0/default.jpg","id":imgpath["url"].replace(self.outpath,self.deploypath),"type": "Manifest","label":{"en":[imgpath["label"]]}})
         f=open(outpath+"/iiif/collection/iiifcoll.json","w",encoding="utf-8")
         f.write(json.dumps(iiifcollection))
         f.close()
@@ -2854,7 +2854,7 @@ class OntDocGeneration:
                     f.write(imagecarouselheader)
                 if len(imageannos)>0 and len(foundmedia["image"])>0:
                     for image in foundmedia["image"]:
-                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,image,str(subject),prefixnamespace))
+                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,image,str(subject),prefixnamespace,foundlabel))
                         annostring=""
                         for anno in imageannos:
                             annostring+=anno.replace("<svg>","<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
@@ -2863,7 +2863,7 @@ class OntDocGeneration:
                             carousel="carousel-item"                  
                 else:
                     for image in foundmedia["image"]:
-                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,image,str(subject),prefixnamespace))
+                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,image,str(subject),prefixnamespace,foundlabel))
                         if image=="<svg width=":
                             continue
                         if "<svg" in image:
