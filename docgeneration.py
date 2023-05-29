@@ -2377,7 +2377,7 @@ class OntDocGeneration:
 
 
     def generateIIIFCollections(self,outpath,imagespaths,prefixnamespace):
-        iiifcollection={"@context":"http://iiif.io/api/presentation/3/context.json","id":outpath+"/iiif/collection/iiifcoll.json","type": "Collection", "label": {"en":["qatar"]},"manifests": []}
+        iiifcollection={"@context":"http://iiif.io/api/presentation/3/context.json","id":outpath+"/iiif/collection/iiifcoll.json","type": "Collection", "label": {"en":["qatar"]},"items": []}
         if not os.path.exists(outpath + "/iiif/collection/"):
             os.makedirs(outpath + "/iiif/collection/")
         for imgpath in imagespaths:
