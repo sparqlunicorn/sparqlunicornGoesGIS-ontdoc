@@ -2381,7 +2381,7 @@ class OntDocGeneration:
         if not os.path.exists(outpath + "/iiif/collection/"):
             os.makedirs(outpath + "/iiif/collection/")
         for imgpath in imagespaths:
-            iiifcollection["items"].append({"full":outpath + "/iiif/images/"+self.shortenURI(imgpath.replace("/manifest.json","")])+"/full/full/0/default.jpg","id":imgpath.replace(self.outpath,self.deploypath),"type": "Manifest","label":{"en":[self.shortenURI(imgpath.replace("/manifest.json","")]}})
+            iiifcollection["items"].append({"full":outpath + "/iiif/images/"+self.shortenURI(imgpath.replace("/manifest.json",""))+"/full/full/0/default.jpg","id":imgpath.replace(self.outpath,self.deploypath),"type": "Manifest","label":{"en":[self.shortenURI(imgpath.replace("/manifest.json",""))]}})
         f=open(outpath+"/iiif/collection/iiifcoll.json","w",encoding="utf-8")
         f.write(json.dumps(iiifcollection))
         f.close()
