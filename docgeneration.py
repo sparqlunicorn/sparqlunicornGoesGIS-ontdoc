@@ -2385,6 +2385,10 @@ class OntDocGeneration:
         f=open(outpath+"/iiif/collection/iiifcoll.json","w",encoding="utf-8")
         f.write(json.dumps(iiifcollection))
         f.close()
+        iiifindex="""<html><head><script src="https://unpkg.com/mirador@latest/dist/mirador.min.js"></script></head><body><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500"><div id="my-mirador"/><script type="text/javascript">var mirador = Mirador.viewer({"id": "my-mirador","manifests": {"collection/iiifcoll.json": {"provider": "Harvard University"}},"windows": [{"loadedManifest": "https://iiif.lib.harvard.edu/manifests/drs:48309543","canvasIndex": 2,"thumbnailNavigationPosition": 'far-bottom'}]});</script></body></html>"""
+        f=open(outpath+"/iiif/index.html","w",encoding="utf-8")
+        f.write(iiifindex)
+        f.close()
 
     def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths,prefixnamespace,ogcapi,mergeJSON):
         if ogcapi:
