@@ -2391,7 +2391,7 @@ class OntDocGeneration:
             if "class" in imgpath and imgpath["class"]!="":
                 curclass=imgpath["class"]
                 if curclass not in collections:
-                    collections[curclass]={"@context":"http://iiif.io/api/presentation/3/context.json","id":outpath+"/iiif/collection/"+curclass+".json","type": "Collection", "label": {"en":["Collection: "+self.shortenURI(str(prefixnamespace))]},"items": []}
+                    collections[curclass]={"@context":"http://iiif.io/api/presentation/3/context.json","id":outpath+"/iiif/collection/"+curclass+".json","type": "Collection", "label": {"en":["Collection: "+str(curclass)]},"items": []}
             if imgpath["url"] not in seenurls:
                 if imgpath["label"]!="":
                     collections[curclass]["items"].append({"full":outpath + "/iiif/images/"+self.shortenURI(imgpath["url"].replace("/manifest.json",""))+"/full/full/0/default.jpg","id":imgpath["url"].replace(self.outpath,self.deploypath),"type": "Manifest","label":{"en":[imgpath["label"]+" ("+self.shortenURI(imgpath["url"].replace("/manifest.json","")[0:imgpath["url"].replace("/manifest.json","").rfind(".")])+")"]}})
