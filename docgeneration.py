@@ -2365,7 +2365,7 @@ class OntDocGeneration:
         if not os.path.exists(self.outpath + "/iiif/images/"):
             os.makedirs(self.outpath + "/iiif/images/")
         if label!="":
-            curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":imgpath+"/manifest.json", "type": "Manifest","label":{"en":[self.shortenURI(imgpath)]},"items":[{"id":imgpath+"/canvas/p1","type":"Canvas","height":100,"width":100,"items":[{"id":imgpath+"/canvas/p1/1","type":"AnnotationPage","items":[{"id":imgpath+"/annotation/p1/1","type":"Annotation","motivation":"painting","body":{"id":imgpath,"type":"Image","format":"image/png"},"target":imgpath+"/canvas/p1"}]}],"annotations":[{"id":imgpath+"/canvas/p1/annopage-2","type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p1/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/plain","value":str(label)},"target":imgpath+"/canvas/p1"}]}]}]}
+            curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":imgpath+"/manifest.json", "type": "Manifest","label":{"en":[str(label)+" ("+self.shortenURI(imgpath)+")"]},"items":[{"id":imgpath+"/canvas/p1","type":"Canvas","height":100,"width":100,"items":[{"id":imgpath+"/canvas/p1/1","type":"AnnotationPage","items":[{"id":imgpath+"/annotation/p1/1","type":"Annotation","motivation":"painting","body":{"id":imgpath,"type":"Image","format":"image/png"},"target":imgpath+"/canvas/p1"}]}],"annotations":[{"id":imgpath+"/canvas/p1/annopage-2","type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p1/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/plain","value":str(label)},"target":imgpath+"/canvas/p1"}]}]}]}
         else:
             curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":imgpath+"/manifest.json", "type": "Manifest","label":{"en":[self.shortenURI(imgpath)]},"items":[{"id":imgpath+"/canvas/p1","type":"Canvas","height":100,"width":100,"items":[{"id":imgpath+"/canvas/p1/1","type":"AnnotationPage","items":[{"id":imgpath+"/annotation/p1/1","type":"Annotation","motivation":"painting","body":{"id":imgpath,"type":"Image","format":"image/png"},"target":imgpath+"/canvas/p1"}]}],"annotations":[{"id":imgpath+"/canvas/p1/annopage-2","type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p1/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/plain","value":str(self.shortenURI(curind))+" "+str(self.shortenURI(imgpath))},"target":imgpath+"/canvas/p1"}]}]}]}
         os.makedirs(self.outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/")
@@ -2382,11 +2382,14 @@ class OntDocGeneration:
         iiifcollection={"@context":"http://iiif.io/api/presentation/3/context.json","id":outpath+"/iiif/collection/iiifcoll.json","type": "Collection", "label": {"en":["Collection: "+self.shortenURI(str(prefixnamespace))]},"items": []}
         if not os.path.exists(outpath + "/iiif/collection/"):
             os.makedirs(outpath + "/iiif/collection/")
+        seenurls=set()
         for imgpath in  sorted(imagespaths, key=lambda k: k['label'], reverse=False):
-            if imgpath["label"]!="":
-                iiifcollection["items"].append({"full":outpath + "/iiif/images/"+self.shortenURI(imgpath["url"].replace("/manifest.json",""))+"/full/full/0/default.jpg","id":imgpath["url"].replace(self.outpath,self.deploypath),"type": "Manifest","label":{"en":[imgpath["label"]]}})
-            else:
-                iiifcollection["items"].append({"full":outpath + "/iiif/images/"+self.shortenURI(imgpath["url"].replace("/manifest.json",""))+"/full/full/0/default.jpg","id":imgpath["url"].replace(self.outpath,self.deploypath),"type": "Manifest","label":{"en":[self.shortenURI(imgpath["url"].replace("/manifest.json",""))]}})
+            if imgpath["url"] not in seenurls:
+                if imgpath["label"]!="":
+                    iiifcollection["items"].append({"full":outpath + "/iiif/images/"+self.shortenURI(imgpath["url"].replace("/manifest.json",""))+"/full/full/0/default.jpg","id":imgpath["url"].replace(self.outpath,self.deploypath),"type": "Manifest","label":{"en":[imgpath["label"]+" ("+self.shortenURI(imgpath["url"].replace("/manifest.json","")[0:imgpath["url"].replace("/manifest.json","").rfind(".")]+")"]}})
+                else:
+                    iiifcollection["items"].append({"full":outpath + "/iiif/images/"+self.shortenURI(imgpath["url"].replace("/manifest.json",""))+"/full/full/0/default.jpg","id":imgpath["url"].replace(self.outpath,self.deploypath),"type": "Manifest","label":{"en":[self.shortenURI(imgpath["url"].replace("/manifest.json",""))]}})
+                seenurls=imgpath["url"]
         f=open(outpath+"/iiif/collection/iiifcoll.json","w",encoding="utf-8")
         f.write(json.dumps(iiifcollection))
         f.close()
