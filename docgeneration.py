@@ -2386,7 +2386,7 @@ class OntDocGeneration:
         for imgpath in  sorted(imagespaths, key=lambda k: k['label'], reverse=False):
             if imgpath["url"] not in seenurls:
                 if imgpath["label"]!="":
-                    iiifcollection["items"].append({"full":outpath + "/iiif/images/"+self.shortenURI(imgpath["url"].replace("/manifest.json",""))+"/full/full/0/default.jpg","id":imgpath["url"].replace(self.outpath,self.deploypath),"type": "Manifest","label":{"en":[imgpath["label"]+" ("+self.shortenURI(imgpath["url"].replace("/manifest.json","")[0:imgpath["url"].replace("/manifest.json","").rfind(".")]+")"]}})
+                    iiifcollection["items"].append({"full":outpath + "/iiif/images/"+self.shortenURI(imgpath["url"].replace("/manifest.json",""))+"/full/full/0/default.jpg","id":imgpath["url"].replace(self.outpath,self.deploypath),"type": "Manifest","label":{"en":[imgpath["label"]+" ("+self.shortenURI(imgpath["url"].replace("/manifest.json","")[0:imgpath["url"].replace("/manifest.json","").rfind(".")])+")"]}})
                 else:
                     iiifcollection["items"].append({"full":outpath + "/iiif/images/"+self.shortenURI(imgpath["url"].replace("/manifest.json",""))+"/full/full/0/default.jpg","id":imgpath["url"].replace(self.outpath,self.deploypath),"type": "Manifest","label":{"en":[self.shortenURI(imgpath["url"].replace("/manifest.json",""))]}})
                 seenurls=imgpath["url"]
