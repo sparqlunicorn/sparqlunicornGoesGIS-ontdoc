@@ -2384,13 +2384,13 @@ class OntDocGeneration:
             #os.makedirs(self.outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/")
             #os.makedirs(self.outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/full/")
             #os.makedirs(self.outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/full/0/")
-            os.makedirs(self.outpath + "/iiif/mf/"+self.shortenURI(imgpath))
-            f=open(self.outpath+"/iiif/mf/"+self.shortenURI(imgpath)+"/manifest.json","w",encoding="utf-8")
+            os.makedirs(self.outpath + "/iiif/mf/"+self.shortenURI(curind))
+            f=open(self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","w",encoding="utf-8")
             f.write(json.dumps(curiiifmanifest))
             f.close()
         if thetypes!=None and len(thetypes)>0:
-            return {"url":self.outpath+"/iiif/mf/"+self.shortenURI(imgpath)+"/manifest.json","label":label,"class":next(iter(thetypes))}
-        return {"url":self.outpath+"/iiif/mf/"+self.shortenURI(imgpath)+"/manifest.json","label":label,"class":""}
+            return {"url":self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","label":label,"class":next(iter(thetypes))}
+        return {"url":self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","label":label,"class":""}
 
 
     def generateIIIFCollections(self,outpath,imagespaths,prefixnamespace):
