@@ -2400,6 +2400,7 @@ class OntDocGeneration:
             seenurls=imgpath["url"]
         for coll in collections:
             iiifcollection["items"].append(collections[coll])
+        iiifcollection["items"].append(collections["main"]["items"][0])
         f=open(outpath+"/iiif/collection/iiifcoll.json","w",encoding="utf-8")
         f.write(json.dumps(iiifcollection))
         f.close()          
