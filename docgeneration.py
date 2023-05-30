@@ -2358,7 +2358,7 @@ class OntDocGeneration:
         targetrellink=targetrellink.replace(outpath,"")
         return targetrellink.replace("//","/")
 
-    def generateIIIFManifest(self,outpath,imgpath,curind,prefixnamespace,label="",thetypes=None):
+    def generateIIIFManifest(self,outpath,imgpath,curind,prefixnamespace,label="",thetypes=None,predobjmap=None):
         print("GENERATE IIIF Manifest for "+str(self.outpath)+" "+str(imgpath)+" "+str(curind))
         if not os.path.exists(self.outpath+"/iiif/mf/"+self.shortenURI(imgpath)+"/manifest.json"):
             if not os.path.exists(self.outpath + "/iiif/mf/"):
@@ -2366,9 +2366,11 @@ class OntDocGeneration:
             if not os.path.exists(self.outpath + "/iiif/images/"):
                 os.makedirs(self.outpath + "/iiif/images/")
             if label!="":
-                curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":imgpath+"/manifest.json", "type": "Manifest","label":{"en":[str(label)+" ("+self.shortenURI(imgpath)+")"]},"items":[{"id":imgpath+"/canvas/p1","type":"Canvas","height":100,"width":100,"items":[{"id":imgpath+"/canvas/p1/1","type":"AnnotationPage","items":[{"id":imgpath+"/annotation/p1/1","type":"Annotation","motivation":"painting","body":{"id":imgpath,"type":"Image","format":"image/png"},"target":imgpath+"/canvas/p1"}]}],"annotations":[{"id":imgpath+"/canvas/p1/annopage-2","type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p1/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(label)+"</a>"},"target":imgpath+"/canvas/p1"}]}]}]}
+                curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":imgpath+"/manifest.json", "type": "Manifest","label":{"en":[str(label)+" ("+self.shortenURI(imgpath)+")"]},"metadata":[],"items":[{"id":imgpath+"/canvas/p1","type":"Canvas","height":100,"width":100,"items":[{"id":imgpath+"/canvas/p1/1","type":"AnnotationPage","items":[{"id":imgpath+"/annotation/p1/1","type":"Annotation","motivation":"painting","body":{"id":imgpath,"type":"Image","format":"image/png"},"target":imgpath+"/canvas/p1"}]}],"annotations":[{"id":imgpath+"/canvas/p1/annopage-2","type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p1/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(label)+"</a>"},"target":imgpath+"/canvas/p1"}]}]}]}
             else:
-                curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":imgpath+"/manifest.json", "type": "Manifest","label":{"en":[self.shortenURI(imgpath)]},"items":[{"id":imgpath+"/canvas/p1","type":"Canvas","height":100,"width":100,"items":[{"id":imgpath+"/canvas/p1/1","type":"AnnotationPage","items":[{"id":imgpath+"/annotation/p1/1","type":"Annotation","motivation":"painting","body":{"id":imgpath,"type":"Image","format":"image/png"},"target":imgpath+"/canvas/p1"}]}],"annotations":[{"id":imgpath+"/canvas/p1/annopage-2","type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p1/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":imgpath+"/canvas/p1"}]}]}]}
+                curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":imgpath+"/manifest.json", "type": "Manifest","label":{"en":[self.shortenURI(imgpath)]},"items":[{"id":imgpath+"/canvas/p1","type":"Canvas","height":100,"width":100,"items":[{"id":imgpath+"/canvas/p1/1","type":"AnnotationPage","metadata":[],"items":[{"id":imgpath+"/annotation/p1/1","type":"Annotation","motivation":"painting","body":{"id":imgpath,"type":"Image","format":"image/png"},"target":imgpath+"/canvas/p1"}]}],"annotations":[{"id":imgpath+"/canvas/p1/annopage-2","type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p1/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":imgpath+"/canvas/p1"}]}]}]}
+            for pred in predobjmap:
+                curiiifmanifest["metadata"].append({"label":{"en":[self.shortenURI(pred)]},"value":{"en":[str(predobjmap[pred])]}})
             #os.makedirs(self.outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/")
             #os.makedirs(self.outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/full/")
             #os.makedirs(self.outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/full/0/")
@@ -2876,7 +2878,7 @@ class OntDocGeneration:
                     f.write(imagecarouselheader)
                 if len(imageannos)>0 and len(foundmedia["image"])>0:
                     for image in foundmedia["image"]:
-                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,image,str(subject),prefixnamespace,foundlabel,thetypes))
+                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,image,str(subject),prefixnamespace,foundlabel,thetypes,predobjmap))
                         annostring=""
                         for anno in imageannos:
                             annostring+=anno.replace("<svg>","<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
@@ -2885,7 +2887,7 @@ class OntDocGeneration:
                             carousel="carousel-item"                  
                 else:
                     for image in foundmedia["image"]:
-                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,image,str(subject),prefixnamespace,foundlabel,thetypes))
+                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,image,str(subject),prefixnamespace,foundlabel,thetypes,predobjmap))
                         if image=="<svg width=":
                             continue
                         if "<svg" in image:
