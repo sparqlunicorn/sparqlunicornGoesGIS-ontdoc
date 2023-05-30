@@ -2376,10 +2376,12 @@ class OntDocGeneration:
                 pagecounter+=1
             for pred in predobjmap:
                 for objs in predobjmap[pred]:
+                    print(str(pred)+" "+str(objs))
                     if isinstance(objs,URIRef):
                         curiiifmanifest["metadata"].append({"label":{"en":[self.shortenURI(pred)]},"value":{"en":["<a href=\""+str(objs)+"\">"+str(objs)+"</a>"]}})
                     else:
                         curiiifmanifest["metadata"].append({"label":{"en":[self.shortenURI(pred)]},"value":{"en":[str(objs)]}})
+                    print(curiiifmanifest["metadata"])
             if summary!=None and summary!="" and summary!={}:
                 curiiifmanifest["summary"]={"en":[str(summary)]}
             #os.makedirs(self.outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/")
