@@ -2386,7 +2386,7 @@ class OntDocGeneration:
         if not os.path.exists(outpath + "/iiif/collection/"):
             os.makedirs(outpath + "/iiif/collection/")
         seenurls=set()
-        collections={"main":{"@context":"http://iiif.io/api/presentation/3/context.json","id":outpath+"/iiif/collection/main.json","type": "Collection", "label": {"en":["Collection: Main"]},"items": []}}
+        collections={"main":{"@context":"http://iiif.io/api/presentation/3/context.json","id":outpath+"/iiif/collection/iiifcoll.json","type": "Collection", "label": {"en":["Collection: "+self.shortenURI(str(prefixnamespace))]},"items": []}}
         for imgpath in  sorted(imagespaths, key=lambda k: k['label'], reverse=False):
             curclass="main"
             if "class" in imgpath and imgpath["class"]!="":
@@ -2401,14 +2401,10 @@ class OntDocGeneration:
             seenurls=imgpath["url"]
         for coll in collections:
             if coll!="main":
-                iiifcollection["items"].append(collections[coll])
-                f=open(outpath+"/iiif/collection/"+str(coll)+".json","w",encoding="utf-8")
-                f.write(json.dumps(collections[coll]))
-                f.close()
-        iiifcollection["items"].append(collections["main"]["items"])
+                collections["main"]["items"].append(collections[coll])
         f=open(outpath+"/iiif/collection/iiifcoll.json","w",encoding="utf-8")
-        f.write(json.dumps(iiifcollection))
-        f.close()          
+        f.write(json.dumps(collections["main"]))
+        f.close()
         iiifindex="""<html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"><script src="https://unpkg.com/mirador@latest/dist/mirador.min.js"></script></head><body><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500"><div id="my-mirador"/><script type="text/javascript">var mirador = Mirador.viewer({"id": "my-mirador","manifests": {"collection/iiifcoll.json": {"provider": "Harvard University"}},"windows": [{"loadedManifest": "collection/iiifcoll.json","canvasIndex": 2,"thumbnailNavigationPosition": 'far-bottom'}]});</script></body></html>"""
         f=open(outpath+"/iiif/index.html","w",encoding="utf-8")
         f.write(iiifindex)
