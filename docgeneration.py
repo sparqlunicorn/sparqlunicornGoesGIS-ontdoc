@@ -2359,7 +2359,7 @@ class OntDocGeneration:
         return targetrellink.replace("//","/")
 
     def generateIIIFManifest(self,outpath,imgpaths,curind,prefixnamespace,label="",summary="",thetypes=None,predobjmap=None):
-        print("GENERATE IIIF Manifest for "+str(self.outpath)+" "+str(curind))
+        print("GENERATE IIIF Manifest for "+str(self.outpath)+" "+str(curind)+" "+str(label)+" "+str(summary))
         if not os.path.exists(self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json"):
             if not os.path.exists(self.outpath + "/iiif/mf/"):
                 os.makedirs(self.outpath + "/iiif/mf/")
@@ -2890,7 +2890,6 @@ class OntDocGeneration:
                 if len(imageannos)>0 and len(foundmedia["image"])>0:
                     iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap))
                     for image in foundmedia["image"]:
-                        #iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,image,str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap))
                         annostring=""
                         for anno in imageannos:
                             annostring+=anno.replace("<svg>","<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
