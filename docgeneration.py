@@ -2381,7 +2381,7 @@ class OntDocGeneration:
                             curiiifmanifest["metadata"].append({"label":{"en":[self.shortenURI(pred)]},"value":{"en":["<a href=\""+str(objs)+"\">"+str(objs)+"</a>"]}})
                         else:
                             curiiifmanifest["metadata"].append({"label":{"en":[self.shortenURI(pred)]},"value":{"en":[str(objs)]}})
-            if summary!=None and summary!="":
+            if summary!=None and summary!="" and summary!={}:
                 curiiifmanifest["summary"]={"en":[str(summary)]}
             #os.makedirs(self.outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/")
             #os.makedirs(self.outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/full/")
