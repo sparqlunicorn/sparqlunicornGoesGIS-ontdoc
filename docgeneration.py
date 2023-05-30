@@ -2371,7 +2371,10 @@ class OntDocGeneration:
                 curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":self.deploypath+"/iiif/mf/"+self.shortenURI(imgpath)+"/manifest.json", "type": "Manifest","label":{"en":[self.shortenURI(imgpath)]},"items":[{"id":imgpath+"/canvas/p1","type":"Canvas","height":100,"width":100,"items":[{"id":imgpath+"/canvas/p1/1","type":"AnnotationPage","metadata":[],"items":[{"id":imgpath+"/annotation/p1/1","type":"Annotation","motivation":"painting","body":{"id":imgpath,"type":"Image","format":"image/png"},"target":imgpath+"/canvas/p1"}]}],"annotations":[{"id":imgpath+"/canvas/p1/annopage-2","type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p1/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":imgpath+"/canvas/p1"}]}]}]}
             for pred in predobjmap:
                 for objs in predobjmap[pred]:
-                    curiiifmanifest["metadata"].append({"label":{"en":[self.shortenURI(pred)]},"value":{"en":[str(objs)]}})
+                    if isinstance(objs,URIRef):
+                        curiiifmanifest["metadata"].append({"label":{"en":[self.shortenURI(pred)]},"value":{"en":["<a href=\""+str(objs)+"\">"+str(objs)+"</a>"]}})
+                    else:
+                        curiiifmanifest["metadata"].append({"label":{"en":[self.shortenURI(pred)]},"value":{"en":[str(objs)]}})
             if summary!=None and summary!="":
                 curiiifmanifest["summary"]={"en":[str(summary)]}
             #os.makedirs(self.outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/")
