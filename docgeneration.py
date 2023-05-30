@@ -2359,19 +2359,20 @@ class OntDocGeneration:
         return targetrellink.replace("//","/")
 
     def generateIIIFManifest(self,outpath,imgpaths,curind,prefixnamespace,label="",summary="",thetypes=None,predobjmap=None):
-        print("GENERATE IIIF Manifest for "+str(self.outpath)+" "+str(curind)+" "+str(label)+" "+str(summary))
+        print("GENERATE IIIF Manifest for "+str(self.outpath)+" "+str(curind)+" "+str(label)+" "+str(summary)+" "+str(predobjmap))
         if not os.path.exists(self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json"):
             if not os.path.exists(self.outpath + "/iiif/mf/"):
                 os.makedirs(self.outpath + "/iiif/mf/")
             if not os.path.exists(self.outpath + "/iiif/images/"):
                 os.makedirs(self.outpath + "/iiif/images/")
+            print(label)
             if label!="":
                 curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":self.deploypath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json", "type": "Manifest","label":{"en":[str(label)+" ("+self.shortenURI(curind)+")"]},"metadata":[],"items":[]}
             else:
                 curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":self.deploypath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json", "type": "Manifest","label":{"en":[self.shortenURI(curind)]},"metadata":[],"items":[]}
             pagecounter=0
             for imgpath in imgpaths:
-                curiiifmanifest["items"].append({"id":imgpath+"/canvas/p"+str(pagecounter),"type":"Canvas","label":{"en":[label+" Image "+str(pagecounter+1)]},"height":100,"width":100,"items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/1","type":"AnnotationPage","metadata":[],"items":[{"id":imgpath+"/annotation/p"+str(pagecounter)+"/1","type":"Annotation","motivation":"painting","body":{"id":imgpath,"type":"Image","format":"image/png"},"target":imgpath+"/canvas/p"+str(pagecounter)}]}],"annotations":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/annopage-2","type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":imgpath+"/canvas/p"+str(pagecounter)}]}]})
+                curiiifmanifest["items"].append({"id":imgpath+"/canvas/p"+str(pagecounter),"type":"Canvas","label":{"en":[str(label)+" Image "+str(pagecounter+1)]},"height":100,"width":100,"items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/1","type":"AnnotationPage","items":[{"id":imgpath+"/annotation/p"+str(pagecounter)+"/1","type":"Annotation","motivation":"painting","body":{"id":imgpath,"type":"Image","format":"image/png"},"target":imgpath+"/canvas/p"+str(pagecounter)}]}],"annotations":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/annopage-2","type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":imgpath+"/canvas/p"+str(pagecounter)}]}]})
                 pagecounter+=1
             for pred in predobjmap:
                 for objs in predobjmap[pred]:
@@ -2390,8 +2391,8 @@ class OntDocGeneration:
             f.write(json.dumps(curiiifmanifest))
             f.close()
         if thetypes!=None and len(thetypes)>0:
-            return {"url":self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","label":label,"class":next(iter(thetypes))}
-        return {"url":self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","label":label,"class":""}
+            return {"url":self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","label":str(label),"class":next(iter(thetypes))}
+        return {"url":self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","label":str(label),"class":""}
 
 
     def generateIIIFCollections(self,outpath,imagespaths,prefixnamespace):
