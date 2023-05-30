@@ -2404,7 +2404,7 @@ class OntDocGeneration:
             f=open(outpath+"/iiif/collection/"+str(coll)+".json","w",encoding="utf-8")
             f.write(json.dumps(collections[coll]))
             f.close()
-        iiifcollection["items"].append(collections["main"]["items"][0])
+        iiifcollection["items"].append(collections["main"]["items"])
         f=open(outpath+"/iiif/collection/iiifcoll.json","w",encoding="utf-8")
         f.write(json.dumps(iiifcollection))
         f.close()          
