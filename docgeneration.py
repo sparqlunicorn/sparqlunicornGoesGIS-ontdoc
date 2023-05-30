@@ -2400,10 +2400,11 @@ class OntDocGeneration:
                     collections[curclass]["items"].append({"full":outpath + "/iiif/images/"+self.shortenURI(imgpath["url"].replace("/manifest.json",""))+"/full/full/0/default.jpg","id":imgpath["url"].replace(self.outpath,self.deploypath),"type": "Manifest","label":{"en":[self.shortenURI(imgpath["url"].replace("/manifest.json",""))]}})
             seenurls=imgpath["url"]
         for coll in collections:
-            iiifcollection["items"].append(collections[coll])
-            f=open(outpath+"/iiif/collection/"+str(coll)+".json","w",encoding="utf-8")
-            f.write(json.dumps(collections[coll]))
-            f.close()
+            if coll!="main":
+                iiifcollection["items"].append(collections[coll])
+                f=open(outpath+"/iiif/collection/"+str(coll)+".json","w",encoding="utf-8")
+                f.write(json.dumps(collections[coll]))
+                f.close()
         iiifcollection["items"].append(collections["main"]["items"])
         f=open(outpath+"/iiif/collection/iiifcoll.json","w",encoding="utf-8")
         f.write(json.dumps(iiifcollection))
