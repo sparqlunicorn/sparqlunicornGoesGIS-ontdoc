@@ -1407,7 +1407,7 @@ def resolveTemplate(templatename):
 
 class OntDocGeneration:
 
-    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,localOptimized=False,startconcept=None,deploypath="",logoname="",templatename="default"):
+    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,iiif,localOptimized=False,startconcept=None,deploypath="",logoname="",templatename="default"):
         self.prefixes=prefixes
         self.prefixnamespace = prefixnamespace
         self.namespaceshort = prefixnsshort.replace("/","")
@@ -1416,6 +1416,7 @@ class OntDocGeneration:
         self.startconcept=startconcept
         self.createVOWL=createVOWL
         self.ogcapifeatures=ogcapifeatures
+        self.iiif=iiif
         self.localOptimized=localOptimized
         self.geocache={}
         self.deploypath=deploypath
@@ -2367,9 +2368,9 @@ class OntDocGeneration:
                 os.makedirs(self.outpath + "/iiif/images/")
             print(label)
             if label!="":
-                curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":self.deploypath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json", "type": "Manifest","label":{"en":[str(label)+" ("+self.shortenURI(curind)+")"]},"homepage":[{"id":"","type":"Text","label":{"en":[str(self.deploypath)+"/"+str(curind)]},"format": "text/html", "language":["en"]}],"metadata":[],"items":[]}
+                curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":self.deploypath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json", "type": "Manifest","label":{"en":[str(label)+" ("+self.shortenURI(curind)+")"]},"homepage":[{"id":"","type":"Text","label":{"en":[str(self.deploypath)+"/"+str(curind).replace(prefixnamespace,self.deploypath)]},"format": "text/html", "language":["en"]}],"metadata":[],"items":[]}
             else:
-                curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":self.deploypath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json", "type": "Manifest","label":{"en":[self.shortenURI(curind)]},"homepage":[{"id":"","type":"Text","label":{"en":[str(self.deploypath)+"/"+str(curind)]},"format": "text/html", "language":["en"]}],"metadata":[],"items":[]}
+                curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":self.deploypath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json", "type": "Manifest","label":{"en":[self.shortenURI(curind)]},"homepage":[{"id":"","type":"Text","label":{"en":[str(self.deploypath)+"/"+str(curind).replace(prefixnamespace,self.deploypath)]},"format": "text/html", "language":["en"]}],"metadata":[],"items":[]}
             pagecounter=0
             for imgpath in imgpaths:
                 curiiifmanifest["items"].append({"id":imgpath+"/canvas/p"+str(pagecounter),"type":"Canvas","label":{"en":[str(label)+" "+str(maintype)+" "+str(pagecounter+1)]},"height":100,"width":100,"items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/1","type":"AnnotationPage","items":[{"id":imgpath+"/annotation/p"+str(pagecounter)+"/1","type":"Annotation","motivation":"painting","body":{"id":imgpath,"type":str(maintype),"format":"image/png"},"target":imgpath+"/canvas/p"+str(pagecounter)}]}],"annotations":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/annopage-2","type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":imgpath+"/canvas/p"+str(pagecounter)}]}]})
@@ -2870,13 +2871,15 @@ class OntDocGeneration:
                 for fval in foundvals:
                     f.write(htmlcommenttemplate.replace("{{comment}}", "<b>Value:<mark>" + str(fval) + "</mark></b>"))
                 if len(foundmedia["mesh"])>0 and len(image3dannos)>0:
-                    iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["mesh"],str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Model"))
+                    if self.iiif:
+                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["mesh"],str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Model"))
                     for anno in image3dannos:
                         if ("POINT" in anno.upper() or "POLYGON" in anno.upper() or "LINESTRING" in anno.upper()):
                             f.write(threejstemplate.replace("{{wktstring}}",anno).replace("{{meshurls}}",str(list(foundmedia["mesh"]))))
                 elif len(foundmedia["mesh"])>0 and len(image3dannos)==0:
                     print("Found 3D Model: "+str(foundmedia["mesh"]))
-                    iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["mesh"],str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Model"))
+                    if self.iiif:
+                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["mesh"],str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Model"))
                     for curitem in foundmedia["mesh"]:
                         format="ply"
                         if ".nxs" in curitem or ".nxz" in curitem:
@@ -2892,7 +2895,8 @@ class OntDocGeneration:
                     carousel="carousel-item active"
                     f.write(imagecarouselheader)
                 if len(imageannos)>0 and len(foundmedia["image"])>0:
-                    iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
+                    if self.iiif:
+                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
                     for image in foundmedia["image"]:
                         annostring=""
                         for anno in imageannos:
@@ -2901,7 +2905,8 @@ class OntDocGeneration:
                         if len(foundmedia["image"])>3:
                             carousel="carousel-item"                  
                 elif len(foundmedia["image"])>0:
-                    iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
+                    if self.iiif:
+                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
                     for image in foundmedia["image"]:                
                         if image=="<svg width=":
                             continue
@@ -2927,11 +2932,11 @@ class OntDocGeneration:
                                 f.write("<span style=\"font-weight:bold\" class=\"textanno\" start=\"" + str(
                                     textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
                                     textanno["exact"]) + "\"><mark>" + str(textanno["exact"]) + "</mark></span>")
-                if len(foundmedia["audio"])>0:
+                if len(foundmedia["audio"])>0 and self.iiif:
                     iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["audio"],str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Audio"))
                 for audio in foundmedia["audio"]:
                     f.write(audiotemplate.replace("{{audio}}",str(audio)))
-                if len(foundmedia["video"])>0:
+                if len(foundmedia["video"])>0 and self.iiif:
                     iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["video"],str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Video"))
                 for video in foundmedia["video"]:
                     f.write(videotemplate.replace("{{video}}",str(video)))
@@ -3058,6 +3063,7 @@ createVOWL=False
 localOptimized=False
 startconcept=None
 ogcapifeatures=False
+iiif=True
 filestoprocess=[]
 if len(sys.argv)<=1:
     print("No TTL file to process has been given as a parameter")
@@ -3109,6 +3115,10 @@ if len(sys.argv)>13:
     ogcapi=sys.argv[13]
     if ogcapi.lower()=="true":
         ogcapifeatures=True
+if len(sys.argv)>13:
+    iiif=sys.argv[13]
+    if iiif.lower()=="true":
+        iiif=True
 if len(sys.argv)>14:
     startconcept=sys.argv[14]
 if len(sys.argv)>15:
@@ -3138,9 +3148,9 @@ for fp in filestoprocess:
         g = Graph()
         g.parse(fp)
         if fcounter<len(outpath):
-            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,ogcapifeatures,localOptimized,startconcept,deploypath,logourl,templatename)
+            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,ogcapifeatures,iiif,localOptimized,startconcept,deploypath,logourl,templatename)
         else:
-            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,ogcapifeatures,localOptimized,startconcept,deploypath,logourl,templatename)
+            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,ogcapifeatures,iiif,localOptimized,startconcept,deploypath,logourl,templatename)
         docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
     except Exception as inst:
      	print("Could not parse "+str(fp))
