@@ -2885,14 +2885,14 @@ class OntDocGeneration:
                     f.write(htmlcommenttemplate.replace("{{comment}}", "<b>Value:<mark>" + str(fval) + "</mark></b>"))
                 if len(foundmedia["mesh"])>0 and len(image3dannos)>0:
                     if self.iiif:
-                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["mesh"],image3dannos,str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Model"))
+                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["mesh"],image3dannos,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Model"))
                     for anno in image3dannos:
                         if ("POINT" in anno.upper() or "POLYGON" in anno.upper() or "LINESTRING" in anno.upper()):
                             f.write(threejstemplate.replace("{{wktstring}}",anno).replace("{{meshurls}}",str(list(foundmedia["mesh"]))))
                 elif len(foundmedia["mesh"])>0 and len(image3dannos)==0:
                     print("Found 3D Model: "+str(foundmedia["mesh"]))
                     if self.iiif:
-                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["mesh"],image3dannos,str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Model"))
+                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["mesh"],image3dannos,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Model"))
                     for curitem in foundmedia["mesh"]:
                         format="ply"
                         if ".nxs" in curitem or ".nxz" in curitem:
@@ -2909,7 +2909,7 @@ class OntDocGeneration:
                     f.write(imagecarouselheader)
                 if len(imageannos)>0 and len(foundmedia["image"])>0:
                     if self.iiif:
-                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],imageannos,str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
+                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],imageannos,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
                     for image in foundmedia["image"]:
                         annostring=""
                         for anno in imageannos:
@@ -2919,7 +2919,7 @@ class OntDocGeneration:
                             carousel="carousel-item"                  
                 elif len(foundmedia["image"])>0:
                     if self.iiif:
-                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],imageannos,str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
+                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],imageannos,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
                     for image in foundmedia["image"]:                
                         if image=="<svg width=":
                             continue
@@ -2946,11 +2946,11 @@ class OntDocGeneration:
                                     textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
                                     textanno["exact"]) + "\"><mark>" + str(textanno["exact"]) + "</mark></span>")
                 if len(foundmedia["audio"])>0 and self.iiif:
-                    iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["audio"],None,str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Audio"))
+                    iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["audio"],None,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Audio"))
                 for audio in foundmedia["audio"]:
                     f.write(audiotemplate.replace("{{audio}}",str(audio)))
                 if len(foundmedia["video"])>0 and self.iiif:
-                    iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["video"],None,str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Video"))
+                    iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["video"],None,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Video"))
                 for video in foundmedia["video"]:
                     f.write(videotemplate.replace("{{video}}",str(video)))
                 if geojsonrep!=None and not isgeocollection:
@@ -3135,8 +3135,8 @@ print("Path exists? "+outpath[0]+'/index.html '+str(os.path.exists(outpath[0]+'/
 if not os.path.exists(outpath[0]+'/index.html'):
     indexf=open(outpath[0]+"/index.html","w",encoding="utf-8")
     nonnslink=""
-    indexhtml = htmltemplate.replace("{{logo}}",logourl).replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}","0").replace("{{toptitle}}","Index page").replace("{{title}}","Index page").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
-        .replace("{{classtreefolderpath}}",prefixnsshort + "_classtree.js").replace("{{baseurlhtml}}", ".").replace("{{nonnslink}}",str(nonnslink)).replace("{{proprelationpath}}", "proprelations.js").replace("{{scriptfolderpath}}", prefixnsshort+ '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
+    indexhtml = htmltemplate.replace("{{logo}}",logourl).replace("{{baseurl}}", args.prefixns).replace("{{relativedepth}}","0").replace("{{toptitle}}","Index page").replace("{{title}}","Index page").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
+        .replace("{{classtreefolderpath}}",args.prefixnsshort + "_classtree.js").replace("{{baseurlhtml}}", ".").replace("{{nonnslink}}",str(nonnslink)).replace("{{proprelationpath}}", "proprelations.js").replace("{{scriptfolderpath}}", args.prefixnsshort+ '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
     indexhtml=indexhtml.replace("{{indexpage}}","true")	
     indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"
     indexhtml+="<table class=\"description\" border=1 id=indextable><thead><tr><th>Dataset</th></tr></thead><tbody>"
