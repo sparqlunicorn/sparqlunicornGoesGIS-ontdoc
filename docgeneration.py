@@ -3091,7 +3091,7 @@ for path in args.input:
     else:
         filestoprocess+=resolveWildcardPath(path)
 print("Files to process: "+str(filestoprocess))
-for path in args.oitput:
+for path in args.output:
     if " " in path:
         for itemm in path.split(" "):
             outpath.append(itemm)
