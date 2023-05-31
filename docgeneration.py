@@ -3140,8 +3140,8 @@ if len(sys.argv)>17:
                 print(templatepath)
                 print(subfoldername)
                 print(templatename)
-if len(sys.argv)>17:
-    templatename=sys.argv[17]
+if len(sys.argv)>18:
+    templatename=sys.argv[18]
 fcounter=0
 for fp in filestoprocess:
     try:
