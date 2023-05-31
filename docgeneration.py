@@ -3063,8 +3063,8 @@ prefixes["reversed"]["http://purl.org/meshsparql/"]="msp"
 outpath=[]
 filestoprocess=[]
 parser=argparse.ArgumentParser()
-parser.add_argument("-i","--input",nargs='*',help="the input TTL file(s) to parse",action="store")
-parser.add_argument("-o","--output",nargs='*',help="the output path(s)",action="store")
+parser.add_argument("-i","--input",nargs='*',help="the input TTL file(s) to parse",action="store", required=True)
+parser.add_argument("-o","--output",nargs='*',help="the output path(s)",action="store", required=True)
 parser.add_argument("-pxns","--prefixns",nargs='?',help="the prefixnamespace",action="store",default="http://purl.org/cuneiform/")
 parser.add_argument("-px","--prefixnsshort",nargs='?',help="the prefix",action="store",default="suni")
 parser.add_argument("-ip","--createIndexPages",help="create index pages?",default=True,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
@@ -3084,9 +3084,6 @@ parser.add_argument("-tp","--templatepath",nargs='?',help="the path of the HTML 
 parser.add_argument("-tn","--templatename",nargs='?',help="the name of the HTML template",action="store",default="default")
 args=parser.parse_args()
 print(args)
-if args.input==None:
-    print("No TTL file to process has been given as a parameter")
-    exit()
 if len(args.input)>1:
     if " " in args.input:
         for itemm in args.input.split(" "):
