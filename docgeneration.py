@@ -3115,16 +3115,16 @@ if len(sys.argv)>13:
     ogcapi=sys.argv[13]
     if ogcapi.lower()=="true":
         ogcapifeatures=True
-if len(sys.argv)>13:
-    iiif=sys.argv[13]
+if len(sys.argv)>14:
+    iiif=sys.argv[14]
     if iiif.lower()=="true":
         iiif=True
-if len(sys.argv)>14:
-    startconcept=sys.argv[14]
 if len(sys.argv)>15:
-    deploypath=sys.argv[15]
+    startconcept=sys.argv[15]
 if len(sys.argv)>16:
-    templatepath=sys.argv[16]
+    deploypath=sys.argv[16]
+if len(sys.argv)>17:
+    templatepath=sys.argv[17]
     if templatepath.startswith("http") and templatepath.endswith(".zip"):
         with urlopen(templatepath) as zipresp:
             with ZipFile(BytesIO(zipresp.read())) as zfile:
