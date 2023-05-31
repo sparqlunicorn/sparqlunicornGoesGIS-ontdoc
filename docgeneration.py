@@ -3063,11 +3063,11 @@ prefixes["reversed"]["http://purl.org/meshsparql/"]="msp"
 outpath=[]
 filestoprocess=[]
 parser=argparse.ArgumentParser()
-parser.add_argument("-i","--input",help="the input TTL file(s) to parse",action="store")
-parser.add_argument("-o","--output",help="the output path(s)",action="store")
+parser.add_argument("-i","--input",nargs='*',help="the input TTL file(s) to parse",action="store")
+parser.add_argument("-o","--output",nargs='*',help="the output path(s)",action="store")
 parser.add_argument("-pxns","--prefixns",nargs='?',help="the prefixnamespace",action="store",default="http://purl.org/cuneiform/")
 parser.add_argument("-px","--prefixnsshort",nargs='?',help="the prefix",action="store",default="suni")
-parser.add_argument("-ip","--indexPages",help="create index pages?",action="store_true",default=True)
+parser.add_argument("-ip","--createIndexPages",help="create index pages?",action="store_true",default=True)
 parser.add_argument("-cc","--createCollections",help="create collections?",action="store_true",default=False)
 parser.add_argument("-ll","--labellang",nargs='?',help="preferred label language (default: en)",action="store",default="en")
 parser.add_argument("-li","--license",nargs='?',help="license under which this data is published",action="store",default="")
