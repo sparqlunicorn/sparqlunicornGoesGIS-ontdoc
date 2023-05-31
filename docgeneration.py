@@ -3084,6 +3084,19 @@ parser.add_argument("-tp","--templatepath",nargs='?',help="the path of the HTML 
 parser.add_argument("-tn","--templatename",nargs='?',help="the name of the HTML template",action="store",default="default")
 args=parser.parse_args()
 print(args)
+for path in args.input:
+    if " " in path:
+        for itemm in path.split(" "):
+            filestoprocess+=resolveWildcardPath(itemm)
+    else:
+        filestoprocess+=resolveWildcardPath(path)
+print("Files to process: "+str(filestoprocess))
+for path in args.oitput:
+    if " " in path:
+        for itemm in path.split(" "):
+            outpath.append(itemm)
+    else:
+        outpath.append(path)
 if args.templatepath!=None:
     templatepath=args.templatepath
     if templatepath.startswith("http") and templatepath.endswith(".zip"):
@@ -3102,11 +3115,11 @@ if args.templatepath!=None:
                 print(subfoldername)
                 print(templatename)
 fcounter=0
-for fp in args.input:
+for fp in filestoprocess:
     try:
         g = Graph()
         g.parse(fp)
-        if fcounter<len(args.output):
+        if fcounter<len(outpath):
             docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createColl,args.metadatatable,args.nonnspages,args.createVOWL,args.ogcapifeatures,args.iiif,localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename)
         else:
             docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createColl,args.metadatatable,args.nonnspages,args.createVOWL,args.ogcapifeatures,args.iiif,localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename)
