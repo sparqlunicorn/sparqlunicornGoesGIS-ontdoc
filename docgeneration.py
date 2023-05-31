@@ -10,6 +10,7 @@ from pathlib import Path
 import shapely.wkt
 import shapely.geometry
 import os
+import argparse
 import re
 import shutil
 import json
@@ -3059,84 +3060,48 @@ prefixes["reversed"]["http://purl.org/graphemon/"]="graphemon"
 prefixes["reversed"]["http://www.opengis.net/ont/crs/"]="geocrs"
 prefixes["reversed"]["http://www.ontology-of-units-of-measure.org/resource/om-2/"]="om"
 prefixes["reversed"]["http://purl.org/meshsparql/"]="msp"
-prefixnsshort="suni"
-prefixnamespace="http://purl.org/cuneiform/"
-license=""
-metadatatable=False
-logourl=""
 outpath=[]
-nonnspages=False
-labellang="en"
-templatepath="resources/html/"
-templatename="default"
-createColl=False
-createIndexPages=True
-createVOWL=False
-localOptimized=False
-startconcept=None
-ogcapifeatures=False
-iiif=True
 filestoprocess=[]
-if len(sys.argv)<=1:
+parser=argparse.ArgumentParser()
+parser.add_argument("-i","--input",help="the input TTL file(s) to parse",action="store")
+parser.add_argument("-o","--output",help="the output path(s)",action="store")
+parser.add_argument("-pxns","--prefixns",nargs='?',help="the prefixnamespace",action="store",default="http://purl.org/cuneiform/")
+parser.add_argument("-px","--prefixnsshort",nargs='?',help="the prefix",action="store",default="suni")
+parser.add_argument("-ip","--indexPages",help="create index pages?",action="store_true",default=True)
+parser.add_argument("-cc","--createCollections",help="create collections?",action="store_true",default=False)
+parser.add_argument("-ll","--labellang",nargs='?',help="preferred label language (default: en)",action="store",default="en")
+parser.add_argument("-li","--license",nargs='?',help="license under which this data is published",action="store",default="")
+parser.add_argument("-lgu","--logourl",nargs='?',help="URL of an optional page logo",action="store",default="")
+parser.add_argument("-lo","--localOptimized",help="build a version for local deployment",action="store",default=False)
+parser.add_argument("-mdt","--metadatatable",help="create metadata table?",action="store_true",default=False)
+parser.add_argument("-nnsp","--nonnspages",help="create nonns pages?",action="store_true",default=False)
+parser.add_argument("-vowl","--createvowl",help="create vowl graph view?",action="store_true",default=False)
+parser.add_argument("-ogc","--ogcapifeatures",help="create ogc api features collections?",action="store_true",default=False)
+parser.add_argument("-iiif","--iiifmanifest",help="create iiif manifests?",action="store_true",default=True)
+parser.add_argument("-sc","--startconcept",nargs='?',help="the concept suggested for browsing the HTML documentation",action="store",default=None)
+parser.add_argument("-dp","--deploypath",nargs='?',help="the deploypath where the documentation will be hosted",action="store",default="")
+parser.add_argument("-tp","--templatepath",nargs='?',help="the path of the HTML template",action="store",default="resources/html/")
+parser.add_argument("-tn","--templatename",nargs='?',help="the name of the HTML template",action="store",default="default")
+args=parser.parse_args()
+print(args)
+if args.input==None or len(args.input)<=1:
     print("No TTL file to process has been given as a parameter")
     exit()
-if len(sys.argv)>1:
-    if " " in sys.argv[1]:
-        for itemm in sys.argv[1].split(" "):
+if len(args.input)>1:
+    if " " in args.input:
+        for itemm in args.input.split(" "):
             filestoprocess+=resolveWildcardPath(itemm)
     else:
-        filestoprocess+=resolveWildcardPath(sys.argv[1])
+        filestoprocess+=resolveWildcardPath(args.input)
 print("Files to process: "+str(filestoprocess))
-if len(sys.argv)>2:
-    if " " in sys.argv[2]:
-        for itemm in sys.argv[2].split(" "):
+if args.output!=None and len(args.output)>2:
+    if " " in args.o:
+        for itemm in args.o.split(" "):
             outpath.append(itemm)
     else:
-        outpath.append(sys.argv[2])
-if len(sys.argv)>3:
-    prefixnamespace=sys.argv[3]
-if len(sys.argv)>4:
-    prefixnsshort=sys.argv[4]
-if len(sys.argv)>5:
-    indexp=sys.argv[5]
-    if indexp.lower()=="false":
-        createIndexPages=False
-if len(sys.argv)>6:
-    indexp=sys.argv[6]
-    if indexp.lower()=="true":
-        createColl=True
-if len(sys.argv)>7:
-    labellang=sys.argv[7]
-if len(sys.argv)>8:
-    license=sys.argv[8]
-if len(sys.argv)>9:
-    logourl=sys.argv[9]
-if len(sys.argv)>10:
-    metap=sys.argv[10]
-    if metap.lower()=="true":
-        metadatatable=True
-if len(sys.argv)>11:
-    nonnsp=sys.argv[11]
-    if nonnsp.lower()=="true":
-        nonnspages=True
-if len(sys.argv)>12:
-    crvowl=sys.argv[12]
-    if crvowl.lower()=="true":
-        createVOWL=True
-if len(sys.argv)>13:
-    ogcapi=sys.argv[13]
-    if ogcapi.lower()=="true":
-        ogcapifeatures=True
-if len(sys.argv)>14:
-    iiif=sys.argv[14]
-    if iiif.lower()=="true":
-        iiif=True
-if len(sys.argv)>15:
-    startconcept=sys.argv[15]
-if len(sys.argv)>16:
-    deploypath=sys.argv[16]
-if len(sys.argv)>17:
-    templatepath=sys.argv[17]
+        outpath.append(args.output)
+if args.templatepath!=None:
+    templatepath=args.templatepath
     if templatepath.startswith("http") and templatepath.endswith(".zip"):
         with urlopen(templatepath) as zipresp:
             with ZipFile(BytesIO(zipresp.read())) as zfile:
@@ -3152,18 +3117,16 @@ if len(sys.argv)>17:
                 print(templatepath)
                 print(subfoldername)
                 print(templatename)
-if len(sys.argv)>18:
-    templatename=sys.argv[18]
 fcounter=0
 for fp in filestoprocess:
     try:
         g = Graph()
         g.parse(fp)
         if fcounter<len(outpath):
-            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[fcounter],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,ogcapifeatures,iiif,localOptimized,startconcept,deploypath,logourl,templatename)
+            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createColl,args.metadatatable,args.nonnspages,args.createVOWL,args.ogcapifeatures,args.iiif,localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename)
         else:
-            docgen=OntDocGeneration(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath[-1],g,createIndexPages,createColl,metadatatable,nonnspages,createVOWL,ogcapifeatures,iiif,localOptimized,startconcept,deploypath,logourl,templatename)
-        docgen.generateOntDocForNameSpace(prefixnamespace,dataformat="HTML")
+            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createColl,args.metadatatable,args.nonnspages,args.createVOWL,args.ogcapifeatures,args.iiif,localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename)
+        docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
     except Exception as inst:
      	print("Could not parse "+str(fp))
      	print(inst)
