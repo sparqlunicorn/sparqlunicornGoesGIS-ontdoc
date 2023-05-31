@@ -2359,7 +2359,7 @@ class OntDocGeneration:
         targetrellink=targetrellink.replace(outpath,"")
         return targetrellink.replace("//","/")
 
-    def generateIIIFManifest(self,outpath,imgpaths,curind,prefixnamespace,label="",summary="",thetypes=None,predobjmap=None,maintype="Image"):
+    def generateIIIFManifest(self,outpath,imgpaths,annos,curind,prefixnamespace,label="",summary="",thetypes=None,predobjmap=None,maintype="Image"):
         print("GENERATE IIIF Manifest for "+str(self.outpath)+" "+str(curind)+" "+str(label)+" "+str(summary)+" "+str(predobjmap))
         if not os.path.exists(self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json"):
             if not os.path.exists(self.outpath + "/iiif/mf/"):
@@ -2373,11 +2373,23 @@ class OntDocGeneration:
                 curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":self.deploypath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json", "type": "Manifest","label":{"en":[self.shortenURI(curind)]},"homepage":[{"id":str(curind).replace(prefixnamespace,self.deploypath+"/"),"type":"Text","label":{"en":[str(curind).replace(prefixnamespace,self.deploypath+"/")]},"format": "text/html", "language":["en"]}],"metadata":[],"items":[]}
             pagecounter=0
             for imgpath in imgpaths:
-                curiiifmanifest["items"].append({"id":imgpath+"/canvas/p"+str(pagecounter),"type":"Canvas","label":{"en":[str(label)+" "+str(maintype)+" "+str(pagecounter+1)]},"height":100,"width":100,"items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/1","type":"AnnotationPage","items":[{"id":imgpath+"/annotation/p"+str(pagecounter)+"/1","type":"Annotation","motivation":"painting","body":{"id":imgpath,"type":str(maintype),"format":"image/png"},"target":imgpath+"/canvas/p"+str(pagecounter)}]}],"annotations":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/annopage-2","type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":imgpath+"/canvas/p"+str(pagecounter)}]}]})
+                curitem={"id":imgpath+"/canvas/p"+str(pagecounter),"type":"Canvas","label":{"en":[str(label)+" "+str(maintype)+" "+str(pagecounter+1)]},"height":100,"width":100,"items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/1","type":"AnnotationPage","items":[{"id":imgpath+"/annotation/p"+str(pagecounter)+"/1","type":"Annotation","motivation":"painting","body":{"id":imgpath,"type":str(maintype),"format":"image/png"},"target":imgpath+"/canvas/p"+str(pagecounter)}]}],"annotations":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/annopage-2","type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":imgpath+"/canvas/p"+str(pagecounter)}]}]}
+                if annos!=None:
+                    annocounter=3
+                    for anno in annos:
+                        curitem["items"][0]["annotations"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/annopage-"+str(annocounter),"type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":{"source":imgpath+"/canvas/p"+str(pagecounter)},"type":"SpecificResource","selector":{"type":"SvgSelector","value":anno}}]}))
+                        annocounter+=1
+                curiiifmanifest["items"].append(curitem)        
                 pagecounter+=1
+            annotations=[]
+            if annos!=None:
+                for anno in annos:
+                    annotations.append()
             for pred in predobjmap:
+                print(str(pred)+" "+str(predobjmap[pred]))
                 for objs in predobjmap[pred]:
                     print(str(pred)+" "+str(objs))
+                    print(curiiifmanifest["metadata"])
                     if isinstance(objs,URIRef):
                         curiiifmanifest["metadata"].append({"label":{"en":[self.shortenURI(str(pred))]},"value":{"en":["<a href=\""+str(objs)+"\">"+str(objs)+"</a>"]}})
                     else:
@@ -2872,14 +2884,14 @@ class OntDocGeneration:
                     f.write(htmlcommenttemplate.replace("{{comment}}", "<b>Value:<mark>" + str(fval) + "</mark></b>"))
                 if len(foundmedia["mesh"])>0 and len(image3dannos)>0:
                     if self.iiif:
-                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["mesh"],str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Model"))
+                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["mesh"],image3dannos,str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Model"))
                     for anno in image3dannos:
                         if ("POINT" in anno.upper() or "POLYGON" in anno.upper() or "LINESTRING" in anno.upper()):
                             f.write(threejstemplate.replace("{{wktstring}}",anno).replace("{{meshurls}}",str(list(foundmedia["mesh"]))))
                 elif len(foundmedia["mesh"])>0 and len(image3dannos)==0:
                     print("Found 3D Model: "+str(foundmedia["mesh"]))
                     if self.iiif:
-                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["mesh"],str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Model"))
+                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["mesh"],image3dannos,str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Model"))
                     for curitem in foundmedia["mesh"]:
                         format="ply"
                         if ".nxs" in curitem or ".nxz" in curitem:
@@ -2896,7 +2908,7 @@ class OntDocGeneration:
                     f.write(imagecarouselheader)
                 if len(imageannos)>0 and len(foundmedia["image"])>0:
                     if self.iiif:
-                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
+                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],imageannos,str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
                     for image in foundmedia["image"]:
                         annostring=""
                         for anno in imageannos:
@@ -2906,7 +2918,7 @@ class OntDocGeneration:
                             carousel="carousel-item"                  
                 elif len(foundmedia["image"])>0:
                     if self.iiif:
-                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
+                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],imageannos,str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
                     for image in foundmedia["image"]:                
                         if image=="<svg width=":
                             continue
@@ -2933,11 +2945,11 @@ class OntDocGeneration:
                                     textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
                                     textanno["exact"]) + "\"><mark>" + str(textanno["exact"]) + "</mark></span>")
                 if len(foundmedia["audio"])>0 and self.iiif:
-                    iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["audio"],str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Audio"))
+                    iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["audio"],None,str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Audio"))
                 for audio in foundmedia["audio"]:
                     f.write(audiotemplate.replace("{{audio}}",str(audio)))
                 if len(foundmedia["video"])>0 and self.iiif:
-                    iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["video"],str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Video"))
+                    iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["video"],None,str(subject),prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Video"))
                 for video in foundmedia["video"]:
                     f.write(videotemplate.replace("{{video}}",str(video)))
                 if geojsonrep!=None and not isgeocollection:
