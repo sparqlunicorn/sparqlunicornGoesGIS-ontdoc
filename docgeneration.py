@@ -1703,11 +1703,11 @@ class OntDocGeneration:
                 else:
                     indexhtml = indexhtml.replace("{{indexpage}}", "false")
                 indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"+vowltemplate.replace("{{vowlpath}}", "minivowl_result.js")
-                if startconcept!=None and path==outpath and startconcept in uritotreeitem:
+                if self.startconcept!=None and path==outpath and self.startconcept in uritotreeitem:
                     if self.createColl:
-                        indexhtml+="<p>Start exploring the graph here: <img src=\""+tree["types"][uritotreeitem[startconcept][-1]["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+uritotreeitem[startconcept][-1]["type"]+"\"/><a href=\""+self.generateRelativeLinkFromGivenDepth(prefixnamespace,0,str(startconcept),True)+"\">"+self.shortenURI(startconcept)+"</a></p>"                    
+                        indexhtml+="<p>Start exploring the graph here: <img src=\""+tree["types"][uritotreeitem[self.startconcept][-1]["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+uritotreeitem[startconcept][-1]["type"]+"\"/><a href=\""+self.generateRelativeLinkFromGivenDepth(prefixnamespace,0,str(self.startconcept),True)+"\">"+self.shortenURI(self.startconcept)+"</a></p>"                    
                     else:
-                        indexhtml+="<p>Start exploring the graph here: <img src=\""+tree["types"][uritotreeitem[startconcept][-1]["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+uritotreeitem[startconcept][-1]["type"]+"\"/><a href=\""+self.generateRelativeLinkFromGivenDepth(prefixnamespace,0,str(startconcept),True)+"\">"+self.shortenURI(startconcept)+"</a></p>"
+                        indexhtml+="<p>Start exploring the graph here: <img src=\""+tree["types"][uritotreeitem[self.startconcept][-1]["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+uritotreeitem[startconcept][-1]["type"]+"\"/><a href=\""+self.generateRelativeLinkFromGivenDepth(prefixnamespace,0,str(self.startconcept),True)+"\">"+self.shortenURI(self.startconcept)+"</a></p>"
                 indexhtml+="<table class=\"description\" style =\"height: 100%; overflow: auto\" border=1 id=indextable><thead><tr><th>Class</th><th>Number of instances</th><th>Instance Example</th></tr></thead><tbody>"
                 for item in tree["core"]["data"]:
                     if (item["type"]=="geoclass" or item["type"]=="class" or item["type"]=="featurecollection" or item["type"]=="geocollection") and "instancecount" in item and item["instancecount"]>0:
