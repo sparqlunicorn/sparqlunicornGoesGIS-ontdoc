@@ -3120,9 +3120,9 @@ for fp in filestoprocess:
         g = Graph()
         g.parse(fp)
         if fcounter<len(outpath):
-            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiif,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename)
+            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename)
         else:
-            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiif,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename)
+            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename)
         docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
     except Exception as inst:
      	print("Could not parse "+str(fp))
