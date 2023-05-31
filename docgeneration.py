@@ -2387,10 +2387,10 @@ class OntDocGeneration:
                 for anno in annos:
                     annotations.append()
             for pred in predobjmap:
-                print(str(pred)+" "+str(predobjmap[pred]))
+                #print(str(pred)+" "+str(predobjmap[pred]))
                 for objs in predobjmap[pred]:
-                    print(str(pred)+" "+str(objs))
-                    print(curiiifmanifest["metadata"])
+                    #print(str(pred)+" "+str(objs))
+                    #print(curiiifmanifest["metadata"])
                     if isinstance(objs,URIRef):
                         curiiifmanifest["metadata"].append({"label":{"en":[self.shortenURI(str(pred))]},"value":{"en":["<a href=\""+str(objs)+"\">"+str(objs)+"</a>"]}})
                     else:
