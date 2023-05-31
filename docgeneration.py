@@ -3084,7 +3084,7 @@ parser.add_argument("-tp","--templatepath",nargs='?',help="the path of the HTML 
 parser.add_argument("-tn","--templatename",nargs='?',help="the name of the HTML template",action="store",default="default")
 args=parser.parse_args()
 print(args)
-if args.input==None or len(args.input)<=1:
+if args.input==None:
     print("No TTL file to process has been given as a parameter")
     exit()
 if len(args.input)>1:
