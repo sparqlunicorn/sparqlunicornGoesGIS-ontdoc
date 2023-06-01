@@ -2415,16 +2415,15 @@ class OntDocGeneration:
 
 
     def generateIIIFCollections(self,outpath,imagespaths,prefixnamespace):
-        if os.path.exists(outpath+"/iiif/collection/iiifcoll.json"):
-            f=open(outpath+"/iiif/collection/iiifcoll.json","r",encoding="utf-8")
-            iiifcollection=json.loads(f.read())
-            f.close()
-        else:
-            iiifcollection={"@context":"http://iiif.io/api/presentation/3/context.json","id":outpath+"/iiif/collection/iiifcoll.json","type": "Collection", "label": {"en":["Collection: "+self.shortenURI(str(prefixnamespace))]},"items": []}
         if not os.path.exists(outpath + "/iiif/collection/"):
             os.makedirs(outpath + "/iiif/collection/")
+        if os.path.exists(outpath+"/iiif/collection/iiifcoll.json"):
+            f=open(outpath+"/iiif/collection/iiifcoll.json","r",encoding="utf-8")
+            collections=json.loads(f.read())
+            f.close()
+        else:
+            collections={"main":{"@context":"http://iiif.io/api/presentation/3/context.json","id":outpath+"/iiif/collection/iiifcoll.json","type": "Collection", "label": {"en":["Collection: "+self.shortenURI(str(prefixnamespace))]},"items": []}}
         seenurls=set()
-        collections={"main":{"@context":"http://iiif.io/api/presentation/3/context.json","id":outpath+"/iiif/collection/iiifcoll.json","type": "Collection", "label": {"en":["Collection: "+self.shortenURI(str(prefixnamespace))]},"items": []}}
         for imgpath in  sorted(imagespaths, key=lambda k: k['label'], reverse=False):
             curclass="main"
             if "class" in imgpath and imgpath["class"]!="":
