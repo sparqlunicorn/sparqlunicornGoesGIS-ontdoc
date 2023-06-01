@@ -1250,6 +1250,10 @@ Your browser does not support the audio element.
 """
 
 threejstemplate="""
+<script src="https://cdn.jsdelivr.net/npm/three/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/TrackballControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/PLYLoader.js"></script>
 <div id="threejs" class="threejscontainer" style="max-width:485px;max-height:500px">
 </div>
 <script>$(document).ready(function(){initThreeJS('threejs',parseWKTStringToJSON("{{wktstring}}"),{{meshurls}})})</script>
@@ -1387,6 +1391,10 @@ def resolveTemplate(templatename):
             with open(templatepath+"/"+templatename+"/templates/3dtemplate.html", 'r') as file:
                 global image3dtemplate
                 image3dtemplate=file.read()
+        if os.path.exists(templatepath+"/"+templatename+"/templates/threejstemplate.html"):
+            with open(templatepath+"/"+templatename+"/templates/threejstemplate.html", 'r') as file:
+                global threejstemplate
+                threejstemplate=file.read()
         if os.path.exists(templatepath+"/"+templatename+"/templates/vowlwrapper.html"):
             with open(templatepath+"/"+templatename+"/templates/vowlwrapper.html", 'r') as file:
                 global vowltemplate
@@ -2185,7 +2193,7 @@ class OntDocGeneration:
         if foundunit!=None and foundval!=None:
             res=None
             if "http" in foundunit:
-                unitlabel=self.createURILink(str(foundunit))
+                unitlabel=str(foundval)+" "+self.createURILink(str(foundunit))
             else:
                 unitlabel=str(foundval)+" "+str(foundunit)
         if foundunit == None and foundval != None:
@@ -2378,7 +2386,7 @@ class OntDocGeneration:
                 if annos!=None:
                     annocounter=3
                     for anno in annos:
-                        curitem["items"][0]["annotations"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/annopage-"+str(annocounter),"type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":{"source":imgpath+"/canvas/p"+str(pagecounter)},"type":"SpecificResource","selector":{"type":"SvgSelector","value":anno}}]})
+                        curitem["annotations"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/annopage-"+str(annocounter),"type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":{"source":imgpath+"/canvas/p"+str(pagecounter)},"type":"SpecificResource","selector":{"type":"SvgSelector","value":anno}}]})
                         annocounter+=1
                 curiiifmanifest["items"].append(curitem)        
                 pagecounter+=1
