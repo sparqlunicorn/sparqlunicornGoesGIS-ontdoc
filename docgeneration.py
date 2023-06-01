@@ -2415,7 +2415,12 @@ class OntDocGeneration:
 
 
     def generateIIIFCollections(self,outpath,imagespaths,prefixnamespace):
-        iiifcollection={"@context":"http://iiif.io/api/presentation/3/context.json","id":outpath+"/iiif/collection/iiifcoll.json","type": "Collection", "label": {"en":["Collection: "+self.shortenURI(str(prefixnamespace))]},"items": []}
+        if not os.path.exists(outpath+"/iiif/collection/iiifcoll.json"):
+            f=open(outpath+"/iiif/collection/iiifcoll.json","r",encoding="utf-8")
+            iiifcollection=json.loads(f.read())
+            f.close()
+        else:
+            iiifcollection={"@context":"http://iiif.io/api/presentation/3/context.json","id":outpath+"/iiif/collection/iiifcoll.json","type": "Collection", "label": {"en":["Collection: "+self.shortenURI(str(prefixnamespace))]},"items": []}
         if not os.path.exists(outpath + "/iiif/collection/"):
             os.makedirs(outpath + "/iiif/collection/")
         seenurls=set()
@@ -3069,23 +3074,23 @@ filestoprocess=[]
 parser=argparse.ArgumentParser()
 parser.add_argument("-i","--input",nargs='*',help="the input TTL file(s) to parse",action="store", required=True)
 parser.add_argument("-o","--output",nargs='*',help="the output path(s)",action="store", required=True)
-parser.add_argument("-pxns","--prefixns",nargs='?',help="the prefixnamespace",action="store",default="http://purl.org/cuneiform/")
-parser.add_argument("-px","--prefixnsshort",nargs='?',help="the prefix",action="store",default="suni")
+parser.add_argument("-pxns","--prefixns",help="the prefixnamespace",action="store",default="http://purl.org/cuneiform/")
+parser.add_argument("-px","--prefixnsshort",help="the prefix",action="store",default="suni")
 parser.add_argument("-ip","--createIndexPages",help="create index pages?",default=True,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-cc","--createCollections",help="create collections?",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
-parser.add_argument("-ll","--labellang",nargs='?',help="preferred label language (default: en)",action="store",default="en")
-parser.add_argument("-li","--license",nargs='?',help="license under which this data is published",action="store",default="")
-parser.add_argument("-lgu","--logourl",nargs='?',help="URL of an optional page logo",action="store",default="")
+parser.add_argument("-ll","--labellang",help="preferred label language (default: en)",action="store",default="en")
+parser.add_argument("-li","--license",help="license under which this data is published",action="store",default="")
+parser.add_argument("-lgu","--logourl",help="URL of an optional page logo",action="store",default="")
 parser.add_argument("-lo","--localOptimized",help="build a version for local deployment",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-mdt","--metadatatable",help="create metadata table?",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-nnsp","--nonnspages",help="create nonns pages?",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-vowl","--createvowl",help="create vowl graph view?",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-ogc","--ogcapifeatures",help="create ogc api features collections?",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-iiif","--iiifmanifest",help="create iiif manifests?",action="store",default=True,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
-parser.add_argument("-sc","--startconcept",nargs='?',help="the concept suggested for browsing the HTML documentation",action="store",default=None)
-parser.add_argument("-dp","--deploypath",nargs='?',help="the deploypath where the documentation will be hosted",action="store",default="")
-parser.add_argument("-tp","--templatepath",nargs='?',help="the path of the HTML template",action="store",default="resources/html/")
-parser.add_argument("-tn","--templatename",nargs='?',help="the name of the HTML template",action="store",default="default")
+parser.add_argument("-sc","--startconcept",help="the concept suggested for browsing the HTML documentation",action="store",default=None)
+parser.add_argument("-dp","--deploypath",help="the deploypath where the documentation will be hosted",action="store",default="")
+parser.add_argument("-tp","--templatepath",help="the path of the HTML template",action="store",default="resources/html/")
+parser.add_argument("-tn","--templatename",help="the name of the HTML template",action="store",default="default")
 args=parser.parse_args()
 print(args)
 for path in args.input:
