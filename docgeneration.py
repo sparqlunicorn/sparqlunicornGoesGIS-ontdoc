@@ -2415,7 +2415,7 @@ class OntDocGeneration:
 
 
     def generateIIIFCollections(self,outpath,imagespaths,prefixnamespace):
-        if not os.path.exists(outpath+"/iiif/collection/iiifcoll.json"):
+        if os.path.exists(outpath+"/iiif/collection/iiifcoll.json"):
             f=open(outpath+"/iiif/collection/iiifcoll.json","r",encoding="utf-8")
             iiifcollection=json.loads(f.read())
             f.close()
