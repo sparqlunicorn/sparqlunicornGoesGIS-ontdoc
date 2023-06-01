@@ -2382,10 +2382,6 @@ class OntDocGeneration:
                         annocounter+=1
                 curiiifmanifest["items"].append(curitem)        
                 pagecounter+=1
-            annotations=[]
-            if annos!=None:
-                for anno in annos:
-                    annotations.append()
             for pred in predobjmap:
                 #print(str(pred)+" "+str(predobjmap[pred]))
                 for objs in predobjmap[pred]:
