@@ -1713,9 +1713,9 @@ class OntDocGeneration:
                 indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"+vowltemplate.replace("{{vowlpath}}", "minivowl_result.js")
                 if self.startconcept!=None and path==outpath and self.startconcept in uritotreeitem:
                     if self.createColl:
-                        indexhtml+="<p>Start exploring the graph here: <img src=\""+tree["types"][uritotreeitem[self.startconcept][-1]["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+uritotreeitem[startconcept][-1]["type"]+"\"/><a href=\""+self.generateRelativeLinkFromGivenDepth(prefixnamespace,0,str(self.startconcept),True)+"\">"+self.shortenURI(self.startconcept)+"</a></p>"                    
+                        indexhtml+="<p>Start exploring the graph here: <img src=\""+tree["types"][uritotreeitem[self.startconcept][-1]["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+uritotreeitem[self.startconcept][-1]["type"]+"\"/><a href=\""+self.generateRelativeLinkFromGivenDepth(prefixnamespace,0,str(self.startconcept),True)+"\">"+self.shortenURI(self.startconcept)+"</a></p>"                    
                     else:
-                        indexhtml+="<p>Start exploring the graph here: <img src=\""+tree["types"][uritotreeitem[self.startconcept][-1]["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+uritotreeitem[startconcept][-1]["type"]+"\"/><a href=\""+self.generateRelativeLinkFromGivenDepth(prefixnamespace,0,str(self.startconcept),True)+"\">"+self.shortenURI(self.startconcept)+"</a></p>"
+                        indexhtml+="<p>Start exploring the graph here: <img src=\""+tree["types"][uritotreeitem[self.startconcept][-1]["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+uritotreeitem[self.startconcept][-1]["type"]+"\"/><a href=\""+self.generateRelativeLinkFromGivenDepth(prefixnamespace,0,str(self.startconcept),True)+"\">"+self.shortenURI(self.startconcept)+"</a></p>"
                 indexhtml+="<table class=\"description\" style =\"height: 100%; overflow: auto\" border=1 id=indextable><thead><tr><th>Class</th><th>Number of instances</th><th>Instance Example</th></tr></thead><tbody>"
                 for item in tree["core"]["data"]:
                     if (item["type"]=="geoclass" or item["type"]=="class" or item["type"]=="featurecollection" or item["type"]=="geocollection") and "instancecount" in item and item["instancecount"]>0:
@@ -2191,7 +2191,6 @@ class OntDocGeneration:
             if str(tup[0]) in unitproperties:
                 foundunit=tup[1]
         if foundunit!=None and foundval!=None:
-            res=None
             if "http" in foundunit:
                 unitlabel=str(foundval)+" "+self.createURILink(str(foundunit))
             else:
@@ -2479,7 +2478,7 @@ class OntDocGeneration:
             apijson["paths"]["/"]={"get": {"tags": ["Capabilities"],"summary": "landing page","description": "Landing page of this dataset","operationId": "landingPage","parameters": [],"responses": {"default": {"description": "default response","content": {"application/json": {"schema": {"$ref": "#/components/schemas/LandingPage"}},"text/html": {"schema": {}}}}}}}
             apijson["paths"]["/conformance"]={"get": {"tags": ["Capabilities"],"summary": "supported conformance classes","description": "Retrieves the supported conformance classes","operationId": "conformance","parameters": [],"responses": {"default": {"description": "default response","content": {"application/json": {"schema": {"$ref": "#/components/schemas/Conformance"}},"text/ttl": {"schema":{}},"text/html": {"schema":{}}}}}}}
             collectionsjson={"collections":[],"links":[{"href":outpath+"collections/index.json","rel":"self","type":"application/json","title":"this document as JSON"},{"href":outpath+"collections/index.html","rel":"self","type":"text/html","title":"this document as HTML"}]}
-            collectionshtml="<html><head></head><body><header><h1>Collections of "+str(self.deploypath)+"</h1></head>{{collectiontable}}<footer><a href=\"index.json\">This page as JSON</a></footer></body></html>"
+            collectionshtml="<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /></head><body><header><h1>Collections of "+str(self.deploypath)+"</h1></head>{{collectiontable}}<footer><a href=\"index.json\">This page as JSON</a></footer></body></html>"
             collectiontable="<table><thead><th>Collection</th><th>Links</th></thead><tbody>"
             apijson["paths"]["/collections"]={"get": {"tags": ["Collections"],"summary": "describes collections","description": "Describes all collections provided by this service","operationId": "collections","parameters": [],"responses":{"default": {"description": "default response","content": {"application/json": {"schema": {"$ref": "#/components/schemas/Collections"}},"text/ttl": {"schema": {}},"text/html": {"schema": {}}}}}}}
             if outpath.endswith("/"):
@@ -2528,7 +2527,7 @@ class OntDocGeneration:
                 f.write(json.dumps(currentcollection))
                 f.close()
                 f=open(op+"indexc.html","w",encoding="utf-8")
-                f.write("<html><head></head><body><h1>"+featurecollectionspaths[coll]["name"]+"</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>"+str(curcollrow)+"</tbody></table></html>")
+                f.write("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /></head><body><h1>"+featurecollectionspaths[coll]["name"]+"</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>"+str(curcollrow)+"</tbody></table></html>")
                 f.close()
                 collectiontable+=curcollrow
                 if os.path.exists(coll):
@@ -3043,6 +3042,7 @@ class OntDocGeneration:
             print(inst)            
         return [postprocessing,nonnsmap]
 
+
 def resolveWildcardPath(thepath):
     result=[]
     if "/*" not in thepath:
@@ -3124,17 +3124,17 @@ if args.templatepath!=None:
                 print(templatename)
 fcounter=0
 for fp in filestoprocess:
-    try:
-        g = Graph()
-        g.parse(fp)
-        if fcounter<len(outpath):
-            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename)
-        else:
-            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename)
-        docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
-    except Exception as inst:
-     	print("Could not parse "+str(fp))
-     	print(inst)
+    #try:
+    g = Graph()
+    g.parse(fp)
+    if fcounter<len(outpath):
+        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename)
+    else:
+        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename)
+    docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
+    #except Exception as inst:
+    # 	print("Could not parse "+str(fp))
+    # 	print(inst)
     fcounter+=1
 curlicense=license
 if docgen!=None:
