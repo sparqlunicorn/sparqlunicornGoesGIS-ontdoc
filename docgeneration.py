@@ -2424,7 +2424,8 @@ class OntDocGeneration:
             os.makedirs(outpath + "/iiif/collection/")
         if os.path.exists(outpath+"/iiif/collection/iiifcoll.json"):
             f=open(outpath+"/iiif/collection/iiifcoll.json","r",encoding="utf-8")
-            collections=json.loads(f.read())
+            collections={}
+            collections["main"]=json.loads(f.read())
             f.close()
         else:
             collections={"main":{"@context":"http://iiif.io/api/presentation/3/context.json","id":str(self.deploypath)+"/iiif/collection/iiifcoll.json","type": "Collection", "label": {"en":["Collection: "+self.shortenURI(str(prefixnamespace))]},"items": []}}
