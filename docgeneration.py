@@ -1569,11 +1569,14 @@ class OntDocGeneration:
             except Exception as e:
                 print(e)
         else:
-            if not os.path.exists(outpath + path):
-                os.mkdir(outpath + path)
-            if outpath not in paths:
-                paths[outpath] = []
-            paths[outpath].append(path + "/index.html")
+            try:
+                if not os.path.exists(outpath + path):
+                    os.mkdir(outpath + path)
+                if outpath not in paths:
+                    paths[outpath] = []
+                paths[outpath].append(path + "/index.html")
+            except Exception as e:
+                print(e)              
         if os.path.exists(outpath + path + "/index.ttl"):
             try:
                 self.graph.parse(outpath + path + "/index.ttl")
