@@ -2432,7 +2432,7 @@ class OntDocGeneration:
         for imgpath in  sorted(imagespaths, key=lambda k: k['label'], reverse=False):
             curclass="main"
             if "class" in imgpath and imgpath["class"]!="":
-                curclass=imgpath["class"]
+                curclass=self.shortenURI(imgpath["class"])
                 if curclass not in collections:
                     collections[curclass]={"@context":"http://iiif.io/api/presentation/3/context.json","id":outpath+"/iiif/collection/"+curclass+".json","type": "Collection", "label": {"en":["Collection: "+str(curclass)]},"items": []}
             if imgpath["url"] not in seenurls:
