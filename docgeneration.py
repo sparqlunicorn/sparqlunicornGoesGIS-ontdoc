@@ -1558,13 +1558,16 @@ class OntDocGeneration:
     def processSubjectPath(self,outpath,paths,path):
         if "/" in path:
             addpath = ""
-            for pathelem in path.split("/"):
-                addpath += pathelem + "/"
-                if not os.path.exists(outpath + addpath):
-                    os.mkdir(outpath + addpath)
-            if outpath + path[0:path.rfind('/')] + "/" not in paths:
-                paths[outpath + path[0:path.rfind('/')] + "/"] = []
-            paths[outpath + path[0:path.rfind('/')] + "/"].append(addpath[0:addpath.rfind('/')])
+            try:
+                for pathelem in path.split("/"):
+                    addpath += pathelem + "/"
+                    if not os.path.exists(outpath + addpath):
+                        os.mkdir(outpath + addpath)
+                if outpath + path[0:path.rfind('/')] + "/" not in paths:
+                    paths[outpath + path[0:path.rfind('/')] + "/"] = []
+                paths[outpath + path[0:path.rfind('/')] + "/"].append(addpath[0:addpath.rfind('/')])
+            except Exception as e:
+                print(e)
         else:
             if not os.path.exists(outpath + path):
                 os.mkdir(outpath + path)
