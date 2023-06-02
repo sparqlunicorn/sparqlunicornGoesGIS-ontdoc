@@ -2864,10 +2864,14 @@ class OntDocGeneration:
         else:
             completesavepath=savepath.replace(":","_") + "/index.html"
         if not nonns:
-            ttlf.serialize(savepath + "/index.ttl", encoding="utf-8")
-            with open(savepath + "/index.json", 'w', encoding='utf-8') as f:
-                f.write(json.dumps(predobjmap))
-                f.close()
+            if os.path.exists(savepath):
+                try:
+                    ttlf.serialize(savepath + "/index.ttl", encoding="utf-8")
+                    with open(savepath + "/index.json", 'w', encoding='utf-8') as f:
+                        f.write(json.dumps(predobjmap))
+                        f.close()
+                except Exception as e:
+                    print(e)
         try:
             with open(completesavepath, 'w', encoding='utf-8') as f:
                 rellink=self.generateRelativeLinkFromGivenDepth(baseurl,checkdepth,searchfilename,False)
