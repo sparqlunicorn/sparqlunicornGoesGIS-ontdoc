@@ -2421,9 +2421,15 @@ class OntDocGeneration:
             f=open(self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","w",encoding="utf-8")
             f.write(json.dumps(curiiifmanifest))
             f.close()
+        besttype=""
+        for typee in thetypes:
+            prefix=self.shortenURI(typee,True)
+            if prefix not in metadatanamespaces:
+                besttype=typee
+                break
         if thetypes!=None and len(thetypes)>0:
             return {"url":self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","label":str(label),"class":next(iter(thetypes))}
-        return {"url":self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","label":str(label),"class":""}
+        return {"url":self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","label":str(label),"class":besttype}
 
 
     def generateIIIFCollections(self,outpath,imagespaths,prefixnamespace):
