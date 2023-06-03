@@ -2429,8 +2429,6 @@ class OntDocGeneration:
                 break
         if besttype=="" and len(thetypes)>0:
             besttype=next(iter(thetypes))
-        if thetypes!=None and len(thetypes)>0:
-            return {"url":self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","label":str(label),"class":besttype}
         return {"url":self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","label":str(label),"class":besttype}
 
 
@@ -2727,7 +2725,6 @@ class OntDocGeneration:
                     uritotreeitem[parentclass][-1]["instancecount"]+=1
                 if isinstance(tup[1],URIRef):
                     for item in graph.objects(tup[1],URIRef(self.typeproperty)):
-                        thetypes.add(str(item))
                         if parentclass!=None:
                             if item not in uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])]:
                                 uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])][item] = 0
@@ -2755,11 +2752,14 @@ class OntDocGeneration:
                 if str(tup)==self.typeproperty and URIRef("http://www.opengis.net/ont/geosparql#FeatureCollection") in predobjmap[tup]:
                     isgeocollection=True
                     uritotreeitem["http://www.opengis.net/ont/geosparql#FeatureCollection"][-1]["instancecount"] += 1
+                    thetypes.add(str("http://www.opengis.net/ont/geosparql#FeatureCollection"))
                 elif str(tup)==self.typeproperty and URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection") in predobjmap[tup]:
                     isgeocollection=True
                     uritotreeitem["http://www.opengis.net/ont/geosparql#GeometryCollection"][-1]["instancecount"] += 1
+                    thetypes.add(str("http://www.opengis.net/ont/geosparql#GeometryCollection"))
                 elif str(tup)==self.typeproperty:
                     for tp in predobjmap[tup]:
+                        thetypes.add(str(tp))
                         if str(tp) in bibtextypemappings:
                             itembibtex="<details><summary>[BIBTEX]</summary><pre>"+str(self.resolveBibtexReference(graph.predicate_objects(subject),subject,graph))+"</pre></details>"
                             break
