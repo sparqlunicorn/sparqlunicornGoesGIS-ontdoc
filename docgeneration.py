@@ -2380,6 +2380,8 @@ class OntDocGeneration:
                 os.makedirs(self.outpath + "/iiif/mf/")
             if not os.path.exists(self.outpath + "/iiif/images/"):
                 os.makedirs(self.outpath + "/iiif/images/")
+            if not os.path.exists(self.outpath + "/iiif/svg/"):
+                os.makedirs(self.outpath + "/iiif/svg/")
             print(label)
             if label!="":
                 curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":self.deploypath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json", "type": "Manifest","label":{"en":[str(label)+" ("+self.shortenURI(curind)+")"]},"homepage":[{"id":str(curind).replace(prefixnamespace,self.deploypath+"/"),"type":"Text","label":{"en":[str(curind).replace(prefixnamespace,self.deploypath+"/")]},"format": "text/html", "language":["en"]}],"metadata":[],"items":[]}
@@ -2387,6 +2389,11 @@ class OntDocGeneration:
                 curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":self.deploypath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json", "type": "Manifest","label":{"en":[self.shortenURI(curind)]},"homepage":[{"id":str(curind).replace(prefixnamespace,self.deploypath+"/"),"type":"Text","label":{"en":[str(curind).replace(prefixnamespace,self.deploypath+"/")]},"format": "text/html", "language":["en"]}],"metadata":[],"items":[]}
             pagecounter=0
             for imgpath in imgpaths:
+                if imgpath.startswith("<svg") and "http" not in imgpath:
+                    f=open(self.outpath+"/iiif/svg/"+self.shortenURI(curind)+"_"+str(pagecounter)+".svg","w",encoding="utf-8")
+                    f.write(str(imgpath).replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\">"))
+                    f.close()
+                    imgpath=self.outpath+"/iiif/svg/"+self.shortenURI(curind)+"_"+str(pagecounter)+".svg"
                 curitem={"id":imgpath+"/canvas/p"+str(pagecounter),"type":"Canvas","label":{"en":[str(label)+" "+str(maintype)+" "+str(pagecounter+1)]},"height":100,"width":100,"items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/1","type":"AnnotationPage","items":[{"id":imgpath+"/annotation/p"+str(pagecounter)+"/1","type":"Annotation","motivation":"painting","body":{"id":imgpath,"type":str(maintype),"format":"image/png"},"target":imgpath+"/canvas/p"+str(pagecounter)}]}],"annotations":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/annopage-2","type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":imgpath+"/canvas/p"+str(pagecounter)}]}]}
                 if annos!=None:
                     annocounter=3
