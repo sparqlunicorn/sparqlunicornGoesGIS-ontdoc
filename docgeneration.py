@@ -2427,8 +2427,10 @@ class OntDocGeneration:
             if prefix not in metadatanamespaces:
                 besttype=typee
                 break
+        if besttype=="" and len(thetypes)>0:
+            besttype=next(iter(thetypes))
         if thetypes!=None and len(thetypes)>0:
-            return {"url":self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","label":str(label),"class":next(iter(thetypes))}
+            return {"url":self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","label":str(label),"class":besttype}
         return {"url":self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","label":str(label),"class":besttype}
 
 
