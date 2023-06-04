@@ -2386,7 +2386,7 @@ class OntDocGeneration:
             curitem["annotations"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/annopage-"+str(annocounter),"type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":{"source":imgpath+"/canvas/p"+str(pagecounter)},"type":"SpecificResource","selector":{"type":"SvgSelector","value":anno}}]})
             annocounter+=1
             if str(anno["src"]) in imagetoURI:
-                targetind=imagetoURI[anno["src"])
+                targetind=imagetoURI[anno["src"]]
                 curannos={"@context": "http://iiif.io/api/presentation/3/context.json","id": self.deploypath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json", "type": "AnnotationPage","items": []}
                 annopath=self.deploypath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json"
                 if not outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json" in curannos and os.path.exists(outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json"):
