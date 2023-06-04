@@ -2396,7 +2396,7 @@ class OntDocGeneration:
                 curannos["items"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(len(curannos["items"])+1),"type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":{"source":imagetoURI[anno["src"]],"type":"SpecificResource","selector":{"type":"SvgSelector","value":anno}}})
                 tosave[outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json"]=curannos
         for sv in tosave:
-            f=open(sv,'w',encoding="utf-8"):
+            f=open(sv,'w',encoding="utf-8")
             f.write(json.dumps(tosave[sv]))
             f.close()
             
