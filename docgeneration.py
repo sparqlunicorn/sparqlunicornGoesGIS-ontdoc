@@ -2391,10 +2391,7 @@ class OntDocGeneration:
                 curiiifmanifest["items"].append(curitem)        
                 pagecounter+=1
             for pred in predobjmap:
-                #print(str(pred)+" "+str(predobjmap[pred]))
                 for objs in predobjmap[pred]:
-                    #print(str(pred)+" "+str(objs))
-                    #print(curiiifmanifest["metadata"])
                     if isinstance(objs,URIRef):
                         curiiifmanifest["metadata"].append({"label":{"en":[self.shortenURI(str(pred))]},"value":{"en":["<a href=\""+str(objs)+"\">"+str(objs)+"</a>"]}})
                     else:
@@ -2402,9 +2399,6 @@ class OntDocGeneration:
             print(curiiifmanifest["metadata"])
             if summary!=None and summary!="" and summary!={}:
                 curiiifmanifest["summary"]={"en":[str(summary)]}
-            #os.makedirs(self.outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/")
-            #os.makedirs(self.outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/full/")
-            #os.makedirs(self.outpath + "/iiif/images/"+self.shortenURI(imgpath)+"/full/full/0/")
             os.makedirs(self.outpath + "/iiif/mf/"+self.shortenURI(curind))
             f=open(self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","w",encoding="utf-8")
             f.write(json.dumps(curiiifmanifest))
