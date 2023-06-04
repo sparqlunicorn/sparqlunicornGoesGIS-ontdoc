@@ -1558,19 +1558,25 @@ class OntDocGeneration:
     def processSubjectPath(self,outpath,paths,path):
         if "/" in path:
             addpath = ""
-            for pathelem in path.split("/"):
-                addpath += pathelem + "/"
-                if not os.path.isdir(outpath + addpath):
-                    os.mkdir(outpath + addpath)
-            if outpath + path[0:path.rfind('/')] + "/" not in paths:
-                paths[outpath + path[0:path.rfind('/')] + "/"] = []
-            paths[outpath + path[0:path.rfind('/')] + "/"].append(addpath[0:addpath.rfind('/')])
+            try:
+                for pathelem in path.split("/"):
+                    addpath += pathelem + "/"
+                    if not os.path.exists(outpath + addpath):
+                        os.mkdir(outpath + addpath)
+                if outpath + path[0:path.rfind('/')] + "/" not in paths:
+                    paths[outpath + path[0:path.rfind('/')] + "/"] = []
+                paths[outpath + path[0:path.rfind('/')] + "/"].append(addpath[0:addpath.rfind('/')])
+            except Exception as e:
+                print(e)
         else:
-            if not os.path.isdir(outpath + path):
-                os.mkdir(outpath + path)
-            if outpath not in paths:
-                paths[outpath] = []
-            paths[outpath].append(path + "/index.html")
+            try:
+                if not os.path.exists(outpath + path):
+                    os.mkdir(outpath + path)
+                if outpath not in paths:
+                    paths[outpath] = []
+                paths[outpath].append(path + "/index.html")
+            except Exception as e:
+                print(e)              
         if os.path.exists(outpath + path + "/index.ttl"):
             try:
                 self.graph.parse(outpath + path + "/index.ttl")
@@ -1713,9 +1719,9 @@ class OntDocGeneration:
                 indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"+vowltemplate.replace("{{vowlpath}}", "minivowl_result.js")
                 if self.startconcept!=None and path==outpath and self.startconcept in uritotreeitem:
                     if self.createColl:
-                        indexhtml+="<p>Start exploring the graph here: <img src=\""+tree["types"][uritotreeitem[self.startconcept][-1]["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+uritotreeitem[startconcept][-1]["type"]+"\"/><a href=\""+self.generateRelativeLinkFromGivenDepth(prefixnamespace,0,str(self.startconcept),True)+"\">"+self.shortenURI(self.startconcept)+"</a></p>"                    
+                        indexhtml+="<p>Start exploring the graph here: <img src=\""+tree["types"][uritotreeitem[self.startconcept][-1]["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+uritotreeitem[self.startconcept][-1]["type"]+"\"/><a href=\""+self.generateRelativeLinkFromGivenDepth(prefixnamespace,0,str(self.startconcept),True)+"\">"+self.shortenURI(self.startconcept)+"</a></p>"                    
                     else:
-                        indexhtml+="<p>Start exploring the graph here: <img src=\""+tree["types"][uritotreeitem[self.startconcept][-1]["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+uritotreeitem[startconcept][-1]["type"]+"\"/><a href=\""+self.generateRelativeLinkFromGivenDepth(prefixnamespace,0,str(self.startconcept),True)+"\">"+self.shortenURI(self.startconcept)+"</a></p>"
+                        indexhtml+="<p>Start exploring the graph here: <img src=\""+tree["types"][uritotreeitem[self.startconcept][-1]["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+uritotreeitem[self.startconcept][-1]["type"]+"\"/><a href=\""+self.generateRelativeLinkFromGivenDepth(prefixnamespace,0,str(self.startconcept),True)+"\">"+self.shortenURI(self.startconcept)+"</a></p>"
                 indexhtml+="<table class=\"description\" style =\"height: 100%; overflow: auto\" border=1 id=indextable><thead><tr><th>Class</th><th>Number of instances</th><th>Instance Example</th></tr></thead><tbody>"
                 for item in tree["core"]["data"]:
                     if (item["type"]=="geoclass" or item["type"]=="class" or item["type"]=="featurecollection" or item["type"]=="geocollection") and "instancecount" in item and item["instancecount"]>0:
@@ -2191,7 +2197,6 @@ class OntDocGeneration:
             if str(tup[0]) in unitproperties:
                 foundunit=tup[1]
         if foundunit!=None and foundval!=None:
-            res=None
             if "http" in foundunit:
                 unitlabel=str(foundval)+" "+self.createURILink(str(foundunit))
             else:
@@ -2375,6 +2380,8 @@ class OntDocGeneration:
                 os.makedirs(self.outpath + "/iiif/mf/")
             if not os.path.exists(self.outpath + "/iiif/images/"):
                 os.makedirs(self.outpath + "/iiif/images/")
+            if not os.path.exists(self.outpath + "/iiif/svg/"):
+                os.makedirs(self.outpath + "/iiif/svg/")
             print(label)
             if label!="":
                 curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":self.deploypath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json", "type": "Manifest","label":{"en":[str(label)+" ("+self.shortenURI(curind)+")"]},"homepage":[{"id":str(curind).replace(prefixnamespace,self.deploypath+"/"),"type":"Text","label":{"en":[str(curind).replace(prefixnamespace,self.deploypath+"/")]},"format": "text/html", "language":["en"]}],"metadata":[],"items":[]}
@@ -2382,6 +2389,11 @@ class OntDocGeneration:
                 curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":self.deploypath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json", "type": "Manifest","label":{"en":[self.shortenURI(curind)]},"homepage":[{"id":str(curind).replace(prefixnamespace,self.deploypath+"/"),"type":"Text","label":{"en":[str(curind).replace(prefixnamespace,self.deploypath+"/")]},"format": "text/html", "language":["en"]}],"metadata":[],"items":[]}
             pagecounter=0
             for imgpath in imgpaths:
+                if imgpath.startswith("<svg") and "http" not in imgpath:
+                    f=open(self.outpath+"/iiif/svg/"+self.shortenURI(curind)+"_"+str(pagecounter)+".svg","w",encoding="utf-8")
+                    f.write(str(imgpath).replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\">"))
+                    f.close()
+                    imgpath=self.outpath+"/iiif/svg/"+self.shortenURI(curind)+"_"+str(pagecounter)+".svg"
                 curitem={"id":imgpath+"/canvas/p"+str(pagecounter),"type":"Canvas","label":{"en":[str(label)+" "+str(maintype)+" "+str(pagecounter+1)]},"height":100,"width":100,"items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/1","type":"AnnotationPage","items":[{"id":imgpath+"/annotation/p"+str(pagecounter)+"/1","type":"Annotation","motivation":"painting","body":{"id":imgpath,"type":str(maintype),"format":"image/png"},"target":imgpath+"/canvas/p"+str(pagecounter)}]}],"annotations":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/annopage-2","type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":imgpath+"/canvas/p"+str(pagecounter)}]}]}
                 if annos!=None:
                     annocounter=3
@@ -2403,9 +2415,15 @@ class OntDocGeneration:
             f=open(self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","w",encoding="utf-8")
             f.write(json.dumps(curiiifmanifest))
             f.close()
-        if thetypes!=None and len(thetypes)>0:
-            return {"url":self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","label":str(label),"class":next(iter(thetypes))}
-        return {"url":self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","label":str(label),"class":""}
+        besttype=""
+        for typee in thetypes:
+            prefix=self.shortenURI(typee,True)
+            if prefix not in metadatanamespaces:
+                besttype=typee
+                break
+        if besttype=="" and len(thetypes)>0:
+            besttype=next(iter(thetypes))
+        return {"url":self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","label":str(label),"class":besttype}
 
 
     def generateIIIFCollections(self,outpath,imagespaths,prefixnamespace):
@@ -2413,17 +2431,18 @@ class OntDocGeneration:
             os.makedirs(outpath + "/iiif/collection/")
         if os.path.exists(outpath+"/iiif/collection/iiifcoll.json"):
             f=open(outpath+"/iiif/collection/iiifcoll.json","r",encoding="utf-8")
-            collections=json.loads(f.read())
+            collections={}
+            collections["main"]=json.loads(f.read())
             f.close()
         else:
-            collections={"main":{"@context":"http://iiif.io/api/presentation/3/context.json","id":outpath+"/iiif/collection/iiifcoll.json","type": "Collection", "label": {"en":["Collection: "+self.shortenURI(str(prefixnamespace))]},"items": []}}
+            collections={"main":{"@context":"http://iiif.io/api/presentation/3/context.json","id":str(self.deploypath)+"/iiif/collection/iiifcoll.json","type": "Collection", "label": {"en":["Collection: "+self.shortenURI(str(prefixnamespace))]},"items": []}}
         seenurls=set()
         for imgpath in  sorted(imagespaths, key=lambda k: k['label'], reverse=False):
             curclass="main"
             if "class" in imgpath and imgpath["class"]!="":
-                curclass=imgpath["class"]
+                curclass=self.shortenURI(imgpath["class"])
                 if curclass not in collections:
-                    collections[curclass]={"@context":"http://iiif.io/api/presentation/3/context.json","id":outpath+"/iiif/collection/"+curclass+".json","type": "Collection", "label": {"en":["Collection: "+str(curclass)]},"items": []}
+                    collections[curclass]={"@context":"http://iiif.io/api/presentation/3/context.json","id":str(self.deploypath)+"/iiif/collection/"+curclass+".json","type": "Collection", "label": {"en":["Collection: "+str(curclass)]},"items": []}
             if imgpath["url"] not in seenurls:
                 if imgpath["label"]!="":
                     collections[curclass]["items"].append({"full":outpath + "/iiif/images/"+self.shortenURI(imgpath["url"].replace("/manifest.json",""))+"/full/full/0/default.jpg","id":imgpath["url"].replace(self.outpath,self.deploypath),"type": "Manifest","label":{"en":[imgpath["label"]+" ("+self.shortenURI(imgpath["url"].replace("/manifest.json","")[0:imgpath["url"].replace("/manifest.json","").rfind(".")])+")"]}})
@@ -2433,6 +2452,9 @@ class OntDocGeneration:
         for coll in collections:
             if coll!="main":
                 collections["main"]["items"].append(collections[coll])
+                f=open(outpath+"/iiif/collection/"+str(coll)+".json","w",encoding="utf-8")
+                f.write(json.dumps(collections[coll]))
+                f.close()
         f=open(outpath+"/iiif/collection/iiifcoll.json","w",encoding="utf-8")
         f.write(json.dumps(collections["main"]))
         f.close()
@@ -2473,7 +2495,7 @@ class OntDocGeneration:
             apijson["paths"]["/"]={"get": {"tags": ["Capabilities"],"summary": "landing page","description": "Landing page of this dataset","operationId": "landingPage","parameters": [],"responses": {"default": {"description": "default response","content": {"application/json": {"schema": {"$ref": "#/components/schemas/LandingPage"}},"text/html": {"schema": {}}}}}}}
             apijson["paths"]["/conformance"]={"get": {"tags": ["Capabilities"],"summary": "supported conformance classes","description": "Retrieves the supported conformance classes","operationId": "conformance","parameters": [],"responses": {"default": {"description": "default response","content": {"application/json": {"schema": {"$ref": "#/components/schemas/Conformance"}},"text/ttl": {"schema":{}},"text/html": {"schema":{}}}}}}}
             collectionsjson={"collections":[],"links":[{"href":outpath+"collections/index.json","rel":"self","type":"application/json","title":"this document as JSON"},{"href":outpath+"collections/index.html","rel":"self","type":"text/html","title":"this document as HTML"}]}
-            collectionshtml="<html><head></head><body><header><h1>Collections of "+str(self.deploypath)+"</h1></head>{{collectiontable}}<footer><a href=\"index.json\">This page as JSON</a></footer></body></html>"
+            collectionshtml="<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /></head><body><header><h1>Collections of "+str(self.deploypath)+"</h1></head>{{collectiontable}}<footer><a href=\"index.json\">This page as JSON</a></footer></body></html>"
             collectiontable="<table><thead><th>Collection</th><th>Links</th></thead><tbody>"
             apijson["paths"]["/collections"]={"get": {"tags": ["Collections"],"summary": "describes collections","description": "Describes all collections provided by this service","operationId": "collections","parameters": [],"responses":{"default": {"description": "default response","content": {"application/json": {"schema": {"$ref": "#/components/schemas/Collections"}},"text/ttl": {"schema": {}},"text/html": {"schema": {}}}}}}}
             if outpath.endswith("/"):
@@ -2522,7 +2544,7 @@ class OntDocGeneration:
                 f.write(json.dumps(currentcollection))
                 f.close()
                 f=open(op+"indexc.html","w",encoding="utf-8")
-                f.write("<html><head></head><body><h1>"+featurecollectionspaths[coll]["name"]+"</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>"+str(curcollrow)+"</tbody></table></html>")
+                f.write("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /></head><body><h1>"+featurecollectionspaths[coll]["name"]+"</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>"+str(curcollrow)+"</tbody></table></html>")
                 f.close()
                 collectiontable+=curcollrow
                 if os.path.exists(coll):
@@ -2697,7 +2719,6 @@ class OntDocGeneration:
                     uritotreeitem[parentclass][-1]["instancecount"]+=1
                 if isinstance(tup[1],URIRef):
                     for item in graph.objects(tup[1],URIRef(self.typeproperty)):
-                        thetypes.add(str(item))
                         if parentclass!=None:
                             if item not in uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])]:
                                 uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])][item] = 0
@@ -2725,11 +2746,14 @@ class OntDocGeneration:
                 if str(tup)==self.typeproperty and URIRef("http://www.opengis.net/ont/geosparql#FeatureCollection") in predobjmap[tup]:
                     isgeocollection=True
                     uritotreeitem["http://www.opengis.net/ont/geosparql#FeatureCollection"][-1]["instancecount"] += 1
+                    thetypes.add(str("http://www.opengis.net/ont/geosparql#FeatureCollection"))
                 elif str(tup)==self.typeproperty and URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection") in predobjmap[tup]:
                     isgeocollection=True
                     uritotreeitem["http://www.opengis.net/ont/geosparql#GeometryCollection"][-1]["instancecount"] += 1
+                    thetypes.add(str("http://www.opengis.net/ont/geosparql#GeometryCollection"))
                 elif str(tup)==self.typeproperty:
                     for tp in predobjmap[tup]:
+                        thetypes.add(str(tp))
                         if str(tp) in bibtextypemappings:
                             itembibtex="<details><summary>[BIBTEX]</summary><pre>"+str(self.resolveBibtexReference(graph.predicate_objects(subject),subject,graph))+"</pre></details>"
                             break
@@ -2853,10 +2877,14 @@ class OntDocGeneration:
         else:
             completesavepath=savepath.replace(":","_") + "/index.html"
         if not nonns:
-            ttlf.serialize(savepath + "/index.ttl", encoding="utf-8")
-            with open(savepath + "/index.json", 'w', encoding='utf-8') as f:
-                f.write(json.dumps(predobjmap))
-                f.close()
+            if os.path.exists(savepath):
+                try:
+                    ttlf.serialize(savepath + "/index.ttl", encoding="utf-8")
+                    with open(savepath + "/index.json", 'w', encoding='utf-8') as f:
+                        f.write(json.dumps(predobjmap))
+                        f.close()
+                except Exception as e:
+                    print(e)
         try:
             with open(completesavepath, 'w', encoding='utf-8') as f:
                 rellink=self.generateRelativeLinkFromGivenDepth(baseurl,checkdepth,searchfilename,False)
@@ -3037,6 +3065,7 @@ class OntDocGeneration:
             print(inst)            
         return [postprocessing,nonnsmap]
 
+
 def resolveWildcardPath(thepath):
     result=[]
     if "/*" not in thepath:
@@ -3118,17 +3147,17 @@ if args.templatepath!=None:
                 print(templatename)
 fcounter=0
 for fp in filestoprocess:
-    try:
-        g = Graph()
-        g.parse(fp)
-        if fcounter<len(outpath):
-            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename)
-        else:
-            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename)
-        docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
-    except Exception as inst:
-     	print("Could not parse "+str(fp))
-     	print(inst)
+    #try:
+    g = Graph()
+    g.parse(fp)
+    if fcounter<len(outpath):
+        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename)
+    else:
+        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename)
+    docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
+    #except Exception as inst:
+    # 	print("Could not parse "+str(fp))
+    # 	print(inst)
     fcounter+=1
 curlicense=license
 if docgen!=None:
