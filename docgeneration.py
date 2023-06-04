@@ -2142,9 +2142,9 @@ class OntDocGeneration:
             if pred=="http://www.w3.org/ns/oa#hasSelector" and tup[0]==URIRef(self.typeproperty) and (tup[1]==URIRef("http://www.w3.org/ns/oa#SvgSelector") or tup[1]==URIRef("http://www.w3.org/ns/oa#WKTSelector")):
                 for svglit in graph.objects(object,URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#value")):
                     if "<svg" in str(svglit):
-                        imageannos.add(str(svglit))
+                        imageannos.add({"value":str(svglit)})
                     elif ("POINT" in str(svglit).upper() or "POLYGON" in str(svglit).upper() or "LINESTRING" in str(svglit).upper()):
-                        image3dannos.add(str(svglit))
+                        image3dannos.add({"value":str(svglit)})
             if pred == "http://www.w3.org/ns/oa#hasSelector" and tup[0] == URIRef(
                     self.typeproperty) and tup[1] == URIRef(
                     "http://www.w3.org/ns/oa#TextPositionSelector"):
@@ -2210,6 +2210,10 @@ class OntDocGeneration:
         if annosource != None:
             for textanno in textannos:
                 textanno["src"] = annosource
+            for imganno in imageannos:
+                imganno["src"] = annosource
+            for imganno in image3dannos:
+                imganno["src"] = annosource
         if label=="" and onelabel!=None:
             label=onelabel
         return {"geojsonrep":geojsonrep,"label":label,"unitlabel":unitlabel,"foundmedia":foundmedia,"imageannos":imageannos,"textannos":textannos,"image3dannos":image3dannos,"bibtex":bibtex,"timeobj":timeobj}
@@ -2374,22 +2378,27 @@ class OntDocGeneration:
         targetrellink=targetrellink.replace(outpath,"")
         return targetrellink.replace("//","/")
 
-    def generateIIIFAnnotation(self,outpath,annos):
+    def generateIIIFAnnotations(self,outpath,annos):
         if not os.path.exists(self.outpath + "/iiif/anno/"):
             os.makedirs(self.outpath + "/iiif/anno/")
+        tosave={}
         for anno in annos:
             curitem["annotations"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/annopage-"+str(annocounter),"type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":{"source":imgpath+"/canvas/p"+str(pagecounter)},"type":"SpecificResource","selector":{"type":"SvgSelector","value":anno}}]})
             annocounter+=1
-            if str(targetind) in imagetoURI:
-                curannos={"@context": "http://iiif.io/api/presentation/3/context.json","id": self.deploypath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json", "type": "AnnotationPage","items": []}"
-                if os.path.exists(outpath+"/iiif/anno/"+self.shortenURI(targetind)):
-                    f=open(outpath+"/iiif/anno/"+self.shortenURI(targetind),'r',encoding="utf-8")
+            if str(anno["src"]) in imagetoURI:
+                targetind=imagetoURI[anno["src"])
+                curannos={"@context": "http://iiif.io/api/presentation/3/context.json","id": self.deploypath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json", "type": "AnnotationPage","items": []}
+                annopath=self.deploypath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json"
+                if not outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json" in curannos and os.path.exists(outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json"):
+                    f=open(outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json",'r',encoding="utf-8")
                     curannos=json.loads(f.read())
                     f.close()
-                else:
-                    f=open(outpath+"/iiif/anno/"+self.shortnURI(targetind),'r',encoding="utf-8"):
-                    f.write(json.dumps(curannos))
-                    f.close()
+                curannos["items"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(len(curannos["items"])+1),"type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":{"source":imagetoURI[anno["src"]),"type":"SpecificResource","selector":{"type":"SvgSelector","value":anno}}})
+                tosave[outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json"]=curannos
+         for sv in tosave:
+            f=open(sv,'w',encoding="utf-8"):
+            f.write(json.dumps(tosave[sv]))
+            f.close()
             
 
     def generateIIIFManifest(self,outpath,imgpaths,annos,curind,prefixnamespace,label="",summary="",thetypes=None,predobjmap=None,maintype="Image"):
@@ -2401,7 +2410,6 @@ class OntDocGeneration:
                 os.makedirs(self.outpath + "/iiif/images/")
             if not os.path.exists(self.outpath + "/iiif/svg/"):
                 os.makedirs(self.outpath + "/iiif/svg/")
-            
             print(label)
             if label!="":
                 curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":self.deploypath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json", "type": "Manifest","label":{"en":[str(label)+" ("+self.shortenURI(curind)+")"]},"homepage":[{"id":str(curind).replace(prefixnamespace,self.deploypath+"/"),"type":"Text","label":{"en":[str(curind).replace(prefixnamespace,self.deploypath+"/")]},"format": "text/html", "language":["en"]}],"metadata":[],"items":[]}
@@ -2415,11 +2423,6 @@ class OntDocGeneration:
                     f.close()
                     imgpath=self.outpath+"/iiif/svg/"+self.shortenURI(curind)+"_"+str(pagecounter)+".svg"
                 curitem={"id":imgpath+"/canvas/p"+str(pagecounter),"type":"Canvas","label":{"en":[str(label)+" "+str(maintype)+" "+str(pagecounter+1)]},"height":100,"width":100,"items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/1","type":"AnnotationPage","items":[{"id":imgpath+"/annotation/p"+str(pagecounter)+"/1","type":"Annotation","motivation":"painting","body":{"id":imgpath,"type":str(maintype),"format":"image/png"},"target":imgpath+"/canvas/p"+str(pagecounter)}]}],"annotations":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/annopage-2","type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":imgpath+"/canvas/p"+str(pagecounter)}]}]}
-                if annos!=None:
-                    annocounter=3
-                    for anno in annos:
-                        curitem["annotations"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/annopage-"+str(annocounter),"type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":{"source":imgpath+"/canvas/p"+str(pagecounter)},"type":"SpecificResource","selector":{"type":"SvgSelector","value":anno}}]})
-                        annocounter+=1
                 curiiifmanifest["items"].append(curitem)        
                 pagecounter+=1
             for pred in predobjmap:
@@ -2435,6 +2438,8 @@ class OntDocGeneration:
             f=open(self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json","w",encoding="utf-8")
             f.write(json.dumps(curiiifmanifest))
             f.close()
+        if annos!=None:
+            self.generateIIIFAnnotations(outpath,annos)
         besttype=""
         for typee in thetypes:
             prefix=self.shortenURI(typee,True)
@@ -2701,8 +2706,8 @@ class OntDocGeneration:
                 logo="<img src=\""+self.logoname+"\" alt=\"logo\" width=\"25\" height=\"25\"/>&nbsp;&nbsp;"
         textannos = []
         foundvals=set()
-        imageannos=set()
-        image3dannos=set()
+        imageannos=[]
+        image3dannos=[]
         predobjmap={}
         isgeocollection=False
         comment={}
@@ -2938,7 +2943,7 @@ class OntDocGeneration:
                         iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["mesh"],image3dannos,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Model"))
                     for anno in image3dannos:
                         if ("POINT" in anno.upper() or "POLYGON" in anno.upper() or "LINESTRING" in anno.upper()):
-                            f.write(threejstemplate.replace("{{wktstring}}",anno).replace("{{meshurls}}",str(list(foundmedia["mesh"]))))
+                            f.write(threejstemplate.replace("{{wktstring}}",anno["value"]).replace("{{meshurls}}",str(list(foundmedia["mesh"]))))
                 elif len(foundmedia["mesh"])>0 and len(image3dannos)==0:
                     print("Found 3D Model: "+str(foundmedia["mesh"]))
                     if self.iiif:
@@ -2952,7 +2957,7 @@ class OntDocGeneration:
                 elif len(foundmedia["mesh"])==0 and len(image3dannos)>0:
                     for anno in image3dannos:
                         if ("POINT" in anno.upper() or "POLYGON" in anno.upper() or "LINESTRING" in anno.upper()):
-                            f.write(threejstemplate.replace("{{wktstring}}",anno).replace("{{meshurls}}","[]"))
+                            f.write(threejstemplate.replace("{{wktstring}}",anno["value"]).replace("{{meshurls}}","[]"))
                 carousel="image"
                 if len(foundmedia["image"])>3:
                     carousel="carousel-item active"
@@ -2966,7 +2971,7 @@ class OntDocGeneration:
                         imagetoURI[image].append(str(subject))
                         annostring=""
                         for anno in imageannos:
-                            annostring+=anno.replace("<svg>","<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
+                            annostring+=anno["value"].replace("<svg>","<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
                         f.write(imageswithannotemplate.replace("{{carousel}}",carousel+"\" style=\"position: relative;display: inline-block;").replace("{{image}}",str(image)).replace("{{svganno}}",annostring).replace("{{imagetitle}}",str(image)[0:str(image).rfind('.')]))
                         if len(foundmedia["image"])>3:
                             carousel="carousel-item"                  
