@@ -1363,6 +1363,7 @@ classtreequery="""PREFIX owl: <http://www.w3.org/2002/07/owl#>\n
 
 featurecollectionspaths={}
 iiifmanifestpaths={"default":[]}
+imagetoURI={}
 
 def resolveTemplate(templatename):
     print(templatepath+"/"+templatename)
@@ -2373,6 +2374,24 @@ class OntDocGeneration:
         targetrellink=targetrellink.replace(outpath,"")
         return targetrellink.replace("//","/")
 
+    def generateIIIFAnnotation(self,outpath,annos):
+        if not os.path.exists(self.outpath + "/iiif/anno/"):
+            os.makedirs(self.outpath + "/iiif/anno/")
+        for anno in annos:
+            curitem["annotations"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/annopage-"+str(annocounter),"type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":{"source":imgpath+"/canvas/p"+str(pagecounter)},"type":"SpecificResource","selector":{"type":"SvgSelector","value":anno}}]})
+            annocounter+=1
+            if str(targetind) in imagetoURI:
+                curannos={"@context": "http://iiif.io/api/presentation/3/context.json","id": self.deploypath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json", "type": "AnnotationPage","items": []}"
+                if os.path.exists(outpath+"/iiif/anno/"+self.shortenURI(targetind)):
+                    f=open(outpath+"/iiif/anno/"+self.shortenURI(targetind),'r',encoding="utf-8")
+                    curannos=json.loads(f.read())
+                    f.close()
+                else:
+                    f=open(outpath+"/iiif/anno/"+self.shortnURI(targetind),'r',encoding="utf-8"):
+                    f.write(json.dumps(curannos))
+                    f.close()
+            
+
     def generateIIIFManifest(self,outpath,imgpaths,annos,curind,prefixnamespace,label="",summary="",thetypes=None,predobjmap=None,maintype="Image"):
         print("GENERATE IIIF Manifest for "+str(self.outpath)+" "+str(curind)+" "+str(label)+" "+str(summary)+" "+str(predobjmap))
         if not os.path.exists(self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json"):
@@ -2382,6 +2401,7 @@ class OntDocGeneration:
                 os.makedirs(self.outpath + "/iiif/images/")
             if not os.path.exists(self.outpath + "/iiif/svg/"):
                 os.makedirs(self.outpath + "/iiif/svg/")
+            
             print(label)
             if label!="":
                 curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":self.deploypath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json", "type": "Manifest","label":{"en":[str(label)+" ("+self.shortenURI(curind)+")"]},"homepage":[{"id":str(curind).replace(prefixnamespace,self.deploypath+"/"),"type":"Text","label":{"en":[str(curind).replace(prefixnamespace,self.deploypath+"/")]},"format": "text/html", "language":["en"]}],"metadata":[],"items":[]}
@@ -2941,6 +2961,9 @@ class OntDocGeneration:
                     if self.iiif:
                         iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],imageannos,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
                     for image in foundmedia["image"]:
+                        if image not in imagetoURI:
+                            imagetoURI[image]=[]
+                        imagetoURI[image].append(str(subject))
                         annostring=""
                         for anno in imageannos:
                             annostring+=anno.replace("<svg>","<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
@@ -2951,6 +2974,9 @@ class OntDocGeneration:
                     if self.iiif:
                         iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],imageannos,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
                     for image in foundmedia["image"]:                
+                        if image not in imagetoURI:
+                            imagetoURI[image]=[]
+                        imagetoURI[image].append(str(subject))
                         if image=="<svg width=":
                             continue
                         if "<svg" in image:
@@ -2978,10 +3004,12 @@ class OntDocGeneration:
                 if len(foundmedia["audio"])>0 and self.iiif:
                     iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["audio"],None,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Audio"))
                 for audio in foundmedia["audio"]:
+                    imagetoURI[audio]=str(subject)
                     f.write(audiotemplate.replace("{{audio}}",str(audio)))
                 if len(foundmedia["video"])>0 and self.iiif:
                     iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["video"],None,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Video"))
                 for video in foundmedia["video"]:
+                    imagetoURI[video]=str(subject)
                     f.write(videotemplate.replace("{{video}}",str(video)))
                 if geojsonrep!=None and not isgeocollection:
                     if uritotreeitem!=None and str(subject) in uritotreeitem:
