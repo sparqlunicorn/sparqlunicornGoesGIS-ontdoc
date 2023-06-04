@@ -2142,9 +2142,9 @@ class OntDocGeneration:
             if pred=="http://www.w3.org/ns/oa#hasSelector" and tup[0]==URIRef(self.typeproperty) and (tup[1]==URIRef("http://www.w3.org/ns/oa#SvgSelector") or tup[1]==URIRef("http://www.w3.org/ns/oa#WKTSelector")):
                 for svglit in graph.objects(object,URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#value")):
                     if "<svg" in str(svglit):
-                        imageannos.add({"value":str(svglit)})
+                        imageannos.append({"value":str(svglit)})
                     elif ("POINT" in str(svglit).upper() or "POLYGON" in str(svglit).upper() or "LINESTRING" in str(svglit).upper()):
-                        image3dannos.add({"value":str(svglit)})
+                        image3dannos.append({"value":str(svglit)})
             if pred == "http://www.w3.org/ns/oa#hasSelector" and tup[0] == URIRef(
                     self.typeproperty) and tup[1] == URIRef(
                     "http://www.w3.org/ns/oa#TextPositionSelector"):
