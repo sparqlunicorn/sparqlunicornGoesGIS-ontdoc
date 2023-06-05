@@ -2390,10 +2390,11 @@ class OntDocGeneration:
             print(anno)
             if "src" in anno:
                 print("In imageToURI? "+str(str(anno["src"]) in imagetoURI))
+                targetind=imagetoURI[anno["src"]]
             else:
                 anno["src"]=curind
+                targetind=curind
             if "src" in anno and str(anno["src"]) in imagetoURI:
-                targetind=imagetoURI[anno["src"]]
                 curannos={"@context": "http://iiif.io/api/presentation/3/context.json","id": self.deploypath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json", "type": "AnnotationPage","items": []}
                 annopath=self.deploypath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json"
                 if not outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json" in curannos and os.path.exists(outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json"):
