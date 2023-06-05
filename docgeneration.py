@@ -2122,7 +2122,7 @@ class OntDocGeneration:
 
     def searchObjectConnectionsForAggregateData(self,graph,object,pred,geojsonrep,foundmedia,imageannos,textannos,image3dannos,label,unitlabel,nonns):
         geoprop=False
-        annosource=False
+        annosource=None
         incollection=False
         if pred in geopointerproperties:
             geoprop=True
@@ -2384,7 +2384,7 @@ class OntDocGeneration:
         tosave={}
         for anno in annos:
             print(anno)
-            print(imagetoURI)
+            #print(imagetoURI)
             if str(anno["src"]) in imagetoURI:
                 targetind=imagetoURI[anno["src"]]
                 curannos={"@context": "http://iiif.io/api/presentation/3/context.json","id": self.deploypath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json", "type": "AnnotationPage","items": []}
