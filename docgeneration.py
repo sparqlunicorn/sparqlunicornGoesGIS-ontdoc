@@ -2380,6 +2380,8 @@ class OntDocGeneration:
         return targetrellink.replace("//","/")
 
     def generateIIIFAnnotations(self,outpath,annos):
+        print("Generate IIIF Annotations for "+str(annos))
+        print(outpath + "/iiif/anno/"+" "+str(os.path.exists(outpath + "/iiif/anno/")))
         if not os.path.exists(outpath + "/iiif/anno/"):
             os.makedirs(outpath + "/iiif/anno/")
         tosave={}
@@ -2404,7 +2406,7 @@ class OntDocGeneration:
             
 
     def generateIIIFManifest(self,outpath,imgpaths,annos,curind,prefixnamespace,label="",summary="",thetypes=None,predobjmap=None,maintype="Image"):
-        print("GENERATE IIIF Manifest for "+str(self.outpath)+" "+str(curind)+" "+str(label)+" "+str(summary)+" "+str(predobjmap))
+        print("GENERATE IIIF Manifest for "+str(self.outpath)+" "+str(curind)+" "+str(label)+" "+str(summary)+" "+str(predobjmap)+" "+str(annos))
         if not os.path.exists(self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json"):
             if not os.path.exists(self.outpath + "/iiif/mf/"):
                 os.makedirs(self.outpath + "/iiif/mf/")
