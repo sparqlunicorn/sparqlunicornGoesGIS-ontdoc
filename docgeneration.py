@@ -2379,9 +2379,10 @@ class OntDocGeneration:
         targetrellink=targetrellink.replace(outpath,"")
         return targetrellink.replace("//","/")
 
-    def generateIIIFAnnotations(self,outpath,annos):
+    def generateIIIFAnnotations(self,outpath,annos,curind):
         print("Generate IIIF Annotations for "+str(annos))
         print(outpath + "/iiif/anno/"+" "+str(os.path.exists(outpath + "/iiif/anno/")))
+        print("Curind: "+str(curind))
         if not os.path.exists(outpath + "/iiif/anno/"):
             os.makedirs(outpath + "/iiif/anno/")
         tosave={}
@@ -2397,7 +2398,7 @@ class OntDocGeneration:
                     f=open(outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json",'r',encoding="utf-8")
                     curannos=json.loads(f.read())
                     f.close()
-                curannos["items"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(len(curannos["items"])+1),"type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":{"source":imagetoURI[anno["src"]],"type":"SpecificResource","selector":{"type":"SvgSelector","value":anno}}})
+                curannos["items"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(len(curannos["items"])+1),"type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(targetind)+"\">"+str(self.shortenURI(targetind))+"</a>"},"target":{"source":imagetoURI[anno["src"]],"type":"SpecificResource","selector":{"type":"SvgSelector","value":anno["value"]}}})
                 tosave[outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json"]=curannos
         for sv in tosave:
             f=open(sv,'w',encoding="utf-8")
@@ -2443,7 +2444,7 @@ class OntDocGeneration:
             f.write(json.dumps(curiiifmanifest))
             f.close()
         if annos!=None:
-            self.generateIIIFAnnotations(self.outpath,annos)
+            self.generateIIIFAnnotations(self.outpath,annos,curind)
         besttype=""
         for typee in thetypes:
             prefix=self.shortenURI(typee,True)
