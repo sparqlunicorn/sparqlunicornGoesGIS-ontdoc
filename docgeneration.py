@@ -2954,7 +2954,7 @@ class OntDocGeneration:
                         break                
                 elif len(foundmedia["mesh"])==0 and len(image3dannos)>0:
                     for anno in image3dannos:
-                        if ("POINT" in anno.upper() or "POLYGON" in anno.upper() or "LINESTRING" in anno.upper()):
+                        if ("POINT" in anno["value"].upper() or "POLYGON" in anno["value"].upper() or "LINESTRING" in anno["value"].upper()):
                             f.write(threejstemplate.replace("{{wktstring}}",anno["value"]).replace("{{meshurls}}","[]"))
                 carousel="image"
                 if len(foundmedia["image"])>3:
