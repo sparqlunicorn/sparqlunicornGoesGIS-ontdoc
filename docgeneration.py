@@ -2434,7 +2434,7 @@ class OntDocGeneration:
                 if annos!=None:
                     annocounter=2
                     for anno in annos:
-                        curitem["annotations"][0]["items"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(annocounter),"type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+" Anno "+str(annocounter)+"</a>"},"target":{"source":imgpath+"/canvas/p"+str(pagecounter),"selector":{"type":"SvgSelector","value":anno["value"].replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">")}}})
+                        curitem["annotations"][0]["items"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(annocounter),"type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+" Anno "+str(annocounter)+"</a>"},"target":{"type":"SpecificResource","source":imgpath+"/canvas/p"+str(pagecounter),"selector":{"type":"SvgSelector","value":anno["value"].replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">")}}})
                         annocounter+=1
                 curiiifmanifest["items"].append(curitem)        
                 pagecounter+=1
