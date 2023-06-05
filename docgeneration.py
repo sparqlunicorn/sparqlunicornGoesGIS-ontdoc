@@ -2157,7 +2157,7 @@ class OntDocGeneration:
                     elif str(txtlit[0]) == "http://www.w3.org/ns/oa#end":
                         curanno["end"] = str(txtlit[1])
                 textannos.append(curanno)
-            if pred == "http://www.w3.org/ns/oa#hasSource":
+            if str(tup[0]) == "http://www.w3.org/ns/oa#hasSource":
                 annosource = str(tup[1])
                 print("Found annosource "+str(tup[1])+" from "+str(object)+" Imageannos: "+str(len(imageannos)))
             if pred == "http://purl.org/dc/terms/isReferencedBy" and tup[0] == URIRef(self.typeproperty) and ("http://purl.org/ontology/bibo/" in str(tup[1])):	
