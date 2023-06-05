@@ -2385,7 +2385,7 @@ class OntDocGeneration:
         tosave={}
         for anno in annos:
             print(anno)
-            #print(imagetoURI)
+            print("In imagToURI? "+str(str(anno["src"]) in imagetoURI))
             if "src" in anno and str(anno["src"]) in imagetoURI:
                 targetind=imagetoURI[anno["src"]]
                 curannos={"@context": "http://iiif.io/api/presentation/3/context.json","id": self.deploypath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json", "type": "AnnotationPage","items": []}
