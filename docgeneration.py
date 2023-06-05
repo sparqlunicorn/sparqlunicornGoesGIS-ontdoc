@@ -2394,15 +2394,14 @@ class OntDocGeneration:
             else:
                 anno["src"]=curind
                 targetind=curind
-            if "src" in anno and str(anno["src"]) in imagetoURI:
-                curannos={"@context": "http://iiif.io/api/presentation/3/context.json","id": self.deploypath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json", "type": "AnnotationPage","items": []}
-                annopath=self.deploypath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json"
-                if not outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json" in curannos and os.path.exists(outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json"):
-                    f=open(outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json",'r',encoding="utf-8")
-                    curannos=json.loads(f.read())
-                    f.close()
-                curannos["items"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(len(curannos["items"])+1),"type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(targetind)+"\">"+str(self.shortenURI(targetind))+"</a>"},"target":{"source":imagetoURI[anno["src"]],"type":"SpecificResource","selector":{"type":"SvgSelector","value":anno["value"]}}})
-                tosave[outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json"]=curannos
+            curannos={"@context": "http://iiif.io/api/presentation/3/context.json","id": self.deploypath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json", "type": "AnnotationPage","items": []}
+            annopath=self.deploypath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json"
+            if not outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json" in curannos and os.path.exists(outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json"):
+                f=open(outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json",'r',encoding="utf-8")
+                curannos=json.loads(f.read())
+                f.close()
+            curannos["items"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(len(curannos["items"])+1),"type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(targetind)+"\">"+str(self.shortenURI(targetind))+"</a>"},"target":{"source":targetind,"type":"SpecificResource","selector":{"type":"SvgSelector","value":anno["value"]}}})
+            tosave[outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json"]=curannos
         for sv in tosave:
             f=open(sv,'w',encoding="utf-8")
             f.write(json.dumps(tosave[sv]))
