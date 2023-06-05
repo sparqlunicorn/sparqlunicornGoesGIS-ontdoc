@@ -2798,7 +2798,7 @@ class OntDocGeneration:
                     labelmap={}
                     for item in predobjmap[tup]:
                         if ("POINT" in str(item).upper() or "POLYGON" in str(item).upper() or "LINESTRING" in str(item).upper()) and tup in valueproperties and self.typeproperty in predobjmap and URIRef("http://www.w3.org/ns/oa#WKTSelector") in predobjmap[self.typeproperty]:
-                            image3dannos.append(str(item))
+                            image3dannos.append({"value":str(item)})
                         elif "<svg" in str(item):
                             foundmedia["image"].add(str(item))
                         elif "http" in str(item):
