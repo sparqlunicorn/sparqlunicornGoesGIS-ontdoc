@@ -2383,7 +2383,6 @@ class OntDocGeneration:
             os.makedirs(self.outpath + "/iiif/anno/")
         tosave={}
         for anno in annos:
-            annocounter+=1
             if str(anno["src"]) in imagetoURI:
                 targetind=imagetoURI[anno["src"]]
                 curannos={"@context": "http://iiif.io/api/presentation/3/context.json","id": self.deploypath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json", "type": "AnnotationPage","items": []}
