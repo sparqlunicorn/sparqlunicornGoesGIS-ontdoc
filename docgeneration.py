@@ -2383,7 +2383,6 @@ class OntDocGeneration:
             os.makedirs(self.outpath + "/iiif/anno/")
         tosave={}
         for anno in annos:
-            curitem["annotations"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/annopage-"+str(annocounter),"type":"AnnotationPage","items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-1","type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+"</a>"},"target":{"source":imgpath+"/canvas/p"+str(pagecounter)},"type":"SpecificResource","selector":{"type":"SvgSelector","value":anno}}]})
             annocounter+=1
             if str(anno["src"]) in imagetoURI:
                 targetind=imagetoURI[anno["src"]]
