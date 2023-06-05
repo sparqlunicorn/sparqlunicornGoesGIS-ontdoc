@@ -2159,6 +2159,7 @@ class OntDocGeneration:
                 textannos.append(curanno)
             if pred == "http://www.w3.org/ns/oa#hasSource":
                 annosource = str(tup[1])
+                print("Found annosource "+str(tup[1]))
             if pred == "http://purl.org/dc/terms/isReferencedBy" and tup[0] == URIRef(self.typeproperty) and ("http://purl.org/ontology/bibo/" in str(tup[1])):	
                 bibtex=self.resolveBibtexReference(graph.predicate_objects(object),object,graph)
             if pred in timepointerproperties:
