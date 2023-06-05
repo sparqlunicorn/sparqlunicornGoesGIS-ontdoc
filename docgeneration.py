@@ -2379,7 +2379,7 @@ class OntDocGeneration:
         targetrellink=targetrellink.replace(outpath,"")
         return targetrellink.replace("//","/")
 
-    def generateIIIFAnnotations(self,outpath,annos,curind):
+    def generateIIIFAnnotations(self,outpath,annos,curind,imgpath):
         print("Generate IIIF Annotations for "+str(annos))
         print(outpath + "/iiif/anno/"+" "+str(os.path.exists(outpath + "/iiif/anno/")))
         print("Curind: "+str(curind))
@@ -2446,7 +2446,7 @@ class OntDocGeneration:
             f.write(json.dumps(curiiifmanifest))
             f.close()
         if annos!=None:
-            self.generateIIIFAnnotations(self.outpath,annos,curind)
+            self.generateIIIFAnnotations(self.outpath,annos,curind,next(iter(imgpaths)))
         besttype=""
         for typee in thetypes:
             prefix=self.shortenURI(typee,True)
