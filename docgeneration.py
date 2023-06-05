@@ -2383,6 +2383,8 @@ class OntDocGeneration:
             os.makedirs(outpath + "/iiif/anno/")
         tosave={}
         for anno in annos:
+            print(anno)
+            print(imagetoURI)
             if str(anno["src"]) in imagetoURI:
                 targetind=imagetoURI[anno["src"]]
                 curannos={"@context": "http://iiif.io/api/presentation/3/context.json","id": self.deploypath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json", "type": "AnnotationPage","items": []}
@@ -2408,7 +2410,7 @@ class OntDocGeneration:
                 os.makedirs(self.outpath + "/iiif/images/")
             if not os.path.exists(self.outpath + "/iiif/svg/"):
                 os.makedirs(self.outpath + "/iiif/svg/")
-            print(label)
+            #print(label)
             if label!="":
                 curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":self.deploypath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json", "type": "Manifest","label":{"en":[str(label)+" ("+self.shortenURI(curind)+")"]},"homepage":[{"id":str(curind).replace(prefixnamespace,self.deploypath+"/"),"type":"Text","label":{"en":[str(curind).replace(prefixnamespace,self.deploypath+"/")]},"format": "text/html", "language":["en"]}],"metadata":[],"items":[]}
             else:
@@ -2429,7 +2431,7 @@ class OntDocGeneration:
                         curiiifmanifest["metadata"].append({"label":{"en":[self.shortenURI(str(pred))]},"value":{"en":["<a href=\""+str(objs)+"\">"+str(objs)+"</a>"]}})
                     else:
                         curiiifmanifest["metadata"].append({"label":{"en":[self.shortenURI(str(pred))]},"value":{"en":[str(objs)]}})
-            print(curiiifmanifest["metadata"])
+            #print(curiiifmanifest["metadata"])
             if summary!=None and summary!="" and summary!={}:
                 curiiifmanifest["summary"]={"en":[str(summary)]}
             os.makedirs(self.outpath + "/iiif/mf/"+self.shortenURI(curind))
