@@ -2434,7 +2434,7 @@ class OntDocGeneration:
                 if annos!=None:
                     annocounter=2
                     for anno in annos:
-                        curitem["annotations"].apppend({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(annocounter),"type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+" Anno "+str(annocounter)+"</a>"},"target":imgpath+"/canvas/p"+str(pagecounter)})
+                        curitem["annotations"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(annocounter),"type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+" Anno "+str(annocounter)+"</a>"},"target":imgpath+"/canvas/p"+str(pagecounter)})
                         annocounter+=1
                 curiiifmanifest["items"].append(curitem)        
                 pagecounter+=1
