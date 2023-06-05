@@ -2379,8 +2379,8 @@ class OntDocGeneration:
         return targetrellink.replace("//","/")
 
     def generateIIIFAnnotations(self,outpath,annos):
-        if not os.path.exists(self.outpath + "/iiif/anno/"):
-            os.makedirs(self.outpath + "/iiif/anno/")
+        if not os.path.exists(outpath + "/iiif/anno/"):
+            os.makedirs(outpath + "/iiif/anno/")
         tosave={}
         for anno in annos:
             if str(anno["src"]) in imagetoURI:
@@ -2437,7 +2437,7 @@ class OntDocGeneration:
             f.write(json.dumps(curiiifmanifest))
             f.close()
         if annos!=None:
-            self.generateIIIFAnnotations(outpath,annos)
+            self.generateIIIFAnnotations(self.outpath,annos)
         besttype=""
         for typee in thetypes:
             prefix=self.shortenURI(typee,True)
