@@ -3007,9 +3007,9 @@ class OntDocGeneration:
                     if self.iiif:
                         iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],imageannos,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
                     for image in foundmedia["image"]:
-                        if image not in imagetoURI:
-                            imagetoURI[image]=[]
-                        imagetoURI[image]={"uri":str(subject)}
+                        if image not in imagetoURI or "uri" not in imagetoURI[image]:
+                            imagetoURI[image]={"uri":[]}
+                        imagetoURI[image]["uri"].append(str(subject))                           
                         annostring=""
                         for anno in imageannos:
                             annostring+=anno["value"].replace("<svg>","<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
@@ -3020,9 +3020,9 @@ class OntDocGeneration:
                     if self.iiif:
                         iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],imageannos,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
                     for image in foundmedia["image"]:                
-                        if image not in imagetoURI:
-                            imagetoURI[image]=[]
-                        imagetoURI[image]={"uri":str(subject)}
+                        if image not in imagetoURI or "uri" not in imagetoURI[image]:
+                            imagetoURI[image]={"uri":[]}
+                        imagetoURI[image]["uri"].append(str(subject)) 
                         if image=="<svg width=":
                             continue
                         if "<svg" in image:
