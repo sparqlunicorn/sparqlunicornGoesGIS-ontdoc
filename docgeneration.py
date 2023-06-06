@@ -2407,7 +2407,7 @@ class OntDocGeneration:
         return svg.replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">")
 
     def generateIIIFManifest(self,outpath,imgpaths,annos,curind,prefixnamespace,label="",summary="",thetypes=None,predobjmap=None,maintype="Image"):
-        print("GENERATE IIIF Manifest for "+str(self.outpath)+" "+str(curind)+" "+str(label)+" "+str(summary)+" "+str(predobjmap)+" "+str(annos))
+        print("GENERATE IIIF Manifest for "+str(self.outpath)+" "+str(curind)+" "+str(label)+" "+str(summary))
         if not os.path.exists(self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json"):
             if not os.path.exists(self.outpath + "/iiif/mf/"):
                 os.makedirs(self.outpath + "/iiif/mf/")
