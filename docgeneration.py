@@ -2443,7 +2443,7 @@ class OntDocGeneration:
                         response = requests.get(imgpath)
                         im = Image.open(BytesIO(response.content))
                         print(im.size)
-                        print(type(im.size))
+                        #print(type(im.size))
                         w, h = im.size
                         width=w
                         height=h
