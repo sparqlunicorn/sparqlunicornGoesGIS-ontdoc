@@ -2420,7 +2420,7 @@ class OntDocGeneration:
                 curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":self.deploypath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json", "type": "Manifest","label":{"en":[str(label)+" ("+self.shortenURI(curind)+")"]},"homepage":[{"id":str(curind).replace(prefixnamespace,self.deploypath+"/"),"type":"Text","label":{"en":[str(curind).replace(prefixnamespace,self.deploypath+"/")]},"format": "text/html", "language":["en"]}],"metadata":[],"items":[]}
             else:
                 curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":self.deploypath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json", "type": "Manifest","label":{"en":[self.shortenURI(curind)]},"homepage":[{"id":str(curind).replace(prefixnamespace,self.deploypath+"/"),"type":"Text","label":{"en":[str(curind).replace(prefixnamespace,self.deploypath+"/")]},"format": "text/html", "language":["en"]}],"metadata":[],"items":[]}
-            pagecounter=0
+            pagecounter=1
             for imgpath in imgpaths:
                 if imgpath not in imagetoURI:
                     imagetoURI[imgpath]={}
