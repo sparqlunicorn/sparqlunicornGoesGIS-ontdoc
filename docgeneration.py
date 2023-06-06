@@ -2205,6 +2205,7 @@ class OntDocGeneration:
             else:
                 unitlabel=str(foundval)+" "+str(foundunit)
             if pred=="http://www.w3.org/ns/oa#hasBody":
+                print("ADD ANNO BODY: "+str({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"}))
                 for anno in imageannos:
                     anno["bodies"].append({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"})
                 for anno in image3dannos:
@@ -2215,6 +2216,7 @@ class OntDocGeneration:
             else:
                 unitlabel = str(foundval)
             if pred=="http://www.w3.org/ns/oa#hasBody":
+                print("ADD ANNO BODY: "+str({"value":foundval,"type":"TextualBody","format":"text/plain"}))
                 for anno in imageannos:
                     anno["bodies"].append({"value":foundval,"type":"TextualBody","format":"text/plain"})
                 for anno in image3dannos:
