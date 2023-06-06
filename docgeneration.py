@@ -2467,6 +2467,7 @@ class OntDocGeneration:
                 if annos!=None:
                     annocounter=2
                     for anno in annos:
+                        print("ANNO: "+str(anno))
                         curitem["annotations"][0]["items"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(annocounter),"type":"Annotation","motivation":"tagging","body":{"type":"TextualBody","language":"en","format":"text/plain","value":str(self.shortenURI(curind))+" Anno "+str(annocounter)+"</a>"},"target":{"type":"SpecificResource","source":imgpath+"/canvas/p"+str(pagecounter),"selector":{"type":"SvgSelector","value":self.polygonToPath(anno["value"])}}})
                         print("ANNO BODIES???? "+str(anno["bodies"]))
                         if "bodies" in anno and len(anno["bodies"])>0:
