@@ -2382,9 +2382,9 @@ class OntDocGeneration:
 
     def generateIIIFAnnotations(self,outpath):
         for imgpath in imagetoURI:
-            print("Generate IIIF Annotations for "+str(imgpath))
-            if "uri" in imagetoURI:
-                for ur in imagetoURI["uri"]:
+            print("Generate IIIF Annotations for "+str(imgpath)+" with "+str(imagetoURI[imgpath]))
+            if "uri" in imagetoURI[imgpath]:
+                for ur in imagetoURI[imgpath]["uri"]:
                     if os.path.exists(outpath+"/iiif/mf/"+ur+"/manifest.json"):
                         f=open(outpath+"/iiif/mf/"+ur+"/manifest.json",'r',encoding="utf-8")
                         curmanifest=json.loads(f.read())
