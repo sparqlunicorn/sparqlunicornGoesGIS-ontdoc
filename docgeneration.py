@@ -2143,9 +2143,9 @@ class OntDocGeneration:
             if pred=="http://www.w3.org/ns/oa#hasSelector" and tup[0]==URIRef(self.typeproperty) and (tup[1]==URIRef("http://www.w3.org/ns/oa#SvgSelector") or tup[1]==URIRef("http://www.w3.org/ns/oa#WKTSelector")):
                 for svglit in graph.objects(object,URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#value")):
                     if "<svg" in str(svglit):
-                        imageannos.append({"value":str(svglit)})
+                        imageannos.append({"value":str(svglit),"bodies":[]})
                     elif ("POINT" in str(svglit).upper() or "POLYGON" in str(svglit).upper() or "LINESTRING" in str(svglit).upper()):
-                        image3dannos.append({"value":str(svglit)})
+                        image3dannos.append({"value":str(svglit),"bodies":[]})
             if pred == "http://www.w3.org/ns/oa#hasSelector" and tup[0] == URIRef(
                     self.typeproperty) and tup[1] == URIRef(
                     "http://www.w3.org/ns/oa#TextPositionSelector"):
@@ -2204,11 +2204,21 @@ class OntDocGeneration:
                 unitlabel=str(foundval)+" "+self.createURILink(str(foundunit))
             else:
                 unitlabel=str(foundval)+" "+str(foundunit)
+            if pred=="http://www.w3.org/ns/oa#hasBody":
+                for anno in imageannos:
+                    anno["bodies"].append({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"})
+                for anno in image3dannos:
+                    anno["bodies"].append({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"})
         if foundunit == None and foundval != None:
             if "http" in foundval:
                 unitlabel = "<a href=\"" + str(foundval) + "\">" + str(self.shortenURI(foundval)) + "</a>"
             else:
                 unitlabel = str(foundval)
+            if pred=="http://www.w3.org/ns/oa#hasBody":
+                for anno in imageannos:
+                    anno["bodies"].append({"value":foundval,"type":"TextualBody","format":"text/plain"})
+                for anno in image3dannos:
+                    anno["bodies"].append({"value":foundval,"type":"TextualBody","format":"text/plain"})
         if annosource != None:
             for textanno in textannos:
                 textanno["src"] = annosource
@@ -2456,8 +2466,11 @@ class OntDocGeneration:
                     annocounter=2
                     for anno in annos:
                         curitem["annotations"][0]["items"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(annocounter),"type":"Annotation","motivation":"tagging","body":{"type":"TextualBody","language":"en","format":"text/plain","value":str(self.shortenURI(curind))+" Anno "+str(annocounter)+"</a>"},"target":{"type":"SpecificResource","source":imgpath+"/canvas/p"+str(pagecounter),"selector":{"type":"SvgSelector","value":self.polygonToPath(anno["value"])}}})
-                        annocounter+=1
+                        if "bodies" in anno and len(anno["bodies"])>0:
+                            curitem["annotations"][0]["items"][-1]["body"]=[curitem["annotations"][0]["items"][-1]["body"]]
+                            curitem["annotations"][0]["items"][-1]["body"]=curitem["annotations"][0]["items"][-1]["body"]+anno["bodies"]
                         imagetoURI[imgpath]["anno"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(annocounter),"type":"Annotation","motivation":"tagging","body":{"type":"TextualBody","language":"en","format":"text/plain","value":str(self.shortenURI(curind))+" Anno "+str(annocounter)},"target":{"type":"SpecificResource","source":imgpath+"/canvas/p"+str(pagecounter),"selector":{"type":"SvgSelector","value":self.polygonToPath(anno["value"])}}})
+                        annocounter+=1
                 curiiifmanifest["items"].append(curitem)        
                 pagecounter+=1
             for pred in predobjmap:
