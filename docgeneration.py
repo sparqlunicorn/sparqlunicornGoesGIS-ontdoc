@@ -2422,6 +2422,8 @@ class OntDocGeneration:
             if not os.path.exists(self.outpath + "/iiif/svg/"):
                 os.makedirs(self.outpath + "/iiif/svg/")
             #print(label)
+            if "anno" not in imagetoURI[imgpath]:
+                imagetoURI[imgpath]["anno"]=[]
             if label!="":
                 curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":self.deploypath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json", "type": "Manifest","label":{"en":[str(label)+" ("+self.shortenURI(curind)+")"]},"homepage":[{"id":str(curind).replace(prefixnamespace,self.deploypath+"/"),"type":"Text","label":{"en":[str(curind).replace(prefixnamespace,self.deploypath+"/")]},"format": "text/html", "language":["en"]}],"metadata":[],"items":[]}
             else:
@@ -2437,6 +2439,7 @@ class OntDocGeneration:
                 width=640
                 if imgpath not in imagetoURI or "width" not in imagetoURI[imgpath]:
                     try:
+                        print("Loading image for "+str(imgpath))
                         response = requests.get(imgpath)
                         im = Image.open(BytesIO(response.content))
                         print(im.size)
@@ -2457,6 +2460,7 @@ class OntDocGeneration:
                     for anno in annos:
                         curitem["annotations"][0]["items"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(annocounter),"type":"Annotation","motivation":"tagging","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+" Anno "+str(annocounter)+"</a>"},"target":{"type":"SpecificResource","source":imgpath+"/canvas/p"+str(pagecounter),"selector":{"type":"SvgSelector","value":self.polygonToPath(anno["value"])}}})
                         annocounter+=1
+                        imagetoURI["anno"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(annocounter),"type":"Annotation","motivation":"tagging","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+" Anno "+str(annocounter)+"</a>"},"target":{"type":"SpecificResource","source":imgpath+"/canvas/p"+str(pagecounter),"selector":{"type":"SvgSelector","value":self.polygonToPath(anno["value"])}}})
                 curiiifmanifest["items"].append(curitem)        
                 pagecounter+=1
             for pred in predobjmap:
@@ -3002,7 +3006,7 @@ class OntDocGeneration:
                     for image in foundmedia["image"]:
                         if image not in imagetoURI:
                             imagetoURI[image]=[]
-                        imagetoURI[image].append({"uri":str(subject)})
+                        imagetoURI[image]={"uri":str(subject)}
                         annostring=""
                         for anno in imageannos:
                             annostring+=anno["value"].replace("<svg>","<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
@@ -3015,7 +3019,7 @@ class OntDocGeneration:
                     for image in foundmedia["image"]:                
                         if image not in imagetoURI:
                             imagetoURI[image]=[]
-                        imagetoURI[image].append({"uri":str(subject)})
+                        imagetoURI[image]={"uri":str(subject)}
                         if image=="<svg width=":
                             continue
                         if "<svg" in image:
