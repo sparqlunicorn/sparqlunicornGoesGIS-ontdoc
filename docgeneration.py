@@ -2414,7 +2414,7 @@ class OntDocGeneration:
         return svg.replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">")
 
     def generateIIIFManifest(self,outpath,imgpaths,annos,annobodies,curind,prefixnamespace,label="",summary="",thetypes=None,predobjmap=None,maintype="Image"):
-        print("GENERATE IIIF Manifest for "+str(self.outpath)+" "+str(curind)+" "+str(label)+" "+str(summary))
+        print("GENERATE IIIF Manifest for "+str(self.outpath)+" "+str(curind)+" "+str(label)+" "+str(summary)+" "+str(annobodies))
         if not os.path.exists(self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json"):
             if not os.path.exists(self.outpath + "/iiif/mf/"):
                 os.makedirs(self.outpath + "/iiif/mf/")
@@ -2866,6 +2866,7 @@ class OntDocGeneration:
                         textannos=res["textannos"]
                         image3dannos=res["image3dannos"]
                         annobodies=res["annobodies"]
+                        print("GOT ANNO BODIES "+str(annobodies))
                         if res["timeobj"]!=None and res["timeobj"]!=[]:
                             #print("RESTIMEOBJ: "+str(timeobj))
                             timeobj=res["timeobj"]
@@ -2924,6 +2925,7 @@ class OntDocGeneration:
                         imageannos=res["imageannos"]
                         image3dannos=res["image3dannos"]
                         annobodies=res["annobodies"]
+                        print("POSTPROC ANNO BODIES "+str(annobodies))
                         if nonns and str(tup) != self.typeproperty:	
                             hasnonns.add(str(item))
                         if nonns:
