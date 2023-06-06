@@ -2,12 +2,11 @@
 from rdflib import Graph
 from rdflib import URIRef, Literal, BNode
 from rdflib.plugins.sparql import prepareQuery
-from urllib.request import urlopen
 from io import BytesIO
-from urllib.request import urlopen
 from zipfile import ZipFile
 from pathlib import Path
 from PIL import Image
+import requests
 import shapely.wkt
 import shapely.geometry
 import os
