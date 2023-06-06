@@ -2452,7 +2452,8 @@ class OntDocGeneration:
                         imagetoURI[imgpath]["width"]=w
                         imagetoURI[imgpath]["height"]=h
                     except Exception as e:
-                        print(e)
+                        imagetoURI[imgpath]["width"]=640
+                        imagetoURI[imgpath]["height"]=480
                 else:
                     height=imagetoURI[imgpath]["height"]
                     width=imagetoURI[imgpath]["width"]
