@@ -2399,7 +2399,7 @@ class OntDocGeneration:
                             curmanifest["items"][0]["annotations"][0]["items"].append(anno)
                             annocounter+=1
                         f=open(outpath+"/iiif/mf/"+sur+"/manifest.json",'w',encoding="utf-8")
-                        f.write(curmanifest)
+                        f.write(json.dumps(curmanifest))
                         f.close()
     
     def polygonToPath(self,svg):
