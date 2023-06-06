@@ -2385,8 +2385,11 @@ class OntDocGeneration:
             print("Generate IIIF Annotations for "+str(imgpath)+" with "+str(imagetoURI[imgpath]))
             if "uri" in imagetoURI[imgpath]:
                 for ur in imagetoURI[imgpath]["uri"]:
-                    if os.path.exists(outpath+"/iiif/mf/"+ur+"/manifest.json"):
-                        f=open(outpath+"/iiif/mf/"+ur+"/manifest.json",'r',encoding="utf-8")
+                    print(ur)
+                    sur=self.shortenURI(ur)
+                    print("Getting "+outpath+"/iiif/mf/"+sur+"/manifest.json")
+                    if os.path.exists(outpath+"/iiif/mf/"+sur+"/manifest.json"):
+                        f=open(outpath+"/iiif/mf/"+sur+"/manifest.json",'r',encoding="utf-8")
                         curmanifest=json.loads(f.read())
                         f.close()
                         annocounter=2
@@ -2395,7 +2398,7 @@ class OntDocGeneration:
                             anno["target"]["source"]=imgpath+"/canvas/p1"
                             curmanifest["items"][0]["annotations"][0]["items"].append(anno)
                             annocounter+=1
-                        f=open(outpath+"/iiif/mf/"+ur+"/manifest.json",'w',encoding="utf-8")
+                        f=open(outpath+"/iiif/mf/"+sur+"/manifest.json",'w',encoding="utf-8")
                         f.write(curmanifest)
                         f.close()
     
