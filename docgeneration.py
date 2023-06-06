@@ -2422,14 +2422,14 @@ class OntDocGeneration:
             if not os.path.exists(self.outpath + "/iiif/svg/"):
                 os.makedirs(self.outpath + "/iiif/svg/")
             #print(label)
-            if "anno" not in imagetoURI[imgpath]:
-                imagetoURI[imgpath]["anno"]=[]
             if label!="":
                 curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":self.deploypath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json", "type": "Manifest","label":{"en":[str(label)+" ("+self.shortenURI(curind)+")"]},"homepage":[{"id":str(curind).replace(prefixnamespace,self.deploypath+"/"),"type":"Text","label":{"en":[str(curind).replace(prefixnamespace,self.deploypath+"/")]},"format": "text/html", "language":["en"]}],"metadata":[],"items":[]}
             else:
                 curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":self.deploypath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json", "type": "Manifest","label":{"en":[self.shortenURI(curind)]},"homepage":[{"id":str(curind).replace(prefixnamespace,self.deploypath+"/"),"type":"Text","label":{"en":[str(curind).replace(prefixnamespace,self.deploypath+"/")]},"format": "text/html", "language":["en"]}],"metadata":[],"items":[]}
             pagecounter=0
             for imgpath in imgpaths:
+                if "anno" not in imagetoURI[imgpath]:
+                    imagetoURI[imgpath]["anno"]=[]
                 if imgpath.startswith("<svg") and "http" not in imgpath:
                     f=open(self.outpath+"/iiif/svg/"+self.shortenURI(curind)+"_"+str(pagecounter)+".svg","w",encoding="utf-8")
                     f.write(str(imgpath).replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">"))
