@@ -2462,7 +2462,7 @@ class OntDocGeneration:
                     for anno in annos:
                         curitem["annotations"][0]["items"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(annocounter),"type":"Annotation","motivation":"tagging","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+" Anno "+str(annocounter)+"</a>"},"target":{"type":"SpecificResource","source":imgpath+"/canvas/p"+str(pagecounter),"selector":{"type":"SvgSelector","value":self.polygonToPath(anno["value"])}}})
                         annocounter+=1
-                        imagetoURI["anno"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(annocounter),"type":"Annotation","motivation":"tagging","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+" Anno "+str(annocounter)+"</a>"},"target":{"type":"SpecificResource","source":imgpath+"/canvas/p"+str(pagecounter),"selector":{"type":"SvgSelector","value":self.polygonToPath(anno["value"])}}})
+                        imagetoURI[imgpath]["anno"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(annocounter),"type":"Annotation","motivation":"tagging","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(curind)+"\">"+str(self.shortenURI(curind))+" Anno "+str(annocounter)+"</a>"},"target":{"type":"SpecificResource","source":imgpath+"/canvas/p"+str(pagecounter),"selector":{"type":"SvgSelector","value":self.polygonToPath(anno["value"])}}})
                 curiiifmanifest["items"].append(curitem)        
                 pagecounter+=1
             for pred in predobjmap:
