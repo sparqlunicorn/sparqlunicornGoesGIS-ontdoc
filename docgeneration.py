@@ -7,6 +7,7 @@ from io import BytesIO
 from urllib.request import urlopen
 from zipfile import ZipFile
 from pathlib import Path
+from PIL import Image
 import shapely.wkt
 import shapely.geometry
 import os
@@ -2433,7 +2434,19 @@ class OntDocGeneration:
                     f.write(str(imgpath).replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">"))
                     f.close()
                     imgpath=self.outpath+"/iiif/svg/"+self.shortenURI(curind)+"_"+str(pagecounter)+".svg"
-                curitem={"id":imgpath+"/canvas/p"+str(pagecounter),"type":"Canvas","label":{"en":[str(label)+" "+str(maintype)+" "+str(pagecounter+1)]},"items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/1","type":"AnnotationPage","items":[{"id":imgpath+"/annotation/p"+str(pagecounter)+"/1","type":"Annotation","motivation":"painting","body":{"id":imgpath,"type":str(maintype),"format":"image/png"},"target":imgpath+"/canvas/p"+str(pagecounter)}]}],"annotations":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/annopage-2","type":"AnnotationPage","items":[]}]}
+                height=480
+                width=640
+                try:
+                    response = requests.get(imgpath)
+                    im = Image.open(BytesIO(response.content))
+                    print(im.size)
+                    print(type(im.size))
+                    w, h = im.size
+                    width=w
+                    height=h
+                except Exception as e:
+                    print(e)
+                curitem={"id":imgpath+"/canvas/p"+str(pagecounter),"height":height,"width":width,"type":"Canvas","label":{"en":[str(label)+" "+str(maintype)+" "+str(pagecounter+1)]},"items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/1","type":"AnnotationPage","items":[{"id":imgpath+"/annotation/p"+str(pagecounter)+"/1","type":"Annotation","motivation":"painting","body":{"id":imgpath,"type":str(maintype),"format":"image/png"},"target":imgpath+"/canvas/p"+str(pagecounter)}]}],"annotations":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/annopage-2","type":"AnnotationPage","items":[]}]}
                 if annos!=None:
                     annocounter=2
                     for anno in annos:
