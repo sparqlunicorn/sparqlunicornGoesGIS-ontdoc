@@ -2435,16 +2435,22 @@ class OntDocGeneration:
                     imgpath=self.outpath+"/iiif/svg/"+self.shortenURI(curind)+"_"+str(pagecounter)+".svg"
                 height=480
                 width=640
-                try:
-                    response = requests.get(imgpath)
-                    im = Image.open(BytesIO(response.content))
-                    print(im.size)
-                    print(type(im.size))
-                    w, h = im.size
-                    width=w
-                    height=h
-                except Exception as e:
-                    print(e)
+                if imgpath not in imagetoURI or "width" not in imagetoURI[imgpath]:
+                    try:
+                        response = requests.get(imgpath)
+                        im = Image.open(BytesIO(response.content))
+                        print(im.size)
+                        print(type(im.size))
+                        w, h = im.size
+                        width=w
+                        height=h
+                        imagetoURI[imgpath]["width"]=w
+                        imagetoURI[imgpath]["height"]=h
+                    except Exception as e:
+                        print(e)
+                else:
+                    height=imagetoURI[imgpath]["height"]
+                    width=imagetoURI[imgpath]["width"]
                 curitem={"id":imgpath+"/canvas/p"+str(pagecounter),"height":height,"width":width,"type":"Canvas","label":{"en":[str(label)+" "+str(maintype)+" "+str(pagecounter+1)]},"items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/1","type":"AnnotationPage","items":[{"id":imgpath+"/annotation/p"+str(pagecounter)+"/1","type":"Annotation","motivation":"painting","body":{"id":imgpath,"type":str(maintype),"format":"image/png"},"target":imgpath+"/canvas/p"+str(pagecounter)}]}],"annotations":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/annopage-2","type":"AnnotationPage","items":[]}]}
                 if annos!=None:
                     annocounter=2
@@ -2996,7 +3002,7 @@ class OntDocGeneration:
                     for image in foundmedia["image"]:
                         if image not in imagetoURI:
                             imagetoURI[image]=[]
-                        imagetoURI[image].append(str(subject))
+                        imagetoURI[image].append({"uri":str(subject)})
                         annostring=""
                         for anno in imageannos:
                             annostring+=anno["value"].replace("<svg>","<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
@@ -3009,7 +3015,7 @@ class OntDocGeneration:
                     for image in foundmedia["image"]:                
                         if image not in imagetoURI:
                             imagetoURI[image]=[]
-                        imagetoURI[image].append(str(subject))
+                        imagetoURI[image].append({"uri":str(subject)})
                         if image=="<svg width=":
                             continue
                         if "<svg" in image:
@@ -3037,12 +3043,12 @@ class OntDocGeneration:
                 if len(foundmedia["audio"])>0 and self.iiif:
                     iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["audio"],None,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Audio"))
                 for audio in foundmedia["audio"]:
-                    imagetoURI[audio]=str(subject)
+                    imagetoURI[audio]={"uri":str(subject)}
                     f.write(audiotemplate.replace("{{audio}}",str(audio)))
                 if len(foundmedia["video"])>0 and self.iiif:
                     iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["video"],None,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Video"))
                 for video in foundmedia["video"]:
-                    imagetoURI[video]=str(subject)
+                    imagetoURI[video]={"uri":str(subject)}
                     f.write(videotemplate.replace("{{video}}",str(video)))
                 if geojsonrep!=None and not isgeocollection:
                     if uritotreeitem!=None and str(subject) in uritotreeitem:
