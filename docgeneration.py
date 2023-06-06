@@ -2393,7 +2393,7 @@ class OntDocGeneration:
                         curmanifest=json.loads(f.read())
                         f.close()
                         annocounter=2
-                        for anno in imagetoURI["anno"]:
+                        for anno in imagetoURI[imgpath]["anno"]:
                             anno["id"]=imgpath+"/canvas/p2/anno-"+str(annocounter)
                             anno["target"]["source"]=imgpath+"/canvas/p1"
                             curmanifest["items"][0]["annotations"][0]["items"].append(anno)
