@@ -1695,6 +1695,7 @@ class OntDocGeneration:
         with open(outpath + corpusid + '_search.js', 'w', encoding='utf-8') as f:
             f.write("var search=" + json.dumps(labeltouri, indent=2, sort_keys=True))
             f.close()
+        self.generateIIIFAnnotations(outpath)
         if self.createIndexPages:
             for path in paths:
                 subgraph=Graph(bind_namespaces="rdflib")
@@ -2379,34 +2380,24 @@ class OntDocGeneration:
         targetrellink=targetrellink.replace(outpath,"")
         return targetrellink.replace("//","/")
 
-    def generateIIIFAnnotations(self,outpath,annos,curind,imgpath):
-        print("Generate IIIF Annotations for "+str(annos))
-        print(outpath + "/iiif/anno/"+" "+str(os.path.exists(outpath + "/iiif/anno/")))
-        print("Curind: "+str(curind))
-        if not os.path.exists(outpath + "/iiif/anno/"):
-            os.makedirs(outpath + "/iiif/anno/")
-        tosave={}
-        for anno in annos:
-            print(anno)
-            if "src" in anno:
-                print("In imageToURI? "+str(str(anno["src"]) in imagetoURI))
-                targetind=imagetoURI[anno["src"]]
-            else:
-                anno["src"]=curind
-                targetind=curind
-            pagecounter=2
-            curannos={"@context": "http://iiif.io/api/presentation/3/context.json","id": self.deploypath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json", "type": "AnnotationPage","items": []}
-            annopath=self.deploypath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json"
-            if not outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json" in curannos and os.path.exists(outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json"):
-                f=open(outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json",'r',encoding="utf-8")
-                curannos=json.loads(f.read())
-                f.close()
-            curannos["items"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(len(curannos["items"])+1),"type":"Annotation","motivation":"commenting","body":{"type":"TextualBody","language":"en","format":"text/html","value":"<a href=\""+str(targetind)+"\">"+str(self.shortenURI(targetind))+"</a>"},"target":{"source":targetind,"type":"SpecificResource","selector":{"type":"SvgSelector","value":anno["value"]}}})
-            tosave[outpath+"/iiif/anno/"+self.shortenURI(targetind)+"_anno.json"]=curannos
-        for sv in tosave:
-            f=open(sv,'w',encoding="utf-8")
-            f.write(json.dumps(tosave[sv]))
-            f.close()
+    def generateIIIFAnnotations(self,outpath):
+        for imgpath in imagetoURI:
+            print("Generate IIIF Annotations for "+str(imgpath))
+            if "uri" in imagetoURI:
+                for ur in imagetoURI["uri"]:
+                    if os.path.exists(outpath+"/iiif/mf/"+ur+"/manifest.json"):
+                        f=open(outpath+"/iiif/mf/"+ur+"/manifest.json",'r',encoding="utf-8")
+                        curmanifest=json.loads(f.read())
+                        f.close()
+                        annocounter=2
+                        for anno in imagetoURI["anno"]:
+                            anno["id"]=imgpath+"/canvas/p2/anno-"+str(annocounter)
+                            anno["target"]["source"]=imgpath+"/canvas/p1"
+                            curmanifest["items"][0]["annotations"][0]["items"].append(anno)
+                            annocounter+=1
+                        f=open(outpath+"/iiif/mf/"+ur+"/manifest.json",'w',encoding="utf-8")
+                        f.write(curmanifest)
+                        f.close()
     
     def polygonToPath(self,svg):
         svg=svg.replace("<polygon","<path").replace("points=\"","d=\"M").replace("\"></polygon>"," Z\"></polygon>")
