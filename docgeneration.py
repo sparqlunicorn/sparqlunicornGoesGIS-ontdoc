@@ -2395,9 +2395,9 @@ class OntDocGeneration:
             print("Generate IIIF Annotations for "+str(imgpath)+" with "+str(imagetoURI[imgpath]))
             if "uri" in imagetoURI[imgpath]:
                 for ur in imagetoURI[imgpath]["uri"]:
-                    print(ur)
+                    #print(ur)
                     sur=self.shortenURI(ur)
-                    print("Getting "+outpath+"/iiif/mf/"+sur+"/manifest.json")
+                    #print("Getting "+outpath+"/iiif/mf/"+sur+"/manifest.json")
                     if os.path.exists(outpath+"/iiif/mf/"+sur+"/manifest.json") and "anno" in imagetoURI[imgpath]:
                         f=open(outpath+"/iiif/mf/"+sur+"/manifest.json",'r',encoding="utf-8")
                         curmanifest=json.loads(f.read())
@@ -2445,10 +2445,10 @@ class OntDocGeneration:
                 width=640
                 if imgpath not in imagetoURI or "width" not in imagetoURI[imgpath]:
                     try:
-                        print("Loading image for "+str(imgpath))
+                        #print("Loading image for "+str(imgpath))
                         response = requests.get(imgpath)
                         im = Image.open(BytesIO(response.content))
-                        print(im.size)
+                        #print(im.size)
                         #print(type(im.size))
                         w, h = im.size
                         width=w
@@ -2466,6 +2466,7 @@ class OntDocGeneration:
                     annocounter=2
                     for anno in annos:
                         curitem["annotations"][0]["items"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(annocounter),"type":"Annotation","motivation":"tagging","body":{"type":"TextualBody","language":"en","format":"text/plain","value":str(self.shortenURI(curind))+" Anno "+str(annocounter)+"</a>"},"target":{"type":"SpecificResource","source":imgpath+"/canvas/p"+str(pagecounter),"selector":{"type":"SvgSelector","value":self.polygonToPath(anno["value"])}}})
+                        print("ANNO BODIES???? "+str(anno["bodies"]))
                         if "bodies" in anno and len(anno["bodies"])>0:
                             curitem["annotations"][0]["items"][-1]["body"]=[curitem["annotations"][0]["items"][-1]["body"]]
                             curitem["annotations"][0]["items"][-1]["body"]=curitem["annotations"][0]["items"][-1]["body"]+anno["bodies"]
