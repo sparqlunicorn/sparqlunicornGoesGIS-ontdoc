@@ -2409,7 +2409,7 @@ class OntDocGeneration:
             f.close()
     
     def polygonToPath(self,svg):
-        svg=svg.replace("<polygon","<path").replace("points=\"","d=\"M").replace("\"/>"," Z\"/>")
+        svg=svg.replace("<polygon","<path").replace("points=\"","d=\"M").replace("\"></polygon>"," Z\"></polygon>")
         return svg.replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">")
 
     def generateIIIFManifest(self,outpath,imgpaths,annos,curind,prefixnamespace,label="",summary="",thetypes=None,predobjmap=None,maintype="Image"):
@@ -3022,6 +3022,7 @@ class OntDocGeneration:
                     for image in foundmedia["image"]:                
                         if image not in imagetoURI or "uri" not in imagetoURI[image]:
                             imagetoURI[image]={"uri":[]}
+                            
                         imagetoURI[image]["uri"].append(str(subject)) 
                         if image=="<svg width=":
                             continue
