@@ -2121,7 +2121,7 @@ class OntDocGeneration:
             label=onelabel	
         return label
 
-    def searchObjectConnectionsForAggregateData(self,graph,object,pred,geojsonrep,foundmedia,imageannos,textannos,image3dannos,label,unitlabel,nonns):
+    def searchObjectConnectionsForAggregateData(self,graph,object,pred,geojsonrep,foundmedia,imageannos,textannos,image3dannos,annobodies,label,unitlabel,nonns):
         geoprop=False
         annosource=None
         incollection=False
@@ -2206,10 +2206,7 @@ class OntDocGeneration:
                 unitlabel=str(foundval)+" "+str(foundunit)
             if pred=="http://www.w3.org/ns/oa#hasBody":
                 print("ADD ANNO BODY: "+str({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"}))
-                for anno in imageannos:
-                    anno["bodies"].append({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"})
-                for anno in image3dannos:
-                    anno["bodies"].append({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"})
+                annobodies.append({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"})
         if foundunit == None and foundval != None:
             if "http" in foundval:
                 unitlabel = "<a href=\"" + str(foundval) + "\">" + str(self.shortenURI(foundval)) + "</a>"
@@ -2217,10 +2214,7 @@ class OntDocGeneration:
                 unitlabel = str(foundval)
             if pred=="http://www.w3.org/ns/oa#hasBody":
                 print("ADD ANNO BODY: "+str({"value":foundval,"type":"TextualBody","format":"text/plain"}))
-                for anno in imageannos:
-                    anno["bodies"].append({"value":foundval,"type":"TextualBody","format":"text/plain"})
-                for anno in image3dannos:
-                    anno["bodies"].append({"value":foundval,"type":"TextualBody","format":"text/plain"})
+                annobodies.append({"value":foundval,"type":"TextualBody","format":"text/plain"})
         if annosource != None:
             for textanno in textannos:
                 textanno["src"] = annosource
@@ -2230,10 +2224,10 @@ class OntDocGeneration:
                 imganno["src"] = annosource
         if label=="" and onelabel!=None:
             label=onelabel
-        return {"geojsonrep":geojsonrep,"label":label,"unitlabel":unitlabel,"foundmedia":foundmedia,"imageannos":imageannos,"textannos":textannos,"image3dannos":image3dannos,"bibtex":bibtex,"timeobj":timeobj}
+        return {"geojsonrep":geojsonrep,"label":label,"unitlabel":unitlabel,"foundmedia":foundmedia,"imageannos":imageannos,"textannos":textannos,"image3dannos":image3dannos,"annobodies":annobodies,"bibtex":bibtex,"timeobj":timeobj}
 
 
-    def createHTMLTableValueEntry(self,subject,pred,object,ttlf,graph,baseurl,checkdepth,geojsonrep,foundmedia,imageannos,textannos,image3dannos,dateprops,inverse,nonns):
+    def createHTMLTableValueEntry(self,subject,pred,object,ttlf,graph,baseurl,checkdepth,geojsonrep,foundmedia,imageannos,textannos,image3dannos,annobodies,dateprops,inverse,nonns):
         tablecontents=""
         label=""
         bibtex=None
@@ -2243,7 +2237,7 @@ class OntDocGeneration:
                 ttlf.add((subject,URIRef(pred),object))
             label = ""
             unitlabel=""
-            mydata=self.searchObjectConnectionsForAggregateData(graph,object,pred,geojsonrep,foundmedia,imageannos,textannos,image3dannos,label,unitlabel,nonns)
+            mydata=self.searchObjectConnectionsForAggregateData(graph,object,pred,geojsonrep,foundmedia,imageannos,textannos,image3dannos,annobodies,label,unitlabel,nonns)
             label=mydata["label"]
             if label=="":
                 label=str(self.shortenURI(str(object)))
@@ -2255,6 +2249,7 @@ class OntDocGeneration:
             unitlabel=mydata["unitlabel"]
             bibtex=mydata["bibtex"]
             timeobj=mydata["timeobj"]
+            annobodies=mydata["annobodies"]
             if inverse:
                 rdfares = " about=\"" + str(object) + "\" resource=\"" + str(subject) + "\""
             else:
@@ -2310,7 +2305,7 @@ class OntDocGeneration:
                     tablecontents += "<span property=\"" + str(pred) + "\" content=\"" + str(object).replace("<", "&lt").replace(">", "&gt;").replace("\"","'") + "\" datatype=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\" xml:lang=\"" + str(object.language) + "\">" + str(object).replace("<", "&lt").replace(">", "&gt;") + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\">rdf:langString</a>) (<a href=\"http://www.lexvo.org/page/iso639-1/"+str(object.language)+"\" target=\"_blank\">iso6391:" + str(object.language) + "</a>)</small></span>"
                 else:
                     tablecontents += self.detectStringLiteralContent(pred,object)
-        return {"html":tablecontents,"geojson":geojsonrep,"foundmedia":foundmedia,"imageannos":imageannos,"textannos":textannos,"image3dannos":image3dannos,"label":label,"timeobj":dateprops}
+        return {"html":tablecontents,"geojson":geojsonrep,"foundmedia":foundmedia,"imageannos":imageannos,"textannos":textannos,"image3dannos":image3dannos,"annobodies":annobodies,"label":label,"timeobj":dateprops}
 
     def detectStringLiteralContent(self,pred,object):
         if object.startswith("http://") or object.startswith("https://"):
@@ -2418,7 +2413,7 @@ class OntDocGeneration:
         svg=svg.replace("<polygon","<path").replace("points=\"","d=\"M").replace("\"></polygon>"," Z\"></polygon>")
         return svg.replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">")
 
-    def generateIIIFManifest(self,outpath,imgpaths,annos,curind,prefixnamespace,label="",summary="",thetypes=None,predobjmap=None,maintype="Image"):
+    def generateIIIFManifest(self,outpath,imgpaths,annos,annobodies,curind,prefixnamespace,label="",summary="",thetypes=None,predobjmap=None,maintype="Image"):
         print("GENERATE IIIF Manifest for "+str(self.outpath)+" "+str(curind)+" "+str(label)+" "+str(summary))
         if not os.path.exists(self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json"):
             if not os.path.exists(self.outpath + "/iiif/mf/"):
@@ -2469,10 +2464,10 @@ class OntDocGeneration:
                     for anno in annos:
                         print("ANNO: "+str(anno))
                         curitem["annotations"][0]["items"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(annocounter),"type":"Annotation","motivation":"tagging","body":{"type":"TextualBody","language":"en","format":"text/plain","value":str(self.shortenURI(curind))+" Anno "+str(annocounter)+"</a>"},"target":{"type":"SpecificResource","source":imgpath+"/canvas/p"+str(pagecounter),"selector":{"type":"SvgSelector","value":self.polygonToPath(anno["value"])}}})
-                        print("ANNO BODIES???? "+str(anno["bodies"]))
-                        if "bodies" in anno and len(anno["bodies"])>0:
+                        print("ANNO BODIES???? "+str(annobodies))
+                        if len(annobodies)>0:
                             curitem["annotations"][0]["items"][-1]["body"]=[curitem["annotations"][0]["items"][-1]["body"]]
-                            curitem["annotations"][0]["items"][-1]["body"]=curitem["annotations"][0]["items"][-1]["body"]+anno["bodies"]
+                            curitem["annotations"][0]["items"][-1]["body"]=curitem["annotations"][0]["items"][-1]["body"]+annobodies
                         imagetoURI[imgpath]["anno"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(annocounter),"type":"Annotation","motivation":"tagging","body":{"type":"TextualBody","language":"en","format":"text/plain","value":str(self.shortenURI(curind))+" Anno "+str(annocounter)},"target":{"type":"SpecificResource","source":imgpath+"/canvas/p"+str(pagecounter),"selector":{"type":"SvgSelector","value":self.polygonToPath(anno["value"])}}})
                         annocounter+=1
                 curiiifmanifest["items"].append(curitem)        
@@ -2759,6 +2754,7 @@ class OntDocGeneration:
         textannos = []
         foundvals=set()
         imageannos=[]
+        annobodies=[]
         image3dannos=[]
         predobjmap={}
         isgeocollection=False
@@ -2863,12 +2859,13 @@ class OntDocGeneration:
                         elif tup in valueproperties:
                             foundvals.add(str(item))
                         res=self.createHTMLTableValueEntry(subject, tup, item, ttlf, graph,
-                                              baseurl, checkdepth,geojsonrep,foundmedia,imageannos,textannos,image3dannos,dateprops,inverse,nonns)
+                                              baseurl, checkdepth,geojsonrep,foundmedia,imageannos,textannos,image3dannos,annobodies,dateprops,inverse,nonns)
                         geojsonrep = res["geojson"]
                         foundmedia = res["foundmedia"]
                         imageannos=res["imageannos"]
                         textannos=res["textannos"]
                         image3dannos=res["image3dannos"]
+                        annobodies=res["annobodies"]
                         if res["timeobj"]!=None and res["timeobj"]!=[]:
                             #print("RESTIMEOBJ: "+str(timeobj))
                             timeobj=res["timeobj"]
@@ -2922,10 +2919,11 @@ class OntDocGeneration:
                             QgsMessageLog.logMessage("Postprocessing: " + str(item)+" - "+str(tup)+" - "+str(subject))
                             postprocessing.add((item,URIRef(tup),subject))
                         res = self.createHTMLTableValueEntry(subject, tup, item, None, graph,
-                                                             baseurl, checkdepth, geojsonrep,foundmedia,imageannos,textannos,image3dannos,None,True,nonns)
+                                                             baseurl, checkdepth, geojsonrep,foundmedia,imageannos,textannos,image3dannos,annobodies,None,True,nonns)
                         foundmedia = res["foundmedia"]
                         imageannos=res["imageannos"]
                         image3dannos=res["image3dannos"]
+                        annobodies=res["annobodies"]
                         if nonns and str(tup) != self.typeproperty:	
                             hasnonns.add(str(item))
                         if nonns:
@@ -3016,7 +3014,7 @@ class OntDocGeneration:
                     f.write(imagecarouselheader)
                 if len(imageannos)>0 and len(foundmedia["image"])>0:
                     if self.iiif:
-                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],imageannos,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
+                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],imageannos,annobodies,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
                     for image in foundmedia["image"]:
                         if image not in imagetoURI or "uri" not in imagetoURI[image]:
                             imagetoURI[image]={"uri":[]}
@@ -3029,7 +3027,7 @@ class OntDocGeneration:
                             carousel="carousel-item"                  
                 elif len(foundmedia["image"])>0:
                     if self.iiif:
-                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],imageannos,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
+                        iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],imageannos,annobodies,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
                     for image in foundmedia["image"]:                
                         if image not in imagetoURI or "uri" not in imagetoURI[image]:
                             imagetoURI[image]={"uri":[]}
@@ -3060,12 +3058,12 @@ class OntDocGeneration:
                                     textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
                                     textanno["exact"]) + "\"><mark>" + str(textanno["exact"]) + "</mark></span>")
                 if len(foundmedia["audio"])>0 and self.iiif:
-                    iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["audio"],None,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Audio"))
+                    iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["audio"],None,None,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Audio"))
                 for audio in foundmedia["audio"]:
                     imagetoURI[audio]={"uri":str(subject)}
                     f.write(audiotemplate.replace("{{audio}}",str(audio)))
                 if len(foundmedia["video"])>0 and self.iiif:
-                    iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["video"],None,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Video"))
+                    iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["video"],None,None,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Video"))
                 for video in foundmedia["video"]:
                     imagetoURI[video]={"uri":str(subject)}
                     f.write(videotemplate.replace("{{video}}",str(video)))
