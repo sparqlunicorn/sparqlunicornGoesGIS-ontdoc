@@ -1751,7 +1751,7 @@ class OntDocGeneration:
             indexhtml = htmltemplate.replace("{{logo}}",self.logoname).replace("{{relativedepth}}","0").replace("{{baseurl}}", prefixnamespace).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}", "vowl_result.js")\
                     .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{nonnslink}}","").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
             indexhtml = indexhtml.replace("{{indexpage}}", "true")
-            self.generateOGCAPIFeaturesPages(outpath,featurecollectionspaths,prefixnamespace,,self.ogcapifeatures,True)
+            self.generateOGCAPIFeaturesPages(outpath,featurecollectionspaths,prefixnamespace,self.ogcapifeatures,True)
             indexhtml += "<p>This page shows feature collections present in the linked open data export</p>"
             indexhtml+="<script src=\"features.js\"></script>"
             indexhtml+=maptemplate.replace("var ajax=true","var ajax=false").replace("var featurecolls = {{myfeature}}","").replace("{{baselayers}}",json.dumps(baselayers).replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{dateatt}}", ""))
@@ -2527,7 +2527,7 @@ class OntDocGeneration:
         f.write(iiifindex)
         f.close()
 
-    def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths,prefixnamespace,curlicense,ogcapi,mergeJSON):
+    def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths,prefixnamespace,ogcapi,mergeJSON):
         if ogcapi:
             apihtml="<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><metaname=\"description\" content=\"SwaggerUI\"/><title>SwaggerUI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css\" /></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js\" crossorigin></script><script>const swaggerUrl = \""+str(self.deploypath)+"/api/index.json\"; const apiUrl = \""+str(self.deploypath)+"/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
             apijson={"openapi":"3.0.1","info":{"title":str(self.deploypath)+" Feature Collections","description":"Feature Collections of "+str(self.deploypath)},"servers":[{"url":str(self.deploypath)}],"paths":{}}
