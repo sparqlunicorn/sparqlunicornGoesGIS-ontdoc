@@ -2598,8 +2598,8 @@ class OntDocGeneration:
                     currentcollection["links"].append({"href":self.licenseuri,"rel":"license","type":"text/html","title":self.license})
                     collectionsjson["collections"][-1]["links"].append({"href":self.licenseuri,"rel":"license","type":"text/html","title":self.license})
                 if "bbox" in curcoll:
-                    currentcollection["extent"]={"spatial":{"bbox":curcoll["bbox"]}}
-                    collectionsjson["collections"][-1]["extent"]={"spatial":{"bbox":curcoll["bbox"]}}
+                    currentcollection["extent"]={"spatial":{"bbox":[curcoll["bbox"]]}}
+                    collectionsjson["collections"][-1]["extent"]={"spatial":{"bbox":[curcoll["bbox"]]}}
                 if "crs" in curcoll:
                     currentcollection["crs"]=curcoll["crs"]
                     collectionsjson["collections"][-1]["crs"]=curcoll["crs"]
