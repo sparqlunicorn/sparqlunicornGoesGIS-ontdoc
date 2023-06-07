@@ -3130,7 +3130,7 @@ class OntDocGeneration:
                         if len(thecrs)>0:
                             featcoll["crs"]="http://www.opengis.net/def/crs/EPSG/0/"+str(next(iter(thecrs)))
                         else:
-                            featcoll["crs"]="http://www.opengis.net/def/crs/OGC/1.3/CRS84"
+                            featcoll["crs"]="http://www.opengis.net/def/crs/EPSG/0/4326"
                         if dateatt!="":
                             for feat in featcoll["features"]:
                                 if dateatt not in feat["properties"]:
