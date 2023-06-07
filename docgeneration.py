@@ -1751,7 +1751,7 @@ class OntDocGeneration:
             indexhtml = htmltemplate.replace("{{logo}}",self.logoname).replace("{{relativedepth}}","0").replace("{{baseurl}}", prefixnamespace).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}", "vowl_result.js")\
                     .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{nonnslink}}","").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
             indexhtml = indexhtml.replace("{{indexpage}}", "true")
-            self.generateOGCAPIFeaturesPages(outpath,featurecollectionspaths,prefixnamespace,self.ogcapifeatures,True)
+            self.generateOGCAPIFeaturesPages(outpath,featurecollectionspaths,prefixnamespace,,self.ogcapifeatures,True)
             indexhtml += "<p>This page shows feature collections present in the linked open data export</p>"
             indexhtml+="<script src=\"features.js\"></script>"
             indexhtml+=maptemplate.replace("var ajax=true","var ajax=false").replace("var featurecolls = {{myfeature}}","").replace("{{baselayers}}",json.dumps(baselayers).replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{dateatt}}", ""))
@@ -2403,6 +2403,9 @@ class OntDocGeneration:
                         for anno in imagetoURI[imgpath]["anno"]:
                             anno["id"]=imgpath+"/canvas/p2/anno-"+str(annocounter)
                             anno["target"]["source"]=imgpath+"/canvas/p1"
+                            if "bodies" in imagetoURI[imgpath]["uri"]:
+                                anno["body"]=[anno["body"]]
+                                anno["body"]+=imagetoURI[imgpath]["uri"]["bodies"]
                             curmanifest["items"][0]["annotations"][0]["items"].append(anno)
                             annocounter+=1
                         f=open(outpath+"/iiif/mf/"+sur+"/manifest.json",'w',encoding="utf-8")
@@ -2459,17 +2462,6 @@ class OntDocGeneration:
                     height=imagetoURI[imgpath]["height"]
                     width=imagetoURI[imgpath]["width"]
                 curitem={"id":imgpath+"/canvas/p"+str(pagecounter),"height":height,"width":width,"type":"Canvas","label":{"en":[str(label)+" "+str(maintype)+" "+str(pagecounter+1)]},"items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/1","type":"AnnotationPage","items":[{"id":imgpath+"/annotation/p"+str(pagecounter)+"/1","type":"Annotation","motivation":"painting","body":{"id":imgpath,"type":str(maintype),"format":"image/png"},"target":imgpath+"/canvas/p"+str(pagecounter)}]}],"annotations":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/annopage-2","type":"AnnotationPage","items":[]}]}
-                if annos!=None:
-                    annocounter=2
-                    for anno in annos:
-                        print("ANNO: "+str(anno))
-                        curitem["annotations"][0]["items"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(annocounter),"type":"Annotation","motivation":"tagging","body":{"type":"TextualBody","language":"en","format":"text/plain","value":str(self.shortenURI(curind))+" Anno "+str(annocounter)+"</a>"},"target":{"type":"SpecificResource","source":imgpath+"/canvas/p"+str(pagecounter),"selector":{"type":"SvgSelector","value":self.polygonToPath(anno["value"])}}})
-                        print("ANNO BODIES???? "+str(annobodies))
-                        if len(annobodies)>0:
-                            curitem["annotations"][0]["items"][-1]["body"]=[curitem["annotations"][0]["items"][-1]["body"]]
-                            curitem["annotations"][0]["items"][-1]["body"]=curitem["annotations"][0]["items"][-1]["body"]+annobodies
-                        imagetoURI[imgpath]["anno"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(annocounter),"type":"Annotation","motivation":"tagging","body":{"type":"TextualBody","language":"en","format":"text/plain","value":str(self.shortenURI(curind))+" Anno "+str(annocounter)},"target":{"type":"SpecificResource","source":imgpath+"/canvas/p"+str(pagecounter),"selector":{"type":"SvgSelector","value":self.polygonToPath(anno["value"])}}})
-                        annocounter+=1
                 curiiifmanifest["items"].append(curitem)        
                 pagecounter+=1
             for pred in predobjmap:
@@ -2535,7 +2527,7 @@ class OntDocGeneration:
         f.write(iiifindex)
         f.close()
 
-    def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths,prefixnamespace,ogcapi,mergeJSON):
+    def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths,prefixnamespace,curlicense,ogcapi,mergeJSON):
         if ogcapi:
             apihtml="<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><metaname=\"description\" content=\"SwaggerUI\"/><title>SwaggerUI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css\" /></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js\" crossorigin></script><script>const swaggerUrl = \""+str(self.deploypath)+"/api/index.json\"; const apiUrl = \""+str(self.deploypath)+"/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
             apijson={"openapi":"3.0.1","info":{"title":str(self.deploypath)+" Feature Collections","description":"Feature Collections of "+str(self.deploypath)},"servers":[{"url":str(self.deploypath)}],"paths":{}}
@@ -2602,6 +2594,9 @@ class OntDocGeneration:
                 collectionsjson["collections"].append({"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"title":featurecollectionspaths[coll]["name"],"links":[{"href":str(opweb.replace(".geojson","")+"/index.json").replace("//","/"),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":str(opweb.replace(".geojson","")+"/").replace("//","/"),"rel":"collection","type":"text/html","title":"Collection as HTML"},{"href":str(opweb.replace(".geojson","")+"/index.ttl").replace("//","/"),"rel":"collection","type":"text/ttl","title":"Collection as TTL"}]})
                 currentcollection={"title":featurecollectionspaths[coll]["name"],"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"links":[],"itemType":"feature"}
                 currentcollection["links"]=[{"href":opwebcoll+"/items/index.json","rel":"items","type":"application/json","title":"Collection as JSON"},{"href":opwebcoll+"/items/indexc.html","rel":"items","type":"text/html","title":"Collection as HTML"},{"href":opwebcoll+"/items/index.ttl","rel":"collection","type":"text/ttl","title":"Collection as TTL"}]
+                if self.license!="" and self.license!=None:
+                    currentcollection["links"].append({"href":self.licenseuri,"rel":"license","type":"text/html","title":self.license})
+                    collectionsjson["collections"][-1]["links"].append({"href":self.licenseuri,"rel":"license","type":"text/html","title":self.license})
                 if "bbox" in curcoll:
                     currentcollection["extent"]={"spatial":{"bbox":curcoll["bbox"]}}
                     collectionsjson["collections"][-1]["extent"]={"spatial":{"bbox":curcoll["bbox"]}}
@@ -3014,13 +3009,21 @@ class OntDocGeneration:
                 if len(foundmedia["image"])>3:
                     carousel="carousel-item active"
                     f.write(imagecarouselheader)
+                if self.iiif and len(annobodies)>0:
+                    if target not in imagetoURI:
+                        imagetoURI[target]={"uri":{str(subject):{"bodies":[]}}}
+                    if str(subject) not in imagetoURI[target]:
+                        imagetoURI[target]["uri"][str(subject)]={"bodies":[]}
+                    if str(subject) not in imagetoURI[target]:
+                        imagetoURI[target]["uri"][str(subject)]["bodies"]+=annobodies
                 if len(imageannos)>0 and len(foundmedia["image"])>0:
                     if self.iiif:
                         iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],imageannos,annobodies,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
                     for image in foundmedia["image"]:
                         if image not in imagetoURI or "uri" not in imagetoURI[image]:
-                            imagetoURI[image]={"uri":[]}
-                        imagetoURI[image]["uri"].append(str(subject))                           
+                            imagetoURI[image]={"uri":{}}
+                        if not str(subject) in imagetoURI[image]["uri"]:
+                            imagetoURI[image]["uri"][str(subject)]={"bodies":[]}                           
                         annostring=""
                         for anno in imageannos:
                             annostring+=anno["value"].replace("<svg>","<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
@@ -3032,9 +3035,9 @@ class OntDocGeneration:
                         iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],imageannos,annobodies,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
                     for image in foundmedia["image"]:                
                         if image not in imagetoURI or "uri" not in imagetoURI[image]:
-                            imagetoURI[image]={"uri":[]}
-                            
-                        imagetoURI[image]["uri"].append(str(subject)) 
+                            imagetoURI[image]={"uri":{}}
+                        if not str(subject) in imagetoURI[image]["uri"]:
+                            imagetoURI[image]["uri"][str(subject)]={"bodies":[]} 
                         if image=="<svg width=":
                             continue
                         if "<svg" in image:
