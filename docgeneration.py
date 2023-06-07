@@ -2205,7 +2205,7 @@ class OntDocGeneration:
             else:
                 unitlabel=str(foundval)+" "+str(foundunit)
             if pred=="http://www.w3.org/ns/oa#hasBody":
-                print("ADD ANNO BODY: "+str({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"}))
+                #print("ADD ANNO BODY: "+str({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"}))
                 annobodies.append({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"})
         if foundunit == None and foundval != None:
             if "http" in foundval:
@@ -2213,7 +2213,7 @@ class OntDocGeneration:
             else:
                 unitlabel = str(foundval)
             if pred=="http://www.w3.org/ns/oa#hasBody":
-                print("ADD ANNO BODY: "+str({"value":foundval,"type":"TextualBody","format":"text/plain"}))
+                #print("ADD ANNO BODY: "+str({"value":foundval,"type":"TextualBody","format":"text/plain"}))
                 annobodies.append({"value":foundval,"type":"TextualBody","format":"text/plain"})
         if annosource != None:
             for textanno in textannos:
@@ -2861,7 +2861,7 @@ class OntDocGeneration:
                         textannos=res["textannos"]
                         image3dannos=res["image3dannos"]
                         annobodies=res["annobodies"]
-                        print("GOT ANNO BODIES "+str(annobodies))
+                        #print("GOT ANNO BODIES "+str(annobodies))
                         if res["timeobj"]!=None and res["timeobj"]!=[]:
                             #print("RESTIMEOBJ: "+str(timeobj))
                             timeobj=res["timeobj"]
@@ -2920,7 +2920,7 @@ class OntDocGeneration:
                         imageannos=res["imageannos"]
                         image3dannos=res["image3dannos"]
                         annobodies=res["annobodies"]
-                        print("POSTPROC ANNO BODIES "+str(annobodies))
+                        #print("POSTPROC ANNO BODIES "+str(annobodies))
                         if nonns and str(tup) != self.typeproperty:	
                             hasnonns.add(str(item))
                         if nonns:
