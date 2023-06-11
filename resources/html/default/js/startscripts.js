@@ -245,6 +245,30 @@ function exportTGF(){
                         }
                     }
                 }
+            }else if("type" in feature && feature["type"]=="Feature"){
+                    featid=nodecounter
+                    uritoNodeId[feat["id"]]=nodecounter
+                    nodes+=nodecounter+" "+feat["id"]+"\n"
+                    nodecounter+=1
+                    if("properties" in feat){
+                        for(prop in feat["properties"]){
+                            if(Array.isArray(feat["properties"][prop])){
+                                    for(arritem of feat["properties"][prop]){
+                                            if(!(arritem in uritoNodeId)){
+                                                uritoNodeId[arritem]=nodecounter
+                                                nodecounter+=1
+                                            }
+                                            edges+=featid+" "+uritoNodeId[arritem]+" "+prop+"\n"
+                                    }
+                            }else{
+                                 if(!(feat["properties"][prop] in uritoNodeId)){
+                                    uritoNodeId[feat["properties"][prop]]=nodecounter
+                                    nodecounter+=1
+                                 }
+                                 edges+=featid+" "+uritoNodeId[feat["properties"][prop]]+" "+prop+"\n"
+                            }
+                      }
+                }
             }
         }
     }
@@ -319,15 +343,15 @@ function exportWKT(){
                         if(i<feat["geometry"].coordinates.length-1)reswkt =  reswkt + p[0] + ' ' + p[1] + ', ';
                         else reswkt =  reswkt + p[0] + ' ' + p[1] + ')';
                     })
-                    reswkt+=")\\n"
+                    reswkt+=")\n"
                 }
-            }else{
+            }else if("geometry" in feature){
                     reswkt+=feature["geometry"]["type"].toUpperCase()+"("
                     feature["geometry"].coordinates.forEach(function(p,i){
-                        if(i<feature["geometry"].coordinates.length-1)reswkt =  reswkt + p[0] + ' ' + p[1] + ', ';
+                        if(i<feature["geometry"].coordinates.length-1) reswkt =  reswkt + p[0] + ' ' + p[1] + ', ';
                         else reswkt =  reswkt + p[0] + ' ' + p[1] + ')';
                     })
-                    reswkt+=")\\n"
+                    reswkt+=")\n"
             }
             saveTextAsFile(reswkt,".wkt")
         }
