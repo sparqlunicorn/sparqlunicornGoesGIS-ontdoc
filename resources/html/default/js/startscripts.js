@@ -211,6 +211,49 @@ function exportCSV(){
     }
 }
 
+function exportTGF(){
+    restgf=""
+    uritoNodeId={}
+    nodecounter=0
+    nodes=""
+    edges=""
+    if(typeof(featurecolls)!=="undefined"){
+        for(feature in featurecolls){
+            if("features" in feature){
+                for(feat of feature["features"]){
+                    featid=nodecounter
+                    uritoNodeId[feat["id"]]=nodecounter
+                    nodes+=nodecounter+" "+feat["id"]+"\n"
+                    nodecounter+=1
+                    if("properties" in feat){
+                        for(prop in feat["properties"]){
+                            if(Array.isArray(feat["properties"][prop])){
+                                    for(arritem of feat["properties"][prop]){
+                                            if(!(arritem in uritoNodeId)){
+                                                uritoNodeId[arritem]=nodecounter
+                                                nodecounter+=1
+                                            }
+                                            edges+=featid+" "+uritoNodeId[arritem]+" "+prop+"\n"
+                                    }
+                            }else{
+                                 if(!(feat["properties"][prop] in uritoNodeId)){
+                                    uritoNodeId[feat["properties"][prop]]=nodecounter
+                                    nodecounter+=1
+                                 }
+                                 edges+=featid+" "+uritoNodeId[feat["properties"][prop]]+" "+prop+"\n"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    restgf+=nodes
+    restgf+="#\n"
+    restgf+=edges
+    saveTextAsFile(restgf,".tgf")
+}
+
 function setSVGDimensions(){
     $('svg').each(function(i, obj) {
         console.log(obj)
@@ -265,27 +308,29 @@ function setSVGDimensions(){
 
 
 function exportWKT(){
-    if(typeof(feature)!=="undefined"){
+    if(typeof(featurecolls)!=="undefined"){
         reswkt=""
-        if("features" in feature){
-            for(feat of feature["features"]){
-                reswkt+=feat["geometry"]["type"].toUpperCase()+"("
-                feat["geometry"].coordinates.forEach(function(p,i){
-                //	console.log(p)
-                    if(i<feat["geometry"].coordinates.length-1)reswkt =  reswkt + p[0] + ' ' + p[1] + ', ';
-                    else reswkt =  reswkt + p[0] + ' ' + p[1] + ')';
-                })
-                reswkt+=")\\n"
+        for(feature in featurecolls){
+            if("features" in feature){
+                for(feat of feature["features"]){
+                    reswkt+=feat["geometry"]["type"].toUpperCase()+"("
+                    feat["geometry"].coordinates.forEach(function(p,i){
+                    //	console.log(p)
+                        if(i<feat["geometry"].coordinates.length-1)reswkt =  reswkt + p[0] + ' ' + p[1] + ', ';
+                        else reswkt =  reswkt + p[0] + ' ' + p[1] + ')';
+                    })
+                    reswkt+=")\\n"
+                }
+            }else{
+                    reswkt+=feature["geometry"]["type"].toUpperCase()+"("
+                    feature["geometry"].coordinates.forEach(function(p,i){
+                        if(i<feature["geometry"].coordinates.length-1)reswkt =  reswkt + p[0] + ' ' + p[1] + ', ';
+                        else reswkt =  reswkt + p[0] + ' ' + p[1] + ')';
+                    })
+                    reswkt+=")\\n"
             }
-        }else{
-                reswkt+=feature["geometry"]["type"].toUpperCase()+"("
-                feature["geometry"].coordinates.forEach(function(p,i){
-                    if(i<feature["geometry"].coordinates.length-1)reswkt =  reswkt + p[0] + ' ' + p[1] + ', ';
-                    else reswkt =  reswkt + p[0] + ' ' + p[1] + ')';
-                })
-                reswkt+=")\\n"
+            saveTextAsFile(reswkt,".wkt")
         }
-        saveTextAsFile(reswkt,".wkt")
     }
 }
 
@@ -324,6 +369,8 @@ function download(){
         exportWKT()
     }else if(format=="csv"){
         exportCSV()
+    }else if(format=="tgf"){
+        exportTGF()
     }
 }
 
