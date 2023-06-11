@@ -1286,12 +1286,14 @@ nongeoexports="""
 <option value="csv">Comma Separated Values (CSV)</option>
 <option value="geojson">(Geo)JSON</option>
 <option value="json">JSON-LD</option>
+<option value="tgf">Trivial Graph Format (TGF)</option>
 <option value="ttl" selected>Turtle (TTL)</option>
 """
 
 geoexports="""
 <option value="csv">Comma Separated Values (CSV)</option>
 <option value="geojson">(Geo)JSON</option>
+<option value="tgf">Trivial Graph Format (TGF)</option>
 <option value="ttl" selected>Turtle (TTL)</option>
 <option value="wkt">Well-Known-Text (WKT)</option>
 """
@@ -2146,7 +2148,7 @@ class OntDocGeneration:
                         imageannos.append({"value":str(svglit),"bodies":[]})
                     elif ("POINT" in str(svglit).upper() or "POLYGON" in str(svglit).upper() or "LINESTRING" in str(svglit).upper()):
                         image3dannos.append({"value":str(svglit),"bodies":[]})
-            if pred == "http://www.w3.org/ns/oa#hasSelector" and tup[0] == URIRef(
+            elif pred == "http://www.w3.org/ns/oa#hasSelector" and tup[0] == URIRef(
                     self.typeproperty) and tup[1] == URIRef(
                     "http://www.w3.org/ns/oa#TextPositionSelector"):
                 curanno = {}
@@ -2206,7 +2208,7 @@ class OntDocGeneration:
                 unitlabel=str(foundval)+" "+str(foundunit)
             if pred=="http://www.w3.org/ns/oa#hasBody":
                 print("ADD ANNO BODY: "+str({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"}))
-                annobodies.append({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"})
+                annobodies[str(subject)].append({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"})
         if foundunit == None and foundval != None:
             if "http" in foundval:
                 unitlabel = "<a href=\"" + str(foundval) + "\">" + str(self.shortenURI(foundval)) + "</a>"
@@ -2214,7 +2216,7 @@ class OntDocGeneration:
                 unitlabel = str(foundval)
             if pred=="http://www.w3.org/ns/oa#hasBody":
                 print("ADD ANNO BODY: "+str({"value":foundval,"type":"TextualBody","format":"text/plain"}))
-                annobodies.append({"value":foundval,"type":"TextualBody","format":"text/plain"})
+                annobodies[str(subject)].append({"value":foundval,"type":"TextualBody","format":"text/plain"})
         if annosource != None:
             for textanno in textannos:
                 textanno["src"] = annosource
@@ -2754,7 +2756,7 @@ class OntDocGeneration:
         textannos = []
         foundvals=set()
         imageannos=[]
-        annobodies=[]
+        annobodies={}
         image3dannos=[]
         predobjmap={}
         isgeocollection=False
