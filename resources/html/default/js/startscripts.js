@@ -247,6 +247,7 @@ function exportTGF(){
                 }
             }else if("type" in feature && feature["type"]=="Feature"){
                     featid=nodecounter
+                    feat=feature
                     uritoNodeId[feat["id"]]=nodecounter
                     nodes+=nodecounter+" "+feat["id"]+"\n"
                     nodecounter+=1
