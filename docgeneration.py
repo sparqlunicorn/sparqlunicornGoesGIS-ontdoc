@@ -2207,16 +2207,16 @@ class OntDocGeneration:
             else:
                 unitlabel=str(foundval)+" "+str(foundunit)
             if pred=="http://www.w3.org/ns/oa#hasBody":
-                print("ADD ANNO BODY: "+str({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"}))
-                annobodies[str(subject)].append({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"})
+                #print("ADD ANNO BODY: "+str({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"}))
+                annobodies.append({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"})
         if foundunit == None and foundval != None:
             if "http" in foundval:
                 unitlabel = "<a href=\"" + str(foundval) + "\">" + str(self.shortenURI(foundval)) + "</a>"
             else:
                 unitlabel = str(foundval)
             if pred=="http://www.w3.org/ns/oa#hasBody":
-                print("ADD ANNO BODY: "+str({"value":foundval,"type":"TextualBody","format":"text/plain"}))
-                annobodies[str(subject)].append({"value":foundval,"type":"TextualBody","format":"text/plain"})
+                #print("ADD ANNO BODY: "+str({"value":foundval,"type":"TextualBody","format":"text/plain"}))
+                annobodies.append({"value":foundval,"type":"TextualBody","format":"text/plain"})
         if annosource != None:
             for textanno in textannos:
                 textanno["src"] = annosource
@@ -2405,6 +2405,9 @@ class OntDocGeneration:
                         for anno in imagetoURI[imgpath]["anno"]:
                             anno["id"]=imgpath+"/canvas/p2/anno-"+str(annocounter)
                             anno["target"]["source"]=imgpath+"/canvas/p1"
+                            if "bodies" in imagetoURI[imgpath]["uri"]:
+                                anno["body"]=[anno["body"]]
+                                anno["body"]+=imagetoURI[imgpath]["uri"]["bodies"]
                             curmanifest["items"][0]["annotations"][0]["items"].append(anno)
                             annocounter+=1
                         f=open(outpath+"/iiif/mf/"+sur+"/manifest.json",'w',encoding="utf-8")
@@ -2461,17 +2464,6 @@ class OntDocGeneration:
                     height=imagetoURI[imgpath]["height"]
                     width=imagetoURI[imgpath]["width"]
                 curitem={"id":imgpath+"/canvas/p"+str(pagecounter),"height":height,"width":width,"type":"Canvas","label":{"en":[str(label)+" "+str(maintype)+" "+str(pagecounter+1)]},"items":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/1","type":"AnnotationPage","items":[{"id":imgpath+"/annotation/p"+str(pagecounter)+"/1","type":"Annotation","motivation":"painting","body":{"id":imgpath,"type":str(maintype),"format":"image/png"},"target":imgpath+"/canvas/p"+str(pagecounter)}]}],"annotations":[{"id":imgpath+"/canvas/p"+str(pagecounter)+"/annopage-2","type":"AnnotationPage","items":[]}]}
-                if annos!=None:
-                    annocounter=2
-                    for anno in annos:
-                        print("ANNO: "+str(anno))
-                        curitem["annotations"][0]["items"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(annocounter),"type":"Annotation","motivation":"tagging","body":{"type":"TextualBody","language":"en","format":"text/plain","value":str(self.shortenURI(curind))+" Anno "+str(annocounter)+"</a>"},"target":{"type":"SpecificResource","source":imgpath+"/canvas/p"+str(pagecounter),"selector":{"type":"SvgSelector","value":self.polygonToPath(anno["value"])}}})
-                        print("ANNO BODIES???? "+str(annobodies))
-                        if len(annobodies)>0:
-                            curitem["annotations"][0]["items"][-1]["body"]=[curitem["annotations"][0]["items"][-1]["body"]]
-                            curitem["annotations"][0]["items"][-1]["body"]=curitem["annotations"][0]["items"][-1]["body"]+annobodies
-                        imagetoURI[imgpath]["anno"].append({"id":imgpath+"/canvas/p"+str(pagecounter)+"/anno-"+str(annocounter),"type":"Annotation","motivation":"tagging","body":{"type":"TextualBody","language":"en","format":"text/plain","value":str(self.shortenURI(curind))+" Anno "+str(annocounter)},"target":{"type":"SpecificResource","source":imgpath+"/canvas/p"+str(pagecounter),"selector":{"type":"SvgSelector","value":self.polygonToPath(anno["value"])}}})
-                        annocounter+=1
                 curiiifmanifest["items"].append(curitem)        
                 pagecounter+=1
             for pred in predobjmap:
@@ -2604,9 +2596,12 @@ class OntDocGeneration:
                 collectionsjson["collections"].append({"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"title":featurecollectionspaths[coll]["name"],"links":[{"href":str(opweb.replace(".geojson","")+"/index.json").replace("//","/"),"rel":"collection","type":"application/json","title":"Collection as JSON"},{"href":str(opweb.replace(".geojson","")+"/").replace("//","/"),"rel":"collection","type":"text/html","title":"Collection as HTML"},{"href":str(opweb.replace(".geojson","")+"/index.ttl").replace("//","/"),"rel":"collection","type":"text/ttl","title":"Collection as TTL"}]})
                 currentcollection={"title":featurecollectionspaths[coll]["name"],"id":coll.replace(outpath,"").replace("index.geojson","").replace(".geojson","")[1:],"links":[],"itemType":"feature"}
                 currentcollection["links"]=[{"href":opwebcoll+"/items/index.json","rel":"items","type":"application/json","title":"Collection as JSON"},{"href":opwebcoll+"/items/indexc.html","rel":"items","type":"text/html","title":"Collection as HTML"},{"href":opwebcoll+"/items/index.ttl","rel":"collection","type":"text/ttl","title":"Collection as TTL"}]
+                if self.license!="" and self.license!=None:
+                    currentcollection["links"].append({"href":self.licenseuri,"rel":"license","type":"text/html","title":self.license})
+                    collectionsjson["collections"][-1]["links"].append({"href":self.licenseuri,"rel":"license","type":"text/html","title":self.license})
                 if "bbox" in curcoll:
-                    currentcollection["extent"]={"spatial":{"bbox":curcoll["bbox"]}}
-                    collectionsjson["collections"][-1]["extent"]={"spatial":{"bbox":curcoll["bbox"]}}
+                    currentcollection["extent"]={"spatial":{"bbox":[curcoll["bbox"]]}}
+                    collectionsjson["collections"][-1]["extent"]={"spatial":{"bbox":[curcoll["bbox"]]}}
                 if "crs" in curcoll:
                     currentcollection["crs"]=curcoll["crs"]
                     collectionsjson["collections"][-1]["crs"]=curcoll["crs"]
@@ -2868,7 +2863,7 @@ class OntDocGeneration:
                         textannos=res["textannos"]
                         image3dannos=res["image3dannos"]
                         annobodies=res["annobodies"]
-                        print("GOT ANNO BODIES "+str(annobodies))
+                        #print("GOT ANNO BODIES "+str(annobodies))
                         if res["timeobj"]!=None and res["timeobj"]!=[]:
                             #print("RESTIMEOBJ: "+str(timeobj))
                             timeobj=res["timeobj"]
@@ -2927,7 +2922,7 @@ class OntDocGeneration:
                         imageannos=res["imageannos"]
                         image3dannos=res["image3dannos"]
                         annobodies=res["annobodies"]
-                        print("POSTPROC ANNO BODIES "+str(annobodies))
+                        #print("POSTPROC ANNO BODIES "+str(annobodies))
                         if nonns and str(tup) != self.typeproperty:	
                             hasnonns.add(str(item))
                         if nonns:
@@ -3016,13 +3011,21 @@ class OntDocGeneration:
                 if len(foundmedia["image"])>3:
                     carousel="carousel-item active"
                     f.write(imagecarouselheader)
+                if self.iiif and len(annobodies)>0:
+                    if target not in imagetoURI:
+                        imagetoURI[target]={"uri":{str(subject):{"bodies":[]}}}
+                    if str(subject) not in imagetoURI[target]:
+                        imagetoURI[target]["uri"][str(subject)]={"bodies":[]}
+                    if str(subject) not in imagetoURI[target]:
+                        imagetoURI[target]["uri"][str(subject)]["bodies"]+=annobodies
                 if len(imageannos)>0 and len(foundmedia["image"])>0:
                     if self.iiif:
                         iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],imageannos,annobodies,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
                     for image in foundmedia["image"]:
                         if image not in imagetoURI or "uri" not in imagetoURI[image]:
-                            imagetoURI[image]={"uri":[]}
-                        imagetoURI[image]["uri"].append(str(subject))                           
+                            imagetoURI[image]={"uri":{}}
+                        if not str(subject) in imagetoURI[image]["uri"]:
+                            imagetoURI[image]["uri"][str(subject)]={"bodies":[]}                           
                         annostring=""
                         for anno in imageannos:
                             annostring+=anno["value"].replace("<svg>","<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
@@ -3034,9 +3037,9 @@ class OntDocGeneration:
                         iiifmanifestpaths["default"].append(self.generateIIIFManifest(outpath,foundmedia["image"],imageannos,annobodies,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
                     for image in foundmedia["image"]:                
                         if image not in imagetoURI or "uri" not in imagetoURI[image]:
-                            imagetoURI[image]={"uri":[]}
-                            
-                        imagetoURI[image]["uri"].append(str(subject)) 
+                            imagetoURI[image]={"uri":{}}
+                        if not str(subject) in imagetoURI[image]["uri"]:
+                            imagetoURI[image]["uri"][str(subject)]={"bodies":[]} 
                         if image=="<svg width=":
                             continue
                         if "<svg" in image:
@@ -3129,7 +3132,7 @@ class OntDocGeneration:
                         if len(thecrs)>0:
                             featcoll["crs"]="http://www.opengis.net/def/crs/EPSG/0/"+str(next(iter(thecrs)))
                         else:
-                            featcoll["crs"]="http://www.opengis.net/def/crs/OGC/1.3/CRS84"
+                            featcoll["crs"]="http://www.opengis.net/def/crs/EPSG/0/4326"
                         if dateatt!="":
                             for feat in featcoll["features"]:
                                 if dateatt not in feat["properties"]:
