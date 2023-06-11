@@ -218,7 +218,7 @@ function exportTGF(){
     nodes=""
     edges=""
     if(typeof(featurecolls)!=="undefined"){
-        for(feature in featurecolls){
+        for(feature of featurecolls){
             if("features" in feature){
                 for(feat of feature["features"]){
                     featid=nodecounter
@@ -310,7 +310,7 @@ function setSVGDimensions(){
 function exportWKT(){
     if(typeof(featurecolls)!=="undefined"){
         reswkt=""
-        for(feature in featurecolls){
+        for(feature of featurecolls){
             if("features" in feature){
                 for(feat of feature["features"]){
                     reswkt+=feat["geometry"]["type"].toUpperCase()+"("
