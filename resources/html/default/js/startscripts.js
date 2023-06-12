@@ -231,6 +231,7 @@ function exportTGF(){
                                     for(arritem of feat["properties"][prop]){
                                             if(!(arritem in uritoNodeId)){
                                                 uritoNodeId[arritem]=nodecounter
+                                                nodes+=nodecounter+" "+arritem+"\n"
                                                 nodecounter+=1
                                             }
                                             edges+=featid+" "+uritoNodeId[arritem]+" "+prop+"\n"
@@ -257,6 +258,7 @@ function exportTGF(){
                                     for(arritem of feat["properties"][prop]){
                                             if(!(arritem in uritoNodeId)){
                                                 uritoNodeId[arritem]=nodecounter
+                                                nodes+=nodecounter+" "+arritem+"\n"
                                                 nodecounter+=1
                                             }
                                             edges+=featid+" "+uritoNodeId[arritem]+" "+prop+"\n"
