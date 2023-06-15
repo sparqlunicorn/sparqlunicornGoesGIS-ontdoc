@@ -402,6 +402,13 @@ function setSVGDimensions(){
     });
 }
 
+function exportGeoURI(){
+    resuri=""
+    for(point of centerpoints){
+        resuri+="geo:"+point[0]+","+point[1]";crs=EPSG:4326\n"
+    }
+    saveTextAsFile(reswkt,".txt")
+}
 
 
 function exportWKT(){
@@ -491,6 +498,8 @@ function download(){
         exportCSV()
     }else if(format=="gdf"){
         exportGDF()
+    }else if(format=="geouri"){
+        exportGeoURI()
     }else if(format=="tgf"){
         exportTGF()
     }else if(format=="xyz"){
@@ -1196,6 +1205,8 @@ function fetchLayersFromList(thelist){
 	return fcolls
 }
 
+var centerpoints=[]
+
 function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,dateatt="",ajax=true){
 	if(ajax){
 		featurecolls=fetchLayersFromList(featurecolls)
@@ -1267,6 +1278,7 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,date
             map.fitBounds(bounds);
             first = false
         }
+        centerpoints.push(layerr.getBounds().getCenter());
     }
 	layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map)
 	if(dateatt!=null && dateatt!=""){
