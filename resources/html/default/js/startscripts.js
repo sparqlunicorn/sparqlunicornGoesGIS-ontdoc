@@ -405,7 +405,7 @@ function setSVGDimensions(){
 function exportGeoURI(){
     resuri=""
     for(point of centerpoints){
-        resuri+="geo:"+point[0]+","+point[1]";crs=EPSG:4326\n"
+        resuri+="geo:"+point[0]+","+point[1]+";crs=EPSG:4326\n"
     }
     saveTextAsFile(reswkt,".txt")
 }
