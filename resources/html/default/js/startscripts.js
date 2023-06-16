@@ -124,11 +124,14 @@ function exportCSV(sepchar,filesuffix){
         if("features" in feature){
            for(feat of feature["features"]){
                 rescsv+="\""+feat["geometry"]["type"].toUpperCase()+"("
-                feat["geometry"].coordinates.forEach(function(p,i){
-                //	console.log(p)
-                    if(i<feat["geometry"].coordinates.length-1)rescsv =  rescsv + p[0] + ' ' + p[1] + ', ';
-                    else rescsv =  rescsv + p[0] + ' ' + p[1] + ')';
-                })
+				if(feature["geometry"]["type"].toUpperCase()=="POINT"){
+                    rescsv =  rescsv + feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1]
+				}else{
+					feature["geometry"].coordinates.forEach(function(p,i){
+						if(i<feature["geometry"].coordinates.length-1) rescsv =  rescsv + p[0] + ' ' + p[1] + ', ';
+						else rescsv =  rescsv + p[0] + ' ' + p[1] + ')';
+					})
+				}
                 rescsv+=")\","
                 if("properties" in feat){
                     if(gottitle==false){
@@ -136,7 +139,7 @@ function exportCSV(sepchar,filesuffix){
                        for(prop in feat["properties"]){
                           rescsvtitle+="\""+prop+"\""+sepchar
                        }
-                       rescsvtitle+="\\n"
+                       rescsvtitle+="\n"
                        rescsv=rescsvtitle+rescsv
                        gottitle=true
                     }
@@ -144,16 +147,19 @@ function exportCSV(sepchar,filesuffix){
                         rescsv+="\""+feat["properties"][prop]+"\""+sepchar
                     }
                 }
-                rescsv+="\\n"
+                rescsv+="\n"
            }
         }else{
             gottitle=false
             rescsv+="\""+feature["geometry"]["type"].toUpperCase()+"("
-            feature["geometry"].coordinates.forEach(function(p,i){
-            //	console.log(p)
-                if(i<feature["geometry"].coordinates.length-1)rescsv =  rescsv + p[0] + ' ' + p[1] + ', ';
-                else rescsv =  rescsv + p[0] + ' ' + p[1] + ')';
-            })
+			if(feature["geometry"]["type"].toUpperCase()=="POINT"){
+				rescsv =  rescsv + feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1]
+			}else{
+				feature["geometry"].coordinates.forEach(function(p,i){
+					if(i<feature["geometry"].coordinates.length-1) rescsv =  rescsv + p[0] + ' ' + p[1] + ', ';
+					else rescsv =  rescsv + p[0] + ' ' + p[1] + ')';
+				})
+			}
             rescsv+=")\","
             if("properties" in feature){
                 if(gottitle==false){
@@ -161,7 +167,7 @@ function exportCSV(sepchar,filesuffix){
                    for(prop in feature["properties"]){
                       rescsvtitle+="\""+prop+"\""+sepchar
                    }
-                   rescsvtitle+="\\n"
+                   rescsvtitle+="\n"
                    rescsv=rescsvtitle+rescsv
                    gottitle=true
                 }
@@ -180,7 +186,7 @@ function exportCSV(sepchar,filesuffix){
                        for(prop in feat["properties"]){
                           rescsvtitle+="\""+prop+"\""+sepchar
                        }
-                       rescsvtitle+="\\n"
+                       rescsvtitle+="\n"
                        rescsv=rescsvtitle+rescsv
                        gottitle=true
                     }
@@ -188,7 +194,7 @@ function exportCSV(sepchar,filesuffix){
                         rescsv+="\""+feat["properties"][prop]+"\""+sepchar
                     }
                 }
-                rescsv+="\\n"
+                rescsv+="\n"
            }
         }else{
             gottitle=false
@@ -198,7 +204,7 @@ function exportCSV(sepchar,filesuffix){
                    for(prop in nongeofeature["properties"]){
                       rescsvtitle+="\""+prop+"\""+sepchar
                    }
-                   rescsvtitle+="\\n"
+                   rescsvtitle+="\n"
                    rescsv=rescsvtitle+rescsv
                    gottitle=true
                 }
@@ -242,22 +248,22 @@ function exportGraphML(){
 					}
 				}
 			}else if("type" in feature && feature["type"]=="Feature"){
-				if(!(feat.id in processedURIs)){
-					resgml+="<node id=\""+feat.id+"\" uri=\""+feat.id+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#800080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+feat.name+"</y:NodeLabel></y:ShapeNode></data></node>\n"
-					processedURIs[feat.id]=true
+				if(!(feature.id in processedURIs)){
+					resgml+="<node id=\""+feature.id+"\" uri=\""+feature.id+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#800080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+feature.name+"</y:NodeLabel></y:ShapeNode></data></node>\n"
+					processedURIs[feature.id]=true
 				}
-				if("properties" in feat){
-					for(prop in feat["properties"]){
-						thetarget=feat["properties"][prop]
-						if(feat["properties"][prop].startsWith("http") && !(feat["properties"][prop] in processedURIs)){
-							resgml+="<node id=\""+feat["properties"][prop]+"\" uri=\""+feat["properties"][prop]+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#800080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+feat["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\n"
-							processedURIs[feat["properties"][prop]]=true
+				if("properties" in feature){
+					for(prop in feature["properties"]){
+						thetarget=feature["properties"][prop]
+						if(feature["properties"][prop].startsWith("http") && !(feature["properties"][prop] in processedURIs)){
+							resgml+="<node id=\""+feature["properties"][prop]+"\" uri=\""+feature["properties"][prop]+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#800080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+feature["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\n"
+							processedURIs[feature["properties"][prop]]=true
 						}else{
 							thetarget="literal"+literalcounter
-							resgml+="<node id=\""+thetarget+"\" uri=\""+thetarget+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#F08080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+feat["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\n"
+							resgml+="<node id=\""+thetarget+"\" uri=\""+thetarget+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#F08080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+feature["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\n"
 							literalcounter+=1
 						}
-						resgml+="<edge id=\"e"+edgecounter+"\" uri=\""+prop+"\" source=\""+feat.id+"\" target=\""+thetarget+"\"><data key=\"edgekey\"><y:PolyLineEdge><y:EdgeLabel alignment=\"center\" configuration=\"AutoFlippingLabel\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+prop+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
+						resgml+="<edge id=\"e"+edgecounter+"\" uri=\""+prop+"\" source=\""+feature.id+"\" target=\""+thetarget+"\"><data key=\"edgekey\"><y:PolyLineEdge><y:EdgeLabel alignment=\"center\" configuration=\"AutoFlippingLabel\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+prop+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
 						edgecounter+=1
 					}
 				}
