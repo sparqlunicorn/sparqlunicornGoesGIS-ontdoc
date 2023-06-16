@@ -405,6 +405,7 @@ function setSVGDimensions(){
 function exportGeoURI(){
     resuri=""
     for(point of centerpoints){
+        console.log(point)
         resuri+="geo:"+point[0]+","+point[1]+";crs=EPSG:4326\n"
     }
     saveTextAsFile(resuri,"geouri")
@@ -418,19 +419,26 @@ function exportWKT(){
             if("features" in feature){
                 for(feat of feature["features"]){
                     reswkt+=feat["geometry"]["type"].toUpperCase()+"("
-                    feat["geometry"].coordinates.forEach(function(p,i){
-                    //	console.log(p)
-                        if(i<feat["geometry"].coordinates.length-1)reswkt =  reswkt + p[0] + ' ' + p[1] + ', ';
-                        else reswkt =  reswkt + p[0] + ' ' + p[1] + ')';
-                    })
+                    if(feature["geometry"]["type"].toUpperCase()=="POINT"){
+                        reswkt =  reswkt + feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1]
+                    }else{
+                        feature["geometry"].coordinates.forEach(function(p,i){
+                            if(i<feature["geometry"].coordinates.length-1) reswkt =  reswkt + p[0] + ' ' + p[1] + ', ';
+                            else reswkt =  reswkt + p[0] + ' ' + p[1] + ')';
+                        })
+                    }
                     reswkt+=")\n"
                 }
             }else if("geometry" in feature){
                     reswkt+=feature["geometry"]["type"].toUpperCase()+"("
-                    feature["geometry"].coordinates.forEach(function(p,i){
-                        if(i<feature["geometry"].coordinates.length-1) reswkt =  reswkt + p[0] + ' ' + p[1] + ', ';
-                        else reswkt =  reswkt + p[0] + ' ' + p[1] + ')';
-                    })
+                    if(feature["geometry"]["type"].toUpperCase()=="POINT"){
+                        reswkt =  reswkt + feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1]
+                    }else{
+                        feature["geometry"].coordinates.forEach(function(p,i){
+                            if(i<feature["geometry"].coordinates.length-1) reswkt =  reswkt + p[0] + ' ' + p[1] + ', ';
+                            else reswkt =  reswkt + p[0] + ' ' + p[1] + ')';
+                        })
+                    }
                     reswkt+=")\n"
             }
             saveTextAsFile(reswkt,"wkt")
@@ -444,17 +452,25 @@ function exportXYZASCII(){
         for(feature of featurecolls){
             if("features" in feature){
                 for(feat of feature["features"]){
-                    feat["geometry"].coordinates.forEach(function(p,i){
-                        console.log(p)
-                        reswkt =  reswkt + p[0] + ' ' + p[1] + '\n';
-                    })
+                    if(feature["geometry"]["type"].toUpperCase()=="POINT"){
+                        reswkt =  reswkt + feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1] + '\n';
+                    }else{
+                        feature["geometry"].coordinates.forEach(function(p,i){
+                            console.log(p)
+                            reswkt =  reswkt + p[0] + ' ' + p[1] + '\n';
+                        })
+                    }
                     reswkt+="\n"
                 }
             }else if("geometry" in feature){
-                    feature["geometry"].coordinates.forEach(function(p,i){
-                        console.log(p)
-                        reswkt =  reswkt + p[0] + ' ' + p[1] + '\n';
-                    })
+                    if(feature["geometry"]["type"].toUpperCase()=="POINT"){
+                        reswkt =  reswkt + feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1] + '\n';
+                    }else{
+                        feature["geometry"].coordinates.forEach(function(p,i){
+                            console.log(p)
+                            reswkt =  reswkt + p[0] + ' ' + p[1] + '\n';
+                        })
+                    }
                     reswkt+="\n"
             }
             saveTextAsFile(reswkt,"xyz")
