@@ -211,8 +211,14 @@ function exportCSV(){
     }
 }
 
-function exportGDF(){
-    resgdf="nodedef>name VARCHAR,label VARCHAR"
+function exportTGFGDF(tgf){
+	sepchar=","
+	resgdf=""
+	if(tgf){
+		sepchar=" "
+	}else{
+		resgdf="nodedef>name VARCHAR,label VARCHAR"
+	} 
     uritoNodeId={}
     nodecounter=0
     nodes=""
@@ -223,7 +229,7 @@ function exportGDF(){
                 for(feat of feature["features"]){
                     featid=nodecounter
                     uritoNodeId[feat["id"]]=nodecounter
-                    nodes+=nodecounter+","+feat["id"]+"\n"
+                    nodes+=nodecounter+sepchar+feat["id"]+"\n"
                     nodecounter+=1
                     if("properties" in feat){
                         for(prop in feat["properties"]){
@@ -231,17 +237,17 @@ function exportGDF(){
                                     for(arritem of feat["properties"][prop]){
                                             if(!(arritem in uritoNodeId)){
                                                 uritoNodeId[arritem]=nodecounter
-                                                nodes+=nodecounter+","+arritem+"\n"
+                                                nodes+=nodecounter+sepchar+arritem+"\n"
                                                 nodecounter+=1
                                             }
-                                            edges+=featid+","+uritoNodeId[arritem]+","+prop+"\n"
+                                            edges+=featid+sepchar+uritoNodeId[arritem]+sepchar+prop+"\n"
                                     }
                             }else{
                                  if(!(feat["properties"][prop] in uritoNodeId)){
                                     uritoNodeId[feat["properties"][prop]]=nodecounter
                                     nodecounter+=1
                                  }
-                                 edges+=featid+","+uritoNodeId[feat["properties"][prop]]+","+prop+"\n"
+                                 edges+=featid+sepchar+uritoNodeId[feat["properties"][prop]]+sepchar+prop+"\n"
                             }
                         }
                     }
@@ -250,7 +256,7 @@ function exportGDF(){
                     featid=nodecounter
                     feat=feature
                     uritoNodeId[feat["id"]]=nodecounter
-                    nodes+=nodecounter+","+feat["id"]+"\n"
+                    nodes+=nodecounter+sepchar+feat["id"]+"\n"
                     nodecounter+=1
                     if("properties" in feat){
                         for(prop in feat["properties"]){
@@ -258,17 +264,17 @@ function exportGDF(){
                                     for(arritem of feat["properties"][prop]){
                                             if(!(arritem in uritoNodeId)){
                                                 uritoNodeId[arritem]=nodecounter
-                                                nodes+=nodecounter+","+arritem+"\n"
+                                                nodes+=nodecounter+sepchar+arritem+"\n"
                                                 nodecounter+=1
                                             }
-                                            edges+=featid+","+uritoNodeId[arritem]+","+prop+"\n"
+                                            edges+=featid+sepchar+uritoNodeId[arritem]+sepchar+prop+"\n"
                                     }
                             }else{
                                  if(!(feat["properties"][prop] in uritoNodeId)){
                                     uritoNodeId[feat["properties"][prop]]=nodecounter
                                     nodecounter+=1
                                  }
-                                 edges+=featid+","+uritoNodeId[feat["properties"][prop]]+","+prop+"\n"
+                                 edges+=featid+sepchar+uritoNodeId[feat["properties"][prop]]+sepchar+prop+"\n"
                             }
                       }
                 }
@@ -276,79 +282,17 @@ function exportGDF(){
         }
     }
     resgdf+=nodes
-    resgdf+="edgedef>node1 VARCHAR,node2 VARCHAR,label VARCHAR\n"
+	if(tgf){
+		resgdf+="#\n"
+	}else{
+		resgdf+="edgedef>node1 VARCHAR,node2 VARCHAR,label VARCHAR\n"
+	}
     resgdf+=edges
-    saveTextAsFile(resgdf,"gdf")
-}
-
-function exportTGF(){
-    restgf=""
-    uritoNodeId={}
-    nodecounter=0
-    nodes=""
-    edges=""
-    if(typeof(featurecolls)!=="undefined"){
-        for(feature of featurecolls){
-            if("features" in feature){
-                for(feat of feature["features"]){
-                    featid=nodecounter
-                    uritoNodeId[feat["id"]]=nodecounter
-                    nodes+=nodecounter+" "+feat["id"]+"\n"
-                    nodecounter+=1
-                    if("properties" in feat){
-                        for(prop in feat["properties"]){
-                            if(Array.isArray(feat["properties"][prop])){
-                                    for(arritem of feat["properties"][prop]){
-                                            if(!(arritem in uritoNodeId)){
-                                                uritoNodeId[arritem]=nodecounter
-                                                nodes+=nodecounter+" "+arritem+"\n"
-                                                nodecounter+=1
-                                            }
-                                            edges+=featid+" "+uritoNodeId[arritem]+" "+prop+"\n"
-                                    }
-                            }else{
-                                 if(!(feat["properties"][prop] in uritoNodeId)){
-                                    uritoNodeId[feat["properties"][prop]]=nodecounter
-                                    nodecounter+=1
-                                 }
-                                 edges+=featid+" "+uritoNodeId[feat["properties"][prop]]+" "+prop+"\n"
-                            }
-                        }
-                    }
-                }
-            }else if("type" in feature && feature["type"]=="Feature"){
-                    featid=nodecounter
-                    feat=feature
-                    uritoNodeId[feat["id"]]=nodecounter
-                    nodes+=nodecounter+" "+feat["id"]+"\n"
-                    nodecounter+=1
-                    if("properties" in feat){
-                        for(prop in feat["properties"]){
-                            if(Array.isArray(feat["properties"][prop])){
-                                    for(arritem of feat["properties"][prop]){
-                                            if(!(arritem in uritoNodeId)){
-                                                uritoNodeId[arritem]=nodecounter
-                                                nodes+=nodecounter+" "+arritem+"\n"
-                                                nodecounter+=1
-                                            }
-                                            edges+=featid+" "+uritoNodeId[arritem]+" "+prop+"\n"
-                                    }
-                            }else{
-                                 if(!(feat["properties"][prop] in uritoNodeId)){
-                                    uritoNodeId[feat["properties"][prop]]=nodecounter
-                                    nodecounter+=1
-                                 }
-                                 edges+=featid+" "+uritoNodeId[feat["properties"][prop]]+" "+prop+"\n"
-                            }
-                      }
-                }
-            }
-        }
-    }
-    restgf+=nodes
-    restgf+="#\n"
-    restgf+=edges
-    saveTextAsFile(restgf,"tgf")
+	if(tgf){
+		saveTextAsFile(resgdf,"tgf")
+	}else{
+		saveTextAsFile(resgdf,"gdf")
+	}	   
 }
 
 function setSVGDimensions(){
@@ -514,11 +458,11 @@ function download(){
     }else if(format=="csv"){
         exportCSV()
     }else if(format=="gdf"){
-        exportGDF()
+        exportTGFGDF(tgf)(false)
     }else if(format=="geouri"){
         exportGeoURI()
     }else if(format=="tgf"){
-        exportTGF()
+        exportTGFGDF(tgf)(true)
     }else if(format=="xyz"){
         exportXYZASCII()
     }
