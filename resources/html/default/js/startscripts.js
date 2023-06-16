@@ -298,7 +298,7 @@ function convertDecimalToLatLonText(D, lng){
 
 function exportLatLonText(){
 	res=""
-	for(point in centerpoints){
+	for(point of centerpoints){
 		res+=convertDecimalToLatLonText(point["lat"],false)+" "+convertDecimalToLatLonText(point["lng"],true)+"\n"
 	}
 	saveTextAsFile(res,"txt")
