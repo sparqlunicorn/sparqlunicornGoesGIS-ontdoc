@@ -271,7 +271,7 @@ function exportGraphML(){
 		}
 	}
 	resgml+="</graph>\n</graphml>\n"
-	saveTextAsFile(resgdf,"graphml")
+	saveTextAsFile(resgml,"graphml")
 }
 
 
