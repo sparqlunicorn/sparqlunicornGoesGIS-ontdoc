@@ -132,7 +132,7 @@ function exportCSV(sepchar,filesuffix){
 						else rescsv =  rescsv + p[0] + ' ' + p[1] + ')';
 					})
 				}
-                rescsv+=")\","
+                rescsv+=")\""+sepchar
                 if("properties" in feat){
                     if(gottitle==false){
                        rescsvtitle="\"the_geom\","
@@ -160,7 +160,7 @@ function exportCSV(sepchar,filesuffix){
 					else rescsv =  rescsv + p[0] + ' ' + p[1] + ')';
 				})
 			}
-            rescsv+=")\","
+            rescsv+=")\""+sepchar
             if("properties" in feature){
                 if(gottitle==false){
                    rescsvtitle=""
@@ -234,7 +234,7 @@ function exportGraphML(){
 					if("properties" in feat){
                         for(prop in feat["properties"]){
 							thetarget=feat["properties"][prop]
-							if(feat["properties"][prop].startsWith("http") && !(feat["properties"][prop] in processedURIs)){
+							if((feat["properties"][prop]+"").startsWith("http") && !(feat["properties"][prop] in processedURIs)){
 								resgml+="<node id=\""+feat["properties"][prop]+"\" uri=\""+feat["properties"][prop]+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#800080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+feat["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\n"
 								processedURIs[feat["properties"][prop]]=true
 							}else{
@@ -255,7 +255,7 @@ function exportGraphML(){
 				if("properties" in feature){
 					for(prop in feature["properties"]){
 						thetarget=feature["properties"][prop]
-						if(feature["properties"][prop].startsWith("http") && !(feature["properties"][prop] in processedURIs)){
+						if((feature["properties"][prop]+"").startsWith("http") && !(feature["properties"][prop] in processedURIs)){
 							resgml+="<node id=\""+feature["properties"][prop]+"\" uri=\""+feature["properties"][prop]+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#800080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+feature["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\n"
 							processedURIs[feature["properties"][prop]]=true
 						}else{
