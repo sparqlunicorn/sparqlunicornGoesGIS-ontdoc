@@ -445,13 +445,14 @@ function exportXYZASCII(){
             if("features" in feature){
                 for(feat of feature["features"]){
                     feat["geometry"].coordinates.forEach(function(p,i){
-                    //	console.log(p)
+                        console.log(p)
                         reswkt =  reswkt + p[0] + ' ' + p[1] + '\n';
                     })
                     reswkt+="\n"
                 }
             }else if("geometry" in feature){
                     feature["geometry"].coordinates.forEach(function(p,i){
+                        console.log(p)
                         reswkt =  reswkt + p[0] + ' ' + p[1] + '\n';
                     })
                     reswkt+="\n"
