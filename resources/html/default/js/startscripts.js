@@ -290,9 +290,9 @@ function convertDecimalToLatLonText(D, lng){
 			dir="N";
 		}
 	}
-	Double deg=D<0?-D:D;
-	Double min=D%1*60;
-	Double sec=(D*60%1*6000)/100;
+	deg=D<0?-D:D;
+	min=D%1*60;
+	sec=(D*60%1*6000)/100;
 	return deg+"°"+min+"'"+sec+"\""+dir;
 }
 
