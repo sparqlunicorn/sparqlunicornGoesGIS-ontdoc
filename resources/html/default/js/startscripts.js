@@ -276,7 +276,7 @@ function exportGDF(){
         }
     }
     resgdf+=nodes
-    resgdf+="\nedgedef>node1 VARCHAR,node2 VARCHAR,label VARCHAR"
+    resgdf+="edgedef>node1 VARCHAR,node2 VARCHAR,label VARCHAR\n"
     resgdf+=edges
     saveTextAsFile(resgdf,".gdf")
 }
@@ -407,7 +407,7 @@ function exportGeoURI(){
     for(point of centerpoints){
         resuri+="geo:"+point[0]+","+point[1]+";crs=EPSG:4326\n"
     }
-    saveTextAsFile(reswkt,".txt")
+    saveTextAsFile(resuri,".txt")
 }
 
 
