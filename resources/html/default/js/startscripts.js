@@ -275,6 +275,36 @@ function exportGraphML(){
 }
 
 
+function convertDecimalToLatLonText(D, lng){
+	dir=""
+	if(D<0) {
+		if(lng) {
+			dir="W";
+		}else {
+			dir="S";
+		}
+	}else {
+		if(lng) {
+			dir="E";
+		}else {
+			dir="N";
+		}
+	}
+	Double deg=D<0?-D:D;
+	Double min=D%1*60;
+	Double sec=(D*60%1*6000)/100;
+	return deg+"°"+min+"'"+sec+"\""+dir;
+}
+
+function exportLatLonText(){
+	res=""
+	for(point in centerpoints){
+		res+=convertDecimalToLatLonText(point["lat"],false)+" "+convertDecimalToLatLonText(point["lng"],true)+"\n"
+	}
+	saveTextAsFile(res,"txt")
+}
+
+
 function exportTGFGDF(sepchar,format){
 	resgdf=""
 	if(format=="gdf")
@@ -405,7 +435,6 @@ function setSVGDimensions(){
 function exportGeoURI(){
     resuri=""
     for(point of centerpoints){
-        console.log(point)
         resuri+="geo:"+point["lng"]+","+point["lat"]+";crs=EPSG:4326\n"
     }
     saveTextAsFile(resuri,"geouri")
@@ -525,6 +554,8 @@ function download(){
         exportTGFGDF(" ",format)
     }else if(format=="xyz"){
         exportXYZASCII()
+    }else if(format=="latlon"){
+        exportLatLonText()
     }
 }
 
