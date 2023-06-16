@@ -406,7 +406,7 @@ function exportGeoURI(){
     resuri=""
     for(point of centerpoints){
         console.log(point)
-        resuri+="geo:"+point[0]+","+point[1]+";crs=EPSG:4326\n"
+        resuri+="geo:"+point["lng"]+","+point["lat"]+";crs=EPSG:4326\n"
     }
     saveTextAsFile(resuri,"geouri")
 }
