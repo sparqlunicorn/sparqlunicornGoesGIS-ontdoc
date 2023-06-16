@@ -170,7 +170,7 @@ function exportCSV(){
                 }
             }
         }
-        saveTextAsFile(rescsv,".csv")
+        saveTextAsFile(rescsv,"csv")
     }else if(typeof(nongeofeature)!=="undefined"){
         if("features" in nongeofeature){
            for(feat of nongeofeature["features"]){
@@ -207,7 +207,7 @@ function exportCSV(){
                 }
             }
         }
-        saveTextAsFile(rescsv,".csv")
+        saveTextAsFile(rescsv,"csv")
     }
 }
 
@@ -278,7 +278,7 @@ function exportGDF(){
     resgdf+=nodes
     resgdf+="edgedef>node1 VARCHAR,node2 VARCHAR,label VARCHAR\n"
     resgdf+=edges
-    saveTextAsFile(resgdf,".gdf")
+    saveTextAsFile(resgdf,"gdf")
 }
 
 function exportTGF(){
@@ -348,7 +348,7 @@ function exportTGF(){
     restgf+=nodes
     restgf+="#\n"
     restgf+=edges
-    saveTextAsFile(restgf,".tgf")
+    saveTextAsFile(restgf,"tgf")
 }
 
 function setSVGDimensions(){
@@ -407,7 +407,7 @@ function exportGeoURI(){
     for(point of centerpoints){
         resuri+="geo:"+point[0]+","+point[1]+";crs=EPSG:4326\n"
     }
-    saveTextAsFile(resuri,".txt")
+    saveTextAsFile(resuri,"geouri")
 }
 
 
@@ -433,7 +433,7 @@ function exportWKT(){
                     })
                     reswkt+=")\n"
             }
-            saveTextAsFile(reswkt,".wkt")
+            saveTextAsFile(reswkt,"wkt")
         }
     }
 }
@@ -456,7 +456,7 @@ function exportXYZASCII(){
                     })
                     reswkt+="\n"
             }
-            saveTextAsFile(reswkt,".xyz")
+            saveTextAsFile(reswkt,"xyz")
         }
     }
 }
