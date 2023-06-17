@@ -609,7 +609,7 @@ function saveTextAsFile(tosave,fileext){
 	var title=$('#title').text()
     var filename = "res."+fileext;
 	if(typeof(title)!=='undefined'){
-		filename=title+"."+fileext
+		filename=title.trim()+"."+fileext
 	}
     a.href = url;
     a.download = filename;
