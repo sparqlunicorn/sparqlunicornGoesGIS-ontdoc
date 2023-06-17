@@ -1479,7 +1479,7 @@ class OntDocGeneration:
                 curcrs=None
                 if "http" in literal:
                     crsuri=literal[0:literal.rfind('>')].replace("<","")
-                    curcrs=crsuri[crsuri.rfind('/'):]
+                    curcrs=crsuri[crsuri.rfind('/')+1:]
                     literal=literal[literal.rfind('>')+1:].strip()
                 shapelygeom=shapely.wkt.loads(literal)
                 thejson=json.loads(json.dumps(shapely.geometry.mapping(shapelygeom),indent=2))

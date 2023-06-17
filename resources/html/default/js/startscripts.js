@@ -304,6 +304,81 @@ function exportLatLonText(){
 	saveTextAsFile(res,"txt")
 }
 
+function exportKML(){
+	reskml="<?xml version=\"1.0\" ?>\n<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n<Document>"
+	reskml+="<Style></Style>\n"
+	if(typeof(featurecolls)!=="undefined"){
+        for(feature of featurecolls){
+            if("features" in feature){
+                for(feat of feature["features"]){
+					reskml+="<Placemark><name>"+feat.id+"</name>"
+					if("properties" in feat){
+						reskml+="<ExtendedData>"
+                        for(prop in feat["properties"]){
+                            if(Array.isArray(feat["properties"][prop])){
+								for(arritem of feat["properties"][prop]){
+									kml+="<Data name=\""+prop+"\"><displayName>"+prop+"</displayName><value>"+arritem+"</value></Data>\n"
+								}
+                            }else{
+                                kml+="<Data name=\""+prop+"\"><displayName>"+prop+"</displayName><value>"+feat["properties"][prop]+"</value></Data>\n"
+                            }
+                        }
+						reskml+="</ExtendedData>"
+                    }
+					if("geometry" in feat){
+						reskml+="<"+feat["geometry"]["type"]+">\n"
+						if(feat["geometry"]["type"]=="Polygon"){
+							reskml+="<outerBoundaryIs><LinearRing>"
+						}
+						reskml+="<coordinates>\n"
+						feat["geometry"].coordinates.forEach(function(p,i){
+                            reskml += p[0] + ', ' + p[1] + '\n '
+                        })
+						reskml+="</coordinates>\n"
+						if(feat["geometry"]["type"]=="Polygon"){
+							reskml+="</LinearRing></outerBoundaryIs>"
+						}
+						reskml+="</"+feat["geometry"]["type"]+">\n"
+					}
+					reskml+="</Placemark>"
+				}
+			}else if("type" in feature && feature["type"]=="Feature"){
+				reskml+="<Placemark><name>"+feature.id+"</name>"
+				if("properties" in feature){
+					reskml+="<ExtendedData>"
+					for(prop in feature["properties"]){
+						if(Array.isArray(feature["properties"][prop])){
+							for(arritem of feature["properties"][prop]){
+								kml+="<Data name=\""+prop+"\"><displayName>"+prop+"</displayName><value>"+arritem+"</value></Data>\n"
+							}
+						}else{
+							kml+="<Data name=\""+prop+"\"><displayName>"+prop+"</displayName><value>"+feature["properties"][prop]+"</value></Data>\n"
+						}
+				    }
+					reskml+="</ExtendedData>"
+                }
+				if("geometry" in feature){
+					reskml+="<"+feature["geometry"]["type"]+">\n"
+					if(feature["geometry"]["type"]=="Polygon"){
+						reskml+="<outerBoundaryIs><LinearRing>"
+					}
+					reskml+="<coordinates>\n"
+					feature["geometry"].coordinates.forEach(function(p,i){
+						reskml += p[0] + ', ' + p[1] + '\n '
+					})
+					reskml+="</coordinates>\n"
+					if(feature["geometry"]["type"]=="Polygon"){
+						reskml+="</LinearRing></outerBoundaryIs>"
+					}
+					reskml+="</"+feature["geometry"]["type"]+">\n"
+				}
+				reskml+="</Placemark>"
+            }
+		}
+	}
+	reskml+="</Document></kml>"
+	saveTextAsFile(reskml,"kml")
+}
 
 function exportTGFGDF(sepchar,format){
 	resgdf=""
@@ -540,6 +615,8 @@ function download(){
         downloadFile(window.location.href.replace(".html",".json"))
     }else if(format=="wkt"){
         exportWKT()
+    }else if(format=="kml"){
+        exportKML()
     }else if(format=="csv"){
         exportCSV(",",format)
     }else if(format=="tsv"){
