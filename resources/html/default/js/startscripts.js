@@ -606,7 +606,11 @@ function saveTextAsFile(tosave,fileext){
     a.style = "display: none";
     var blob= new Blob([tosave], {type:'text/plain'});
     var url = window.URL.createObjectURL(blob);
+	var title=$('#title').text()
     var filename = "res."+fileext;
+	if(typeof(title)!=='undefined'){
+		filename=title+"."+fileext
+	}
     a.href = url;
     a.download = filename;
     document.body.appendChild(a);
