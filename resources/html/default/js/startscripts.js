@@ -331,9 +331,13 @@ function exportKML(){
 							reskml+="<outerBoundaryIs><LinearRing>"
 						}
 						reskml+="<coordinates>\n"
-						feat["geometry"].coordinates.forEach(function(p,i){
-                            reskml += p[0] + ', ' + p[1] + '\n '
-                        })
+						if(feat["geometry"]["type"].toUpperCase()=="POINT"){
+							reskml += feat["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1]+'\n '
+						}else{
+							feat["geometry"].coordinates.forEach(function(p,i){
+								reskml += p[0] + ', ' + p[1] + '\n '
+							})
+						}
 						reskml+="</coordinates>\n"
 						if(feat["geometry"]["type"]=="Polygon"){
 							reskml+="</LinearRing></outerBoundaryIs>"
@@ -363,9 +367,13 @@ function exportKML(){
 						reskml+="<outerBoundaryIs><LinearRing>"
 					}
 					reskml+="<coordinates>\n"
-					feature["geometry"].coordinates.forEach(function(p,i){
-						reskml += p[0] + ', ' + p[1] + '\n '
-					})
+					if(feat["geometry"]["type"].toUpperCase()=="POINT"){
+						reskml += feat["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1]+'\n '
+					}else{
+						feature["geometry"].coordinates.forEach(function(p,i){
+							reskml += p[0] + ', ' + p[1] + '\n '
+						})
+					}
 					reskml+="</coordinates>\n"
 					if(feature["geometry"]["type"]=="Polygon"){
 						reskml+="</LinearRing></outerBoundaryIs>"
