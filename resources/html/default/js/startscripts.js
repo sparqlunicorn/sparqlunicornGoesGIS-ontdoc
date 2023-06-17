@@ -317,10 +317,10 @@ function exportKML(){
                         for(prop in feat["properties"]){
                             if(Array.isArray(feat["properties"][prop])){
 								for(arritem of feat["properties"][prop]){
-									kml+="<Data name=\""+prop+"\"><displayName>"+prop+"</displayName><value>"+arritem+"</value></Data>\n"
+									reskml+="<Data name=\""+prop+"\"><displayName>"+prop+"</displayName><value>"+arritem+"</value></Data>\n"
 								}
                             }else{
-                                kml+="<Data name=\""+prop+"\"><displayName>"+prop+"</displayName><value>"+feat["properties"][prop]+"</value></Data>\n"
+                                reskml+="<Data name=\""+prop+"\"><displayName>"+prop+"</displayName><value>"+feat["properties"][prop]+"</value></Data>\n"
                             }
                         }
 						reskml+="</ExtendedData>"
@@ -349,10 +349,10 @@ function exportKML(){
 					for(prop in feature["properties"]){
 						if(Array.isArray(feature["properties"][prop])){
 							for(arritem of feature["properties"][prop]){
-								kml+="<Data name=\""+prop+"\"><displayName>"+prop+"</displayName><value>"+arritem+"</value></Data>\n"
+								reskml+="<Data name=\""+prop+"\"><displayName>"+prop+"</displayName><value>"+arritem+"</value></Data>\n"
 							}
 						}else{
-							kml+="<Data name=\""+prop+"\"><displayName>"+prop+"</displayName><value>"+feature["properties"][prop]+"</value></Data>\n"
+							reskml+="<Data name=\""+prop+"\"><displayName>"+prop+"</displayName><value>"+feature["properties"][prop]+"</value></Data>\n"
 						}
 				    }
 					reskml+="</ExtendedData>"
@@ -510,7 +510,11 @@ function setSVGDimensions(){
 function exportGeoURI(){
     resuri=""
     for(point of centerpoints){
-        resuri+="geo:"+point["lng"]+","+point["lat"]+";crs=EPSG:4326\n"
+		if(typeof(epsg)!=='undefined'){
+			resuri+="geo:"+point["lng"]+","+point["lat"]+";crs="+epsg+"\n"		
+		}else{
+			resuri+="geo:"+point["lng"]+","+point["lat"]+";crs=EPSG:4326\n"
+		}       
     }
     saveTextAsFile(resuri,"geouri")
 }
