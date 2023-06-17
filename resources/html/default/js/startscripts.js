@@ -304,6 +304,76 @@ function exportLatLonText(){
 	saveTextAsFile(res,"txt")
 }
 
+function exportGML(){
+	resgml="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<gml:FeatureCollection xmlns:gml=\"http://www.opengis.net/gml\">\n"
+    resgmlhead=""
+    nscounter=0
+    nsmap={}
+	if(typeof(featurecolls)!=="undefined"){
+        for(feature of featurecolls){
+            if("features" in feature){
+                for(feat of feature["features"]){
+					resgml+="<gml:featureMember>"
+					if("properties" in feat){
+                        for(prop in feat["properties"]){
+                            if(Array.isArray(feat["properties"][prop])){
+								for(arritem of feat["properties"][prop]){
+									resgml+="<"+prop+">"+arritem+"</"+prop+">\n"
+								}
+                            }else{
+                                resgml+="<"+prop+">"+feat["properties"][prop]+"</"+prop+">"\n"
+                            }
+                        }
+                    }
+					if("geometry" in feat){
+						resgml+="<the_geom><gml:"+feat["geometry"]["type"]+">\n"
+						resgml+="<gml:pos>\n"
+						if(feat["geometry"]["type"].toUpperCase()=="POINT"){
+							resgml += feat["geometry"].coordinates[0] + ' ' + feat["geometry"].coordinates[1]+'\n '
+						}else{
+							feat["geometry"].coordinates.forEach(function(p,i){
+								resgml += p[0] + ', ' + p[1] + '\n '
+							})
+						}
+						resgml+="</gml:pos>\n"
+						resgml+="</gml:"+feat["geometry"]["type"]+"></the_geom>\n"
+					}
+					resgml+="</gml:featureMember>"
+				}
+			}else if("type" in feature && feature["type"]=="Feature"){
+				resgml+="<gml:featureMember>"
+				if("properties" in feature){
+					for(prop in feature["properties"]){
+						if(Array.isArray(feature["properties"][prop])){
+							for(arritem of feature["properties"][prop]){
+								resgml+="<Data name=\""+prop+"\"><displayName>"+prop+"</displayName><value>"+arritem+"</value></Data>\n"
+							}
+						}else{
+							resgml+="<Data name=\""+prop+"\"><displayName>"+prop+"</displayName><value>"+feature["properties"][prop]+"</value></Data>\n"
+						}
+				    }
+                }
+				if("geometry" in feature){
+					resgml+="<the_geom><gml:"+feat["geometry"]["type"]+">\n"
+					resgml+="<gml:pos>\n"
+					if(feature["geometry"]["type"].toUpperCase()=="POINT"){
+						resgml += feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1]+'\n '
+					}else{
+						feature["geometry"].coordinates.forEach(function(p,i){
+							resgml += p[0] + ', ' + p[1] + '\n '
+						})
+					}
+					resgml+="</gml:pos>\n"
+					resgml+="</gml:"+feature["geometry"]["type"]+"></the_geom>\n"
+				}
+				resgml+="</gml:featureMember>"
+            }
+		}
+	}
+	resgml+="</gml:FeatureCollection>"
+	saveTextAsFile(resgml,"gml")
+}
+
 function exportKML(){
 	reskml="<?xml version=\"1.0\" ?>\n<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n<Document>"
 	reskml+="<Style></Style>\n"
@@ -631,6 +701,8 @@ function download(){
         downloadFile(window.location.href.replace(".html",".json"))
     }else if(format=="wkt"){
         exportWKT()
+    }else if(format=="gml"){
+        exportGML()
     }else if(format=="kml"){
         exportKML()
     }else if(format=="csv"){
