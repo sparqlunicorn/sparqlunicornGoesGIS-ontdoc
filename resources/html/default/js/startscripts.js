@@ -354,7 +354,7 @@ function exportGML(){
 				    }
                 }
 				if("geometry" in feature){
-					resgml+="<the_geom><gml:"+feat["geometry"]["type"]+">\n"
+					resgml+="<the_geom><gml:"+feature["geometry"]["type"]+">\n"
 					resgml+="<gml:pos>\n"
 					if(feature["geometry"]["type"].toUpperCase()=="POINT"){
 						resgml += feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1]+'\n '
