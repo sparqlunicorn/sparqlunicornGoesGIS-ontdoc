@@ -321,7 +321,7 @@ function exportGML(){
 									resgml+="<"+prop+">"+arritem+"</"+prop+">\n"
 								}
                             }else{
-                                resgml+="<"+prop+">"+feat["properties"][prop]+"</"+prop+">"\n"
+                                resgml+="<"+prop+">"+feat["properties"][prop]+"</"+prop+">\n"
                             }
                         }
                     }
