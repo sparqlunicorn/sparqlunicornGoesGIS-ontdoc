@@ -316,12 +316,21 @@ function exportGML(){
 					resgml+="<gml:featureMember>"
 					if("properties" in feat){
                         for(prop in feat["properties"]){
+                            ns=shortenURI(prop)
+                            nsprefix=""
+                            if(!(ns in nsmap)){
+                                nsmap[ns]="ns"+nscounter
+                                nsprefix="ns"+nscounter
+                                nscounter+=1
+                            }else{
+                                nsprefix=nsmap[ns]
+                            }
                             if(Array.isArray(feat["properties"][prop])){
 								for(arritem of feat["properties"][prop]){
-									resgml+="<"+prop+">"+arritem+"</"+prop+">\n"
+									resgml+="<"+nsprefix+":"+shortenURI(prop)+">"+arritem+"</"+nsprefix+":"+shortenURI(prop)+">\n"
 								}
                             }else{
-                                resgml+="<"+prop+">"+feat["properties"][prop]+"</"+prop+">\n"
+                                resgml+="<"+nsprefix+":"+shortenURI(prop)+">"+feat["properties"][prop]+"</"+nsprefix+":"+shortenURI(prop)+">\n"
                             }
                         }
                     }
@@ -344,12 +353,21 @@ function exportGML(){
 				resgml+="<gml:featureMember>"
 				if("properties" in feature){
 					for(prop in feature["properties"]){
-						if(Array.isArray(feature["properties"][prop])){
+                        ns=shortenURI(prop)
+                        nsprefix=""
+                        if(!(ns in nsmap)){
+                            nsmap[ns]="ns"+nscounter
+                            nsprefix="ns"+nscounter
+                            nscounter+=1
+                        }else{
+                            nsprefix=nsmap[ns]
+                        }
+                        if(Array.isArray(feature["properties"][prop])){
 							for(arritem of feature["properties"][prop]){
-								resgml+="<Data name=\""+prop+"\"><displayName>"+prop+"</displayName><value>"+arritem+"</value></Data>\n"
+								resgml+="<"+nsprefix+":"+shortenURI(prop)+">"+arritem+"</"+nsprefix+":"+shortenURI(prop)+">\n"
 							}
 						}else{
-							resgml+="<Data name=\""+prop+"\"><displayName>"+prop+"</displayName><value>"+feature["properties"][prop]+"</value></Data>\n"
+							resgml+="<"+nsprefix+":"+shortenURI(prop)+">"+feature["properties"][prop]+"</"+nsprefix+":"+shortenURI(prop)+">\n"
 						}
 				    }
                 }
@@ -387,10 +405,10 @@ function exportKML(){
                         for(prop in feat["properties"]){
                             if(Array.isArray(feat["properties"][prop])){
 								for(arritem of feat["properties"][prop]){
-									reskml+="<Data name=\""+prop+"\"><displayName>"+prop+"</displayName><value>"+arritem+"</value></Data>\n"
+									reskml+="<Data name=\""+prop+"\"><displayName>"+shortenURI(prop)+"</displayName><value>"+arritem+"</value></Data>\n"
 								}
                             }else{
-                                reskml+="<Data name=\""+prop+"\"><displayName>"+prop+"</displayName><value>"+feat["properties"][prop]+"</value></Data>\n"
+                                reskml+="<Data name=\""+prop+"\"><displayName>"+shortenURI(prop)+"</displayName><value>"+feat["properties"][prop]+"</value></Data>\n"
                             }
                         }
 						reskml+="</ExtendedData>"
@@ -423,10 +441,10 @@ function exportKML(){
 					for(prop in feature["properties"]){
 						if(Array.isArray(feature["properties"][prop])){
 							for(arritem of feature["properties"][prop]){
-								reskml+="<Data name=\""+prop+"\"><displayName>"+prop+"</displayName><value>"+arritem+"</value></Data>\n"
+								reskml+="<Data name=\""+prop+"\"><displayName>"+shortenURI(prop)+"</displayName><value>"+arritem+"</value></Data>\n"
 							}
 						}else{
-							reskml+="<Data name=\""+prop+"\"><displayName>"+prop+"</displayName><value>"+feature["properties"][prop]+"</value></Data>\n"
+							reskml+="<Data name=\""+prop+"\"><displayName>"+shortenURI(prop)+"</displayName><value>"+feature["properties"][prop]+"</value></Data>\n"
 						}
 				    }
 					reskml+="</ExtendedData>"
@@ -483,14 +501,14 @@ function exportTGFGDF(sepchar,format){
                                                 nodes+=nodecounter+sepchar+arritem+"\n"
                                                 nodecounter+=1
                                             }
-                                            edges+=featid+sepchar+uritoNodeId[arritem]+sepchar+prop+"\n"
+                                            edges+=featid+sepchar+uritoNodeId[arritem]+sepchar+shortenURI(prop)+"\n"
                                     }
                             }else{
                                  if(!(feat["properties"][prop] in uritoNodeId)){
                                     uritoNodeId[feat["properties"][prop]]=nodecounter
                                     nodecounter+=1
                                  }
-                                 edges+=featid+sepchar+uritoNodeId[feat["properties"][prop]]+sepchar+prop+"\n"
+                                 edges+=featid+sepchar+uritoNodeId[feat["properties"][prop]]+sepchar+shortenURI(prop)+"\n"
                             }
                         }
                     }
@@ -510,14 +528,14 @@ function exportTGFGDF(sepchar,format){
                                                 nodes+=nodecounter+sepchar+arritem+"\n"
                                                 nodecounter+=1
                                             }
-                                            edges+=featid+sepchar+uritoNodeId[arritem]+sepchar+prop+"\n"
+                                            edges+=featid+sepchar+uritoNodeId[arritem]+sepchar+shortenURI(prop)+"\n"
                                     }
                             }else{
                                  if(!(feat["properties"][prop] in uritoNodeId)){
                                     uritoNodeId[feat["properties"][prop]]=nodecounter
                                     nodecounter+=1
                                  }
-                                 edges+=featid+sepchar+uritoNodeId[feat["properties"][prop]]+sepchar+prop+"\n"
+                                 edges+=featid+sepchar+uritoNodeId[feat["properties"][prop]]+sepchar+shortenURI(prop)+"\n"
                             }
                       }
                 }
@@ -824,7 +842,7 @@ var definitionlinks={
     "yaml":"https://yaml.org"
     }
 
-function shortenURI(uri){
+function shortenURI(uri,getns=false){
 	prefix=""
 	if(typeof(uri)!="undefined"){
 		for(namespace in namespaces){
@@ -834,14 +852,21 @@ function shortenURI(uri){
 			}
 		}
 	}
-	if(typeof(uri)!= "undefined" && uri.includes("#")){
+	if(typeof(uri)!= "undefined" && uri.includes("#") && !getns){
 		return prefix+uri.substring(uri.lastIndexOf('#')+1)
 	}
-	if(typeof(uri)!= "undefined" && uri.includes("/")){
+	if(typeof(uri)!= "undefined" && uri.includes("/") && !getns){
 		return prefix+uri.substring(uri.lastIndexOf("/")+1)
+	}
+    if(typeof(uri)!= "undefined" && uri.includes("#") && getns){
+		return prefix+uri.substring(0,uri.lastIndexOf('#'))
+	}
+	if(typeof(uri)!= "undefined" && uri.includes("/") && getns){
+		return prefix+uri.substring(0,uri.lastIndexOf("/"))
 	}
 	return uri
 }
+
 
 var presenter = null;
 function setup3dhop(meshurl,meshformat) {
