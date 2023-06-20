@@ -316,7 +316,7 @@ function exportGML(){
 					resgml+="<gml:featureMember>"
 					if("properties" in feat){
                         for(prop in feat["properties"]){
-                            ns=shortenURI(prop)
+                            ns=shortenURI(prop,true)
                             nsprefix=""
                             if(ns in namespaces && !(ns in nsmap)){
                                 nsmap[ns]=namespaces[ns]
@@ -358,21 +358,26 @@ function exportGML(){
 				resgml+="<gml:featureMember>"
 				if("properties" in feature){
 					for(prop in feature["properties"]){
-                        ns=shortenURI(prop)
+                        ns=shortenURI(prop,true)
                         nsprefix=""
+                        if(ns in namespaces && !(ns in nsmap)){
+                            nsmap[ns]=namespaces[ns]
+                            resgmlhead+="xmlns:"+namespaces[ns]+"=\""+ns+"\" "
+                        }
                         if(!(ns in nsmap)){
                             nsmap[ns]="ns"+nscounter
                             nsprefix="ns"+nscounter
+                            resgmlhead+="xmlns:"+nsprefix+"=\""+ns+"\" "
                             nscounter+=1
                         }else{
                             nsprefix=nsmap[ns]
                         }
                         if(Array.isArray(feature["properties"][prop])){
 							for(arritem of feature["properties"][prop]){
-								resgml+="<"+nsprefix+":"+shortenURI(prop)+">"+arritem+"</"+nsprefix+":"+shortenURI(prop)+">\n"
+								resgml+="<"+shortenURI(prop,false,nsprefix)+">"+arritem+"</"+shortenURI(prop,false,nsprefix)+">\n"
 							}
 						}else{
-							resgml+="<"+nsprefix+":"+shortenURI(prop)+">"+feature["properties"][prop]+"</"+nsprefix+":"+shortenURI(prop)+">\n"
+							resgml+="<"+shortenURI(prop,false,nsprefix)+">"+feature["properties"][prop]+"</"+shortenURI(prop,false,nsprefix)+">\n"
 						}
 				    }
                 }
