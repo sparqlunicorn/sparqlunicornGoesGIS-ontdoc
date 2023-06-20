@@ -318,19 +318,24 @@ function exportGML(){
                         for(prop in feat["properties"]){
                             ns=shortenURI(prop)
                             nsprefix=""
+                            if(ns in namespaces && !(ns in nsmap)){
+                                nsmap[ns]=namespaces[ns]
+                                resgmlhead+="xmlns:"+namespaces[ns]+"=\""+ns+"\" "
+                            }
                             if(!(ns in nsmap)){
                                 nsmap[ns]="ns"+nscounter
                                 nsprefix="ns"+nscounter
+                                resgmlhead+="xmlns:"+nsprefix+"=\""+ns+"\" "
                                 nscounter+=1
                             }else{
                                 nsprefix=nsmap[ns]
                             }
                             if(Array.isArray(feat["properties"][prop])){
 								for(arritem of feat["properties"][prop]){
-									resgml+="<"+nsprefix+":"+shortenURI(prop)+">"+arritem+"</"+nsprefix+":"+shortenURI(prop)+">\n"
+									resgml+="<"+shortenURI(prop,false,nsprefix)+">"+arritem+"</"+shortenURI(prop,false,nsprefix)+">\n"
 								}
                             }else{
-                                resgml+="<"+nsprefix+":"+shortenURI(prop)+">"+feat["properties"][prop]+"</"+nsprefix+":"+shortenURI(prop)+">\n"
+                                resgml+="<"+shortenURI(prop,false,nsprefix)+">"+feat["properties"][prop]+"</"+shortenURI(prop,false,nsprefix)+">\n"
                             }
                         }
                     }
@@ -842,7 +847,7 @@ var definitionlinks={
     "yaml":"https://yaml.org"
     }
 
-function shortenURI(uri,getns=false){
+function shortenURI(uri,getns=false,nsprefix=""){
 	prefix=""
 	if(typeof(uri)!="undefined"){
 		for(namespace in namespaces){
@@ -851,6 +856,9 @@ function shortenURI(uri,getns=false){
 				break
 			}
 		}
+		if(prefix=="" && nsprefix!=""){
+            prefix==nsprefix
+        }
 	}
 	if(typeof(uri)!= "undefined" && uri.includes("#") && !getns){
 		return prefix+uri.substring(uri.lastIndexOf('#')+1)
