@@ -394,7 +394,7 @@ function exportGML(){
 		}
 	}
 	resgml+="</gml:FeatureCollection>"
-	saveTextAsFile(resgml,"gml")
+	saveTextAsFile(resgmlhead+resgml,"gml")
 }
 
 function exportKML(){
