@@ -242,7 +242,7 @@ function exportGraphML(){
 								resgml+="<node id=\""+thetarget+"\" uri=\""+thetarget+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#F08080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+feat["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\n"
 								literalcounter+=1
 							}
-							resgml+="<edge id=\"e"+edgecounter+"\" uri=\""+prop+"\" source=\""+feat.id+"\" target=\""+thetarget+"\"><data key=\"edgekey\"><y:PolyLineEdge><y:EdgeLabel alignment=\"center\" configuration=\"AutoFlippingLabel\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+prop+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
+							resgml+="<edge id=\"e"+edgecounter+"\" uri=\""+prop+"\" source=\""+feat.id+"\" target=\""+thetarget+"\"><data key=\"edgekey\"><y:PolyLineEdge><y:EdgeLabel alignment=\"center\" configuration=\"AutoFlippingLabel\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+shortenURI(prop)+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
 							edgecounter+=1
 						}
 					}
@@ -263,7 +263,7 @@ function exportGraphML(){
 							resgml+="<node id=\""+thetarget+"\" uri=\""+thetarget+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#F08080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+feature["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\n"
 							literalcounter+=1
 						}
-						resgml+="<edge id=\"e"+edgecounter+"\" uri=\""+prop+"\" source=\""+feature.id+"\" target=\""+thetarget+"\"><data key=\"edgekey\"><y:PolyLineEdge><y:EdgeLabel alignment=\"center\" configuration=\"AutoFlippingLabel\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+prop+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
+						resgml+="<edge id=\"e"+edgecounter+"\" uri=\""+prop+"\" source=\""+feature.id+"\" target=\""+thetarget+"\"><data key=\"edgekey\"><y:PolyLineEdge><y:EdgeLabel alignment=\"center\" configuration=\"AutoFlippingLabel\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+shortenURI(prop)+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
 						edgecounter+=1
 					}
 				}
@@ -305,8 +305,8 @@ function exportLatLonText(){
 }
 
 function exportGML(){
-	resgml="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<gml:FeatureCollection xmlns:gml=\"http://www.opengis.net/gml\">\n"
-    resgmlhead=""
+	resgml=">\n"
+    resgmlhead="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<gml:FeatureCollection xmlns:gml=\"http://www.opengis.net/gml\" "
     nscounter=0
     nsmap={}
 	if(typeof(featurecolls)!=="undefined"){
