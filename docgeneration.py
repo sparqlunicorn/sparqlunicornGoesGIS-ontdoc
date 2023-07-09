@@ -1500,11 +1500,13 @@ class OntDocGeneration:
         print("MATCHES FOR OFFLINE: "+str(matched))
         for match in matched:
             #download the library
-            print(match.replace("src=\"",""))
-            r = requests.get(match.replace("src=\"",""))  
-            with open(os.path.join(match, outpath+"js/"+match[match.rfind("/")+1:]), 'wb') as fd:
-                fd.write(r.content)
-            htmltemplate=htmltemplate.replace(match,"src=\"js/"+match[match.rfind("/")+1:]+"\"")
+            if "</script>" in match:
+                for m in match.split("></script><script src="):
+                    print(m)
+                    r = requests.get(m)  
+                    with open(os.path.join(match, outpath+"js/"+match[match.rfind("/")+1:]), 'wb') as fd:
+                        fd.write(r.content)
+                    htmltemplate=htmltemplate.replace(match,"src=\"js/"+match[match.rfind("/")+1:]+"\"")
 
     def convertOWL2MiniVOWL(self,g,outpath,predicates=[],typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",labelproperty="http://www.w3.org/2000/01/rdf-schema#label"):
         minivowlresult={"info": [{
