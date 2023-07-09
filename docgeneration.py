@@ -1504,7 +1504,7 @@ class OntDocGeneration:
                 for m in match.split("></script><script src="):
                     print(m.replace("\"",""))
                     r = requests.get(m.replace("\"",""))  
-                    with open(outpath+"/js/"+m[m.rfind("/")+1:], 'wb') as fd:
+                    with open(outpath+"/"+m[m.rfind("/")+1:], 'wb') as fd:
                         fd.write(r.content)
                     htmltemplate=htmltemplate.replace(match,"src=\"js/"+match[match.rfind("/")+1:]+"\"")
 
