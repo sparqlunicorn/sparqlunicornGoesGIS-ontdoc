@@ -1495,6 +1495,8 @@ class OntDocGeneration:
 
     def createOfflineCompatibleVersion(self,outpath):
         print("")
+        if not os.path.isdir(outpath):
+            os.mkdir(outpath)
         global htmltemplate
         matched=re.findall(r'src="(http.*)"',htmltemplate)
         print("MATCHES FOR OFFLINE: "+str(matched))
