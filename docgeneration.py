@@ -1503,7 +1503,7 @@ class OntDocGeneration:
             dl=QgsFileDownloader(match,outpath+"js/"+match[match.rfind("/")+1:])
             dl.startDownload()
             r = requests.get(link)  
-            with open(os.path.join(match, outpath+"js/"+match[match.rfind("/")+1:), 'wb') as fd:
+            with open(os.path.join(match, outpath+"js/"+match[match.rfind("/")+1:]), 'wb') as fd:
                 fd.write(r.content)
             htmltemplate=htmltemplate.replace(match,"src=\"js/"+match[match.rfind("/")+1:]+"\"")
 
