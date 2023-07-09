@@ -1500,7 +1500,8 @@ class OntDocGeneration:
         print("MATCHES FOR OFFLINE: "+str(matched))
         for match in matched:
             #download the library
-            r = requests.get(link)  
+            print(match.group(1))
+            r = requests.get(match.group(1))  
             with open(os.path.join(match, outpath+"js/"+match[match.rfind("/")+1:]), 'wb') as fd:
                 fd.write(r.content)
             htmltemplate=htmltemplate.replace(match,"src=\"js/"+match[match.rfind("/")+1:]+"\"")
