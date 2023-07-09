@@ -1502,9 +1502,9 @@ class OntDocGeneration:
             #download the library
             if "</script>" in match:
                 for m in match.split("></script><script src="):
-                    print(m)
-                    r = requests.get(m)  
-                    with open(os.path.join(match, outpath+"js/"+match[match.rfind("/")+1:]), 'wb') as fd:
+                    print(m.replace("\"",""))
+                    r = requests.get(m.replace("\"",""))  
+                    with open(outpath+"js/"+m[m.rfind("/")+1:], 'wb') as fd:
                         fd.write(r.content)
                     htmltemplate=htmltemplate.replace(match,"src=\"js/"+match[match.rfind("/")+1:]+"\"")
 
