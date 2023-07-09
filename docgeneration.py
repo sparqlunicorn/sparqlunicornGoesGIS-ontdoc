@@ -1496,12 +1496,10 @@ class OntDocGeneration:
     def createOfflineCompatibleVersion(self,outpath):
         print("")
         global htmltemplate
-        matched=re.search(r'src="(http.*)"',htmltemplate)
+        matched=re.findall(r'src="(http.*)"',htmltemplate)
         print("MATCHES FOR OFFLINE: "+str(matched))
         for match in matched:
             #download the library
-            dl=QgsFileDownloader(match,outpath+"js/"+match[match.rfind("/")+1:])
-            dl.startDownload()
             r = requests.get(link)  
             with open(os.path.join(match, outpath+"js/"+match[match.rfind("/")+1:]), 'wb') as fd:
                 fd.write(r.content)
