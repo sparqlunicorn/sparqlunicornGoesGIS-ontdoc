@@ -83,7 +83,7 @@ on:
         type: string
       offlinecompat:
         required: false
-        default: ""
+        default: false
         type: boolean
 
 jobs:
