@@ -1511,7 +1511,7 @@ class OntDocGeneration:
                     r = requests.get(m.replace("\"",""))  
                     with open(outpath+"/js/"+m[m.rfind("/")+1:], 'wb') as fd:
                         fd.write(r.content)
-                    htmltemplate=htmltemplate.replace(m,"js/"+m[m.rfind("/")+1:])
+                    htmltemplate=htmltemplate.replace(m,"{{relativepath}}/js/"+m[m.rfind("/")+1:])
             else:
                 print(match.replace("\"",""))
                 match=match.replace("\"","")
