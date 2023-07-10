@@ -1427,7 +1427,7 @@ def resolveTemplate(templatename):
 
 class OntDocGeneration:
 
-    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,iiif,localOptimized=False,startconcept=None,deploypath="",logoname="",templatename="default"):
+    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,iiif,localOptimized=False,startconcept=None,deploypath="",logoname="",templatename="default",offlinecompat=False):
         self.prefixes=prefixes
         self.prefixnamespace = prefixnamespace
         self.namespaceshort = prefixnsshort.replace("/","")
@@ -1444,7 +1444,8 @@ class OntDocGeneration:
         self.geocollectionspaths=[]
         self.metadatatable=metadatatable
         resolveTemplate(templatename)
-        self.createOfflineCompatibleVersion(outpath)
+        if offlinecompat:
+            self.createOfflineCompatibleVersion(outpath)
         self.license=license
         self.licenseuri=None
         self.licensehtml=None
@@ -3240,6 +3241,7 @@ parser.add_argument("-lo","--localOptimized",help="build a version for local dep
 parser.add_argument("-mdt","--metadatatable",help="create metadata table?",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-nnsp","--nonnspages",help="create nonns pages?",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-vowl","--createvowl",help="create vowl graph view?",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
+parser.add_argument("-of","--offlinecompat",help="built-result is offline compatible",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-ogc","--ogcapifeatures",help="create ogc api features collections?",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-iiif","--iiifmanifest",help="create iiif manifests?",action="store",default=True,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-sc","--startconcept",help="the concept suggested for browsing the HTML documentation",action="store",default=None)
@@ -3284,9 +3286,9 @@ for fp in filestoprocess:
     g = Graph()
     g.parse(fp)
     if fcounter<len(outpath):
-        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename)
+        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat)
     else:
-        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename)
+        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat)
     docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
     #except Exception as inst:
     # 	print("Could not parse "+str(fp))
