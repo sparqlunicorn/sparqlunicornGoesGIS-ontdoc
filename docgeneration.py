@@ -1511,7 +1511,7 @@ class OntDocGeneration:
                     r = requests.get(m.replace("\"",""))  
                     with open(outpath+"/js/"+m[m.rfind("/")+1:], 'wb') as fd:
                         fd.write(r.content)
-                    htmltemplate=htmltemplate.replace(match,"src=\"js/"+match[match.rfind("/")+1:]+"\"")
+                    htmltemplate=htmltemplate.replace(match,"js/"+match[match.rfind("/")+1:])
 
     def convertOWL2MiniVOWL(self,g,outpath,predicates=[],typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",labelproperty="http://www.w3.org/2000/01/rdf-schema#label"):
         minivowlresult={"info": [{
