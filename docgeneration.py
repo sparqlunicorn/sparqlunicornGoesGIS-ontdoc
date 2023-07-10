@@ -1502,6 +1502,8 @@ class OntDocGeneration:
             os.mkdir(outpath)
         if not os.path.isdir(outpath+"/js"):
             os.mkdir(outpath+"/js")
+        if not os.path.isdir(outpath+"/css"):
+            os.mkdir(outpath+"/css")
         matched=re.findall(r'src="(http.*)"',myhtmltemplate)
         for match in matched:
             #download the library
@@ -1520,6 +1522,14 @@ class OntDocGeneration:
                 with open(outpath+"/js/"+match[match.rfind("/")+1:], 'wb') as fd:
                     fd.write(r.content)
                 myhtmltemplate=myhtmltemplate.replace(match,"{{relativepath}}js/"+match[match.rfind("/")+1:])
+        matched=re.findall(r'href="(http.*\.css)"',myhtmltemplate)
+        for match in matched:
+            print(match.replace("\"",""))
+            match=match.replace("\"","")
+            r = requests.get(match.replace("\"",""))  
+            with open(outpath+"/css/"+match[match.rfind("/")+1:], 'wb') as fd:
+                fd.write(r.content)
+            myhtmltemplate=myhtmltemplate.replace(match,"{{relativepath}}css/"+match[match.rfind("/")+1:])        
         return myhtmltemplate
 
     def convertOWL2MiniVOWL(self,g,outpath,predicates=[],typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",labelproperty="http://www.w3.org/2000/01/rdf-schema#label"):
