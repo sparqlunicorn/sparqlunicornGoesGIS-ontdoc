@@ -1750,7 +1750,7 @@ class OntDocGeneration:
                         for tup in self.graph.predicate_objects(sub):
                             subgraph.add((sub, tup[0], tup[1]))
                 subgraph.serialize(path + "index.ttl",encoding="utf-8")
-                indexhtml = htmltemplate.replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{relativepath}}",self.generateRelativePathFromGivenDepth(baseurl,checkdepth)).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink)\
+                indexhtml = htmltemplate.replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{relativepath}}",self.generateRelativePathFromGivenDepth(prefixnamespace,checkdepth)).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink)\
                     .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", nslink).replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
                 if nslink==prefixnamespace:
                     indexhtml=indexhtml.replace("{{indexpage}}","true")
@@ -1786,7 +1786,7 @@ class OntDocGeneration:
         if len(iiifmanifestpaths["default"])>0:
             self.generateIIIFCollections(self.outpath,iiifmanifestpaths["default"],prefixnamespace)
         if len(featurecollectionspaths)>0:
-            indexhtml = htmltemplate.replace("{{logo}}",self.logoname).replace("{{relativedepth}}","0").replace("{{baseurl}}", prefixnamespace).replace("{{relativepath}}",self.generateRelativePathFromGivenDepth(baseurl,checkdepth)).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}", "vowl_result.js")\
+            indexhtml = htmltemplate.replace("{{logo}}",self.logoname).replace("{{relativedepth}}","0").replace("{{baseurl}}", prefixnamespace).replace("{{relativepath}}",self.generateRelativePathFromGivenDepth("",0)).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}", "vowl_result.js")\
                     .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{nonnslink}}","").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
             indexhtml = indexhtml.replace("{{indexpage}}", "true")
             self.generateOGCAPIFeaturesPages(outpath,featurecollectionspaths,prefixnamespace,self.ogcapifeatures,True)
