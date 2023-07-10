@@ -1505,6 +1505,7 @@ class OntDocGeneration:
             if "</script>" in match:
                 for m in match.split("></script><script src="):
                     print(m.replace("\"",""))
+                    m=m.replace("\"","")
                     r = requests.get(m.replace("\"",""))  
                     with open(outpath+"/"+m[m.rfind("/")+1:], 'wb') as fd:
                         fd.write(r.content)
