@@ -1497,6 +1497,8 @@ class OntDocGeneration:
         print("")
         if not os.path.isdir(outpath):
             os.mkdir(outpath)
+        if not os.path.isdir(outpath+"/js"):
+            os.mkdir(outpath+"/js")
         global htmltemplate
         matched=re.findall(r'src="(http.*)"',htmltemplate)
         print("MATCHES FOR OFFLINE: "+str(matched))
@@ -1507,7 +1509,7 @@ class OntDocGeneration:
                     print(m.replace("\"",""))
                     m=m.replace("\"","")
                     r = requests.get(m.replace("\"",""))  
-                    with open(outpath+"/"+m[m.rfind("/")+1:], 'wb') as fd:
+                    with open(outpath+"/js/"+m[m.rfind("/")+1:], 'wb') as fd:
                         fd.write(r.content)
                     htmltemplate=htmltemplate.replace(match,"src=\"js/"+match[match.rfind("/")+1:]+"\"")
 
