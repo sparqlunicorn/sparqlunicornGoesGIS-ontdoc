@@ -1518,7 +1518,7 @@ class OntDocGeneration:
                 r = requests.get(match.replace("\"",""))  
                 with open(outpath+"/js/"+match[match.rfind("/")+1:], 'wb') as fd:
                     fd.write(r.content)
-                htmltemplate=htmltemplate.replace(match,"js/"+match[match.rfind("/")+1:])
+                htmltemplate=htmltemplate.replace(match,"{{relativepath}}/js/"+match[match.rfind("/")+1:])
 
     def convertOWL2MiniVOWL(self,g,outpath,predicates=[],typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",labelproperty="http://www.w3.org/2000/01/rdf-schema#label"):
         minivowlresult={"info": [{
@@ -1997,6 +1997,12 @@ class OntDocGeneration:
                 return {"uri": str(self.prefixes["reversed"][ns]) + ":" + str(uri.replace(ns, "")),
                         "ns": self.prefixes["reversed"][ns]}
         return None
+
+    def generateRelativePathFromGivenDepth(self,baseurl,checkdepth):
+        rellink = ""
+        for i in range(0, checkdepth):
+            rellink = "../" + rellink
+        return rellink
 
     def generateRelativeLinkFromGivenDepth(self,baseurl,checkdepth,item,withindex):
         rellink = str(item).replace(baseurl, "")
@@ -3009,13 +3015,13 @@ class OntDocGeneration:
                 else:
                     myexports=nongeoexports
                 if foundlabel != "":
-                    f.write(htmltemplate.replace("{{logo}}",logo).replace("{{baseurl}}",baseurl).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{toptitle}}", foundlabel).replace(
+                    f.write(htmltemplate.replace("{{logo}}",logo).replace("{{baseurl}}",baseurl).replace("{{relativepath}}",generateRelativePathFromGivenDepth(baseurl,checkdepth)).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{toptitle}}", foundlabel).replace(
                         "{{startscriptpath}}", rellink4).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}",itembibtex).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{indexpage}}","false").replace("{{title}}",
                                                                                                     "<a href=\"" + str(subject) + "\">" + str(foundlabel) + "</a>").replace(
                         "{{baseurl}}", baseurl).replace("{{tablecontent}}", tablecontents).replace("{{description}}","").replace(
                         "{{scriptfolderpath}}", rellink).replace("{{classtreefolderpath}}", rellink2).replace("{{exports}}",myexports).replace("{{nonnslink}}",str(nonnslink)).replace("{{subject}}",str(subject)))
                 else:
-                    f.write(htmltemplate.replace("{{logo}}",logo).replace("{{baseurl}}",baseurl).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{indexpage}}","false").replace("{{toptitle}}", self.shortenURI(str(subject))).replace(
+                    f.write(htmltemplate.replace("{{logo}}",logo).replace("{{baseurl}}",baseurl).replace("{{relativepath}}",generateRelativePathFromGivenDepth(baseurl,checkdepth)).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{indexpage}}","false").replace("{{toptitle}}", self.shortenURI(str(subject))).replace(
                         "{{startscriptpath}}", rellink4).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}",itembibtex).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{title}}","<a href=\"" + str(subject) + "\">" + self.shortenURI(str(subject)) + "</a>").replace(
                         "{{baseurl}}", baseurl).replace("{{description}}","").replace(
                         "{{scriptfolderpath}}", rellink).replace("{{classtreefolderpath}}", rellink2).replace("{{exports}}",myexports).replace("{{nonnslink}}",str(nonnslink)).replace("{{subject}}",str(subject)))
@@ -3293,7 +3299,7 @@ print("Path exists? "+outpath[0]+'/index.html '+str(os.path.exists(outpath[0]+'/
 if not os.path.exists(outpath[0]+'/index.html'):
     indexf=open(outpath[0]+"/index.html","w",encoding="utf-8")
     nonnslink=""
-    indexhtml = htmltemplate.replace("{{logo}}",args.logourl).replace("{{baseurl}}", args.prefixns).replace("{{relativedepth}}","0").replace("{{toptitle}}","Index page").replace("{{title}}","Index page").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
+    indexhtml = htmltemplate.replace("{{logo}}",args.logourl).replace("{{baseurl}}", args.prefixns).replace("{{relativepath}}",generateRelativePathFromGivenDepth(baseurl,0)).replace("{{relativedepth}}","0").replace("{{toptitle}}","Index page").replace("{{title}}","Index page").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
         .replace("{{classtreefolderpath}}",args.prefixnsshort + "_classtree.js").replace("{{baseurlhtml}}", ".").replace("{{nonnslink}}",str(nonnslink)).replace("{{proprelationpath}}", "proprelations.js").replace("{{scriptfolderpath}}", args.prefixnsshort+ '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
     indexhtml=indexhtml.replace("{{indexpage}}","true")	
     indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"
