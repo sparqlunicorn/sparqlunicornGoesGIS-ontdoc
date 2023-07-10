@@ -1445,7 +1445,10 @@ class OntDocGeneration:
         self.metadatatable=metadatatable
         resolveTemplate(templatename)
         if offlinecompat:
-            self.createOfflineCompatibleVersion(outpath)
+            global htmltemplate
+            htmltemplate=self.createOfflineCompatibleVersion(outpath,htmltemplate)
+            global maptemplate
+            maptemplate=self.createOfflineCompatibleVersion(outpath,maptemplate)
         self.license=license
         self.licenseuri=None
         self.licensehtml=None
@@ -1494,15 +1497,12 @@ class OntDocGeneration:
             print(e)
         return None
 
-    def createOfflineCompatibleVersion(self,outpath):
-        print("")
+    def createOfflineCompatibleVersion(self,outpath,myhtmltemplate):
         if not os.path.isdir(outpath):
             os.mkdir(outpath)
         if not os.path.isdir(outpath+"/js"):
             os.mkdir(outpath+"/js")
-        global htmltemplate
-        matched=re.findall(r'src="(http.*)"',htmltemplate)
-        print("MATCHES FOR OFFLINE: "+str(matched))
+        matched=re.findall(r'src="(http.*)"',myhtmltemplate)
         for match in matched:
             #download the library
             if "</script>" in match:
@@ -1512,14 +1512,15 @@ class OntDocGeneration:
                     r = requests.get(m.replace("\"",""))  
                     with open(outpath+"/js/"+m[m.rfind("/")+1:], 'wb') as fd:
                         fd.write(r.content)
-                    htmltemplate=htmltemplate.replace(m,"{{relativepath}}js/"+m[m.rfind("/")+1:])
+                    myhtmltemplate=myhtmltemplate.replace(m,"{{relativepath}}js/"+m[m.rfind("/")+1:])
             else:
                 print(match.replace("\"",""))
                 match=match.replace("\"","")
                 r = requests.get(match.replace("\"",""))  
                 with open(outpath+"/js/"+match[match.rfind("/")+1:], 'wb') as fd:
                     fd.write(r.content)
-                htmltemplate=htmltemplate.replace(match,"{{relativepath}}js/"+match[match.rfind("/")+1:])
+                myhtmltemplate=myhtmltemplate.replace(match,"{{relativepath}}js/"+match[match.rfind("/")+1:])
+        return myhtmltemplate
 
     def convertOWL2MiniVOWL(self,g,outpath,predicates=[],typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",labelproperty="http://www.w3.org/2000/01/rdf-schema#label"):
         minivowlresult={"info": [{
