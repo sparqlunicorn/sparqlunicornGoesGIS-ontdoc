@@ -1522,7 +1522,7 @@ class OntDocGeneration:
                 with open(outpath+"/js/"+match[match.rfind("/")+1:], 'wb') as fd:
                     fd.write(r.content)
                 myhtmltemplate=myhtmltemplate.replace(match,"{{relativepath}}js/"+match[match.rfind("/")+1:])
-        matched=re.findall(r'href="(http.*\.css)"',myhtmltemplate)
+        matched=re.findall(r'href="(http.*.css)"',myhtmltemplate)
         for match in matched:
             print(match.replace("\"",""))
             match=match.replace("\"","")
