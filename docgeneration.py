@@ -3287,7 +3287,7 @@ if args.templatepath!=None:
                 if subfoldername.endswith("/"):
                     subfoldername=subfoldername[0:-1]
                 templatepath="mydownloadedtemplate/"+subfoldername[0:subfoldername.rfind('/')+1]
-                templatename=subfoldername
+                args.templatename=subfoldername
                 if templatepath.endswith("/"):
                     templatepath=templatepath[0:-1]
                 print(templatepath)
