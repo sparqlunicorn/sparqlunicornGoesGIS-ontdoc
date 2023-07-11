@@ -3292,7 +3292,7 @@ if args.templatepath!=None:
                     templatepath=templatepath[0:-1]
                 print(templatepath)
                 print(subfoldername)
-                print(templatename)
+                print(args.templatename)
 fcounter=0
 for fp in filestoprocess:
     #try:
