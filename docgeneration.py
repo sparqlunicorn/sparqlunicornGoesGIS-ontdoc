@@ -1367,6 +1367,7 @@ classtreequery="""PREFIX owl: <http://www.w3.org/2002/07/owl#>\n
 featurecollectionspaths={}
 iiifmanifestpaths={"default":[]}
 imagetoURI={}
+epsgdefs={}
 
 def resolveTemplate(templatename):
     print(templatepath+"/"+templatename)
