@@ -2,6 +2,7 @@
 from rdflib import Graph
 from rdflib import URIRef, Literal, BNode
 from rdflib.plugins.sparql import prepareQuery
+from urllib.request import urlopen
 from io import BytesIO
 from zipfile import ZipFile
 from pathlib import Path
