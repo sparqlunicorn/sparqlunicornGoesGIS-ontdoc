@@ -1694,7 +1694,10 @@ class OntDocGeneration:
             f.write(startscripts.replace("{{baseurl}}",prefixnamespace))
             f.close()
         with open(outpath + "epsgdefs.js", 'w', encoding='utf-8') as f:
-            f.write(epsgdefs)
+            if epsgdefs!=None:
+                f.write(epsgdefs)
+            else:
+                f.write("var epsgdefs={}")
             f.close()
         pathmap = {}
         paths = {}
