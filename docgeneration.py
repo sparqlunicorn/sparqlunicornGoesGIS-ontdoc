@@ -1367,7 +1367,7 @@ classtreequery="""PREFIX owl: <http://www.w3.org/2002/07/owl#>\n
 featurecollectionspaths={}
 iiifmanifestpaths={"default":[]}
 imagetoURI={}
-epsgdefs={}
+epsgdefs="var epsgdefs={}"
 
 def resolveTemplate(templatename):
     print(templatepath+"/"+templatename)
@@ -1694,10 +1694,7 @@ class OntDocGeneration:
             f.write(startscripts.replace("{{baseurl}}",prefixnamespace))
             f.close()
         with open(outpath + "epsgdefs.js", 'w', encoding='utf-8') as f:
-            if epsgdefs!=None:
-                f.write(epsgdefs)
-            else:
-                f.write("var epsgdefs={}")
+            f.write(epsgdefs)
             f.close()
         pathmap = {}
         paths = {}
