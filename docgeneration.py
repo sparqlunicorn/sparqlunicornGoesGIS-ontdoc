@@ -1543,13 +1543,13 @@ class OntDocGeneration:
         if subjectstorender==None:
             subjectstorender=g.subjects()
         for sub in subjectstorender:
-            graphmlres+="<node id=\""+str(sub)+"\" uri="\""+str(sub)+"\">"+"""<data key="nodekey"><y:ShapeNode><y:Shape shape="ellipse"></y:Shape><y:Fill color="#800080" transparent="false"></y:Fill><y:NodeLabel alignment="center" fontSize="12" fontStyle="plain" hasText="true" visible="true" width="4.0">"""+str(self.shortenURI(sub))+"""</y:NodeLabel></y:ShapeNode></data></node>\n"""
+            graphmlres+="<node id=\""+str(sub)+"\" uri="\""+str(sub)+"\">"+"""<data key="nodekey"><y:ShapeNode><y:Shape shape="ellipse"></y:Shape><y:Fill color="#800080" transparent="false"></y:Fill><y:NodeLabel alignment="center" fontSize="12" fontStyle="plain" hasText="true" visible="true" width="4.0">"""+str(self.shortenURI(sub))+"</y:NodeLabel></y:ShapeNode></data></node>\n"
             for tup in g.predicate_objects(sub):
                 if isinstance(tup[1],Literal):
-                    graphmlres+="<edge id=\"e"+str(edgecounter)+"\" uri=\""+str(tup[0])+"\" source=\""+str(sub)+"\" target=\"literal"+str(literalcounter)+"\">"+"""<data key="edgekey"><y:PolyLineEdge><y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" fontSize="12" fontStyle="plain" hasText="true" visible="true" width="4.0">"""+str(tup[1])+"""</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"""
+                    graphmlres+="<edge id=\"e"+str(edgecounter)+"\" uri=\""+str(tup[0])+"\" source=\""+str(sub)+"\" target=\"literal"+str(literalcounter)+"\">"+"""<data key="edgekey"><y:PolyLineEdge><y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" fontSize="12" fontStyle="plain" hasText="true" visible="true" width="4.0">"""+str(tup[1])+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
                     literalcounter+=1
                 else:
-                    graphmlres+="<edge id=\"e"+str(edgecounter)+"\" uri=\""+str(tup[0])+"\" source=\""+str(sub)+"\" target=\""+str(tup[1])+"\">"+"""<data key="edgekey"><y:PolyLineEdge><y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" fontSize="12" fontStyle="plain" hasText="true" visible="true" width="4.0">"""+str(self.shortenURI(tup[1]))+"""</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"""
+                    graphmlres+="<edge id=\"e"+str(edgecounter)+"\" uri=\""+str(tup[0])+"\" source=\""+str(sub)+"\" target=\""+str(tup[1])+"\">"+"""<data key="edgekey"><y:PolyLineEdge><y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" fontSize="12" fontStyle="plain" hasText="true" visible="true" width="4.0">"""+str(self.shortenURI(tup[1]))+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
                 edgecounter+=1
         graphmlres+="</graphml>"
         return graphmlres
