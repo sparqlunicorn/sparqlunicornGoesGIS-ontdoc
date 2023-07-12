@@ -1549,6 +1549,8 @@ class OntDocGeneration:
                     graphmlres+="<edge id=\"e"+str(edgecounter)+"\" uri=\""+str(tup[0])+"\" source=\""+str(sub)+"\" target=\"literal"+str(literalcounter)+"\"><data key=\"edgekey\"><y:PolyLineEdge><y:EdgeLabel alignment=\"center\" configuration=\"AutoFlippingLabel\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\"><![CDATA["+str(tup[1])+"]]></y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
                     literalcounter+=1
                 else:
+                    if tup[1] not in subjectstorender:
+                        graphmlres+="<node id=\""+str(tup[1])+"\" uri=\""+str(tup[1])+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#800080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+str(self.shortenURI(tup[1]))+"</y:NodeLabel></y:ShapeNode></data></node>\n"
                     graphmlres+="<edge id=\"e"+str(edgecounter)+"\" uri=\""+str(tup[0])+"\" source=\""+str(sub)+"\" target=\""+str(tup[1])+"\"><data key=\"edgekey\"><y:PolyLineEdge><y:EdgeLabel alignment=\"center\" configuration=\"AutoFlippingLabel\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+str(self.shortenURI(tup[1]))+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
                 edgecounter+=1
         graphmlres+="</graph></graphml>"
