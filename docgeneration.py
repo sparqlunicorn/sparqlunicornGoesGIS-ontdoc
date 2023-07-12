@@ -1534,6 +1534,26 @@ class OntDocGeneration:
             myhtmltemplate=myhtmltemplate.replace(match,"{{relativepath}}css/"+match[match.rfind("/")+1:])        
         return myhtmltemplate
 
+    def convertTTLToGraphML(self,g,subjectstorender=None):
+        literalcounter=0
+        edgecounter=0
+        graphmlres="""<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:y="http://www.yworks.com/xml/graphml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+<key for="node" id="nodekey" yfiles.type="nodegraphics"></key><key for="edge" id="edgekey" yfiles.type="edgegraphics"></key><graph id="G" edgedefault="directed">"""
+        if subjectstorender==None:
+            subjectstorender=g.subjects()
+        for sub in subjectstorender:
+            graphmlres+="<node id=\""+str(sub)+"\" uri="\""+str(sub)+"\">"+"""<data key="nodekey"><y:ShapeNode><y:Shape shape="ellipse"></y:Shape><y:Fill color="#800080" transparent="false"></y:Fill><y:NodeLabel alignment="center" fontSize="12" fontStyle="plain" hasText="true" visible="true" width="4.0">"""+str(self.shortenURI(sub))+"""</y:NodeLabel></y:ShapeNode></data></node>\n"""
+            for tup in g.predicate_objects(sub):
+                if isinstance(tup[1],Literal):
+                    graphmlres+="<edge id=\"e"+str(edgecounter)+"\" uri=\""+str(tup[0])+"\" source=\""+str(sub)+"\" target=\"literal"+str(literalcounter)+"\">"+"""<data key="edgekey"><y:PolyLineEdge><y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" fontSize="12" fontStyle="plain" hasText="true" visible="true" width="4.0">"""+str(tup[1])+"""</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"""
+                    literalcounter+=1
+                else:
+                    graphmlres+="<edge id=\"e"+str(edgecounter)+"\" uri=\""+str(tup[0])+"\" source=\""+str(sub)+"\" target=\""+str(tup[1])+"\">"+"""<data key="edgekey"><y:PolyLineEdge><y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" fontSize="12" fontStyle="plain" hasText="true" visible="true" width="4.0">"""+str(self.shortenURI(tup[1]))+"""</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"""
+                edgecounter+=1
+        graphmlres+="</graphml>"
+        return graphmlres
+
     def convertOWL2MiniVOWL(self,g,outpath,predicates=[],typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",labelproperty="http://www.w3.org/2000/01/rdf-schema#label"):
         minivowlresult={"info": [{
             "description": "Created with pyowl2vowl (version 0.1) as part of the SPARQLing Unicorn QGIS Plugin"}],
@@ -1764,6 +1784,10 @@ class OntDocGeneration:
                         for tup in self.graph.predicate_objects(sub):
                             subgraph.add((sub, tup[0], tup[1]))
                 subgraph.serialize(path + "index.ttl",encoding="utf-8")
+                graphml=self.convertTTLToGraphML(subgraph,subjectstorender)
+                with open(path + "index.graphml", 'w', encoding='utf-8') as f:
+                    f.write(graphml)
+                    f.close()
                 indexhtml = htmltemplate.replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{relativepath}}",self.generateRelativePathFromGivenDepth(prefixnamespace,checkdepth)).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink)\
                     .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", nslink).replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
                 if nslink==prefixnamespace:
