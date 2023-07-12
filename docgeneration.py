@@ -1551,7 +1551,7 @@ class OntDocGeneration:
                 else:
                     graphmlres+="<edge id=\"e"+str(edgecounter)+"\" uri=\""+str(tup[0])+"\" source=\""+str(sub)+"\" target=\""+str(tup[1])+"\"><data key=\"edgekey\"><y:PolyLineEdge><y:EdgeLabel alignment=\"center\" configuration=\"AutoFlippingLabel\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+str(self.shortenURI(tup[1]))+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
                 edgecounter+=1
-        graphmlres+="</graphml>"
+        graphmlres+="</graph></graphml>"
         return graphmlres
 
     def convertOWL2MiniVOWL(self,g,outpath,predicates=[],typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",labelproperty="http://www.w3.org/2000/01/rdf-schema#label"):
