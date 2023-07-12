@@ -1542,16 +1542,19 @@ class OntDocGeneration:
 <key for="node" id="nodekey" yfiles.type="nodegraphics"></key><key for="edge" id="edgekey" yfiles.type="edgegraphics"></key><graph id="G" edgedefault="directed">"""
         if subjectstorender==None:
             subjectstorender=g.subjects()
+        addednodes=set()
         for sub in subjectstorender:
             graphmlres+="<node id=\""+str(sub)+"\" uri=\""+str(sub)+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#800080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+str(self.shortenURI(sub))+"</y:NodeLabel></y:ShapeNode></data></node>\n"
             for tup in g.predicate_objects(sub):
                 if isinstance(tup[1],Literal):
-                    graphmlres+="<edge id=\"e"+str(edgecounter)+"\" uri=\""+str(tup[0])+"\" source=\""+str(sub)+"\" target=\"literal"+str(literalcounter)+"\"><data key=\"edgekey\"><y:PolyLineEdge><y:EdgeLabel alignment=\"center\" configuration=\"AutoFlippingLabel\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\"><![CDATA["+str(tup[1])+"]]></y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
+                    graphmlres+="<node id=\"literal"+str(literalcounter)+"\" uri=\"literal"+str(literalcounter)+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#F08080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+str(tup[1])+"</y:NodeLabel></y:ShapeNode></data></node>\n"
+                    graphmlres+="<edge id=\"e"+str(edgecounter)+"\" uri=\""+str(tup[0])+"\" source=\""+str(sub)+"\" target=\"literal"+str(literalcounter)+"\"><data key=\"edgekey\"><y:PolyLineEdge><y:EdgeLabel alignment=\"center\" configuration=\"AutoFlippingLabel\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\"><![CDATA["+str(self.shortenURI(str(tup[0])))+"]]></y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
                     literalcounter+=1
                 else:
-                    if tup[1] not in subjectstorender:
-                        graphmlres+="<node id=\""+str(tup[1])+"\" uri=\""+str(tup[1])+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#800080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+str(self.shortenURI(tup[1]))+"</y:NodeLabel></y:ShapeNode></data></node>\n"
-                    graphmlres+="<edge id=\"e"+str(edgecounter)+"\" uri=\""+str(tup[0])+"\" source=\""+str(sub)+"\" target=\""+str(tup[1])+"\"><data key=\"edgekey\"><y:PolyLineEdge><y:EdgeLabel alignment=\"center\" configuration=\"AutoFlippingLabel\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+str(self.shortenURI(tup[1]))+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
+                    if tup[1] not in subjectstorender and str(tup[1]) not in addednodes:
+                        graphmlres+="<node id=\""+str(tup[1])+"\" uri=\""+str(tup[1])+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#800080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+str(self.shortenURI(str(tup[1])))+"</y:NodeLabel></y:ShapeNode></data></node>\n"
+                        addednodes.add(str(tup[1]))
+                    graphmlres+="<edge id=\"e"+str(edgecounter)+"\" uri=\""+str(tup[0])+"\" source=\""+str(sub)+"\" target=\""+str(tup[1])+"\"><data key=\"edgekey\"><y:PolyLineEdge><y:EdgeLabel alignment=\"center\" configuration=\"AutoFlippingLabel\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+str(self.shortenURI(str(tup[1])))+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
                 edgecounter+=1
         graphmlres+="</graph></graphml>"
         return graphmlres
