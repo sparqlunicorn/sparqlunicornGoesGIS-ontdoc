@@ -3335,7 +3335,7 @@ for path in args.output:
 print("ARG EXPORTS: "+str(args.exports))
 for expo in args.exports:
     if " " in expo:
-        for ex in path.split(" "):
+        for ex in expo.split(" "):
             if ex not in dataexports:
                 dataexports.append(ex)
     elif expo not in dataexports:
