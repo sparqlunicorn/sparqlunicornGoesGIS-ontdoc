@@ -3293,7 +3293,7 @@ prefixes["reversed"]["http://www.ontology-of-units-of-measure.org/resource/om-2/
 prefixes["reversed"]["http://purl.org/meshsparql/"]="msp"
 outpath=[]
 filestoprocess=[]
-exports=[]
+dataexports=[]
 parser=argparse.ArgumentParser()
 parser.add_argument("-i","--input",nargs='*',help="the input TTL file(s) to parse",action="store", required=True)
 parser.add_argument("-o","--output",nargs='*',help="the output path(s)",action="store", required=True)
@@ -3336,11 +3336,11 @@ print("ARG EXPORTS: "+str(args.exports))
 for expo in args.exports:
     if " " in expo:
         for ex in path.split(" "):
-            if ex not in exports:
-                exports.append(ex)
-    elif expo not in exports:
-        exports.append(expo)
-print("EXPORTS: "+str(exports))
+            if ex not in dataexports:
+                dataexports.append(ex)
+    elif expo not in dataexports:
+        dataexports.append(expo)
+print("EXPORTS: "+str(dataexports))
 if args.templatepath!=None:
     templatepath=args.templatepath
     if templatepath.startswith("http") and templatepath.endswith(".zip"):
@@ -3364,9 +3364,9 @@ for fp in filestoprocess:
     g = Graph()
     g.parse(fp)
     if fcounter<len(outpath):
-        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,exports)
+        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports)
     else:
-        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,exports)
+        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports)
     docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
     #except Exception as inst:
     # 	print("Could not parse "+str(fp))
