@@ -1577,7 +1577,7 @@ class OntDocGeneration:
                     tgfresnodes+=str(nodecounter)+" "+str(tup[1])+"\n"
                     uriToNodeId[str(tup[1])]=nodecounter
                     nodecounter+=1
-                tgfresedges+=uriToNodeId[str(sub)]+" "+str(uriToNodeId[str(tup[1]))+" "+str(self.shortenURI(tup[0]))+"\n"
+                tgfresedges+=uriToNodeId[str(sub)]+" "+str(uriToNodeId[str(tup[1])])+" "+str(self.shortenURI(tup[0]))+"\n"
         return tgfresnodes+"#\n"+tgfresedges
 
     def convertOWL2MiniVOWL(self,g,outpath,predicates=[],typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",labelproperty="http://www.w3.org/2000/01/rdf-schema#label"):
