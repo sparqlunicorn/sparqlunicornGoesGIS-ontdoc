@@ -1429,11 +1429,12 @@ def resolveTemplate(templatename):
 
 class OntDocGeneration:
 
-    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,iiif,localOptimized=False,startconcept=None,deploypath="",logoname="",templatename="default",offlinecompat=False):
+    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,iiif,localOptimized=False,startconcept=None,deploypath="",logoname="",templatename="default",offlinecompat=False,exports=["json","ttl"]):
         self.prefixes=prefixes
         self.prefixnamespace = prefixnamespace
         self.namespaceshort = prefixnsshort.replace("/","")
         self.outpath=outpath
+        self.exports=exports
         self.logoname=logoname
         self.startconcept=startconcept
         self.createVOWL=createVOWL
@@ -1445,6 +1446,7 @@ class OntDocGeneration:
         self.generatePagesForNonNS=generatePagesForNonNS
         self.geocollectionspaths=[]
         self.metadatatable=metadatatable
+        self.exportToFunction={"graphml":self.convertTTLToGraphML,"tgf":self.convertTTLToTGF}
         resolveTemplate(templatename)
         if offlinecompat:
             global htmltemplate
@@ -1547,7 +1549,7 @@ class OntDocGeneration:
             graphmlres+="<node id=\""+str(sub)+"\" uri=\""+str(sub)+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#800080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+str(self.shortenURI(sub))+"</y:NodeLabel></y:ShapeNode></data></node>\n"
             for tup in g.predicate_objects(sub):
                 if isinstance(tup[1],Literal):
-                    graphmlres+="<node id=\"literal"+str(literalcounter)+"\" uri=\"literal"+str(literalcounter)+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#F08080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\"><![CDATA["+str(tup[1])+"]]></y:NodeLabel></y:ShapeNode></data></node>\n"
+                    graphmlres+="<node id=\"literal"+str(literalcounter)+"\" uri=\"literal"+str(literalcounter)+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#008000\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\"><![CDATA["+str(tup[1])+"]]></y:NodeLabel></y:ShapeNode></data></node>\n"
                     graphmlres+="<edge id=\"e"+str(edgecounter)+"\" uri=\""+str(tup[0])+"\" source=\""+str(sub)+"\" target=\"literal"+str(literalcounter)+"\"><data key=\"edgekey\"><y:PolyLineEdge><y:EdgeLabel alignment=\"center\" configuration=\"AutoFlippingLabel\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+str(self.shortenURI(str(tup[0])))+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
                     literalcounter+=1
                 else:
@@ -1558,6 +1560,25 @@ class OntDocGeneration:
                 edgecounter+=1
         graphmlres+="</graph></graphml>"
         return graphmlres
+
+    def convertTTLToTGF(self,g,subjectstorender=None):
+        uriToNodeId={}
+        nodecounter=0
+        tgfresnodes=""
+        tgfresedges=""
+        if subjectstorender==None:
+            subjectstorender=g.subjects()
+        for sub in subjectstorender:
+            uriToNodeId[str(sub)]=nodecounter
+            tgfresnodes+=str(nodecounter)+" "+str(sub)+"\n"
+            nodecounter+=1
+            for tup in g.predicate_objects(sub):
+                if str(tup[1]) not in uriToNodeId:
+                    tgfresnodes+=str(nodecounter)+" "+str(tup[1])+"\n"
+                    uriToNodeId[str(tup[1]]=nodecounter
+                    nodecounter+=1
+                tgfresedges+=uriToNodeId[str(sub)]+" "+str(uriToNodeId[str(tup[1]))+" "+str(self.shortenURI(tup[0]))+"\n"
+        return tgfresnodes+"#\n"+tgfresedges
 
     def convertOWL2MiniVOWL(self,g,outpath,predicates=[],typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",labelproperty="http://www.w3.org/2000/01/rdf-schema#label"):
         minivowlresult={"info": [{
@@ -1788,11 +1809,14 @@ class OntDocGeneration:
                     if nslink in sub:
                         for tup in self.graph.predicate_objects(sub):
                             subgraph.add((sub, tup[0], tup[1]))
-                subgraph.serialize(path + "index.ttl",encoding="utf-8")
-                graphml=self.convertTTLToGraphML(subgraph,subjectstorender)
-                with open(path + "index.graphml", 'w', encoding='utf-8') as f:
-                    f.write(graphml)
-                    f.close()
+                if "ttl" in self.exports:
+                    subgraph.serialize(path + "index.ttl",encoding="utf-8")
+                for ex in self.exports:
+                    if ex in self.exportToFunction:
+                        res=self.exportToFunction[ex](subgraph,subjectstorender)
+                        with open(path + "index."+str(ex), 'w', encoding='utf-8') as f:
+                        f.write(res)
+                        f.close()
                 indexhtml = htmltemplate.replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{relativepath}}",self.generateRelativePathFromGivenDepth(prefixnamespace,checkdepth)).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink)\
                     .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", nslink).replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
                 if nslink==prefixnamespace:
@@ -3278,6 +3302,7 @@ parser.add_argument("-ip","--createIndexPages",help="create index pages?",defaul
 parser.add_argument("-cc","--createCollections",help="create collections?",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-ll","--labellang",help="preferred label language (default: en)",action="store",default="en")
 parser.add_argument("-li","--license",help="license under which this data is published",action="store",default="")
+parser.add_argument('-ex','--exports', ,choices=['graphml', 'json', 'tgf', 'ttl'], nargs='+', help='choose script exports to be generated next to HTML', required=True,action="store",default=["ttl","json"])
 parser.add_argument("-lgu","--logourl",help="URL of an optional page logo",action="store",default="")
 parser.add_argument("-lo","--localOptimized",help="build a version for local deployment",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-mdt","--metadatatable",help="create metadata table?",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
@@ -3328,9 +3353,9 @@ for fp in filestoprocess:
     g = Graph()
     g.parse(fp)
     if fcounter<len(outpath):
-        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat)
+        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,args.exports)
     else:
-        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat)
+        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,args.exports)
     docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
     #except Exception as inst:
     # 	print("Could not parse "+str(fp))
