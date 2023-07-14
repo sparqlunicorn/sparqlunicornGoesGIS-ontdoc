@@ -3331,7 +3331,7 @@ for path in args.output:
             outpath.append(itemm)
     else:
         outpath.append(path)
-print("EXPORTS: "+str(exports))
+
 print("ARG EXPORTS: "+str(args.exports))
 for expo in args.exports:
     if " " in expo:
@@ -3340,6 +3340,7 @@ for expo in args.exports:
                 exports.append(ex)
     elif expo not in exports:
         exports.append(expo)
+print("EXPORTS: "+str(exports))
 if args.templatepath!=None:
     templatepath=args.templatepath
     if templatepath.startswith("http") and templatepath.endswith(".zip"):
