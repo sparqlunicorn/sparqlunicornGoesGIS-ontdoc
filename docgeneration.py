@@ -1504,10 +1504,10 @@ class OntDocGeneration:
     def createOfflineCompatibleVersion(self,outpath,myhtmltemplate):
         if not os.path.isdir(outpath):
             os.mkdir(outpath)
-        if not os.path.isdir(outpath+"/js"):
-            os.mkdir(outpath+"/js")
-        if not os.path.isdir(outpath+"/css"):
-            os.mkdir(outpath+"/css")
+        if not os.path.isdir(outpath+str(os.sep)+"js"):
+            os.mkdir(outpath+str(os.sep)+"js")
+        if not os.path.isdir(outpath+str(os.sep)+"css"):
+            os.mkdir(outpath+str(os.sep)+"css")
         matched=re.findall(r'src="(http.*)"',myhtmltemplate)
         for match in matched:
             #download the library
@@ -1516,14 +1516,14 @@ class OntDocGeneration:
                     print(m.replace("\"",""))
                     m=m.replace("\"","")
                     r = requests.get(m.replace("\"",""))  
-                    with open(outpath+"/js/"+m[m.rfind("/")+1:], 'wb') as fd:
+                    with open(outpath+str(os.sep)+"js"+str(os.sep)+m[m.rfind("/")+1:], 'wb') as fd:
                         fd.write(r.content)
                     myhtmltemplate=myhtmltemplate.replace(m,"{{relativepath}}js/"+m[m.rfind("/")+1:])
             else:
                 print(match.replace("\"",""))
                 match=match.replace("\"","")
                 r = requests.get(match.replace("\"",""))  
-                with open(outpath+"/js/"+match[match.rfind("/")+1:], 'wb') as fd:
+                with open(outpath+str(os.sep)+"js"+str(os.sep)+match[match.rfind("/")+1:], 'wb') as fd:
                     fd.write(r.content)
                 myhtmltemplate=myhtmltemplate.replace(match,"{{relativepath}}js/"+match[match.rfind("/")+1:])
         matched=re.findall(r'href="(http.*.css)"',myhtmltemplate)
@@ -1531,7 +1531,7 @@ class OntDocGeneration:
             print(match.replace("\"",""))
             match=match.replace("\"","")
             r = requests.get(match.replace("\"",""))  
-            with open(outpath+"/css/"+match[match.rfind("/")+1:], 'wb') as fd:
+            with open(outpath+str(os.sep)+"css"+str(os.sep)+match[match.rfind("/")+1:], 'wb') as fd:
                 fd.write(r.content)
             myhtmltemplate=myhtmltemplate.replace(match,"{{relativepath}}css/"+match[match.rfind("/")+1:])        
         return myhtmltemplate
@@ -1577,7 +1577,7 @@ class OntDocGeneration:
                     tgfresnodes+=str(nodecounter)+" "+str(tup[1])+"\n"
                     uriToNodeId[str(tup[1])]=nodecounter
                     nodecounter+=1
-                tgfresedges+=uriToNodeId[str(sub)]+" "+str(uriToNodeId[str(tup[1])])+" "+str(self.shortenURI(tup[0]))+"\n"
+                tgfresedges+=str(uriToNodeId[str(sub)])+" "+str(uriToNodeId[str(tup[1])])+" "+str(self.shortenURI(tup[0]))+"\n"
         return tgfresnodes+"#\n"+tgfresedges
 
     def convertOWL2MiniVOWL(self,g,outpath,predicates=[],typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",labelproperty="http://www.w3.org/2000/01/rdf-schema#label"):
@@ -2770,7 +2770,7 @@ class OntDocGeneration:
                             print(e)
                     if mergeJSON:
                         result.append(curcoll)
-        collectiontable+="</tbody></table>"
+                collectiontable+="</tbody></table>"
         if mergeJSON:
             with open(outpath+"/features.js", 'w',encoding="utf-8") as output_file:
                 output_file.write("var featurecolls="+json.dumps(result))
