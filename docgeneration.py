@@ -1575,7 +1575,7 @@ class OntDocGeneration:
             for tup in g.predicate_objects(sub):
                 if str(tup[1]) not in uriToNodeId:
                     tgfresnodes+=str(nodecounter)+" "+str(tup[1])+"\n"
-                    uriToNodeId[str(tup[1]]=nodecounter
+                    uriToNodeId[str(tup[1])]=nodecounter
                     nodecounter+=1
                 tgfresedges+=uriToNodeId[str(sub)]+" "+str(uriToNodeId[str(tup[1]))+" "+str(self.shortenURI(tup[0]))+"\n"
         return tgfresnodes+"#\n"+tgfresedges
