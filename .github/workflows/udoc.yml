@@ -87,7 +87,7 @@ on:
         type: boolean
       exports:
         required: false
-        default: "json ttl"
+        default: "ttl"
         type: string
 
 jobs:
