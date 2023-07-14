@@ -3331,6 +3331,8 @@ for path in args.output:
             outpath.append(itemm)
     else:
         outpath.append(path)
+print("EXPORTS: "+str(exports))
+print("ARG EXPORTS: "+str(args.exports))
 for expo in args.exports:
     if " " in expo:
         for ex in path.split(" "):
