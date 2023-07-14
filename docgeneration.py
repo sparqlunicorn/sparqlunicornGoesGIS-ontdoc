@@ -1815,8 +1815,8 @@ class OntDocGeneration:
                     if ex in self.exportToFunction:
                         res=self.exportToFunction[ex](subgraph,subjectstorender)
                         with open(path + "index."+str(ex), 'w', encoding='utf-8') as f:
-                        f.write(res)
-                        f.close()
+                            f.write(res)
+                            f.close()
                 indexhtml = htmltemplate.replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{relativepath}}",self.generateRelativePathFromGivenDepth(prefixnamespace,checkdepth)).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink)\
                     .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", nslink).replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
                 if nslink==prefixnamespace:
