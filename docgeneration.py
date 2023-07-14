@@ -3293,6 +3293,7 @@ prefixes["reversed"]["http://www.ontology-of-units-of-measure.org/resource/om-2/
 prefixes["reversed"]["http://purl.org/meshsparql/"]="msp"
 outpath=[]
 filestoprocess=[]
+exports=[]
 parser=argparse.ArgumentParser()
 parser.add_argument("-i","--input",nargs='*',help="the input TTL file(s) to parse",action="store", required=True)
 parser.add_argument("-o","--output",nargs='*',help="the output path(s)",action="store", required=True)
@@ -3302,7 +3303,7 @@ parser.add_argument("-ip","--createIndexPages",help="create index pages?",defaul
 parser.add_argument("-cc","--createCollections",help="create collections?",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-ll","--labellang",help="preferred label language (default: en)",action="store",default="en")
 parser.add_argument("-li","--license",help="license under which this data is published",action="store",default="")
-parser.add_argument('-ex','--exports', choices=['graphml', 'json', 'tgf', 'ttl'], nargs='+', help='choose script exports to be generated next to HTML', required=True,action="store",default=["ttl","json"])
+parser.add_argument('-ex','--exports', choices=['graphml', 'json', 'tgf', 'ttl'], nargs='+', help='choose script exports to be generated next to HTML', required=True,action="store",default="ttl json")
 parser.add_argument("-lgu","--logourl",help="URL of an optional page logo",action="store",default="")
 parser.add_argument("-lo","--localOptimized",help="build a version for local deployment",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-mdt","--metadatatable",help="create metadata table?",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
@@ -3330,6 +3331,13 @@ for path in args.output:
             outpath.append(itemm)
     else:
         outpath.append(path)
+for expo in args.exports:
+    if " " in expo:
+        for ex in path.split(" "):
+            if ex not in exports:
+                exports.append(ex)
+    elif expo not in exports:
+        exports.append(expo)
 if args.templatepath!=None:
     templatepath=args.templatepath
     if templatepath.startswith("http") and templatepath.endswith(".zip"):
@@ -3353,9 +3361,9 @@ for fp in filestoprocess:
     g = Graph()
     g.parse(fp)
     if fcounter<len(outpath):
-        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,args.exports)
+        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,exports)
     else:
-        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,args.exports)
+        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,exports)
     docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
     #except Exception as inst:
     # 	print("Could not parse "+str(fp))
