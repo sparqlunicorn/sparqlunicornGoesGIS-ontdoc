@@ -1368,6 +1368,7 @@ featurecollectionspaths={}
 iiifmanifestpaths={"default":[]}
 imagetoURI={}
 epsgdefs="var epsgdefs={}"
+rdfformats=["ttl","trix","trig","n3","nquads","nt","xml"]
 
 def resolveTemplate(templatename):
     print(templatepath+"/"+templatename)
@@ -1446,7 +1447,7 @@ class OntDocGeneration:
         self.generatePagesForNonNS=generatePagesForNonNS
         self.geocollectionspaths=[]
         self.metadatatable=metadatatable
-        self.exportToFunction={"graphml":self.convertTTLToGraphML,"tgf":self.convertTTLToTGF}
+        self.exportToFunction={"graphml":self.convertTTLToGraphML,"tgf":self.convertTTLToTGF,"ttl":self.serializeRDF,"trig":self.serializeRDF,"xml":self.serializeRDF,"trix":self.serializeRDF,"nt":self.serializeRDF,"n3":self.serializeRDF,"nquads":self.serializeRDF}
         resolveTemplate(templatename)
         if offlinecompat:
             global htmltemplate
@@ -1536,7 +1537,10 @@ class OntDocGeneration:
             myhtmltemplate=myhtmltemplate.replace(match,"{{relativepath}}css/"+match[match.rfind("/")+1:])        
         return myhtmltemplate
 
-    def convertTTLToGraphML(self,g,file,subjectstorender=None):
+    def serializeRDF(self,g,file,formatt):
+        g.serialize(file,encoding="utf-8",format=formatt)
+
+    def convertTTLToGraphML(self,g,file,subjectstorender=None,formatt="graphml"):
         literalcounter=0
         edgecounter=0
         file.write("""<?xml version="1.0" encoding="UTF-8"?>
@@ -1561,7 +1565,7 @@ class OntDocGeneration:
         file.write("</graph></graphml>")
         return None
 
-    def convertTTLToTGF(self,g,file,subjectstorender=None):
+    def convertTTLToTGF(self,g,file,subjectstorender=None,formatt="tgf"):
         uriToNodeId={}
         nodecounter=0
         tgfresedges=""
@@ -1810,13 +1814,16 @@ class OntDocGeneration:
                     if nslink in sub:
                         for tup in self.graph.predicate_objects(sub):
                             subgraph.add((sub, tup[0], tup[1]))
-                if "ttl" in self.exports:
-                    subgraph.serialize(path + "index.ttl",encoding="utf-8")
+                #if "ttl" in self.exports:
+                #    subgraph.serialize(path + "index.ttl",encoding="utf-8")
                 for ex in self.exports:
                     if ex in self.exportToFunction:
-                        with open(path + "index."+str(ex), 'w', encoding='utf-8') as f:
-                            res=self.exportToFunction[ex](subgraph,f,subjectstorender)
-                            f.close()
+                        if ex not in rdfformats:
+                            with open(path + "index."+str(ex), 'w', encoding='utf-8') as f:
+                                res=self.exportToFunction[ex](subgraph,f,subjectstorender)
+                                f.close()
+                        else:
+                            self.exportToFunction[ex](subgraph,path + "index."+str(ex),subjectstorender,ex)
                 indexhtml = htmltemplate.replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{relativepath}}",self.generateRelativePathFromGivenDepth(prefixnamespace,checkdepth)).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink)\
                     .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", nslink).replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
                 if nslink==prefixnamespace:
