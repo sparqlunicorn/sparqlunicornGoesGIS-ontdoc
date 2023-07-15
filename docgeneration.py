@@ -1537,7 +1537,7 @@ class OntDocGeneration:
             myhtmltemplate=myhtmltemplate.replace(match,"{{relativepath}}css/"+match[match.rfind("/")+1:])        
         return myhtmltemplate
 
-    def serializeRDF(self,g,file,formatt):
+    def serializeRDF(self,g,file,subjectstorender,formatt):
         g.serialize(file,encoding="utf-8",format=formatt)
 
     def convertTTLToGraphML(self,g,file,subjectstorender=None,formatt="graphml"):
