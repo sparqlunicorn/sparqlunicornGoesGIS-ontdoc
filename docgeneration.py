@@ -1430,12 +1430,13 @@ def resolveTemplate(templatename):
 
 class OntDocGeneration:
 
-    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,iiif,localOptimized=False,startconcept=None,deploypath="",logoname="",templatename="default",offlinecompat=False,exports=["json","ttl"]):
+    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,iiif,localOptimized=False,startconcept=None,deploypath="",logoname="",templatename="default",offlinecompat=False,exports=["json","ttl"],datasettitle=""):
         self.prefixes=prefixes
         self.prefixnamespace = prefixnamespace
         self.namespaceshort = prefixnsshort.replace("/","")
         self.outpath=outpath
         self.exports=exports
+        self.datasettitle=datasettitle
         self.logoname=logoname
         self.startconcept=startconcept
         self.createVOWL=createVOWL
@@ -1561,23 +1562,6 @@ class OntDocGeneration:
         file.write("\n\nCREATE ")
         file.write(tgfresedges[0:-2]+"\n")
         return None        
-
-    def convertTTLToCSV(self,g,file,subjectstorender=None,formatt="cypher"):
-        uriToNodeId={}
-        nodecounter=0
-        csvheader={"id":0}
-        csvheadercounter=0
-        if subjectstorender==None:
-            subjectstorender=g.subjects()
-        for sub in subjectstorender:
-            instancerow=[str(sub)]
-            for tup in g.predicate_objects(sub):
-                if str(tup[0]) not in csvheader:
-                    csvheader[str(tup[0])]=csvheadercounter
-                    csvheadercounter+=1
-                instancerow[csvheader[str(tup[0])]]=str(tup[1])
-            file.write(str(instancerow).replace("[","").replace("]","")+"\n")
-        return None 
 
     def convertTTLToGraphML(self,g,file,subjectstorender=None,formatt="graphml"):
         literalcounter=0
@@ -1866,7 +1850,7 @@ class OntDocGeneration:
                         else:
                             self.exportToFunction[ex](subgraph,path + "index."+str(ex),subjectstorender,ex)
                 relpath=self.generateRelativePathFromGivenDepth(prefixnamespace,checkdepth)
-                indexhtml = htmltemplate.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{relativepath}}",relpath).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink)\
+                indexhtml = htmltemplate.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{datasettitle}}",self.datasettitle).replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{relativepath}}",relpath).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink)\
                     .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", nslink).replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
                 if nslink==prefixnamespace:
                     indexhtml=indexhtml.replace("{{indexpage}}","true")
@@ -1903,7 +1887,7 @@ class OntDocGeneration:
             self.generateIIIFCollections(self.outpath,iiifmanifestpaths["default"],prefixnamespace)
         if len(featurecollectionspaths)>0:
             relpath=self.generateRelativePathFromGivenDepth("",0)
-            indexhtml = htmltemplate.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{logo}}",self.logoname).replace("{{relativedepth}}","0").replace("{{baseurl}}", prefixnamespace).replace("{{relativepath}}",relpath).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}", "vowl_result.js")\
+            indexhtml = htmltemplate.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{datasettitle}}",self.datasettitle).replace("{{logo}}",self.logoname).replace("{{relativedepth}}","0").replace("{{baseurl}}", prefixnamespace).replace("{{relativepath}}",relpath).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}", "vowl_result.js")\
                     .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{nonnslink}}","").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
             indexhtml = indexhtml.replace("{{indexpage}}", "true")
             self.generateOGCAPIFeaturesPages(outpath,featurecollectionspaths,prefixnamespace,self.ogcapifeatures,True)
@@ -3133,13 +3117,13 @@ class OntDocGeneration:
                     myexports=nongeoexports
                 relpath=self.generateRelativePathFromGivenDepth(baseurl,checkdepth)
                 if foundlabel != "":
-                    f.write(htmltemplate.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{logo}}",logo).replace("{{baseurl}}",baseurl).replace("{{relativepath}}",self.generateRelativePathFromGivenDepth(baseurl,checkdepth)).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{toptitle}}", foundlabel).replace(
+                    f.write(htmltemplate.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{datasettitle}}",self.datasettitle).replace("{{logo}}",logo).replace("{{baseurl}}",baseurl).replace("{{relativepath}}",self.generateRelativePathFromGivenDepth(baseurl,checkdepth)).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{toptitle}}", foundlabel).replace(
                         "{{startscriptpath}}", rellink4).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}",itembibtex).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{indexpage}}","false").replace("{{title}}",
                                                                                                     "<a href=\"" + str(subject) + "\">" + str(foundlabel) + "</a>").replace(
                         "{{baseurl}}", baseurl).replace("{{tablecontent}}", tablecontents).replace("{{description}}","").replace(
                         "{{scriptfolderpath}}", rellink).replace("{{classtreefolderpath}}", rellink2).replace("{{exports}}",myexports).replace("{{nonnslink}}",str(nonnslink)).replace("{{subject}}",str(subject)))
                 else:
-                    f.write(htmltemplate.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{logo}}",logo).replace("{{baseurl}}",baseurl).replace("{{relativepath}}",self.generateRelativePathFromGivenDepth(baseurl,checkdepth)).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{indexpage}}","false").replace("{{toptitle}}", self.shortenURI(str(subject))).replace(
+                    f.write(htmltemplate.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{datasettitle}}",self.datasettitle).replace("{{logo}}",logo).replace("{{baseurl}}",baseurl).replace("{{relativepath}}",self.generateRelativePathFromGivenDepth(baseurl,checkdepth)).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{indexpage}}","false").replace("{{toptitle}}", self.shortenURI(str(subject))).replace(
                         "{{startscriptpath}}", rellink4).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}",itembibtex).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{title}}","<a href=\"" + str(subject) + "\">" + self.shortenURI(str(subject)) + "</a>").replace(
                         "{{baseurl}}", baseurl).replace("{{description}}","").replace(
                         "{{scriptfolderpath}}", rellink).replace("{{classtreefolderpath}}", rellink2).replace("{{exports}}",myexports).replace("{{nonnslink}}",str(nonnslink)).replace("{{subject}}",str(subject)))
@@ -3356,6 +3340,7 @@ parser.add_argument("-ll","--labellang",help="preferred label language (default:
 parser.add_argument("-li","--license",help="license under which this data is published",action="store",default="")
 parser.add_argument('-ex','--exports', nargs='+', help="choose script exports to be generated next to HTML ['graphml', 'json', 'tgf', 'ttl']", required=True,action="store",default="ttl json")
 parser.add_argument("-lgu","--logourl",help="URL of an optional page logo",action="store",default="")
+parser.add_argument("-dt","--datasettitle",help="The title of this dataset to use in HTML templates",action="store",default="")
 parser.add_argument("-lo","--localOptimized",help="build a version for local deployment",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-mdt","--metadatatable",help="create metadata table?",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-nnsp","--nonnspages",help="create nonns pages?",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
@@ -3415,9 +3400,9 @@ for fp in filestoprocess:
     g = Graph()
     g.parse(fp)
     if fcounter<len(outpath):
-        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports)
+        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle)
     else:
-        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports)
+        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle)
     docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
     #except Exception as inst:
     # 	print("Could not parse "+str(fp))
@@ -3431,7 +3416,7 @@ if not os.path.exists(outpath[0]+'/index.html'):
     indexf=open(outpath[0]+"/index.html","w",encoding="utf-8")
     nonnslink=""
     relpath=self.generateRelativePathFromGivenDepth(baseurl,0)
-    indexhtml = htmltemplate.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{logo}}",args.logourl).replace("{{baseurl}}", args.prefixns).replace("{{relativepath}}",relpath).replace("{{relativedepth}}","0").replace("{{toptitle}}","Index page").replace("{{title}}","Index page").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
+    indexhtml = htmltemplate.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{datasettitle}}",self.datasettitle).replace("{{logo}}",args.logourl).replace("{{baseurl}}", args.prefixns).replace("{{relativepath}}",relpath).replace("{{relativedepth}}","0").replace("{{toptitle}}","Index page").replace("{{title}}","Index page").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
         .replace("{{classtreefolderpath}}",args.prefixnsshort + "_classtree.js").replace("{{baseurlhtml}}", ".").replace("{{nonnslink}}",str(nonnslink)).replace("{{proprelationpath}}", "proprelations.js").replace("{{scriptfolderpath}}", args.prefixnsshort+ '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
     indexhtml=indexhtml.replace("{{indexpage}}","true")	
     indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"
