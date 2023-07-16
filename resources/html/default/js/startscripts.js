@@ -1244,8 +1244,9 @@ iconprefix="https://cdn.jsdelivr.net/gh/i3mainz/geopubby@master/public/icons/"
 
 function setupJSTree(){
     console.log("setupJSTree")
-	if iconprefixx!="":
+	if(iconprefixx!=""){
 		iconprefix=iconprefixx
+	}
     tree["contextmenu"]={}
     tree["core"]["check_callback"]=true
     tree["sort"]=function(a, b) {
