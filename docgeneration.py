@@ -1550,14 +1550,14 @@ class OntDocGeneration:
             subjectstorender=g.subjects()
         for sub in subjectstorender:
             uriToNodeId[str(sub)]=nodecounter
-            file.write("CREATE ( "+str(self.shortenURI(str(sub))+"{ _id:'"+str(self.shortenURI(str(sub))+"'' _uri:'"+str(sub)+"', rdfs_label:'"+str(self.shortenURI(str(sub)))+"' })\n")
+            file.write("CREATE ( "+str(self.shortenURI(str(sub)))+"{ _id:'"+str(self.shortenURI(str(sub)))+"', _uri:'"+str(sub)+"', rdfs_label:'"+str(self.shortenURI(str(sub)))+"' })\n")
             nodecounter+=1
             for tup in g.predicate_objects(sub):
                 if str(tup[1]) not in uriToNodeId:
-                    file.write("CREATE ( "+str(self.shortenURI(str(tup[1]))+"{ _id:'"+str(self.shortenURI(str(tup[1]))+"'' _uri:'"+str(tup[1])+"', rdfs_label:'"+str(self.shortenURI(str(tup[1])))+"' })\n")
+                    file.write("CREATE ( "+str(self.shortenURI(str(tup[1])))+"{ _id:'"+str(self.shortenURI(str(tup[1])))+"', _uri:'"+str(tup[1])+"', rdfs_label:'"+str(self.shortenURI(str(tup[1])))+"' })\n")
                     uriToNodeId[str(tup[1])]=nodecounter
                     nodecounter+=1
-                tgfresedges+="("+str(uriToNodeId[str(sub)])+")-[:"+str(self.shortenURI(str(tup[1]))+"]->("+str(self.shortenURI(tup[0]))+"),\n"
+                tgfresedges+="("+str(uriToNodeId[str(sub)])+")-[:"+str(self.shortenURI(str(tup[1])))+"]->("+str(self.shortenURI(tup[0]))+"),\n"
         file.write("\n\nCREATE ")
         file.write(tgfresedges[0:-2]+"\n")
         return None        
