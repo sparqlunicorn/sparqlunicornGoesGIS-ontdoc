@@ -89,6 +89,10 @@ on:
         required: false
         default: "ttl"
         type: string
+      datasettitle:
+        required: false
+        default: ""
+        type: string
 
 jobs:
   sample-action:
