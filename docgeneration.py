@@ -1447,6 +1447,7 @@ class OntDocGeneration:
         self.generatePagesForNonNS=generatePagesForNonNS
         self.geocollectionspaths=[]
         self.metadatatable=metadatatable
+        self.templatename=templatename
         self.exportToFunction={"graphml":self.convertTTLToGraphML,"tgf":self.convertTTLToTGF,"ttl":self.serializeRDF,"trig":self.serializeRDF,"xml":self.serializeRDF,"trix":self.serializeRDF,"nt":self.serializeRDF,"n3":self.serializeRDF,"nquads":self.serializeRDF}
         resolveTemplate(templatename)
         self.offlinecompat=offlinecompat
