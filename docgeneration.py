@@ -1448,7 +1448,7 @@ class OntDocGeneration:
         self.geocollectionspaths=[]
         self.metadatatable=metadatatable
         self.templatename=templatename
-        self.exportToFunction={"graphml":self.convertTTLToGraphML,"tgf":self.convertTTLToTGF,"ttl":self.serializeRDF,"trig":self.serializeRDF,"xml":self.serializeRDF,"trix":self.serializeRDF,"nt":self.serializeRDF,"n3":self.serializeRDF,"nquads":self.serializeRDF}
+        self.exportToFunction={"cypher":self.convertTTLToCypher,"graphml":self.convertTTLToGraphML,"tgf":self.convertTTLToTGF,"ttl":self.serializeRDF,"trig":self.serializeRDF,"xml":self.serializeRDF,"trix":self.serializeRDF,"nt":self.serializeRDF,"n3":self.serializeRDF,"nquads":self.serializeRDF}
         resolveTemplate(templatename)
         self.offlinecompat=offlinecompat
         if offlinecompat:
@@ -1541,6 +1541,43 @@ class OntDocGeneration:
 
     def serializeRDF(self,g,file,subjectstorender,formatt):
         g.serialize(file,encoding="utf-8",format=formatt)
+
+    def convertTTLToCypher(self,g,file,subjectstorender=None,formatt="cypher"):
+        uriToNodeId={}
+        nodecounter=0
+        tgfresedges=""
+        if subjectstorender==None:
+            subjectstorender=g.subjects()
+        for sub in subjectstorender:
+            uriToNodeId[str(sub)]=nodecounter
+            file.write("CREATE ( "+str(self.shortenURI(str(sub))+"{ _id:'"+str(self.shortenURI(str(sub))+"'' _uri:'"+str(sub)+"', rdfs_label:'"+str(self.shortenURI(str(sub)))+"' })\n")
+            nodecounter+=1
+            for tup in g.predicate_objects(sub):
+                if str(tup[1]) not in uriToNodeId:
+                    file.write("CREATE ( "+str(self.shortenURI(str(tup[1]))+"{ _id:'"+str(self.shortenURI(str(tup[1]))+"'' _uri:'"+str(tup[1])+"', rdfs_label:'"+str(self.shortenURI(str(tup[1])))+"' })\n")
+                    uriToNodeId[str(tup[1])]=nodecounter
+                    nodecounter+=1
+                tgfresedges+="("+str(uriToNodeId[str(sub)])+")-[:"+str(self.shortenURI(str(tup[1]))+"]->("+str(self.shortenURI(tup[0]))+"),\n"
+        file.write("\n\nCREATE ")
+        file.write(tgfresedges[0:-2]+"\n")
+        return None        
+
+    def convertTTLToCSV(self,g,file,subjectstorender=None,formatt="cypher"):
+        uriToNodeId={}
+        nodecounter=0
+        csvheader={"id":0}
+        csvheadercounter=0
+        if subjectstorender==None:
+            subjectstorender=g.subjects()
+        for sub in subjectstorender:
+            instancerow=[str(sub)]
+            for tup in g.predicate_objects(sub):
+                if str(tup[0]) not in csvheader:
+                    csvheader[str(tup[0])]=csvheadercounter
+                    csvheadercounter+=1
+                instancerow[csvheader[str(tup[0])]]=str(tup[1])
+            file.write(str(instancerow).replace("[","").replace("]","")+"\n")
+        return None 
 
     def convertTTLToGraphML(self,g,file,subjectstorender=None,formatt="graphml"):
         literalcounter=0
