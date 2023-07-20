@@ -74,7 +74,7 @@ class Geo {
  const endpoint = urlParams.get('endpoint');
  const thequery = urlParams.get('query');
  const yasgui = new Yasgui(document.getElementById("yasgui"),{"pluginOrder": ["response", "table", "Geo"],"yasqe":{"showQueryButton": false},"requestConfig": { "endpoint": endpoint},  "copyEndpointOnNewTab": false});
- if(typeof(thequery)!=='undefined'){
+ if(typeof(thequery)!=='undefined' && thequery!=null){
 	yasgui.getTab().yasqe.setValue(thequery)
  }
  const myEngine=new Comunica.QueryEngine()
