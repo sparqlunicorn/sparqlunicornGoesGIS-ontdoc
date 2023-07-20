@@ -1753,7 +1753,7 @@ class OntDocGeneration:
             if os.path.exists(outpath+"icons/"):
                 shutil.rmtree(outpath+"icons/")
             shutil.copytree(templatepath+"/"+self.templatename+"/icons/", outpath+"icons/")
-        shutil.copytree(templatepath+"/"+self.templatename+"/templates/sparql.html", outpath+"sparql.html")
+        shutil.copy(templatepath+"/"+self.templatename+"/templates/sparql.html", outpath+"sparql.html")
         prevtree=[]
         if os.path.exists(outpath + corpusid + '_classtree.js'):
             try:
