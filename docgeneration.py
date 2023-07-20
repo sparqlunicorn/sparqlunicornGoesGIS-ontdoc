@@ -1753,9 +1753,6 @@ class OntDocGeneration:
             if os.path.exists(outpath+"icons/"):
                 shutil.rmtree(outpath+"icons/")
             shutil.copytree(templatepath+"/"+self.templatename+"/icons/", outpath+"icons/")
-        with open( outpath+"sparql.html", 'w', encoding='utf-8') as f:
-            f.write(sparqlhtml)
-            f.close()
         prevtree=[]
         if os.path.exists(outpath + corpusid + '_classtree.js'):
             try:
@@ -1892,6 +1889,9 @@ class OntDocGeneration:
             sparqlhtml+=f.read()
             f.close()
         sparqlhtml+=htmlfooter.replace("{{license}}",curlicense).replace("{{exports}}",nongeoexports).replace("{{bibtex}}","")
+        with open( outpath+"sparql.html", 'w', encoding='utf-8') as f:
+            f.write(sparqlhtml)
+            f.close()
         if len(iiifmanifestpaths["default"])>0:
             self.generateIIIFCollections(self.outpath,iiifmanifestpaths["default"],prefixnamespace)
         if len(featurecollectionspaths)>0:
