@@ -542,7 +542,7 @@ function changeDefLink2(){
 var definitionlinks={
 "covjson":"https://covjson.org",
 "csv":"https://tools.ietf.org/html/rfc4180",
-"cipher":"https://neo4j.com/docs/cypher-manual/current/",
+"cypher":"https://neo4j.com/docs/cypher-manual/current/",
 "esrijson":"https://doc.arcgis.com/de/iot/ingest/esrijson.htm",
 "geohash":"http://geohash.org",
 "json":"https://geojson.org",
@@ -1753,6 +1753,7 @@ class OntDocGeneration:
             if os.path.exists(outpath+"icons/"):
                 shutil.rmtree(outpath+"icons/")
             shutil.copytree(templatepath+"/"+self.templatename+"/icons/", outpath+"icons/")
+        shutil.copytree(templatepath+"/"+self.templatename+"/templates/sparql.html", outpath+"sparql.html")
         prevtree=[]
         if os.path.exists(outpath + corpusid + '_classtree.js'):
             try:
