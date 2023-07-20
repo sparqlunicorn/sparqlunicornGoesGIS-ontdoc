@@ -3136,7 +3136,7 @@ class OntDocGeneration:
                     f.write(htmltemplate.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{deploypath}}",self.deploypath).replace("{{datasettitle}}",self.datasettitle).replace("{{logo}}",logo).replace("{{baseurl}}",baseurl).replace("{{relativepath}}",self.generateRelativePathFromGivenDepth(baseurl,checkdepth)).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{indexpage}}","false").replace("{{toptitle}}", self.shortenURI(str(subject))).replace(
                         "{{startscriptpath}}", rellink4).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}",itembibtex).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{title}}","<a href=\"" + str(subject) + "\">" + self.shortenURI(str(subject)) + "</a>").replace(
                         "{{baseurl}}", baseurl).replace("{{description}}","").replace(
-                        "{{scriptfolderpath}}", rellink).replace("{{classtreefolderpath}}", rellink2).replace("{{exports}}",myexports).replace("{{nonnslink}}",str(nonnslink)).replace("{{subject}}",str(subject)).replace("{{subjectencoded}}",urllib.parse.quote(str(subject)))
+                        "{{scriptfolderpath}}", rellink).replace("{{classtreefolderpath}}", rellink2).replace("{{exports}}",myexports).replace("{{nonnslink}}",str(nonnslink)).replace("{{subject}}",str(subject)).replace("{{subjectencoded}}",urllib.parse.quote(str(subject))))
                 for comm in comment:
                     f.write(htmlcommenttemplate.replace("{{comment}}", self.shortenURI(comm) + ":" + comment[comm]))
                 for fval in foundvals:
