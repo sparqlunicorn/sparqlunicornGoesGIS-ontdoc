@@ -16,7 +16,13 @@ https://github.com/sparqlunicorn/sparqlunicornGoesGIS_testdata
 
 ### Usage as standalone script
 
+You can use the standalone script by downloading a release or cloning this repository.
+
 Before using the script, please ensure you have installed the requirements listed in the file requirements.txt.
+
+```
+pip install -r requirements.txt
+```
 
 The command docgeneration.py -h will print a help dialog with all available parameters and options.
 
