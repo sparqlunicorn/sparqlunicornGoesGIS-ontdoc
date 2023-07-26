@@ -9,10 +9,16 @@ Deviations from the SPARQLing Unicorn Plugin are listed as follows:
 
 * Support for less geometry literals: Only WKT and GeoJSON literals are supported for rendering
 
-### Usage Example
+### Usage Example as Github Action
 
 For a usage example please refer to this repository:
 https://github.com/sparqlunicorn/sparqlunicornGoesGIS_testdata
+
+### Usage as standalone script
+
+Before using the script, please ensure you have installed the requirements listed in the file requirements.txt.
+
+The command docgeneration.py -h will print you a help dialog with all available parameters and options.
 
 ### Supported vocabularies
 
