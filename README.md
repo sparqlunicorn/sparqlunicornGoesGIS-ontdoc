@@ -20,6 +20,8 @@ Before using the script, please ensure you have installed the requirements liste
 
 The command docgeneration.py -h will print a help dialog with all available parameters and options.
 
+At the minimum, this script expects an input RDF file and an output file path.
+
 ```
 usage: docgeneration.py [-h] -i [INPUT ...] -o [OUTPUT ...] [-pxns PREFIXNS] [-px PREFIXNSSHORT]
                         [-ip CREATEINDEXPAGES] [-cc CREATECOLLECTIONS] [-ll LABELLANG] [-li LICENSE] -ex EXPORTS
