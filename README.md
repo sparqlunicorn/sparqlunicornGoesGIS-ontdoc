@@ -18,7 +18,62 @@ https://github.com/sparqlunicorn/sparqlunicornGoesGIS_testdata
 
 Before using the script, please ensure you have installed the requirements listed in the file requirements.txt.
 
-The command docgeneration.py -h will print you a help dialog with all available parameters and options.
+The command docgeneration.py -h will print a help dialog with all available parameters and options.
+
+```
+usage: docgeneration.py [-h] -i [INPUT ...] -o [OUTPUT ...] [-pxns PREFIXNS] [-px PREFIXNSSHORT]
+                        [-ip CREATEINDEXPAGES] [-cc CREATECOLLECTIONS] [-ll LABELLANG] [-li LICENSE] -ex EXPORTS
+                        [EXPORTS ...] [-lgu LOGOURL] [-dt DATASETTITLE] [-lo LOCALOPTIMIZED] [-mdt METADATATABLE]
+                        [-nnsp NONNSPAGES] [-vowl CREATEVOWL] [-of OFFLINECOMPAT] [-ogc OGCAPIFEATURES]
+                        [-iiif IIIFMANIFEST] [-sc STARTCONCEPT] [-dp DEPLOYPATH] [-tp TEMPLATEPATH] [-tn TEMPLATENAME]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i [INPUT ...], --input [INPUT ...]
+                        the input TTL file(s) to parse
+  -o [OUTPUT ...], --output [OUTPUT ...]
+                        the output path(s)
+  -pxns PREFIXNS, --prefixns PREFIXNS
+                        the prefixnamespace
+  -px PREFIXNSSHORT, --prefixnsshort PREFIXNSSHORT
+                        the prefix
+  -ip CREATEINDEXPAGES, --createIndexPages CREATEINDEXPAGES
+                        create index pages?
+  -cc CREATECOLLECTIONS, --createCollections CREATECOLLECTIONS
+                        create collections?
+  -ll LABELLANG, --labellang LABELLANG
+                        preferred label language (default: en)
+  -li LICENSE, --license LICENSE
+                        license under which this data is published
+  -ex EXPORTS [EXPORTS ...], --exports EXPORTS [EXPORTS ...]
+                        choose script exports to be generated next to HTML ['graphml', 'json', 'tgf', 'ttl']
+  -lgu LOGOURL, --logourl LOGOURL
+                        URL of an optional page logo
+  -dt DATASETTITLE, --datasettitle DATASETTITLE
+                        The title of this dataset to use in HTML templates
+  -lo LOCALOPTIMIZED, --localOptimized LOCALOPTIMIZED
+                        build a version for local deployment
+  -mdt METADATATABLE, --metadatatable METADATATABLE
+                        create metadata table?
+  -nnsp NONNSPAGES, --nonnspages NONNSPAGES
+                        create nonns pages?
+  -vowl CREATEVOWL, --createvowl CREATEVOWL
+                        create vowl graph view?
+  -of OFFLINECOMPAT, --offlinecompat OFFLINECOMPAT
+                        built-result is offline compatible
+  -ogc OGCAPIFEATURES, --ogcapifeatures OGCAPIFEATURES
+                        create ogc api features collections?
+  -iiif IIIFMANIFEST, --iiifmanifest IIIFMANIFEST
+                        create iiif manifests?
+  -sc STARTCONCEPT, --startconcept STARTCONCEPT
+                        the concept suggested for browsing the HTML documentation
+  -dp DEPLOYPATH, --deploypath DEPLOYPATH
+                        the deploypath where the documentation will be hosted
+  -tp TEMPLATEPATH, --templatepath TEMPLATEPATH
+                        the path of the HTML template
+  -tn TEMPLATENAME, --templatename TEMPLATENAME
+                        the name of the HTML template
+```
 
 ### Supported vocabularies
 
