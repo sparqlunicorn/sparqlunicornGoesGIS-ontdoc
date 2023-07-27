@@ -3,12 +3,13 @@ name: SPARQLing Unicorn Ontology Documentation
 permissions:
   contents: write
 
-env:
-  theref: ${{github.ref_name}}
-
 on:
   workflow_call:
     inputs:
+      version:
+        required: false
+        type: string
+        default: main
       rdffilepath:
         required: true
         type: string
@@ -102,9 +103,6 @@ jobs:
     name: Ontology Documentation
     runs-on: ubuntu-latest
     steps:
-      - name: Test
-        run: |
-          echo "${{theref}}"
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
@@ -113,7 +111,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: sparqlunicorn/sparqlunicornGoesGIS-ontdoc
-          ref: "${{theref}}"
+          ref: "${{inputs.version}}"
           path: ontdocscript
       - name: Generate Ontology Documentation
         run: |
