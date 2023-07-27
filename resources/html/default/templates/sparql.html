@@ -120,11 +120,11 @@ async function queryFile(){
 	  executionTime: 1000 // ms
 	  // error to show
 	})  		
-  $('.class').each(function(i,obj)){
+  $('.class').each(function(i,obj){
 	if($(this).attr("href").includes(baseurl)){
 		$(this).attr("href",$(this).attr("href").replace(baseurl,""))
 	}
-  }
+  })
 // Draw results with current plugin
  //yasgui.getTab().yasr.draw()
 }
