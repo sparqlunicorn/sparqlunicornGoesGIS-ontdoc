@@ -101,7 +101,7 @@ jobs:
     steps:
       - name: Test
         run: |
-          echo "${{github.action_ref}} ${{github.head_ref}}"
+          echo "${{github.workflow_ref}} ${{github.workflow}}"
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
