@@ -78,8 +78,16 @@ Yasr.registerPlugin("Geo", Geo);
  if(typeof(thequery)!=='undefined' && thequery!=null){
 	yasgui.getTab().yasqe.setValue(thequery)
  }
+ yasgui.getTab().yasr.on("drawn",function(event){
+	$('.iri').each(function(i,obj){
+	    console.log(obj)
+		if($(this).attr("href").includes(baseurl)){
+			$(this).attr("href",$(this).attr("href").replace(baseurl,""))
+		}
+	})
+ })
  const myEngine=new Comunica.QueryEngine()
-document.getElementsByClassName('yasqe_buttons')[0].appendChild(document.getElementById('query'));
+ document.getElementsByClassName('yasqe_buttons')[0].appendChild(document.getElementById('query'));
  
  //yasgui.getTab().yasqe.on("query", function(event){ console.log(event); event.preventDefault(); queryFile()});	
 
@@ -115,11 +123,7 @@ async function queryFile(){
 	  executionTime: 1000 // ms
 	  // error to show
 	})  		
-  $('.iri').each(function(i,obj){
-	if($(this).attr("href").includes(baseurl)){
-		$(this).attr("href",$(this).attr("href").replace(baseurl,""))
-	}
-  })
+
 // Draw results with current plugin
  //yasgui.getTab().yasr.draw()
 }
