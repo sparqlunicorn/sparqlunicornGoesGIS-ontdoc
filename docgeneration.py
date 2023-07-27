@@ -1851,7 +1851,7 @@ class OntDocGeneration:
                     if ex in self.exportToFunction:
                         if ex not in rdfformats:
                             with open(path + "index."+str(ex), 'w', encoding='utf-8') as f:
-                                res=self.exportToFunction[ex](subgraph,f,subjectstorender)
+                                res=self.exportToFunction[ex](subgraph,f,subjectstorender,ex)
                                 f.close()
                         else:
                             self.exportToFunction[ex](subgraph,path + "index."+str(ex),subjectstorender,ex)
