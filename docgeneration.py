@@ -1390,7 +1390,7 @@ def resolveTemplate(templatename):
             with open(templatepath+"/"+templatename+"/templates/header.html", 'r') as file:
                 global htmltemplate
                 htmltemplate=file.read()
-        if os.path.exists(templatepath+"/"+templatename+"/templates/header.html"):
+        if os.path.exists(templatepath+"/"+templatename+"/templates/sparql.html"):
             with open(templatepath+"/"+templatename+"/templates/sparql.html", 'r') as file:
                 global sparqltemplate
                 sparqltemplate=file.read()
