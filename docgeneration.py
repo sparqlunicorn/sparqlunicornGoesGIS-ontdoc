@@ -20,7 +20,7 @@ import sys
 
 templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
 
-version="SPARQLing Unicorn QGIS Plugin OntDoc Script 0.15"
+version="SPARQLing Unicorn QGIS Plugin OntDoc Script 0.16"
 
 versionurl="https://github.com/sparqlunicorn/sparqlunicornGoesGIS-ontdoc"
 
