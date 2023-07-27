@@ -4,7 +4,7 @@ permissions:
   contents: write
 
 env:
-  theref: ${{github.ref}}
+  theref: ${{github.ref_name}}
 
 on:
   workflow_call:
@@ -102,6 +102,9 @@ jobs:
     name: Ontology Documentation
     runs-on: ubuntu-latest
     steps:
+      - name: Test
+        run: |
+          echo "${{theref}}"
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
@@ -110,9 +113,9 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: sparqlunicorn/sparqlunicornGoesGIS-ontdoc
-          ref: ${{theref}}
+          ref: "${{theref}}"
           path: ontdocscript
-      - name: Run sample action
+      - name: Generate Ontology Documentation
         run: |
           sudo pip3 install rdflib shapely pillow
           cp ontdocscript/docgeneration.py .
