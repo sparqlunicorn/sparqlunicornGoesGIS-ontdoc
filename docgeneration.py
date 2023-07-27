@@ -1390,6 +1390,10 @@ def resolveTemplate(templatename):
             with open(templatepath+"/"+templatename+"/templates/header.html", 'r') as file:
                 global htmltemplate
                 htmltemplate=file.read()
+        if os.path.exists(templatepath+"/"+templatename+"/templates/sparql.html"):
+            with open(templatepath+"/"+templatename+"/templates/sparql.html", 'r') as file:
+                global sparqltemplate
+                sparqltemplate=file.read()
         if os.path.exists(templatepath+"/"+templatename+"/templates/footer.html"):
             with open(templatepath+"/"+templatename+"/templates/footer.html", 'r') as file:
                 global htmlfooter
@@ -1458,6 +1462,8 @@ class OntDocGeneration:
             htmltemplate=self.createOfflineCompatibleVersion(outpath,htmltemplate)
             global maptemplate
             maptemplate=self.createOfflineCompatibleVersion(outpath,maptemplate)
+            global sparqltemplate
+            sparqltemplate=self.createOfflineCompatibleVersion(outpath,sparqltemplate)
         self.license=license
         self.licenseuri=None
         self.licensehtml=None
@@ -1682,7 +1688,6 @@ class OntDocGeneration:
                 graph.add((ind, URIRef(prop), URIRef(str(tobeaddedPerInd[prop]["value"]))))
 
 
-
     def processSubjectPath(self,outpath,paths,path):
         if "/" in path:
             addpath = ""
@@ -1886,9 +1891,7 @@ class OntDocGeneration:
                     f.close()
         sparqlhtml = htmltemplate.replace("{{indexpage}}","false").replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{deploypath}}",self.deploypath).replace("{{datasettitle}}",self.datasettitle).replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}","0").replace("{{relativepath}}",".").replace("{{toptitle}}","SPARQL Query Editor").replace("{{title}}","SPARQL Query Editor").replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink)\
                     .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", "").replace("{{subject}}","").replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
-        with open(templatepath+"/"+self.templatename+"/templates/sparql.html", 'r', encoding='utf-8') as f:
-            sparqlhtml+=f.read()
-            f.close()
+        sparqlhtml+=sparqltemplate
         sparqlhtml+=htmlfooter.replace("{{license}}",curlicense).replace("{{exports}}",nongeoexports).replace("{{bibtex}}","")
         with open( outpath+"sparql.html", 'w', encoding='utf-8') as f:
             f.write(sparqlhtml)
@@ -1901,10 +1904,10 @@ class OntDocGeneration:
                     .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{nonnslink}}","").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
             indexhtml = indexhtml.replace("{{indexpage}}", "true")
             self.generateOGCAPIFeaturesPages(outpath,featurecollectionspaths,prefixnamespace,self.ogcapifeatures,True)
-            indexhtml += "<p>This page shows feature collections present in the linked open data export</p>"
+            indexhtml+= "<p>This page shows feature collections present in the linked open data export</p>"
             indexhtml+="<script src=\"features.js\"></script>"
             indexhtml+=maptemplate.replace("var ajax=true","var ajax=false").replace("var featurecolls = {{myfeature}}","").replace("{{relativepath}}",self.generateRelativePathFromGivenDepth("",0)).replace("{{baselayers}}",json.dumps(baselayers).replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{dateatt}}", ""))
-            indexhtml += htmlfooter.replace("{{license}}", curlicense).replace("{{subject}}","").replace("{{exports}}", nongeoexports).replace("{{bibtex}}","")
+            indexhtml+= htmlfooter.replace("{{license}}", curlicense).replace("{{subject}}","").replace("{{exports}}", nongeoexports).replace("{{bibtex}}","")
             with open(outpath + "featurecollections.html", 'w', encoding='utf-8') as f:
                 f.write(indexhtml)
                 f.close()

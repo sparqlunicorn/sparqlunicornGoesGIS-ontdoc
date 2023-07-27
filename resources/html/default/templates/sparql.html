@@ -84,13 +84,10 @@ document.getElementsByClassName('yasqe_buttons')[0].appendChild(document.getElem
  //yasgui.getTab().yasqe.on("query", function(event){ console.log(event); event.preventDefault(); queryFile()});	
 
 async function queryFile(){
-  console.log("COMMUNICA!!!!")
   yasres={"head":{"vars":[]},"results":{"bindings":[]}}
   config={"sources":[endpoint]}
   const result=await myEngine.queryBindings(yasgui.getTab().yasqe.getValue(), config)
-  console.log(result)
   const data=await result.toArray()	
-  console.log(data)
   vararray=[]
   ttypemap={"NamedNode":"uri","Literal":"literal"}
   for(bind of data){
@@ -99,7 +96,6 @@ async function queryFile(){
 		if(!(vararray.includes(entry[0]))){
 			vararray.push(entry[0])
 		}
-		console.log(entry[1])
 		curbindings[entry[0]]={"type":ttypemap[entry[1]["termType"]],"value":entry[1]["value"]}	
 		if("datatype" in entry[1]){
 			curbindings[entry[0]]["datatype"]=entry[1]["datatype"]["value"]
@@ -110,7 +106,6 @@ async function queryFile(){
 			
 	}
 	yasres["results"]["bindings"].push(curbindings)
-	console.log(yasres)
   }
   yasres["head"]["vars"]=vararray
 	yasgui.getTab().yasr.setResponse({
@@ -120,7 +115,7 @@ async function queryFile(){
 	  executionTime: 1000 // ms
 	  // error to show
 	})  		
-  $('.class').each(function(i,obj){
+  $('.iri').each(function(i,obj){
 	if($(this).attr("href").includes(baseurl)){
 		$(this).attr("href",$(this).attr("href").replace(baseurl,""))
 	}
