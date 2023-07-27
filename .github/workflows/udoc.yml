@@ -102,7 +102,7 @@ jobs:
       - name: Test
         run: |
           echo "${{github.workflow_ref}} ${{github.workflow}} ${{github.action_path}} ${{github.action_ref}} "
-          echo "$GITHUB_CONTEXT"
+          echo "${{GITHUB_CONTEXT}}"
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
