@@ -3,6 +3,9 @@ name: SPARQLing Unicorn Ontology Documentation
 permissions:
   contents: write
 
+env:
+  theref: ${{github.ref}}
+
 on:
   workflow_call:
     inputs:
@@ -107,10 +110,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: sparqlunicorn/sparqlunicornGoesGIS-ontdoc
+          ref: ${{theref}}
           path: ontdocscript
       - name: Run sample action
         run: |
-          sudo apt-get install wget -y
           sudo pip3 install rdflib shapely pillow
           cp ontdocscript/docgeneration.py .
           cp ontdocscript/prefixes.json .
