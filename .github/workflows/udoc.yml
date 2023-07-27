@@ -95,7 +95,7 @@ on:
         type: string
 
 jobs:
-  sample-action:
+  ontdoc-action:
     name: Ontology Documentation
     runs-on: ubuntu-latest
     steps:
@@ -123,8 +123,3 @@ jobs:
           BRANCH: ${{inputs.ghpagesbranch}}
           FOLDER: ${{inputs.docpath}}/
           TARGET-FOLDER: ${{inputs.ghpagesfolder}}
-      #- name: Create build-output artifact
-      #  uses: actions/upload-artifact@master
-      #  with:
-      #   name: build-output
-      #    path: docs/
