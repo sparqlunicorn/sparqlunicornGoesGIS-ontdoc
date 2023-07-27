@@ -6,6 +6,10 @@ permissions:
 on:
   workflow_call:
     inputs:
+      version:
+        required: false
+        type: string
+        default: main
       rdffilepath:
         required: true
         type: string
@@ -95,7 +99,7 @@ on:
         type: string
 
 jobs:
-  sample-action:
+  ontdoc-action:
     name: Ontology Documentation
     runs-on: ubuntu-latest
     steps:
@@ -107,10 +111,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: sparqlunicorn/sparqlunicornGoesGIS-ontdoc
+          ref: "${{inputs.version}}"
           path: ontdocscript
-      - name: Run sample action
+      - name: Generate Ontology Documentation
         run: |
-          sudo apt-get install wget -y
           sudo pip3 install rdflib shapely pillow
           cp ontdocscript/docgeneration.py .
           cp ontdocscript/prefixes.json .
@@ -123,8 +127,3 @@ jobs:
           BRANCH: ${{inputs.ghpagesbranch}}
           FOLDER: ${{inputs.docpath}}/
           TARGET-FOLDER: ${{inputs.ghpagesfolder}}
-      #- name: Create build-output artifact
-      #  uses: actions/upload-artifact@master
-      #  with:
-      #   name: build-output
-      #    path: docs/
