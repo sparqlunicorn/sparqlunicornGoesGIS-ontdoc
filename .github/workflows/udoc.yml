@@ -107,6 +107,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: sparqlunicorn/sparqlunicornGoesGIS-ontdoc
+          ref: ${{github.action_ref}}
           path: ontdocscript
       - name: Run sample action
         run: |
