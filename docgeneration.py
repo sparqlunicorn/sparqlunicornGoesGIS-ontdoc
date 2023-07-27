@@ -1885,7 +1885,7 @@ class OntDocGeneration:
                     f.write(indexhtml)
                     f.close()
         sparqlhtml = htmltemplate.replace("{{indexpage}}","false").replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{deploypath}}",self.deploypath).replace("{{datasettitle}}",self.datasettitle).replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}","0").replace("{{relativepath}}",".").replace("{{toptitle}}","SPARQL Query Editor").replace("{{title}}","SPARQL Query Editor").replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink)\
-                    .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", "").replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
+                    .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", "").replace("{{subject}}","").replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
         with open(templatepath+"/"+self.templatename+"/templates/sparql.html", 'r', encoding='utf-8') as f:
             sparqlhtml+=f.read()
             f.close()
@@ -1904,7 +1904,7 @@ class OntDocGeneration:
             indexhtml += "<p>This page shows feature collections present in the linked open data export</p>"
             indexhtml+="<script src=\"features.js\"></script>"
             indexhtml+=maptemplate.replace("var ajax=true","var ajax=false").replace("var featurecolls = {{myfeature}}","").replace("{{relativepath}}",self.generateRelativePathFromGivenDepth("",0)).replace("{{baselayers}}",json.dumps(baselayers).replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{dateatt}}", ""))
-            indexhtml += htmlfooter.replace("{{license}}", curlicense).replace("{{exports}}", nongeoexports).replace("{{bibtex}}","")
+            indexhtml += htmlfooter.replace("{{license}}", curlicense).replace("{{subject}}","").replace("{{exports}}", nongeoexports).replace("{{bibtex}}","")
             with open(outpath + "featurecollections.html", 'w', encoding='utf-8') as f:
                 f.write(indexhtml)
                 f.close()
@@ -3348,7 +3348,7 @@ parser.add_argument("-ip","--createIndexPages",help="create index pages?",defaul
 parser.add_argument("-cc","--createCollections",help="create collections?",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-ll","--labellang",help="preferred label language (default: en)",action="store",default="en")
 parser.add_argument("-li","--license",help="license under which this data is published",action="store",default="")
-parser.add_argument('-ex','--exports', nargs='+', help="choose script exports to be generated next to HTML ['graphml', 'json', 'tgf', 'ttl']", required=True,action="store",default="ttl json")
+parser.add_argument('-ex','--exports', nargs='+', help="choose script exports to be generated next to HTML ['graphml', 'json', 'n3', 'nq', 'nt' 'tgf', 'trig', 'trix', 'ttl']", required=True,action="store",default="ttl json")
 parser.add_argument("-lgu","--logourl",help="URL of an optional page logo",action="store",default="")
 parser.add_argument("-dt","--datasettitle",help="The title of this dataset to use in HTML templates",action="store",default="")
 parser.add_argument("-lo","--localOptimized",help="build a version for local deployment",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
@@ -3427,7 +3427,7 @@ if not os.path.exists(outpath[0]+'/index.html'):
     nonnslink=""
     relpath=self.generateRelativePathFromGivenDepth(baseurl,0)
     indexhtml = htmltemplate.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{deploypath}}",self.deploypath).replace("{{datasettitle}}",self.datasettitle).replace("{{logo}}",args.logourl).replace("{{baseurl}}", args.prefixns).replace("{{relativepath}}",relpath).replace("{{relativedepth}}","0").replace("{{toptitle}}","Index page").replace("{{title}}","Index page").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
-        .replace("{{classtreefolderpath}}",args.prefixnsshort + "_classtree.js").replace("{{baseurlhtml}}", ".").replace("{{nonnslink}}",str(nonnslink)).replace("{{proprelationpath}}", "proprelations.js").replace("{{scriptfolderpath}}", args.prefixnsshort+ '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
+        .replace("{{classtreefolderpath}}",args.prefixnsshort + "_classtree.js").replace("{{baseurlhtml}}", ".").replace("{{nonnslink}}",str(nonnslink)).replace("{{proprelationpath}}", "proprelations.js").replace("{{scriptfolderpath}}", args.prefixnsshort+ '_search.js').replace("{{subject}}","").replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
     indexhtml=indexhtml.replace("{{indexpage}}","true")	
     indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"
     indexhtml+="<table class=\"description\" border=1 id=indextable><thead><tr><th>Dataset</th></tr></thead><tbody>"

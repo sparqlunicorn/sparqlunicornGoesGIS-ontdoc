@@ -73,7 +73,7 @@ class Geo {
  const urlParams = new URLSearchParams(window.location.search);
  const endpoint = urlParams.get('endpoint');
  const thequery = urlParams.get('query');
- const yasgui = new Yasgui(document.getElementById("yasgui"),{"pluginOrder": ["response", "table", "Geo"],"yasqe":{"showQueryButton": false},"requestConfig": { "endpoint": endpoint},  "copyEndpointOnNewTab": false});
+ const yasgui = new Yasgui(document.getElementById("yasgui"),{"pluginOrder": ["response", "table"],"yasqe":{"showQueryButton": false},"requestConfig": { "endpoint": endpoint},  "copyEndpointOnNewTab": false});
  if(typeof(thequery)!=='undefined' && thequery!=null){
 	yasgui.getTab().yasqe.setValue(thequery)
  }
@@ -119,7 +119,11 @@ async function queryFile(){
 	  executionTime: 1000 // ms
 	  // error to show
 	})  		
-  
+  $('.class').each(function(i,obj)){
+	if($(this).attr("href").includes(baseurl)){
+		$(this).attr("href",$(this).attr("href").replace(baseurl,""))
+	}
+  }
 // Draw results with current plugin
  //yasgui.getTab().yasr.draw()
 }
