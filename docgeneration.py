@@ -2929,6 +2929,7 @@ class OntDocGeneration:
         hasnonns=set()
         thetypes=set()
         itembibtex=""
+        curquery="SELECT ?sub ?pred ?obj \nWHERE {\n BIND(<"+str(subject)+"> AS ?sub)\n?sub ?pred ?obj .\n}\n"
         if predobjs!=None:
             for tup in sorted(predobjs,key=lambda tup: tup[0]):
                 if str(tup[0]) not in predobjmap:
