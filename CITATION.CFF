@@ -16,10 +16,10 @@ date-released: 2023-07-27
 identifiers:
   - description: This is the collection of archived snapshots of all versions
     type: doi
-    value: "10.5281/zenodo.TBD"
+    value: "10.5281/zenodo.8190763"
   - description: This is the archived snapshot of version 0.16
     type: doi
-    value: "10.5281/zenodo.TBD"
+    value: "10.5281/zenodo.8190764"
 repository-code: "https://github.com/sparqlunicorn/sparqlunicornGoesGIS-ontdoc"
 keywords:
   - "Linked Open Data"
