@@ -11,7 +11,7 @@ title: "SPARQL Unicorn Ontology Documentation"
 abstract: This is a standalone version of the HTML documentation feature included in the SPARQLing Unicorn QGIS Plugin.
 version: 0.16
 type: software
-doi: 10.5281/zenodo.TBD
+doi: 10.5281/zenodo.8190763
 date-released: 2023-07-27
 identifiers:
   - description: This is the collection of archived snapshots of all versions
@@ -29,13 +29,15 @@ contact:
   - affiliation: "Research Squirrel Engineers Network"
     email: qgisplugin@sparqlunicorn.link
     family-names: Timo
-    given-names: Hamoburg
+    given-names: Homburg
 preferred-citation:
   authors:
     - family-names: Homburg
       given-names: Timo
+      orcid: https://orcid.org/0000-0002-9499-5840
     - family-names: Thiery
       given-names: Florian
+      orcid: https://orcid.org/0000-0002-3246-3531
   title: "SPARQL Unicorn Ontology Documentation"
   type: software
   year: 2023
