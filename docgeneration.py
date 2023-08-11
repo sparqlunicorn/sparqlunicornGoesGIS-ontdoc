@@ -1194,7 +1194,7 @@ htmltemplate = """<html about=\"{{subject}}\"><head><title>{{toptitle}}</title>
   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
   GeoClasses: <input type="checkbox" id="geoclasses"/><br/>
   Search:<input type="text" id="classsearch"><br/><div id="jstree"></div>
-</div><script>var indexpage={{indexpage}}; var iconprefixx="{{iconprefixx}}"
+</div><script>var indexpage={{indexpage}}; var baseurl="{{baseurl}}"; var iconprefixx="{{iconprefixx}}"
 var relativedepth={{relativedepth}}</script>
 <body><div id="header"><h1 id="title">{{title}}</h1></div><div class="page-resource-uri"><a href="{{baseurl}}">{{baseurl}}</a> <b>powered by Static GeoPubby</b> generated using the <a style="color:blue;font-weight:bold" target="_blank" href="{{versionurl}}">{{version}}</a></div>
 </div><div id="rdficon"><span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span></div> <div class="search"><div class="ui-widget">Search: <input id="search" size="50"><button id="gotosearch" onclick="followLink()">Go</button><b>Download Options:</b>&nbsp;Format:<select id="format" onchange="changeDefLink()">	
@@ -1895,6 +1895,7 @@ class OntDocGeneration:
             f.close()
         if len(iiifmanifestpaths["default"])>0:
             self.generateIIIFCollections(self.outpath,iiifmanifestpaths["default"],prefixnamespace)
+        self.generateCKANCollection(outpath,featurecollectionspaths,prefixnamespace,self.ogcapifeatures,True)
         if len(featurecollectionspaths)>0:
             relpath=self.generateRelativePathFromGivenDepth("",0)
             indexhtml = htmltemplate.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{deploypath}}",self.deploypath).replace("{{datasettitle}}",self.datasettitle).replace("{{logo}}",self.logoname).replace("{{relativedepth}}","0").replace("{{baseurl}}", prefixnamespace).replace("{{relativepath}}",relpath).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}", "vowl_result.js")\
@@ -2682,6 +2683,37 @@ class OntDocGeneration:
         f.write(iiifindex)
         f.close()
 
+    def generateCKANCollection(self,outpath,featurecollectionspaths,prefixnamespace,ogcapi,mergeJSON):
+        if not os.path.exists(outpath+"/dataset/"):
+            os.makedirs(outpath + "/dataset/")
+        if not os.path.exists(outpath+"/api/"):
+            os.makedirs(outpath + "/api/")
+        if not os.path.exists(outpath+"/api/action/"):
+            os.makedirs(outpath + "/api/action/")
+        if not os.path.exists(outpath+"/api/action/group_list/"):
+            os.makedirs(outpath + "/api/action/group_list/")
+        if not os.path.exists(outpath+"/api/action/action_list/"):
+            os.makedirs(outpath + "/api/action/action_list/")
+        if not os.path.exists(outpath+"/api/action/tag_list/"):
+            os.makedirs(outpath + "/api/action/tag_list/")
+        for coll in featurecollectionspaths:
+            curcoll=None
+            op=outpath+"/dataset/"+coll.replace(outpath,"").replace("index.geojson","")+"/"
+            op=op.replace(".geojson","")
+            op=op.replace("//","/")
+            if not os.path.exists(op):
+                os.makedirs(op)
+            if not os.path.exists(op+"/items/"):
+                os.makedirs(op+"/items/")
+            targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+".json").replace("//","/"),outpath)
+            p = Path( str(op+".json").replace("//","/") )
+            p.symlink_to(targetpath)
+            targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+".ttl").replace("//","/"),outpath)
+            p = Path( str(op+".ttl").replace("//","/") )
+            p.symlink_to(targetpath)
+            
+                    
+
     def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths,prefixnamespace,ogcapi,mergeJSON):
         if ogcapi:
             apihtml="<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><metaname=\"description\" content=\"SwaggerUI\"/><title>SwaggerUI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css\" /></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js\" crossorigin></script><script>const swaggerUrl = \""+str(self.deploypath)+"/api/index.json\"; const apiUrl = \""+str(self.deploypath)+"/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
@@ -2800,9 +2832,7 @@ class OntDocGeneration:
                                 p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.json").replace("//","/") )
                                 p.symlink_to(targetpath)
                             if os.path.exists(feat["id"].replace(prefixnamespace,outpath+"/")+"/index.ttl"):
-                                targetpath=self.generateRelativeSymlink(featpath+"/index.ttl",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/"),outpath,True)
-                                p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/") )
-                                p.symlink_to(targetpath)
+ 
                             if os.path.exists(feat["id"].replace(prefixnamespace,outpath+"/")+"/index.html"):
                                 targetpath=self.generateRelativeSymlink(featpath+"/index.html",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/"),outpath,True)
                                 f=open(str(op+"/items/"+str(self.shortenURI(feat["id"])))+"/index.html","w")
