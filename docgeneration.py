@@ -1899,7 +1899,7 @@ class OntDocGeneration:
             f.close()
         if len(iiifmanifestpaths["default"])>0:
             self.generateIIIFCollections(self.outpath,iiifmanifestpaths["default"],prefixnamespace)
-        if len(featurecollectionspaths)>0 && self.ckan:
+        if len(featurecollectionspaths)>0 and self.ckan:
             self.generateCKANCollection(outpath,featurecollectionspaths)
         if len(featurecollectionspaths)>0:
             relpath=self.generateRelativePathFromGivenDepth("",0)
