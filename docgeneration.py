@@ -2704,6 +2704,8 @@ class OntDocGeneration:
             op=outpath+"/dataset/"+coll.replace(outpath,"").replace("index.geojson","")
             op=op.replace(".geojson","")
             op=op.replace("//","/")
+            if op.endswith("/"):
+                op=op[0:-1]
             if not os.path.exists(op):
                 os.makedirs(op)
             if not os.path.exists(op+"/items/"):
