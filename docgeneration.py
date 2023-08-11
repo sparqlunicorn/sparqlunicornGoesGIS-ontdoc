@@ -2701,13 +2701,13 @@ class OntDocGeneration:
             os.makedirs(outpath + "/api/action/action_list/")
         if not os.path.exists(outpath+"/api/action/tag_list/"):
             os.makedirs(outpath + "/api/action/tag_list/")
-        f=open(outpath+"/api/action/action_list/index.json")
+        f=open(outpath+"/api/action/action_list/index.json","w")
         f.write({"success":true,"result":featurecollectionspaths})
         f.close()
-        f=open(outpath+"/api/action/group_list/index.json")
+        f=open(outpath+"/api/action/group_list/index.json","w")
         f.write({"success":true,"result":[]})
         f.close()
-        f=open(outpath+"/api/action/tag_list/index.json")
+        f=open(outpath+"/api/action/tag_list/index.json","w")
         f.write({"success":true,"result":["ttl","json","geojson","html"]})
         f.close()
         for coll in featurecollectionspaths:
