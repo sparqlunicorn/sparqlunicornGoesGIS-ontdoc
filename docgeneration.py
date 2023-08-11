@@ -2726,7 +2726,7 @@ class OntDocGeneration:
             targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+".html").replace("//","/"),outpath)
             p = Path( str(op+".html").replace("//","/") )
             p.symlink_to(targetpath)
-            colls.append(op)
+            colls.append(op[op.rfind('/')+1:])
         f=open(outpath+"/api/action/action_list/index.json","w")
         f.write(json.dumps({"success":True,"result":colls}))
         f.close()
