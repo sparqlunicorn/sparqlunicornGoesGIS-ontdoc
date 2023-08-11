@@ -2,7 +2,7 @@ name: SPARQLing Unicorn Ontology Documentation
 
 permissions:
   contents: write
-
+ 
 on:
   workflow_call:
     inputs:
