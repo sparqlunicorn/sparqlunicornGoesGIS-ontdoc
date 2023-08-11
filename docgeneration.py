@@ -2835,7 +2835,9 @@ class OntDocGeneration:
                                 p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.json").replace("//","/") )
                                 p.symlink_to(targetpath)
                             if os.path.exists(feat["id"].replace(prefixnamespace,outpath+"/")+"/index.ttl"):
- 
+                                targetpath=self.generateRelativeSymlink(featpath+"/index.ttl",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/"),outpath,True)
+                                p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/") )
+                                p.symlink_to(targetpath) 
                             if os.path.exists(feat["id"].replace(prefixnamespace,outpath+"/")+"/index.html"):
                                 targetpath=self.generateRelativeSymlink(featpath+"/index.html",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/"),outpath,True)
                                 f=open(str(op+"/items/"+str(self.shortenURI(feat["id"])))+"/index.html","w")
