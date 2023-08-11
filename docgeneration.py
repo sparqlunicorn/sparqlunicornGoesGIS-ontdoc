@@ -20,7 +20,7 @@ import sys
 
 templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
 
-version="SPARQLing Unicorn QGIS Plugin OntDoc Script 0.17dev"
+version="SPARQLing Unicorn QGIS Plugin OntDoc Script 0.16"
 
 versionurl="https://github.com/sparqlunicorn/sparqlunicornGoesGIS-ontdoc"
 
@@ -1390,6 +1390,10 @@ def resolveTemplate(templatename):
             with open(templatepath+"/"+templatename+"/templates/header.html", 'r') as file:
                 global htmltemplate
                 htmltemplate=file.read()
+        if os.path.exists(templatepath+"/"+templatename+"/templates/sparql.html"):
+            with open(templatepath+"/"+templatename+"/templates/sparql.html", 'r') as file:
+                global sparqltemplate
+                sparqltemplate=file.read()
         if os.path.exists(templatepath+"/"+templatename+"/templates/footer.html"):
             with open(templatepath+"/"+templatename+"/templates/footer.html", 'r') as file:
                 global htmlfooter
@@ -1458,6 +1462,8 @@ class OntDocGeneration:
             htmltemplate=self.createOfflineCompatibleVersion(outpath,htmltemplate)
             global maptemplate
             maptemplate=self.createOfflineCompatibleVersion(outpath,maptemplate)
+            global sparqltemplate
+            sparqltemplate=self.createOfflineCompatibleVersion(outpath,sparqltemplate)
         self.license=license
         self.licenseuri=None
         self.licensehtml=None
@@ -1682,7 +1688,6 @@ class OntDocGeneration:
                 graph.add((ind, URIRef(prop), URIRef(str(tobeaddedPerInd[prop]["value"]))))
 
 
-
     def processSubjectPath(self,outpath,paths,path):
         if "/" in path:
             addpath = ""
@@ -1846,13 +1851,13 @@ class OntDocGeneration:
                     if ex in self.exportToFunction:
                         if ex not in rdfformats:
                             with open(path + "index."+str(ex), 'w', encoding='utf-8') as f:
-                                res=self.exportToFunction[ex](subgraph,f,subjectstorender)
+                                res=self.exportToFunction[ex](subgraph,f,subjectstorender,ex)
                                 f.close()
                         else:
                             self.exportToFunction[ex](subgraph,path + "index."+str(ex),subjectstorender,ex)
                 relpath=self.generateRelativePathFromGivenDepth(prefixnamespace,checkdepth)
                 indexhtml = htmltemplate.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{deploypath}}",self.deploypath).replace("{{datasettitle}}",self.datasettitle).replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{relativepath}}",relpath).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink)\
-                    .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", nslink).replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
+                    .replace("{{classtreefolderpath}}",classtreelink).replace("{{subject}}","").replace("{{baseurlhtml}}", nslink).replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
                 if nslink==prefixnamespace:
                     indexhtml=indexhtml.replace("{{indexpage}}","true")
                 else:
@@ -1885,10 +1890,8 @@ class OntDocGeneration:
                     f.write(indexhtml)
                     f.close()
         sparqlhtml = htmltemplate.replace("{{indexpage}}","false").replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{deploypath}}",self.deploypath).replace("{{datasettitle}}",self.datasettitle).replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}","0").replace("{{relativepath}}",".").replace("{{toptitle}}","SPARQL Query Editor").replace("{{title}}","SPARQL Query Editor").replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink)\
-                    .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", "").replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
-        with open(templatepath+"/"+self.templatename+"/templates/sparql.html", 'r', encoding='utf-8') as f:
-            sparqlhtml+=f.read()
-            f.close()
+                    .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", "").replace("{{subject}}","").replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
+        sparqlhtml+=sparqltemplate
         sparqlhtml+=htmlfooter.replace("{{license}}",curlicense).replace("{{exports}}",nongeoexports).replace("{{bibtex}}","")
         with open( outpath+"sparql.html", 'w', encoding='utf-8') as f:
             f.write(sparqlhtml)
@@ -1902,10 +1905,10 @@ class OntDocGeneration:
                     .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{nonnslink}}","").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
             indexhtml = indexhtml.replace("{{indexpage}}", "true")
             self.generateOGCAPIFeaturesPages(outpath,featurecollectionspaths,prefixnamespace,self.ogcapifeatures,True)
-            indexhtml += "<p>This page shows feature collections present in the linked open data export</p>"
+            indexhtml+= "<p>This page shows feature collections present in the linked open data export</p>"
             indexhtml+="<script src=\"features.js\"></script>"
             indexhtml+=maptemplate.replace("var ajax=true","var ajax=false").replace("var featurecolls = {{myfeature}}","").replace("{{relativepath}}",self.generateRelativePathFromGivenDepth("",0)).replace("{{baselayers}}",json.dumps(baselayers).replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{dateatt}}", ""))
-            indexhtml += htmlfooter.replace("{{license}}", curlicense).replace("{{exports}}", nongeoexports).replace("{{bibtex}}","")
+            indexhtml+= htmlfooter.replace("{{license}}", curlicense).replace("{{subject}}","").replace("{{exports}}", nongeoexports).replace("{{bibtex}}","")
             with open(outpath + "featurecollections.html", 'w', encoding='utf-8') as f:
                 f.write(indexhtml)
                 f.close()
@@ -3378,7 +3381,7 @@ parser.add_argument("-ip","--createIndexPages",help="create index pages?",defaul
 parser.add_argument("-cc","--createCollections",help="create collections?",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-ll","--labellang",help="preferred label language (default: en)",action="store",default="en")
 parser.add_argument("-li","--license",help="license under which this data is published",action="store",default="")
-parser.add_argument('-ex','--exports', nargs='+', help="choose script exports to be generated next to HTML ['graphml', 'json', 'tgf', 'ttl']", required=True,action="store",default="ttl json")
+parser.add_argument('-ex','--exports', nargs='+', help="choose script exports to be generated next to HTML ['graphml', 'json', 'n3', 'nq', 'nt' 'tgf', 'trig', 'trix', 'ttl']", required=True,action="store",default="ttl json")
 parser.add_argument("-lgu","--logourl",help="URL of an optional page logo",action="store",default="")
 parser.add_argument("-dt","--datasettitle",help="The title of this dataset to use in HTML templates",action="store",default="")
 parser.add_argument("-lo","--localOptimized",help="build a version for local deployment",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
