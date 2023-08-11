@@ -2702,13 +2702,13 @@ class OntDocGeneration:
         if not os.path.exists(outpath+"/api/action/tag_list/"):
             os.makedirs(outpath + "/api/action/tag_list/")
         f=open(outpath+"/api/action/action_list/index.json","w")
-        f.write({"success":True,"result":featurecollectionspaths})
+        f.write(json.dumps({"success":True,"result":featurecollectionspaths}))
         f.close()
         f=open(outpath+"/api/action/group_list/index.json","w")
-        f.write({"success":True,"result":[]})
+        f.write(json.dumps({"success":True,"result":[]}))
         f.close()
         f=open(outpath+"/api/action/tag_list/index.json","w")
-        f.write({"success":True,"result":["ttl","json","geojson","html"]})
+        f.write(json.dumps({"success":True,"result":["ttl","json","geojson","html"]}))
         f.close()
         for coll in featurecollectionspaths:
             curcoll=None
