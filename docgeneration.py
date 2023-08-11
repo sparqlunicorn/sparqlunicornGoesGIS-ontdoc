@@ -2701,7 +2701,7 @@ class OntDocGeneration:
             os.makedirs(outpath + "/api/action/tag_list/")
         for coll in featurecollectionspaths:
             curcoll=None
-            op=outpath+"/dataset/"+coll.replace(outpath,"").replace("index.geojson","")+"/"
+            op=outpath+"/dataset/"+coll.replace(outpath,"").replace("index.geojson","")
             op=op.replace(".geojson","")
             op=op.replace("//","/")
             if not os.path.exists(op):
