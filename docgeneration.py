@@ -3413,8 +3413,9 @@ parser.add_argument("-sc","--startconcept",help="the concept suggested for brows
 parser.add_argument("-dp","--deploypath",help="the deploypath where the documentation will be hosted",action="store",default="")
 parser.add_argument("-tp","--templatepath",help="the path of the HTML template",action="store",default="resources/html/")
 parser.add_argument("-tn","--templatename",help="the name of the HTML template",action="store",default="default")
-args=parser.parse_known_args()
+args, unknown=parser.parse_known_args()
 print(args)
+print("The following arguments were not recognized: "+str(unknown))
 for path in args.input:
     if " " in path:
         for itemm in path.split(" "):
