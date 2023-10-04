@@ -2130,10 +2130,14 @@ class OntDocGeneration:
         return rellink
 
     def resolveBibtexReference(self,predobjs,item,graph):	
-        bibtexmappings={"http://purl.org/dc/elements/1.1/title":"title",	
-                      "http://purl.org/dc/elements/1.1/created":"year",	
+        bibtexmappings={"http://purl.org/dc/elements/1.1/title":"title",
+                      "http://purl.org/dc/terms/title":"title",	        
+                      "http://purl.org/dc/terms/created":"year",	
+                      "http://purl.org/dc/terms/issued":"year",	
                       "http://purl.org/ontology/bibo/number":"number",	
-                      "http://purl.org/ontology/bibo/publisher":"publisher",	
+                      "http://purl.org/ontology/bibo/publisher":"publisher",
+                      "http://purl.org/dc/terms/publisher":"publishter",
+                      "http://purl.org/dc/terms/language":"language",                      
                       "http://purl.org/ontology/bibo/issuer": "journal",	
                       "http://purl.org/ontology/bibo/volume":"volume",	
                       "http://purl.org/ontology/bibo/doi": "doi",	
@@ -2146,7 +2150,7 @@ class OntDocGeneration:
                       }	
         bibtexitem={"type":"@misc"}	
         for tup in predobjs:	
-            if str(tup[0])=="http://purl.org/dc/elements/1.1/creator":	
+            if str(tup[0])=="http://purl.org/dc/elements/1.1/creator" or str(tup[0])=="http://purl.org/dc/terms/creator":	
                 if "author" not in bibtexitem:	
                     bibtexitem["author"]=[]	
                 if isinstance(tup[1],URIRef):	
@@ -2322,7 +2326,7 @@ class OntDocGeneration:
             if str(tup[0]) == "http://www.w3.org/ns/oa#hasSource":
                 annosource = str(tup[1])
                 print("Found annosource "+str(tup[1])+" from "+str(object)+" Imageannos: "+str(len(imageannos)))
-            if pred == "http://purl.org/dc/terms/isReferencedBy" and tup[0] == URIRef(self.typeproperty) and ("http://purl.org/ontology/bibo/" in str(tup[1])):	
+            if (pred == "http://purl.org/dc/terms/isReferencedBy" or pred=="http://purl.org/spar/cito/hasCitingEntity") and tup[0] == URIRef(self.typeproperty) and ("http://purl.org/ontology/bibo/" in str(tup[1])):	
                 bibtex=self.resolveBibtexReference(graph.predicate_objects(object),object,graph)
             if pred in timepointerproperties:
                 timeobj=self.resolveTimeLiterals(pred,object,graph)
@@ -2605,6 +2609,7 @@ class OntDocGeneration:
                 height=480
                 width=640
                 if imgpath not in imagetoURI or "width" not in imagetoURI[imgpath]:
+                    if resolveimagepath:
                     try:
                         #print("Loading image for "+str(imgpath))
                         response = requests.get(imgpath)
