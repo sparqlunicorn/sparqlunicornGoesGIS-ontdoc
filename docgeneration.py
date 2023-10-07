@@ -1194,7 +1194,7 @@ htmltemplate = """<html about=\"{{subject}}\"><head><title>{{toptitle}}</title>
   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
   GeoClasses: <input type="checkbox" id="geoclasses"/><br/>
   Search:<input type="text" id="classsearch"><br/><div id="jstree"></div>
-</div><script>var indexpage={{indexpage}}; var iconprefixx="{{iconprefixx}}"
+</div><script>var indexpage={{indexpage}}; var baseurl="{{baseurl}}"; var iconprefixx="{{iconprefixx}}"
 var relativedepth={{relativedepth}}</script>
 <body><div id="header"><h1 id="title">{{title}}</h1></div><div class="page-resource-uri"><a href="{{baseurl}}">{{baseurl}}</a> <b>powered by Static GeoPubby</b> generated using the <a style="color:blue;font-weight:bold" target="_blank" href="{{versionurl}}">{{version}}</a></div>
 </div><div id="rdficon"><span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span></div> <div class="search"><div class="ui-widget">Search: <input id="search" size="50"><button id="gotosearch" onclick="followLink()">Go</button><b>Download Options:</b>&nbsp;Format:<select id="format" onchange="changeDefLink()">	
@@ -1518,7 +1518,7 @@ class Exporter:
 
 class OntDocGeneration:
 
-    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,iiif,localOptimized=False,startconcept=None,deploypath="",logoname="",templatename="default",offlinecompat=False,exports=["json","ttl"],datasettitle=""):
+    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,iiif,ckan=True,localOptimized=False,startconcept=None,deploypath="",logoname="",templatename="default",offlinecompat=False,exports=["json","ttl"],datasettitle=""):
         self.prefixes=prefixes
         self.prefixnamespace = prefixnamespace
         self.namespaceshort = prefixnsshort.replace("/","")
@@ -1526,6 +1526,7 @@ class OntDocGeneration:
         self.exports=exports
         self.datasettitle=datasettitle
         self.logoname=logoname
+        self.ckan=ckan
         self.startconcept=startconcept
         self.createVOWL=createVOWL
         self.ogcapifeatures=ogcapifeatures
@@ -1913,6 +1914,8 @@ class OntDocGeneration:
             f.close()
         if len(iiifmanifestpaths["default"])>0:
             self.generateIIIFCollections(self.outpath,iiifmanifestpaths["default"],prefixnamespace)
+        if len(featurecollectionspaths)>0 and self.ckan:
+            self.generateCKANCollection(outpath,featurecollectionspaths)
         if len(featurecollectionspaths)>0:
             relpath=self.generateRelativePathFromGivenDepth("",0)
             indexhtml = htmltemplate.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{deploypath}}",self.deploypath).replace("{{datasettitle}}",self.datasettitle).replace("{{logo}}",self.logoname).replace("{{relativedepth}}","0").replace("{{baseurl}}", prefixnamespace).replace("{{relativepath}}",relpath).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}", "vowl_result.js")\
@@ -2142,10 +2145,14 @@ class OntDocGeneration:
         return rellink
 
     def resolveBibtexReference(self,predobjs,item,graph):	
-        bibtexmappings={"http://purl.org/dc/elements/1.1/title":"title",	
-                      "http://purl.org/dc/elements/1.1/created":"year",	
+        bibtexmappings={"http://purl.org/dc/elements/1.1/title":"title",
+                      "http://purl.org/dc/terms/title":"title",	        
+                      "http://purl.org/dc/terms/created":"year",	
+                      "http://purl.org/dc/terms/issued":"year",	
                       "http://purl.org/ontology/bibo/number":"number",	
-                      "http://purl.org/ontology/bibo/publisher":"publisher",	
+                      "http://purl.org/ontology/bibo/publisher":"publisher",
+                      "http://purl.org/dc/terms/publisher":"publishter",
+                      "http://purl.org/dc/terms/language":"language",                      
                       "http://purl.org/ontology/bibo/issuer": "journal",	
                       "http://purl.org/ontology/bibo/volume":"volume",	
                       "http://purl.org/ontology/bibo/doi": "doi",	
@@ -2158,7 +2165,7 @@ class OntDocGeneration:
                       }	
         bibtexitem={"type":"@misc"}	
         for tup in predobjs:	
-            if str(tup[0])=="http://purl.org/dc/elements/1.1/creator":	
+            if str(tup[0])=="http://purl.org/dc/elements/1.1/creator" or str(tup[0])=="http://purl.org/dc/terms/creator":	
                 if "author" not in bibtexitem:	
                     bibtexitem["author"]=[]	
                 if isinstance(tup[1],URIRef):	
@@ -2334,7 +2341,7 @@ class OntDocGeneration:
             if str(tup[0]) == "http://www.w3.org/ns/oa#hasSource":
                 annosource = str(tup[1])
                 print("Found annosource "+str(tup[1])+" from "+str(object)+" Imageannos: "+str(len(imageannos)))
-            if pred == "http://purl.org/dc/terms/isReferencedBy" and tup[0] == URIRef(self.typeproperty) and ("http://purl.org/ontology/bibo/" in str(tup[1])):	
+            if (pred == "http://purl.org/dc/terms/isReferencedBy" or pred=="http://purl.org/spar/cito/hasCitingEntity") and tup[0] == URIRef(self.typeproperty) and ("http://purl.org/ontology/bibo/" in str(tup[1])):	
                 bibtex=self.resolveBibtexReference(graph.predicate_objects(object),object,graph)
             if pred in timepointerproperties:
                 timeobj=self.resolveTimeLiterals(pred,object,graph)
@@ -2617,6 +2624,7 @@ class OntDocGeneration:
                 height=480
                 width=640
                 if imgpath not in imagetoURI or "width" not in imagetoURI[imgpath]:
+                    if resolveimagepath:
                     try:
                         #print("Loading image for "+str(imgpath))
                         response = requests.get(imgpath)
@@ -2699,6 +2707,50 @@ class OntDocGeneration:
         f=open(outpath+"/iiif/index.html","w",encoding="utf-8")
         f.write(iiifindex)
         f.close()
+
+    def generateCKANCollection(self,outpath,featurecollectionspaths):
+        if not os.path.exists(outpath+"/dataset/"):
+            os.makedirs(outpath + "/dataset/")
+        if not os.path.exists(outpath+"/api/"):
+            os.makedirs(outpath + "/api/")
+        if not os.path.exists(outpath+"/api/action/"):
+            os.makedirs(outpath + "/api/action/")
+        if not os.path.exists(outpath+"/api/action/group_list/"):
+            os.makedirs(outpath + "/api/action/group_list/")
+        if not os.path.exists(outpath+"/api/action/action_list/"):
+            os.makedirs(outpath + "/api/action/action_list/")
+        if not os.path.exists(outpath+"/api/action/tag_list/"):
+            os.makedirs(outpath + "/api/action/tag_list/")
+        f=open(outpath+"/api/action/group_list/index.json","w")
+        f.write(json.dumps({"success":True,"result":[]}))
+        f.close()
+        f=open(outpath+"/api/action/tag_list/index.json","w")
+        f.write(json.dumps({"success":True,"result":["ttl","json","geojson","html"]}))
+        f.close()
+        colls=[]
+        for coll in featurecollectionspaths:
+            curcoll=None
+            op=outpath+"/dataset/"+coll.replace(outpath,"").replace("index.geojson","")
+            op=op.replace(".geojson","")
+            op=op.replace("//","/")
+            if op.endswith("/"):
+                op=op[0:-1]
+            if not os.path.exists(op):
+                os.makedirs(op)
+            targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+".json").replace("//","/"),outpath)
+            p = Path( str(op+".json").replace("//","/") )
+            p.symlink_to(targetpath)
+            targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+".ttl").replace("//","/"),outpath)
+            p = Path( str(op+".ttl").replace("//","/") )
+            p.symlink_to(targetpath)
+            targetpath=self.generateRelativeSymlink(coll.replace("//","/"),str(op+".html").replace("//","/"),outpath)
+            p = Path( str(op+".html").replace("//","/") )
+            p.symlink_to(targetpath)
+            colls.append(op[op.rfind('/')+1:])
+        f=open(outpath+"/api/action/action_list/index.json","w")
+        f.write(json.dumps({"success":True,"result":colls}))
+        f.close()
+                    
 
     def generateOGCAPIFeaturesPages(self,outpath,featurecollectionspaths,prefixnamespace,ogcapi,mergeJSON):
         if ogcapi:
@@ -2820,7 +2872,7 @@ class OntDocGeneration:
                             if os.path.exists(feat["id"].replace(prefixnamespace,outpath+"/")+"/index.ttl"):
                                 targetpath=self.generateRelativeSymlink(featpath+"/index.ttl",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/"),outpath,True)
                                 p = Path( str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.ttl").replace("//","/") )
-                                p.symlink_to(targetpath)
+                                p.symlink_to(targetpath) 
                             if os.path.exists(feat["id"].replace(prefixnamespace,outpath+"/")+"/index.html"):
                                 targetpath=self.generateRelativeSymlink(featpath+"/index.html",str(op+"/items/"+str(self.shortenURI(feat["id"]))+"/index.html").replace("//","/"),outpath,True)
                                 f=open(str(op+"/items/"+str(self.shortenURI(feat["id"])))+"/index.html","w")
@@ -3376,12 +3428,14 @@ parser.add_argument("-vowl","--createvowl",help="create vowl graph view?",action
 parser.add_argument("-of","--offlinecompat",help="built-result is offline compatible",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-ogc","--ogcapifeatures",help="create ogc api features collections?",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-iiif","--iiifmanifest",help="create iiif manifests?",action="store",default=True,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
+parser.add_argument("-ckan","--ckanapi",help="create static ckan api docs?",action="store",default=True,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-sc","--startconcept",help="the concept suggested for browsing the HTML documentation",action="store",default=None)
 parser.add_argument("-dp","--deploypath",help="the deploypath where the documentation will be hosted",action="store",default="")
 parser.add_argument("-tp","--templatepath",help="the path of the HTML template",action="store",default="resources/html/")
 parser.add_argument("-tn","--templatename",help="the name of the HTML template",action="store",default="default")
-args=parser.parse_args()
+args, unknown=parser.parse_known_args()
 print(args)
+print("The following arguments were not recognized: "+str(unknown))
 for path in args.input:
     if " " in path:
         for itemm in path.split(" "):
@@ -3428,9 +3482,9 @@ for fp in filestoprocess:
         g = Graph()
         g.parse(fp)
         if fcounter<len(outpath):
-            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle)
+            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle)
         else:
-            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle)
+            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle)
         docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
     except Exception as inst:
      	print("Could not parse "+str(fp))
