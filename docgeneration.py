@@ -2698,20 +2698,20 @@ class OntDocGeneration:
                 width=640
                 if imgpath not in imagetoURI or "width" not in imagetoURI[imgpath]:
                     if resolveimagepath:
-                    try:
-                        #print("Loading image for "+str(imgpath))
-                        response = requests.get(imgpath)
-                        im = Image.open(BytesIO(response.content))
-                        #print(im.size)
-                        #print(type(im.size))
-                        w, h = im.size
-                        width=w
-                        height=h
-                        imagetoURI[imgpath]["width"]=w
-                        imagetoURI[imgpath]["height"]=h
-                    except Exception as e:
-                        imagetoURI[imgpath]["width"]=640
-                        imagetoURI[imgpath]["height"]=480
+                        try:
+                            #print("Loading image for "+str(imgpath))
+                            response = requests.get(imgpath)
+                            im = Image.open(BytesIO(response.content))
+                            #print(im.size)
+                            #print(type(im.size))
+                            w, h = im.size
+                            width=w
+                            height=h
+                            imagetoURI[imgpath]["width"]=w
+                            imagetoURI[imgpath]["height"]=h
+                        except Exception as e:
+                            imagetoURI[imgpath]["width"]=640
+                            imagetoURI[imgpath]["height"]=480
                 else:
                     height=imagetoURI[imgpath]["height"]
                     width=imagetoURI[imgpath]["width"]
