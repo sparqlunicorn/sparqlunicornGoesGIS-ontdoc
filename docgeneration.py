@@ -1461,6 +1461,72 @@ class Exporter:
         return None        
 
     @staticmethod
+    def convertTTLToDOT(g, file, subjectstorender=None,classlist=None, formatt="dot"):
+        uriToNodeId = {}
+        nodecounter = 0
+        edgecounter=0
+        if subjectstorender == None:
+            subjectstorender = g.subjects(None,None,True)
+        file.write("digraph mygraph {")
+        for sub in subjectstorender:
+            if str(sub) not in uriToNodeId:
+                uriToNodeId[str(sub)] = nodecounter
+                file.write(str(sub)+" [label=\""+str(GraphExporter.shortenURI(str(sub)))+"\"]\n")
+                nodecounter += 1
+            for tup in g.predicate_objects(sub):
+                if str(tup[1]) not in uriToNodeId:
+                    file.write(str(tup[1])+" [label=\""+str(GraphExporter.shortenURI(str(tup[1])))+"\"]\n")
+                    uriToNodeId[str(tup[1])] = nodecounter
+                    nodecounter += 1
+                file.write(str(sub) + " " + str(tup[1])+" [label=\""+str(GraphExporter.shortenURI(str(tup[0])))+"\"]\n")
+                edgecounter+=1
+        file.write("\n}\n")
+        return None
+
+    @staticmethod
+    def convertTTLToGEXF(g,file,subjectstorender,classlist=None,formatt="gexf"):
+        uriToNodeId = {}
+        nodecounter = 0
+        edges = "<edges>"
+        edgecounter=0
+        file.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<gexf xmlns=\"http://gexf.net/1.3\" xmlns:viz=\"http://gexf.net/1.3/viz\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://gexf.net/1.3 http://gexf.net/1.3/gexf.xsd\" version=\"1.3\">\n<graph mode=\"static\" defaultedgetype=\"directed\">\n<nodes>\n")
+        if subjectstorender == None:
+            subjectstorender = g.subjects(None,None,True)
+        for sub in subjectstorender:
+            if str(sub) not in uriToNodeId:
+                uriToNodeId[str(sub)] = nodecounter
+                file.write("<node id=\""+str(nodecounter)+"\" value=\""+str(sub)+"\" label=\""+str(GraphExporter.shortenURI(str(sub)))+"\"><viz:color r=\"128\" g=\"0\" b=\"128\"/></node>\n")
+                nodecounter += 1
+            for tup in g.predicate_objects(sub):
+                if isinstance(tup[1],Literal):
+                    if str(tup[1]) not in uriToNodeId:
+                        file.write("<node id=\"" + str(nodecounter) + "\" value=\""+str(str(tup[1]).replace("<","&lt;").replace(">","&gt;").replace("&","&amp;"))+"\" label=\"" + str(str(tup[1]).replace("<","&lt;").replace(">","&gt;").replace("&","&amp;")) + "\">\n")
+                        if str(tup[0]) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":
+                            file.write("<viz:color r=\"255\" g=\"165\" b=\"0\"/>\n")
+                        else:
+                            file.write("<viz:color r=\"0\" g=\"128\" b=\"0\"/>\n")
+                        file.write("</node>")
+                        uriToNodeId[str(tup[1])] = nodecounter
+                        nodecounter += 1
+                    edges += "<edge value=\""+str(tup[0])+"\" id=\""+str(edgecounter)+"\" source=\""+str(uriToNodeId[str(sub)])+"\" target=\""+str(uriToNodeId[str(tup[1])])+"\" label=\""+str(GraphExporter.shortenURI(str(tup[0]))) + "\"/>\n"
+                else:
+                    if str(tup[1]) not in uriToNodeId:
+                        file.write("<node id=\"" + str(nodecounter) + "\" value=\""+str(tup[1])+"\" label=\"" + str(GraphExporter.shortenURI(str(tup[1])) + "\">\n"))
+                        if str(tup[0]) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":
+                            file.write("<viz:color r=\"255\" g=\"165\" b=\"0\"/>\n")
+                        else:
+                            file.write("<viz:color r=\"128\" g=\"0\" b=\"128\"/>\n")
+                        file.write("</node>")
+                        uriToNodeId[str(tup[1])] = nodecounter
+                        nodecounter += 1
+                    edges += "<edge value=\""+str(tup[0])+"\" id=\""+str(edgecounter)+"\" source=\""+str(uriToNodeId[str(sub)])+"\" target=\""+str(uriToNodeId[str(tup[1])])+"\" label=\""+str(GraphExporter.shortenURI(str(tup[0]))) + "\"/>\n"
+                edgecounter+=1
+        file.write("</nodes>\n")
+        file.write(edges)
+        file.write("</edges>\n</graph>\n</gexf>")
+        return None
+
+    @staticmethod
     def convertTTLToGML(g, file, subjectstorender=None,classlist=None, formatt="graphml"):
         literalcounter = 0
         file.write("""graph\n[\n""")
@@ -1530,6 +1596,31 @@ class Exporter:
                 edgecounter+=1
         file.write(json.dumps(result))
         return None
+
+    @staticmethod
+    def convertTTLToNET(g, file, subjectstorender=None,classlist=None, formatt="net"):
+        uriToNodeId = {}
+        nodecounter = 0
+        tgfresedges = ""
+        sepchar=" "
+        if subjectstorender == None:
+            subjectstorender = list(g.subjects(None,None,True))
+        file.write("vertices "+str(len(subjectstorender))+"\n")
+        for sub in subjectstorender:
+            if str(sub) not in uriToNodeId:
+                uriToNodeId[str(sub)] = nodecounter
+                file.write(str(nodecounter) + sepchar +"\""+ GraphExporter.shortenURI(str(sub)) + "\"\n")
+                nodecounter += 1
+            for tup in g.predicate_objects(sub):
+                if str(tup[1]) not in uriToNodeId:
+                    file.write(str(nodecounter) + sepchar +"\""+ GraphExporter.shortenURI(str(tup[1])) + "\"\n")
+                    uriToNodeId[str(tup[1])] = nodecounter
+                    nodecounter += 1
+                tgfresedges += str(sub) + sepchar + str(tup[1])+ "\n"
+        file.write("\n*arcs\n")
+        file.write(tgfresedges)
+        return None
+
 
     @staticmethod
     def convertTTLToTGF(g,file,subjectstorender=None,classlist=None,formatt="tgf"):
@@ -1609,8 +1700,8 @@ class OntDocGeneration:
         self.geocollectionspaths=[]
         self.metadatatable=metadatatable
         self.templatename=templatename
-        self.exportToFunction={"cypher":Exporter.convertTTLToCypher,"graphml":Exporter.convertTTLToGraphML,"gdf":Exporter.convertTTLToTGF,"jgf":Exporter.convertTTLToJGF,
-            "gml":Exporter.convertTTLToGML,"tlp":Exporter.convertTTLToTLP,"tgf":Exporter.convertTTLToTGF,"ttl":Exporter.serializeRDF,"trig":Exporter.serializeRDF,"xml":Exporter.serializeRDF,"trix":Exporter.serializeRDF,"nt":Exporter.serializeRDF,"n3":Exporter.serializeRDF,"nquads":Exporter.serializeRDF}
+        self.exportToFunction={"cypher":Exporter.convertTTLToCypher,"dot":Exporter.convertTTLToDOT,"graphml":Exporter.convertTTLToGraphML,"gdf":Exporter.convertTTLToTGF,"gexf":Exporter.convertTTLToGEXF,"jgf":Exporter.convertTTLToJGF,
+            "gml":Exporter.convertTTLToGML,"net":Exporter.convertTTLToNET,"tlp":Exporter.convertTTLToTLP,"tgf":Exporter.convertTTLToTGF,"ttl":Exporter.serializeRDF,"trig":Exporter.serializeRDF,"xml":Exporter.serializeRDF,"trix":Exporter.serializeRDF,"nt":Exporter.serializeRDF,"n3":Exporter.serializeRDF,"nquads":Exporter.serializeRDF}
         resolveTemplate(templatename)
         self.offlinecompat=offlinecompat
         if offlinecompat:
