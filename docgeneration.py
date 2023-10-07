@@ -1436,11 +1436,11 @@ def resolveTemplate(templatename):
 class Exporter:
     
     @staticmethod
-    def serializeRDF(g,file,subjectstorender,formatt):
+    def serializeRDF(g,file,subjectstorender,classlist,formatt):
         g.serialize(file,encoding="utf-8",format=formatt)
 
     @staticmethod
-    def convertTTLToCypher(g,file,subjectstorender=None,formatt="cypher"):
+    def convertTTLToCypher(g,file,subjectstorender=None,classlist=None,formatt="cypher"):
         uriToNodeId={}
         nodecounter=0
         tgfresedges=""
@@ -1461,7 +1461,29 @@ class Exporter:
         return None        
 
     @staticmethod
-    def convertTTLToGraphML(g,file,subjectstorender=None,formatt="graphml"):
+    def convertTTLToGML(g, file, subjectstorender=None,classlist=None, formatt="graphml"):
+        literalcounter = 0
+        file.write("""graph\n[\n""")
+        if subjectstorender == None:
+            subjectstorender = g.subjects(None,None,True)
+        addednodes = set()
+        for sub in subjectstorender:
+            file.write("node\n[\nid "+str(sub)+"\nlabel \""+GraphExporter.shortenURI(str(sub))+"\"\n]\n")
+            for tup in g.predicate_objects(sub):
+                if isinstance(tup[1], Literal):
+                    file.write("node\n[\nid literal"+str(literalcounter)+"\nlabel \""+GraphExporter.shortenURI(str(tup[1]))+"\"\n]\n")
+                    file.write("edge\n[\nsource " + str(sub) + "\n target literal" + str(literalcounter) + "\nlabel \""+GraphExporter.shortenURI(str(tup[0]))+"\"\n]\n")
+                    literalcounter += 1
+                else:
+                    if tup[1] not in subjectstorender and str(tup[1]) not in addednodes:
+                        file.write("node\n[\nid " + str(tup[1]) + "\nlabel \"" + GraphExporter.shortenURI(str(tup[1])) + "\"\n]\n")
+                        addednodes.add(str(tup[1]))
+                    file.write("edge \n[\n source " + str(sub) + "\n target " + str(tup[1]) + "\n label \""+GraphExporter.shortenURI(str(tup[0]))+"\"")
+        file.write("\n]\n")
+        return None
+
+    @staticmethod
+    def convertTTLToGraphML(g,file,subjectstorender=None,classlist=None,formatt="graphml"):
         literalcounter=0
         edgecounter=0
         file.write("""<?xml version="1.0" encoding="UTF-8"?>
@@ -1487,7 +1509,30 @@ class Exporter:
         return None
 
     @staticmethod
-    def convertTTLToTGF(g,file,subjectstorender=None,formatt="tgf"):
+    def convertTTLToJGF(g, file, subjectstorender=None,classlist=None, formatt="jgf"):
+        uriToNodeId = {}
+        nodecounter = 0
+        edgecounter=0
+        result={"graph":{"nodes":{},"edges":[]}}
+        if subjectstorender == None:
+            subjectstorender = g.subjects(None,None,True)
+        for sub in subjectstorender:
+            if str(sub) not in uriToNodeId:
+                uriToNodeId[str(sub)] = nodecounter
+                result["graph"]["nodes"][str(sub)]={"label":str(GraphExporter.shortenURI(str(sub)))}
+                nodecounter += 1
+            for tup in g.predicate_objects(sub):
+                if str(tup[1]) not in uriToNodeId:
+                    result["graph"]["nodes"][str(tup[1])] = {"label": str(GraphExporter.shortenURI(str(tup[1])))}
+                    uriToNodeId[str(tup[1])] = nodecounter
+                    nodecounter += 1
+                result["graph"]["edges"].append({"source":str(uriToNodeId[str(sub)]),"target":str(uriToNodeId[str(tup[1])])})
+                edgecounter+=1
+        file.write(json.dumps(result))
+        return None
+
+    @staticmethod
+    def convertTTLToTGF(g,file,subjectstorender=None,classlist=None,formatt="tgf"):
         uriToNodeId = {}
         nodecounter = 0
         tgfresedges = ""
@@ -1516,6 +1561,32 @@ class Exporter:
         file.write(tgfresedges)
         return None
 
+    @staticmethod
+    def convertTTLToTLP(g, file, subjectstorender=None,classlist=None, formatt="tlp"):
+        uriToNodeId = {}
+        nodecounter = 0
+        edgecounter=0
+        tgfresedges = ""
+        if subjectstorender == None:
+            subjectstorender = g.subjects(None,None,True)
+        file.write("(tlp \"2.0\"\nnodes(")
+        for sub in subjectstorender:
+            if str(sub) not in uriToNodeId:
+                uriToNodeId[str(sub)] = nodecounter
+                file.write(str(nodecounter)+" ")
+                nodecounter += 1
+            for tup in g.predicate_objects(sub):
+                if str(tup[1]) not in uriToNodeId:
+                    file.write(str(nodecounter)+" ")
+                    uriToNodeId[str(tup[1])] = nodecounter
+                    nodecounter += 1
+                tgfresedges += "(edge "+str(edgecounter)+" "+str(uriToNodeId[str(sub)]) + " " + str(uriToNodeId[str(tup[1])])+")\n"
+                edgecounter+=1
+        file.write(")\n")
+        file.write(tgfresedges)
+        file.write("\n)\n")
+        return None
+
 class OntDocGeneration:
 
     def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,iiif,ckan=True,localOptimized=False,startconcept=None,deploypath="",logoname="",templatename="default",offlinecompat=False,exports=["json","ttl"],datasettitle=""):
@@ -1538,7 +1609,8 @@ class OntDocGeneration:
         self.geocollectionspaths=[]
         self.metadatatable=metadatatable
         self.templatename=templatename
-        self.exportToFunction={"cypher":Exporter.convertTTLToCypher,"graphml":Exporter.convertTTLToGraphML,"tgf":Exporter.convertTTLToTGF,"ttl":Exporter.serializeRDF,"trig":Exporter.serializeRDF,"xml":Exporter.serializeRDF,"trix":Exporter.serializeRDF,"nt":Exporter.serializeRDF,"n3":Exporter.serializeRDF,"nquads":Exporter.serializeRDF}
+        self.exportToFunction={"cypher":Exporter.convertTTLToCypher,"graphml":Exporter.convertTTLToGraphML,"gdf":Exporter.convertTTLToTGF,"jgf":Exporter.convertTTLToJGF,
+            "gml":Exporter.convertTTLToGML,"tlp":Exporter.convertTTLToTLP,"tgf":Exporter.convertTTLToTGF,"ttl":Exporter.serializeRDF,"trig":Exporter.serializeRDF,"xml":Exporter.serializeRDF,"trix":Exporter.serializeRDF,"nt":Exporter.serializeRDF,"n3":Exporter.serializeRDF,"nquads":Exporter.serializeRDF}
         resolveTemplate(templatename)
         self.offlinecompat=offlinecompat
         if offlinecompat:
@@ -1837,7 +1909,7 @@ class OntDocGeneration:
                 subtorenderlen=len(subjectstorender)+len(postprocessing)
                 print(str(subtorencounter) + "/" + str(subtorenderlen) + " " + str(outpath + path))
         self.checkGeoInstanceAssignment(uritotreeitem)
-        self.assignGeoClassesToTree(tree)
+        classlist=self.assignGeoClassesToTree(tree)
         if self.generatePagesForNonNS:
             #self.detectURIsConnectedToSubjects(subjectstorender, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace)
             labeltouri=self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace,uritotreeitem,labeltouri)
@@ -1867,10 +1939,10 @@ class OntDocGeneration:
                     if ex in self.exportToFunction:
                         if ex not in rdfformats:
                             with open(path + "index."+str(ex), 'w', encoding='utf-8') as f:
-                                res=self.exportToFunction[ex](subgraph,f,subjectstorender,ex)
+                                res=self.exportToFunction[ex](subgraph,f,subjectstorender,classlist,ex)
                                 f.close()
                         else:
-                            self.exportToFunction[ex](subgraph,path + "index."+str(ex),subjectstorender,ex)
+                            self.exportToFunction[ex](subgraph,path + "index."+str(ex),subjectstorender,classlist,ex)
                 relpath=self.generateRelativePathFromGivenDepth(prefixnamespace,checkdepth)
                 indexhtml = htmltemplate.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{deploypath}}",self.deploypath).replace("{{datasettitle}}",self.datasettitle).replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{relativepath}}",relpath).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink)\
                     .replace("{{classtreefolderpath}}",classtreelink).replace("{{subject}}","").replace("{{baseurlhtml}}", nslink).replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
@@ -2092,6 +2164,7 @@ class OntDocGeneration:
                 classlist[item]["item"]["type"]="halfgeoclass"
             else:
                 classlist[item]["item"]["type"] = "class"
+        return classlist
 
     def checkGeoInstanceAssignment(self,uritotreeitem):
         for uri in uritotreeitem:
