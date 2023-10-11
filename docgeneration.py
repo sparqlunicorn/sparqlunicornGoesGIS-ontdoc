@@ -2512,11 +2512,11 @@ class OntDocGeneration:
             if not nonns:
                 geojsonrep=self.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep,nonns)
             if incollection and "<svg" in str(tup[1]):
-                foundmedia["image"].add(str(tup[1]))
+                foundmedia["image"][str(tup[1])]={}
             elif incollection and "http" in str(tup[1]):
                 ext="."+''.join(filter(str.isalpha,str(tup[1]).split(".")[-1]))
                 if ext in fileextensionmap:
-                    foundmedia[fileextensionmap[ext]].add(str(tup[1]))
+                    foundmedia[fileextensionmap[ext]][str(tup[1])]={}
             if str(tup[0]) in valueproperties:
                 if tempvalprop == None and str(tup[0]) == "http://www.w3.org/ns/oa#hasSource":
                     tempvalprop = str(tup[0])
@@ -2760,7 +2760,7 @@ class OntDocGeneration:
         svg=svg.replace("<polygon","<path").replace("points=\"","d=\"M").replace("\"></polygon>"," Z\"></polygon>")
         return svg.replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">")
 
-    def generateIIIFManifest(self,outpath,imgpaths,annos,annobodies,curind,prefixnamespace,label="",summary="",thetypes=None,predobjmap=None,maintype="Image"):
+    def generateIIIFManifest(self,g,outpath,imgpaths,annos,annobodies,curind,prefixnamespace,label="",summary="",thetypes=None,predobjmap=None,maintype="Image"):
         print("GENERATE IIIF Manifest for "+str(self.outpath)+" "+str(curind)+" "+str(label)+" "+str(summary)+" "+str(annobodies))
         if not os.path.exists(self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json"):
             if not os.path.exists(self.outpath + "/iiif/mf/"):
@@ -3127,7 +3127,7 @@ class OntDocGeneration:
         isodd = False
         geojsonrep=None
         epsgcode=""
-        foundmedia={"audio":set(),"video":set(),"image":set(),"mesh":set()}
+        foundmedia={"audio":{},"video":{},"image":{},"mesh":{}}
         savepath = savepath.replace("\\", "/")
         checkdepth=0
         if not nonns:
@@ -3232,14 +3232,14 @@ class OntDocGeneration:
                         if ("POINT" in str(item).upper() or "POLYGON" in str(item).upper() or "LINESTRING" in str(item).upper()) and tup in valueproperties and self.typeproperty in predobjmap and URIRef("http://www.w3.org/ns/oa#WKTSelector") in predobjmap[self.typeproperty]:
                             image3dannos.append({"value":str(item)})
                         elif "<svg" in str(item):
-                            foundmedia["image"].add(str(item))
+                            foundmedia["image"][str(item)]={}
                         elif "http" in str(item):
                             if isinstance(item,Literal):
                                 ext = "." + ''.join(filter(str.isalpha, str(item.value).split(".")[-1]))
                             else:
                                 ext = "." + ''.join(filter(str.isalpha, str(item).split(".")[-1]))
                             if ext in fileextensionmap:
-                                foundmedia[fileextensionmap[ext]].add(str(item))
+                                foundmedia[fileextensionmap[ext]][str(item)]={}
                         elif tup in valueproperties:
                             foundvals.add(str(item))
                         res=self.createHTMLTableValueEntry(subject, tup, item, ttlf, graph,
