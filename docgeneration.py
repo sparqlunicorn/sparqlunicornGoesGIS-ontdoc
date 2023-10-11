@@ -1680,7 +1680,7 @@ class Exporter:
 
 class OntDocGeneration:
 
-    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,iiif,ckan=True,localOptimized=False,startconcept=None,deploypath="",logoname="",templatename="default",offlinecompat=False,exports=["json","ttl"],datasettitle=""):
+    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,iiif,ckan=True,localOptimized=False,imagemetadata=None,startconcept=None,deploypath="",logoname="",templatename="default",offlinecompat=False,exports=["json","ttl"],datasettitle=""):
         self.prefixes=prefixes
         self.prefixnamespace = prefixnamespace
         self.namespaceshort = prefixnsshort.replace("/","")
@@ -1693,6 +1693,7 @@ class OntDocGeneration:
         self.createVOWL=createVOWL
         self.ogcapifeatures=ogcapifeatures
         self.iiif=iiif
+        self.imagemetadata=imagemetadata
         self.localOptimized=localOptimized
         self.geocache={}
         self.deploypath=deploypath
@@ -2802,7 +2803,7 @@ class OntDocGeneration:
                     if "height" in res:
                         imagetoURI[imgpath]["height"]=res["height"]                        
                 if imgpath not in imagetoURI or "width" not in imagetoURI[imgpath]:
-                    if resolveimagepath:
+                    if self.imagemetadata:
                         try:
                             #print("Loading image for "+str(imgpath))
                             response = requests.get(imgpath)
@@ -3606,6 +3607,7 @@ parser.add_argument("-vowl","--createvowl",help="create vowl graph view?",action
 parser.add_argument("-of","--offlinecompat",help="built-result is offline compatible",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-ogc","--ogcapifeatures",help="create ogc api features collections?",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-iiif","--iiifmanifest",help="create iiif manifests?",action="store",default=True,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
+parser.add_argument("-imgmd","--imagemetadata",help="resolve image metadata?",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-ckan","--ckanapi",help="create static ckan api docs?",action="store",default=True,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-sc","--startconcept",help="the concept suggested for browsing the HTML documentation",action="store",default=None)
 parser.add_argument("-dp","--deploypath",help="the deploypath where the documentation will be hosted",action="store",default="")
@@ -3660,9 +3662,9 @@ for fp in filestoprocess:
         g = Graph()
         g.parse(fp)
         if fcounter<len(outpath):
-            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle)
+            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle)
         else:
-            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle)
+            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle)
         docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
     except Exception as inst:
      	print("Could not parse "+str(fp))
