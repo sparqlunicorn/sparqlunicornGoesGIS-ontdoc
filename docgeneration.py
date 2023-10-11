@@ -2762,9 +2762,9 @@ class OntDocGeneration:
 
     def checkImgMetadataRDF(g,uri):
         res={}
-        for obj in g.objects(URIRef(uri),URIRef("http://www.w3.org/2003/12/exif/ns#width"))
+        for obj in g.objects(URIRef(uri),URIRef("http://www.w3.org/2003/12/exif/ns#width")):
             res["width"]=str(obj)
-        for obj in g.objects(URIRef(uri),URIRef("http://www.w3.org/2003/12/exif/ns#height"))
+        for obj in g.objects(URIRef(uri),URIRef("http://www.w3.org/2003/12/exif/ns#height")):
             res["height"]=str(obj)
         return res
 
