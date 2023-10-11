@@ -2760,6 +2760,14 @@ class OntDocGeneration:
         svg=svg.replace("<polygon","<path").replace("points=\"","d=\"M").replace("\"></polygon>"," Z\"></polygon>")
         return svg.replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">")
 
+    def checkImgMetadataRDF(g,uri):
+        res={}
+        for obj in g.objects(URIRef(uri),URIRef("http://www.w3.org/2003/12/exif/ns#width"))
+            res["width"]=str(obj)
+        for obj in g.objects(URIRef(uri),URIRef("http://www.w3.org/2003/12/exif/ns#height"))
+            res["height"]=str(obj)
+        return res
+
     def generateIIIFManifest(self,g,outpath,imgpaths,annos,annobodies,curind,prefixnamespace,label="",summary="",thetypes=None,predobjmap=None,maintype="Image"):
         print("GENERATE IIIF Manifest for "+str(self.outpath)+" "+str(curind)+" "+str(label)+" "+str(summary)+" "+str(annobodies))
         if not os.path.exists(self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json"):
@@ -2787,6 +2795,12 @@ class OntDocGeneration:
                     imgpath=self.outpath+"/iiif/svg/"+self.shortenURI(curind)+"_"+str(pagecounter)+".svg"
                 height=480
                 width=640
+                if "width" not in imagetoURI[imgpath]:
+                    res=checkImgMetadataRDF(g,uri)
+                    if "width" in res:
+                        imagetoURI[imgpath]["width"]=res["width"]
+                    if "height" in res:
+                        imagetoURI[imgpath]["height"]=res["height"]                        
                 if imgpath not in imagetoURI or "width" not in imagetoURI[imgpath]:
                     if resolveimagepath:
                         try:
