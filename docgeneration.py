@@ -2761,7 +2761,7 @@ class OntDocGeneration:
         svg=svg.replace("<polygon","<path").replace("points=\"","d=\"M").replace("\"></polygon>"," Z\"></polygon>")
         return svg.replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">")
 
-    def checkImgMetadataRDF(g,uri):
+    def checkImgMetadataRDF(self,g,uri):
         res={}
         for obj in g.objects(URIRef(uri),URIRef("http://www.w3.org/2003/12/exif/ns#width")):
             res["width"]=str(obj)
@@ -2797,11 +2797,13 @@ class OntDocGeneration:
                 height=480
                 width=640
                 if "width" not in imagetoURI[imgpath]:
-                    res=checkImgMetadataRDF(g,uri)
+                    res=self.checkImgMetadataRDF(g,uri)
                     if "width" in res:
+                        print("Found image width in KG: "+str(res["width"]))
                         imagetoURI[imgpath]["width"]=res["width"]
                     if "height" in res:
-                        imagetoURI[imgpath]["height"]=res["height"]                        
+                        imagetoURI[imgpath]["height"]=res["height"]  
+                        print("Found image height in KG: "+str(res["width"]))                        
                 if imgpath not in imagetoURI or "width" not in imagetoURI[imgpath]:
                     if self.imagemetadata:
                         try:
