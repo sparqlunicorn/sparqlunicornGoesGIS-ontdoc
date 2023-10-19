@@ -2771,6 +2771,7 @@ class OntDocGeneration:
 
     def generateIIIFManifest(self,g,outpath,imgpaths,annos,annobodies,curind,prefixnamespace,label="",summary="",thetypes=None,predobjmap=None,maintype="Image"):
         print("GENERATE IIIF Manifest for "+str(self.outpath)+" "+str(curind)+" "+str(label)+" "+str(summary)+" "+str(annobodies))
+        print(predobjmap)
         if not os.path.exists(self.outpath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json"):
             if not os.path.exists(self.outpath + "/iiif/mf/"):
                 os.makedirs(self.outpath + "/iiif/mf/")
