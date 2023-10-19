@@ -2778,7 +2778,7 @@ class OntDocGeneration:
                 os.makedirs(self.outpath + "/iiif/images/")
             if not os.path.exists(self.outpath + "/iiif/svg/"):
                 os.makedirs(self.outpath + "/iiif/svg/")
-            #print(label)
+            print(label)
             if label!="":
                 curiiifmanifest={"@context": "http://iiif.io/api/presentation/3/context.json","id":self.deploypath+"/iiif/mf/"+self.shortenURI(curind)+"/manifest.json", "type": "Manifest","label":{"en":[str(label)+" ("+self.shortenURI(curind)+")"]},"homepage":[{"id":str(curind).replace(prefixnamespace,self.deploypath+"/"),"type":"Text","label":{"en":[str(curind).replace(prefixnamespace,self.deploypath+"/")]},"format": "text/html", "language":["en"]}],"metadata":[],"items":[]}
             else:
@@ -2807,10 +2807,10 @@ class OntDocGeneration:
                 if imgpath not in imagetoURI or "width" not in imagetoURI[imgpath]:
                     if self.imagemetadata:
                         try:
-                            #print("Loading image for "+str(imgpath))
+                            print("Loading image for "+str(imgpath))
                             response = requests.get(imgpath)
                             im = Image.open(BytesIO(response.content))
-                            #print(im.size)
+                            print(im.size)
                             #print(type(im.size))
                             w, h = im.size
                             width=w
