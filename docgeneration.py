@@ -2798,7 +2798,7 @@ class OntDocGeneration:
                 height=480
                 width=640
                 if "width" not in imagetoURI[imgpath]:
-                    res=self.checkImgMetadataRDF(g,uri)
+                    res=self.checkImgMetadataRDF(g,imgpath)
                     if "width" in res:
                         print("Found image width in KG: "+str(res["width"]))
                         imagetoURI[imgpath]["width"]=res["width"]
