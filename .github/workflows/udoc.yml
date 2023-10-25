@@ -120,7 +120,8 @@ jobs:
       - name: Generate Ontology Documentation
         run: |
           sudo pip3 install rdflib shapely pillow
-          cd ontdocscript .
+          cd ontdocscript
+          ls
           python3 doc/docgeneration.py --input "${{inputs.rdffilepath}}" --output "${{inputs.docpath}}" --prefixns "${{inputs.prefixns}}" --prefixnsshort "${{inputs.prefixnsshort}}" --createIndexPages "${{inputs.indexpages}}" --createCollections "${{inputs.createcollections}}" --labellang "${{inputs.preferredlang}}" --license "${{inputs.license}}" --logourl "${{inputs.logourl}}" --metadatatable "${{inputs.metadatatable}}" --nonnspages "${{inputs.createnonNSPages}}" --createvowl "${{inputs.createVOWL}}" --ogcapifeatures "${{inputs.ogcapifeatures}}" --iiif "${{inputs.iiif}}" --ckan "${{inputs.ckan}}" --startconcept "${{inputs.startconcept}}" --deploypath "https://${{github.repository_owner}}.github.io/${{ github.event.repository.name }}" --templatepath "${{inputs.templatedir}}" --offlinecompat "${{inputs.offlinecompat}}" --exports "${{inputs.exports}}" --datasettitle "${{inputs.datasettitle}}" 
           mv ${{inputs.docpath}} .
       - name: Deploy 🚀
