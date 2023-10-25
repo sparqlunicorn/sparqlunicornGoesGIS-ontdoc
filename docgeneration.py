@@ -2322,7 +2322,7 @@ class OntDocGeneration:
                 if bibtex!=None:
                     tablecontents+="<details><summary>[BIBTEX]</summary><pre>"+str(bibtex)+"</pre></details>"
             else:
-                res = DocUtils.replaceNameSpacesInLabel(str(object))
+                res = DocUtils.replaceNameSpacesInLabel(self.prefixes,str(object))
                 if res != None:
                     tablecontents += "<span><a property=\"" + str(pred) + "\" "+rdfares+" target=\"_blank\" href=\"" + str(object) + "\">" + label + " <span style=\"color: #666;\">(" + res["uri"] + ")</span></a>"                                     
                 else:
