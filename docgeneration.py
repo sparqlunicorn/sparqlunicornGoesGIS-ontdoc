@@ -3,9 +3,12 @@ from rdflib import Graph
 from rdflib import URIRef, Literal, BNode
 from rdflib.plugins.sparql import prepareQuery
 from urllib.request import urlopen
-import urllib.parse
+
 from io import BytesIO
 from zipfile import ZipFile
+import os
+import sys
+sys.path.insert(0, os.getcwd())
 from doc.docutils import DocUtils
 from export.data.graphexporter import GraphExporter
 from export.data.miscexporter import MiscExporter
@@ -15,12 +18,11 @@ from export.api.ckanexporter import CKANExporter
 import requests
 import shapely.wkt
 import shapely.geometry
-import os
+import urllib.parse
 import argparse
 import re
 import shutil
 import json
-import sys
 
 
 

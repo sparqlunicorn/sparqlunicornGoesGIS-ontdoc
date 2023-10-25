@@ -4,7 +4,7 @@ import json
 
 from rdflib import URIRef
 
-from ...doc.docutils import DocUtils
+from doc.docutils import DocUtils
 
 
 class IIIFAPIExporter:
