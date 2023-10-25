@@ -8,8 +8,9 @@ from io import BytesIO
 from zipfile import ZipFile
 import os
 import sys
-sys.path.insert(0, os.getcwd())
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 print(sys.path)
+print(os.path.dirname(os.path.realpath(__file__)))
 from doc.docutils import DocUtils
 from export.data.graphexporter import GraphExporter
 from export.data.miscexporter import MiscExporter
