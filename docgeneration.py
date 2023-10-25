@@ -17,12 +17,14 @@ import re
 import shutil
 import json
 import sys
-from .doc.docutils import DocUtils
-from .export.data.graphexporter import GraphExporter
-from .export.data.miscexporter import MiscExporter
-from .export.api.iiifexporter import IIIFAPIExporter
-from .export.api.ogcapifeaturesexporter import OGCAPIFeaturesExporter
-from .export.api.ckanexporter import CKANExporter
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "doc")))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "export")))
+from doc.docutils import DocUtils
+from export.data.graphexporter import GraphExporter
+from export.data.miscexporter import MiscExporter
+from export.api.iiifexporter import IIIFAPIExporter
+from export.api.ogcapifeaturesexporter import OGCAPIFeaturesExporter
+from export.api.ckanexporter import CKANExporter
 
 
 
