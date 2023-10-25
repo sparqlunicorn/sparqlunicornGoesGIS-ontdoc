@@ -1,7 +1,6 @@
 import json
 import os
 from .miscexporter import MiscExporter
-from qgis.core import Qgis, QgsMessageLog
 
 class GeoExporter:
 
@@ -33,7 +32,6 @@ class GeoExporter:
 
     @staticmethod
     def convertTTLToGeoJSON(g, file, subjectstorender=None,classlist=None, formatt="json"):
-        QgsMessageLog.logMessage("Classlist " + str(classlist), "OntdocGeneration", Qgis.Info)
         if subjectstorender == None:
             subjectstorender = g.subjects(None, None, True)
         geoclasslist=GeoExporter.filterGeoClasses(classlist)

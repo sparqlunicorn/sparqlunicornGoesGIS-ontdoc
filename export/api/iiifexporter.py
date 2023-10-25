@@ -2,8 +2,9 @@
 import os
 import json
 
-from ...sparqlutils import SPARQLUtils
 from rdflib import URIRef
+
+from ...doc.docutils import DocUtils
 
 
 class IIIFAPIExporter:
@@ -15,7 +16,7 @@ class IIIFAPIExporter:
             if "uri" in imagetoURI[imgpath]:
                 for ur in imagetoURI[imgpath]["uri"]:
                     # print(ur)
-                    sur = SPARQLUtils.shortenURI(ur)
+                    sur = DocUtils.shortenURI(ur)
                     # print("Getting "+outpath+"/iiif/mf/"+sur+"/manifest.json")
                     if os.path.exists(outpath + "/iiif/mf/" + sur + "/manifest.json") and "anno" in imagetoURI[imgpath]:
                         f = open(outpath + "/iiif/mf/" + sur + "/manifest.json", 'r', encoding="utf-8")
