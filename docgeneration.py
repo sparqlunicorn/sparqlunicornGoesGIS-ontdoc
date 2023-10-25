@@ -9,6 +9,7 @@ from zipfile import ZipFile
 import os
 import sys
 sys.path.insert(0, os.getcwd())
+print(sys.path)
 from doc.docutils import DocUtils
 from export.data.graphexporter import GraphExporter
 from export.data.miscexporter import MiscExporter
