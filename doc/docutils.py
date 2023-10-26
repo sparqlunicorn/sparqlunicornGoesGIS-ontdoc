@@ -46,7 +46,7 @@ class DocUtils:
         return rellink
 
     @staticmethod
-    def checkImgMetadataRDF(self,g,uri):
+    def checkImgMetadataRDF(g,uri):
         res={}
         for obj in g.objects(URIRef(uri),URIRef("http://www.w3.org/2003/12/exif/ns#width")):
             res["width"]=str(obj)

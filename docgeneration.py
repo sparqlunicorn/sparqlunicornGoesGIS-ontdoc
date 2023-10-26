@@ -1782,7 +1782,7 @@ class OntDocGeneration:
         with open(outpath + corpusid + '_search.js', 'w', encoding='utf-8') as f:
             f.write("var search=" + json.dumps(labeltouri, indent=2, sort_keys=True))
             f.close()
-        IIIFAPIExporter.generateIIIFAnnotations(outpath)
+        IIIFAPIExporter.generateIIIFAnnotations(outpath,imagetoURI)
         if self.createIndexPages:
             for path in paths:
                 subgraph=Graph(bind_namespaces="rdflib")
@@ -1848,7 +1848,7 @@ class OntDocGeneration:
             f.write(sparqlhtml)
             f.close()
         if len(iiifmanifestpaths["default"])>0:
-            IIIFAPIExporter.generateIIIFCollections(self.outpath,iiifmanifestpaths["default"],prefixnamespace)
+            IIIFAPIExporter.generateIIIFCollections(self.outpath,self.deploypath,iiifmanifestpaths["default"],prefixnamespace)
         if len(featurecollectionspaths)>0 and self.ckan:
             CKANExporter.generateCKANCollection(outpath,featurecollectionspaths)
         if len(featurecollectionspaths)>0:
@@ -2734,14 +2734,14 @@ class OntDocGeneration:
                     f.write(htmlcommenttemplate.replace("{{comment}}", "<b>Value:<mark>" + str(fval) + "</mark></b>"))
                 if len(foundmedia["mesh"])>0 and len(image3dannos)>0:
                     if self.iiif:
-                        iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,outpath,self.deploypath,foundmedia["mesh"],image3dannos,annobodies,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Model"))
+                        iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,outpath,self.deploypath,foundmedia["mesh"],image3dannos,annobodies,str(subject),self.prefixnamespace,imagetoURI, self.imagemetadata,metadatanamespaces,foundlabel,comment,thetypes,predobjmap,"Model"))
                     for anno in image3dannos:
                         if ("POINT" in anno["value"].upper() or "POLYGON" in anno["value"].upper() or "LINESTRING" in anno["value"].upper()):
                             f.write(threejstemplate.replace("{{wktstring}}",anno["value"]).replace("{{meshurls}}",str(list(foundmedia["mesh"]))))
                 elif len(foundmedia["mesh"])>0 and len(image3dannos)==0:
                     print("Found 3D Model: "+str(foundmedia["mesh"]))
                     if self.iiif:
-                        iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,outpath,self.deploypath,foundmedia["mesh"],image3dannos,annobodies,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Model"))
+                        iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,outpath,self.deploypath,foundmedia["mesh"],image3dannos,annobodies,str(subject),self.prefixnamespace,imagetoURI, self.imagemetadata,metadatanamespaces,foundlabel,comment,thetypes,predobjmap,"Model"))
                     for curitem in foundmedia["mesh"]:
                         format="ply"
                         if ".nxs" in curitem or ".nxz" in curitem:
@@ -2765,7 +2765,7 @@ class OntDocGeneration:
                 #        imagetoURI[target]["uri"][str(subject)]["bodies"]+=annobodies
                 if len(imageannos)>0 and len(foundmedia["image"])>0:
                     if self.iiif:
-                        iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,outpath,self.deploypath,foundmedia["image"],imageannos,annobodies,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
+                        iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,outpath,self.deploypath,foundmedia["image"],imageannos,annobodies,str(subject),self.prefixnamespace,imagetoURI, self.imagemetadata,metadatanamespaces,foundlabel,comment,thetypes,predobjmap,"Image"))
                     for image in foundmedia["image"]:
                         if image not in imagetoURI or "uri" not in imagetoURI[image]:
                             imagetoURI[image]={"uri":{}}
@@ -2779,7 +2779,7 @@ class OntDocGeneration:
                             carousel="carousel-item"                  
                 elif len(foundmedia["image"])>0:
                     if self.iiif:
-                        iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,outpath,self.deploypath,foundmedia["image"],imageannos,annobodies,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Image"))
+                        iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,outpath,self.deploypath,foundmedia["image"],imageannos,annobodies,str(subject),self.prefixnamespace,imagetoURI, self.imagemetadata,metadatanamespaces,foundlabel,comment,thetypes,predobjmap,"Image"))
                     for image in foundmedia["image"]:                
                         if image not in imagetoURI or "uri" not in imagetoURI[image]:
                             imagetoURI[image]={"uri":{}}
@@ -2810,12 +2810,12 @@ class OntDocGeneration:
                                     textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
                                     textanno["exact"]) + "\"><mark>" + str(textanno["exact"]) + "</mark></span>")
                 if len(foundmedia["audio"])>0 and self.iiif:
-                    iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,outpath,self.deploypath,foundmedia["audio"],None,None,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Audio"))
+                    iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,outpath,self.deploypath,foundmedia["audio"],None,None,str(subject),self.prefixnamespace,imagetoURI, self.imagemetadata,metadatanamespaces,foundlabel,comment,thetypes,predobjmap,"Audio"))
                 for audio in foundmedia["audio"]:
                     imagetoURI[audio]={"uri":str(subject)}
                     f.write(audiotemplate.replace("{{audio}}",str(audio)))
                 if len(foundmedia["video"])>0 and self.iiif:
-                    iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,outpath,self.deploypath,foundmedia["video"],None,None,str(subject),self.prefixnamespace,foundlabel,comment,thetypes,predobjmap,"Video"))
+                    iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,outpath,self.deploypath,foundmedia["video"],None,None,str(subject),self.prefixnamespace,imagetoURI, self.imagemetadata,metadatanamespaces,foundlabel,comment,thetypes,predobjmap,"Video"))
                 for video in foundmedia["video"]:
                     imagetoURI[video]={"uri":str(subject)}
                     f.write(videotemplate.replace("{{video}}",str(video)))
