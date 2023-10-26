@@ -1650,34 +1650,7 @@ class OntDocGeneration:
                 graph.add((ind, URIRef(prop), URIRef(str(tobeaddedPerInd[prop]["value"]))))
 
 
-    def processSubjectPath(self,outpath,paths,path):
-        if "/" in path:
-            addpath = ""
-            try:
-                for pathelem in path.split("/"):
-                    addpath += pathelem + "/"
-                    if not os.path.exists(outpath + addpath):
-                        os.mkdir(outpath + addpath)
-                if outpath + path[0:path.rfind('/')] + "/" not in paths:
-                    paths[outpath + path[0:path.rfind('/')] + "/"] = []
-                paths[outpath + path[0:path.rfind('/')] + "/"].append(addpath[0:addpath.rfind('/')])
-            except Exception as e:
-                print(e)
-        else:
-            try:
-                if not os.path.exists(outpath + path):
-                    os.mkdir(outpath + path)
-                if outpath not in paths:
-                    paths[outpath] = []
-                paths[outpath].append(path + "/index.html")
-            except Exception as e:
-                print(e)              
-        if os.path.exists(outpath + path + "/index.ttl"):
-            try:
-                self.graph.parse(outpath + path + "/index.ttl")
-            except Exception as e:
-                print(e)
-        return paths
+
 
     def generateOntDocForNameSpace(self, prefixnamespace,dataformat="HTML"):
         outpath=self.outpath
@@ -1751,7 +1724,7 @@ class OntDocGeneration:
         for subj in subjectstorender:
             path = subj.replace(prefixnamespace, "")
             #try:
-            paths=self.processSubjectPath(outpath,paths,path)
+            paths=DocUtils.processSubjectPath(outpath,paths,path,self.graph)
             if os.path.exists(outpath + path+"/index.ttl"):
                 try:
                     self.graph.parse(outpath + path+"/index.ttl")
@@ -1770,7 +1743,7 @@ class OntDocGeneration:
         print("Postprocessing " + str(len(postprocessing)))
         for subj in postprocessing.subjects(None,None,True):
             path = str(subj).replace(prefixnamespace, "")
-            paths=self.processSubjectPath(outpath,paths,path)
+            paths=DocUtils.processSubjectPath(outpath,paths,path,self.graph)
             if os.path.exists(outpath + path+"/index.ttl"):
                 try:
                     self.graph.parse(outpath + path+"/index.ttl")
