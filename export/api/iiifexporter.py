@@ -77,10 +77,8 @@ class IIIFAPIExporter:
                 if "anno" not in imagetoURI[imgpath]:
                     imagetoURI[imgpath]["anno"] = []
                 if imgpath.startswith("<svg") and "http" not in imgpath:
-                    f = open(outpath + "/iiif/svg/" + DocUtils.shortenURI(curind) + "_" + str(pagecounter) + ".svg",
-                             "w", encoding="utf-8")
-                    f.write(str(imgpath).replace("<svg>",
-                                                 "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">"))
+                    f = open(outpath + "/iiif/svg/" + DocUtils.shortenURI(curind) + "_" + str(pagecounter) + ".svg", "w", encoding="utf-8")
+                    f.write(str(imgpath).replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">"))
                     f.close()
                     imgpath = outpath + "/iiif/svg/" + DocUtils.shortenURI(curind) + "_" + str(pagecounter) + ".svg"
                 height = 480
@@ -195,7 +193,7 @@ class IIIFAPIExporter:
         for coll in collections:
             if coll!="main":
                 collections["main"]["items"].append(collections[coll])
-                f=open(outpath+"/iiif/collection/"+str(coll)+".json","w",encoding="utf-8")
+                f=open(outpath+"/iiif/collection/"+str(DocUtils.shortenURI(coll))+".json","w",encoding="utf-8")
                 f.write(json.dumps(collections[coll]))
                 f.close()
         f = open(outpath + "/iiif/collection/iiifcoll.json", "w", encoding="utf-8")
