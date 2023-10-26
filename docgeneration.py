@@ -31,8 +31,6 @@ import shutil
 import json
 
 
-
-
 templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
 
 version="SPARQLing Unicorn QGIS Plugin OntDoc Script 0.16"
@@ -95,6 +93,19 @@ valueproperties={
 unitproperties={
     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit":"ObjectProperty",
     "https://www.w3.org/ns/activitystreams#units":"DatatypeProperty"
+}
+
+labelproperties = {
+    "http://www.w3.org/2004/02/skos/core#prefLabel": "DatatypeProperty",
+    "http://www.w3.org/2004/02/skos/core#prefSymbol": "DatatypeProperty",
+    "http://www.w3.org/2004/02/skos/core#altLabel": "DatatypeProperty",
+    "https://schema.org/name": "DatatypeProperty",
+    "https://schema.org/alternateName": "DatatypeProperty",
+    "http://purl.org/dc/terms/title": "DatatypeProperty",
+    "http://purl.org/dc/elements/1.1/title": "DatatypeProperty",
+    "http://www.w3.org/2004/02/skos/core#altSymbol": "DatatypeProperty",
+    "http://www.w3.org/2004/02/skos/core#hiddenLabel": "DatatypeProperty",
+    "http://www.w3.org/2000/01/rdf-schema#label": "DatatypeProperty"
 }
 
 commentproperties={
