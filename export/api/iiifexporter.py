@@ -160,7 +160,7 @@ class IIIFAPIExporter:
             f.close()
         else:
             collections = {"main": {"@context": "http://iiif.io/api/presentation/3/context.json",
-                                    "id": outpath + "/iiif/collection/iiifcoll.json", "type": "Collection",
+                                    "id": deploypath + "/iiif/collection/iiifcoll.json", "type": "Collection",
                                     "label": {"en": ["Collection: " + DocUtils.shortenURI(str(prefixnamespace))]},
                                     "items": []}}
         seenurls = set()
@@ -176,19 +176,14 @@ class IIIFAPIExporter:
             if imgpath["url"] not in seenurls:
                 if imgpath["label"] != "":
                     collections[curclass]["items"].append({"full": outpath + "/iiif/images/" + DocUtils.shortenURI(
-                        imgpath["url"].replace("/manifest.json", "")) + "/full/full/0/default.jpg",
-                                                           "id": imgpath["url"].replace(outpath, deploypath),
+                        imgpath["url"].replace("/manifest.json", "")) + "/full/full/0/default.jpg","id": imgpath["url"].replace(outpath, deploypath),
                                                            "type": "Manifest", "label": {"en": [
                             imgpath["label"] + " (" + DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", "")[
-                                                                      0:imgpath["url"].replace("/manifest.json",
-                                                                                               "").rfind(
-                                                                          ".")]) + ")"]}})
+                                                                      0:imgpath["url"].replace("/manifest.json","").rfind(".")]) + ")"]}})
                 else:
                     collections[curclass]["items"].append({"full": outpath + "/iiif/images/" + DocUtils.shortenURI(
-                        imgpath["url"].replace("/manifest.json", "")) + "/full/full/0/default.jpg",
-                                                           "id": imgpath["url"].replace(outpath, deploypath),
-                                                           "type": "Manifest", "label": {
-                            "en": [DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", ""))]}})
+                        imgpath["url"].replace("/manifest.json", "")) + "/full/full/0/default.jpg","id": imgpath["url"].replace(outpath, deploypath),
+                        "type": "Manifest", "label": {"en": [DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", ""))]}})
             seenurls = imgpath["url"]
         for coll in collections:
             if coll!="main":
