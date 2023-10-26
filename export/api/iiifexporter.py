@@ -44,6 +44,8 @@ class IIIFAPIExporter:
         print("GENERATE IIIF Manifest for " + str(outpath) + " " + str(curind) + " " + str(label) + " " + str(
             summary) + " " + str(annobodies))
         print(predobjmap)
+        print(outpath)
+        print(curind)
         if not os.path.exists(outpath + "/iiif/mf/" + DocUtils.shortenURI(curind) + "/manifest.json"):
             if not os.path.exists(outpath + "/iiif/mf/"):
                 os.makedirs(outpath + "/iiif/mf/")
