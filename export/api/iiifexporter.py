@@ -193,8 +193,11 @@ class IIIFAPIExporter:
                             "en": [DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", ""))]}})
             seenurls = imgpath["url"]
         for coll in collections:
-            if coll != "main":
+            if coll!="main":
                 collections["main"]["items"].append(collections[coll])
+                f=open(outpath+"/iiif/collection/"+str(coll)+".json","w",encoding="utf-8")
+                f.write(json.dumps(collections[coll]))
+                f.close()
         f = open(outpath + "/iiif/collection/iiifcoll.json", "w", encoding="utf-8")
         f.write(json.dumps(collections["main"]))
         f.close()
