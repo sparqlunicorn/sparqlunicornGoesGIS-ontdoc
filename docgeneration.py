@@ -1542,39 +1542,53 @@ class OntDocGeneration:
             print(e)
         return None
 
-    def createOfflineCompatibleVersion(self,outpath,myhtmltemplate):
+    def createOfflineCompatibleVersion(self,outpath,myhtmltemplate,templatepath,templatename):
         if not os.path.isdir(outpath):
             os.mkdir(outpath)
-        if not os.path.isdir(outpath+str(os.sep)+"js"):
-            os.mkdir(outpath+str(os.sep)+"js")
-        if not os.path.isdir(outpath+str(os.sep)+"css"):
-            os.mkdir(outpath+str(os.sep)+"css")
+        if not os.path.isdir(outpath+"/js"):
+            os.mkdir(outpath+"/js")
+        if not os.path.isdir(outpath+"/css"):
+            os.mkdir(outpath+"/css")
         matched=re.findall(r'src="(http.*)"',myhtmltemplate)
         for match in matched:
             #download the library
             if "</script>" in match:
                 for m in match.split("></script><script src="):
-                    print(m.replace("\"",""))
-                    m=m.replace("\"","")
-                    r = requests.get(m.replace("\"",""))  
-                    with open(outpath+str(os.sep)+"js"+str(os.sep)+m[m.rfind("/")+1:], 'wb') as fd:
-                        fd.write(r.content)
+                    m=m.replace("\"","").replace(">","")
+                    try:
+                        g = urllib.request.urlopen(m.replace("\"", ""))
+                        with open(outpath + str(os.sep)+"js"+str(os.sep) + m[m.rfind("/") + 1:], 'b+w') as f:
+                            f.write(g.read())
+                    except Exception as e:
+                        print(e)
+                        if os.path.exists(templatepath+"/"+templatename+"/js/lib/"+str(m[m.rfind("/")+1:])):
+                            shutil.copy(templatepath+"/"+templatename+"/js/lib/"+str(m[m.rfind("/")+1:]),outpath + str(os.sep)+"js"+str(os.sep) + m[m.rfind("/") + 1:])
                     myhtmltemplate=myhtmltemplate.replace(m,"{{relativepath}}js/"+m[m.rfind("/")+1:])
             else:
-                print(match.replace("\"",""))
                 match=match.replace("\"","")
-                r = requests.get(match.replace("\"",""))  
-                with open(outpath+str(os.sep)+"js"+str(os.sep)+match[match.rfind("/")+1:], 'wb') as fd:
-                    fd.write(r.content)
+                try:
+                    g = urllib.request.urlopen(match.replace("\"", ""))
+                    with open(outpath + str(os.sep)+"js"+str(os.sep) + match[match.rfind("/") + 1:], 'b+w') as f:
+                        f.write(g.read())
+                except Exception as e:
+                    print(e)
+                    if os.path.exists(templatepath + "/" + templatename + "/js/lib/" + str(match[match.rfind("/") + 1:])):
+                        shutil.copy(templatepath + "/" + templatename + "/js/lib/" + str(match[match.rfind("/") + 1:]),
+                                    outpath + str(os.sep) + "js" + str(os.sep) + match[match.rfind("/") + 1:])
                 myhtmltemplate=myhtmltemplate.replace(match,"{{relativepath}}js/"+match[match.rfind("/")+1:])
         matched=re.findall(r'href="(http.*.css)"',myhtmltemplate)
         for match in matched:
             print(match.replace("\"",""))
             match=match.replace("\"","")
-            r = requests.get(match.replace("\"",""))  
-            with open(outpath+str(os.sep)+"css"+str(os.sep)+match[match.rfind("/")+1:], 'wb') as fd:
-                fd.write(r.content)
-            myhtmltemplate=myhtmltemplate.replace(match,"{{relativepath}}css/"+match[match.rfind("/")+1:])        
+            try:
+                g = urllib.request.urlopen(match.replace("\"", ""))
+                with open(outpath +str(os.sep)+"css"+str(os.sep)+ match[match.rfind("/") + 1:], 'b+w') as f:
+                    f.write(g.read())
+            except Exception as e:
+                if os.path.exists(templatepath + "/" + templatename + "/css/lib/" + str(match[match.rfind("/") + 1:])):
+                    shutil.copy(templatepath + "/" + templatename + "/css/lib/" + str(match[match.rfind("/") + 1:]),
+                                outpath + str(os.sep) + "css" + str(os.sep) + match[match.rfind("/") + 1:])
+            myhtmltemplate=myhtmltemplate.replace(match,"{{relativepath}}css/"+match[match.rfind("/")+1:])
         return myhtmltemplate
 
     def convertOWL2MiniVOWL(self,g,outpath,predicates=[],typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",labelproperty="http://www.w3.org/2000/01/rdf-schema#label"):
