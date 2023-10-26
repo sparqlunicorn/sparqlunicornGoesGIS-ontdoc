@@ -46,6 +46,7 @@ class IIIFAPIExporter:
         print(predobjmap)
         print(outpath)
         print(curind)
+        print(DocUtils.shortenURI(curind))
         if not os.path.exists(outpath + "/iiif/mf/" + DocUtils.shortenURI(curind) + "/manifest.json"):
             if not os.path.exists(outpath + "/iiif/mf/"):
                 os.makedirs(outpath + "/iiif/mf/")
