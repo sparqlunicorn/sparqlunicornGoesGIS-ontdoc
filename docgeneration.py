@@ -8,6 +8,7 @@ from io import BytesIO
 from zipfile import ZipFile
 import os
 import sys
+
 if os.path.exists("ontdocscript"):
     sys.path.insert(0, os.path.dirname(os.path.realpath(__file__))+"/ontdocscript")
 else:
@@ -16,8 +17,7 @@ print(sys.path)
 print(os.path.dirname(os.path.realpath(__file__)))
 print(os.listdir(os.getcwd()))
 from doc.docutils import DocUtils
-from export.data.graphexporter import GraphExporter
-from export.data.miscexporter import MiscExporter
+from export.data.exporterutils import ExporterUtils
 from export.api.iiifexporter import IIIFAPIExporter
 from export.api.ogcapifeaturesexporter import OGCAPIFeaturesExporter
 from export.api.ckanexporter import CKANExporter
@@ -1483,8 +1483,6 @@ class OntDocGeneration:
         self.geocollectionspaths=[]
         self.metadatatable=metadatatable
         self.templatename=templatename
-        self.exportToFunction={"cypher":GraphExporter.convertTTLToCypher,"dot":GraphExporter.convertTTLToDOT,"graphml":GraphExporter.convertTTLToGraphML,"gdf":GraphExporter.convertTTLToTGF,"gexf":GraphExporter.convertTTLToGEXF,"jgf":GraphExporter.convertTTLToJGF,
-            "gml":GraphExporter.convertTTLToGML,"net":GraphExporter.convertTTLToNET,"tlp":GraphExporter.convertTTLToTLP,"tgf":GraphExporter.convertTTLToTGF,"ttl":GraphExporter.serializeRDF,"trig":GraphExporter.serializeRDF,"xml":GraphExporter.serializeRDF,"trix":GraphExporter.serializeRDF,"nt":GraphExporter.serializeRDF,"n3":GraphExporter.serializeRDF,"nquads":GraphExporter.serializeRDF}
         resolveTemplate(templatename)
         self.offlinecompat=offlinecompat
         if offlinecompat:
@@ -1797,13 +1795,13 @@ class OntDocGeneration:
                         for tup in self.graph.predicate_objects(sub):
                             subgraph.add((sub, tup[0], tup[1]))
                 for ex in self.exports:
-                    if ex in self.exportToFunction:
-                        if ex not in rdfformats:
+                    if ex in ExporterUtils.exportToFunction:
+                        if ex not in ExporterUtils.rdfformats:
                             with open(path + "index."+str(ex), 'w', encoding='utf-8') as f:
-                                res=self.exportToFunction[ex](subgraph,f,subjectstorender,classlist,ex)
+                                res=ExporterUtils.exportToFunction[ex](subgraph,f,subjectstorender,classlist,ex)
                                 f.close()
                         else:
-                            self.exportToFunction[ex](subgraph,path + "index."+str(ex),subjectstorender,classlist,ex)
+                            ExporterUtils.exportToFunction[ex](subgraph,path + "index."+str(ex),subjectstorender,classlist,ex)
                 relpath=DocUtils.generateRelativePathFromGivenDepth(checkdepth)
                 indexhtml = htmltemplate.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{deploypath}}",self.deploypath).replace("{{datasettitle}}",self.datasettitle).replace("{{logo}}","").replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{relativepath}}",relpath).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink)\
                     .replace("{{classtreefolderpath}}",classtreelink).replace("{{subject}}","").replace("{{baseurlhtml}}", nslink).replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")

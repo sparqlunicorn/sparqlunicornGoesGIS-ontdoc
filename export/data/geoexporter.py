@@ -1,6 +1,7 @@
 import json
 import os
-from .miscexporter import MiscExporter
+
+from ...doc.docutils import DocUtils
 
 class GeoExporter:
 
@@ -49,7 +50,7 @@ class GeoExporter:
                 res[str(tup[0])] = str(tup[1])
             typeToRes[subjectsToType[str(sub)]].append(res)
         for type in typeToFields:
-            f = open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + MiscExporter.shortenURI(
+            f = open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
                 type) + "." + formatt, "w", encoding="utf-8")
             resjson={"type":"FeatureCollection","features":[]}
             for res in typeToRes[type]:
