@@ -1485,13 +1485,14 @@ class OntDocGeneration:
         self.templatename=templatename
         resolveTemplate(templatename)
         self.offlinecompat=offlinecompat
+        templatepath = os.path.abspath(os.path.join(os.path.dirname(__file__), "/resources/html/"))
         if offlinecompat:
             global htmltemplate
-            htmltemplate=self.createOfflineCompatibleVersion(outpath,htmltemplate)
+            htmltemplate=self.createOfflineCompatibleVersion(outpath,htmltemplate,templatepath,templatename)
             global maptemplate
-            maptemplate=self.createOfflineCompatibleVersion(outpath,maptemplate)
+            maptemplate=self.createOfflineCompatibleVersion(outpath,maptemplate,templatepath,templatename)
             global sparqltemplate
-            sparqltemplate=self.createOfflineCompatibleVersion(outpath,sparqltemplate)
+            sparqltemplate=self.createOfflineCompatibleVersion(outpath,sparqltemplate,templatepath,templatename)
         self.license=license
         self.licenseuri=None
         self.licensehtml=None
