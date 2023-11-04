@@ -1553,7 +1553,8 @@ class OntDocGeneration:
             #download the library
             if "</script>" in match:
                 for m in match.split("></script><script src="):
-                    m=m.replace("\"","").replace(">","")
+                    m=m.replace("\"","").replace("/>","")
+                    m=m.replace(">","")
                     try:
                         g = urllib.request.urlopen(m.replace("\"", ""))
                         with open(outpath + str(os.sep)+"js"+str(os.sep) + m[m.rfind("/") + 1:], 'b+w') as f:
@@ -1578,7 +1579,8 @@ class OntDocGeneration:
         matched=re.findall(r'href="(http.*.css)"',myhtmltemplate)
         for match in matched:
             print(match.replace("\"",""))
-            match=match.replace("\"","")
+            match=match.replace("\"","").replace("/>","")
+            match=match.replace(">","")
             try:
                 g = urllib.request.urlopen(match.replace("\"", ""))
                 with open(outpath +str(os.sep)+"css"+str(os.sep)+ match[match.rfind("/") + 1:], 'b+w') as f:
