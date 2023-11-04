@@ -1,7 +1,7 @@
 from rdflib import Graph, Literal
 import json
 
-from ...doc.docutils import DocUtils
+from doc.docutils import DocUtils
 
 
 class GraphExporter:
