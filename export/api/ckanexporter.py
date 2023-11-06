@@ -25,7 +25,7 @@ class CKANExporter:
         if not os.path.exists(outpath + "/api/"+str(version)+"/action/tag_list/"):
             os.makedirs(outpath + "/api/"+str(version)+"/action/tag_list/")
         p = Path(str(outpath + "/api/"+str(version)+"/action/group_list?all_fields=true"))
-        p.symlink_to(outpath + "/api/"+str(version)+"/action/group_list")
+        p.symlink_to("../group_list/")
         f = open(outpath + "/api/"+str(version)+"/action/group_list/index.json", "w")
         f.write(json.dumps({"success": True, "result": []}))
         f.close()
