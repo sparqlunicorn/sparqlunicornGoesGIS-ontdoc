@@ -20,8 +20,8 @@ class CKANExporter:
             os.makedirs(outpath + "/api/"+str(version)+"/action/")
         if not os.path.exists(outpath + "/api/"+str(version)+"/action/group_list/"):
             os.makedirs(outpath + "/api/"+str(version)+"/action/group_list/")
-        if not os.path.exists(outpath + "/api/"+str(version)+"/action/action_list/"):
-            os.makedirs(outpath + "/api/"+str(version)+"/action/action_list/")
+        if not os.path.exists(outpath + "/api/"+str(version)+"/action/package_list/"):
+            os.makedirs(outpath + "/api/"+str(version)+"/action/package_list/")
         if not os.path.exists(outpath + "/api/"+str(version)+"/action/tag_list/"):
             os.makedirs(outpath + "/api/"+str(version)+"/action/tag_list/")
         p = Path(str(outpath + "/api/"+str(version)+"/action/group_list?all_fields=true"))
@@ -54,6 +54,6 @@ class CKANExporter:
             p = Path(str(op + ".html").replace("//", "/"))
             p.symlink_to(targetpath)
             colls.append(op[op.rfind('/') + 1:])
-        f = open(outpath + "/api/action/"+str(version)+"/action_list/index.json", "w")
+        f = open(outpath + "/api/"+str(version)+"/action/package_list/index.json", "w")
         f.write(json.dumps({"success": True, "result": colls}))
         f.close()
