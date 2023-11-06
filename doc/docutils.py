@@ -71,7 +71,7 @@ class DocUtils:
 
     @staticmethod
     def generateRelativeSymlink(linkpath, targetpath, outpath, items=False):
-        if "nonns" in targetpath and targetpath.count("/")==1:
+        if "nonns" in targetpath and targetpath.count("/")<3:
             checkdepthtarget= 1
         elif "nonns" in targetpath and not items:
             checkdepthtarget = 3
