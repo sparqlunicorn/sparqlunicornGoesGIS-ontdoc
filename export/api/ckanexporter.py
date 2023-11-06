@@ -37,15 +37,15 @@ class CKANExporter:
                 op = op[0:-1]
             if not os.path.exists(op):
                 os.makedirs(op)
-            targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"), str(op + ".json").replace("//", "/"),
+            targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"), str(op + ".json"),
                                                       outpath)
             p = Path(str(op + ".json").replace("//", "/"))
             p.symlink_to(targetpath)
-            targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"), str(op + ".ttl").replace("//", "/"),
+            targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"), str(op + ".ttl"),
                                                       outpath)
             p = Path(str(op + ".ttl").replace("//", "/"))
             p.symlink_to(targetpath)
-            targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"), str(op + ".html").replace("//", "/"),
+            targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"), str(op + ".html"),
                                                       outpath)
             p = Path(str(op + ".html").replace("//", "/"))
             p.symlink_to(targetpath)
