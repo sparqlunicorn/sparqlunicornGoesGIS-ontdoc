@@ -1843,11 +1843,11 @@ class OntDocGeneration:
                 with open(path + "index.html", 'w', encoding='utf-8') as f:
                     f.write(indexhtml)
                     f.close()
-        sparqlhtml = self.replaceStandardVariables(htmltemplate, "", checkdepth,"false")
+        sparqlhtml = self.replaceStandardVariables(htmltemplate, "", "0","false")
         sparqlhtml = sparqlhtml.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}","0").replace("{{relativepath}}",".").replace("{{toptitle}}","SPARQL Query Editor").replace("{{title}}","SPARQL Query Editor").replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink)\
                     .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", "").replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","").replace("{{proprelationpath}}","proprelations.js")
         sparqlhtml+=sparqltemplate
-        sparqlhtml+=self.replaceStandardVariables(htmlfooter,"",checkdepth,"false").replace("{{license}}",curlicense).replace("{{exports}}",nongeoexports).replace("{{bibtex}}","")
+        sparqlhtml+=self.replaceStandardVariables(htmlfooter,"","0","false").replace("{{license}}",curlicense).replace("{{exports}}",nongeoexports).replace("{{bibtex}}","")
         with open( outpath+"sparql.html", 'w', encoding='utf-8') as f:
             f.write(sparqlhtml)
             f.close()
