@@ -9,7 +9,7 @@ from doc.docutils import DocUtils
 class CKANExporter:
 
     @staticmethod
-    def generateCKANCollection(outpath, featurecollectionspaths,version="3"):
+    def generateCKANCollection(outpath, featurecollectionspaths,classidset,version="3"):
         if not os.path.exists(outpath + "/dataset/"):
             os.makedirs(outpath + "/dataset/")
         if not os.path.exists(outpath + "/api/"):
@@ -24,14 +24,17 @@ class CKANExporter:
             os.makedirs(outpath + "/api/"+str(version)+"/action/package_list/")
         if not os.path.exists(outpath + "/api/"+str(version)+"/action/tag_list/"):
             os.makedirs(outpath + "/api/"+str(version)+"/action/tag_list/")
-        if not os.path.exists(outpath + "/api/"+str(version)+"/action/group_list?all_fields=true"):
-            p = Path(str(outpath + "/api/"+str(version)+"/action/group_list?all_fields=true"))
-            p.symlink_to("./group_list/")
         if not os.path.exists(outpath + "/api/"+str(version)+"/action/package_search"):
             p = Path(str(outpath + "/api/"+str(version)+"/action/package_search"))
             p.symlink_to("./package_list/")
+        f = open(outpath + "/api/"+str(version)+"/index.json", "w")
+        f.write(json.dumps({"version": int(version)}))
+        f.close()
         f = open(outpath + "/api/"+str(version)+"/action/group_list/index.json", "w")
-        f.write(json.dumps({"success": True, "result": []}))
+        if classidset!=None and len(classidset)>0:
+            f.write(json.dumps({"success": True, "result": list(classidset)}))
+        else:
+            f.write(json.dumps({"success": True, "result": []}))
         f.close()
         f = open(outpath + "/api/"+str(version)+"/action/tag_list/index.json", "w")
         f.write(json.dumps({"success": True, "result": ["ttl", "json", "geojson", "html"]}))
