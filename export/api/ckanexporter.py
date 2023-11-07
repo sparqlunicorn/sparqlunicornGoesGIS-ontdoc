@@ -56,6 +56,10 @@ class CKANExporter:
                 op = op[0:-1]
             if not os.path.exists(op):
                 os.makedirs(op)
+            dataset={"success":True,"type":"dataset","title":curcollname,"result":{"id":curcollname,"name":curcollname,"notes":"","tags":[],"groups":[],"resources":[{"format":"ttl","url":""}]}}
+            f = open(outpath + "/dataset/"+curcollname, "w")
+            f.write(json.dumps(dataset))
+            f.close()
             if not os.path.exists(str(op + ".json").replace("//", "/")):
                 targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"), str(op + ".json"),
                                                           outpath)
