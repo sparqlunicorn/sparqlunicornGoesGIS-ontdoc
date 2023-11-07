@@ -129,7 +129,7 @@ jobs:
           ref: "${{inputs.version}}"
           path: ontdocscript
       - name: Checkout tools repo fallback
-        if: ${{ steps.checkout_tools.status != 200 }}
+        if: ${{ steps.checkout_tools.outputs.status != 200 }}
         uses: actions/checkout@v3
         with:
           repository: sparqlunicorn/sparqlunicornGoesGIS-ontdoc
@@ -137,8 +137,8 @@ jobs:
           path: ontdocscript    
       - name: Generate Ontology Documentation
         run: |
-          echo "${{ steps.checkout_tools.status != 200 }}"
-          echo "${{ steps.checkout_tools.status}}"
+          echo "${{ steps.checkout_tools.outputs.status != 200 }}"
+          echo "${{ steps.checkout_tools.outputs.status}}"
           sudo pip3 install rdflib shapely pillow
           cp ontdocscript/docgeneration.py .
           cp ontdocscript/prefixes.json .
