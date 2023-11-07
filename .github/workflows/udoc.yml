@@ -137,8 +137,6 @@ jobs:
           path: ontdocscript    
       - name: Generate Ontology Documentation
         run: |
-          echo "${{ steps.checkout_tools.outcome != 'success' }}"
-          echo "${{ steps.checkout_tools.outcome }}"
           sudo pip3 install rdflib shapely pillow
           cp ontdocscript/docgeneration.py .
           cp ontdocscript/prefixes.json .
