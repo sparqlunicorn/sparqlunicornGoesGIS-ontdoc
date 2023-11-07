@@ -72,5 +72,5 @@ class CKANExporter:
                 p.symlink_to("../../"+targetpath)
             colls.append(op[op.rfind('/') + 1:])
         f = open(outpath + "/api/"+str(version)+"/action/package_list/index.json", "w")
-        f.write(json.dumps({"success": True, "result":{ "count": str(len(colls)), "results":colls}}))
+        f.write(json.dumps({"success": True, "result":{ "count": len(colls), "results":colls}}))
         f.close()
