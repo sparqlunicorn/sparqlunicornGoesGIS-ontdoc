@@ -129,7 +129,7 @@ jobs:
           ref: "${{inputs.version}}"
           path: ontdocscript
       - name: Checkout tools repo fallback
-        if: ('${{ steps.checkout_tools.status }}' != '200')
+        if: ${{ steps.checkout_tools.status != "200" }}
         uses: actions/checkout@v3
         with:
           repository: sparqlunicorn/sparqlunicornGoesGIS-ontdoc
