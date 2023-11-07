@@ -123,11 +123,12 @@ jobs:
       - name: Checkout tools repo
         id: checkout_tools
         uses: actions/checkout@v3
+        continue-on-error: true
         with:
           repository: sparqlunicorn/sparqlunicornGoesGIS-ontdoc
           ref: "${{inputs.version}}"
           path: ontdocscript
-      - name: Checkout tools repo
+      - name: Checkout tools repo fallback
         if: ('${{ steps.checkout_tools.status }}' != '200')
         uses: actions/checkout@v3
         with:
