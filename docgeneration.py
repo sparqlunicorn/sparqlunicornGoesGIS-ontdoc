@@ -1797,6 +1797,7 @@ class OntDocGeneration:
                 classtreelink = DocUtils.generateRelativeLinkFromGivenDepth(prefixnamespace,checkdepth,corpusid + "_classtree.js",False)
                 stylelink =DocUtils.generateRelativeLinkFromGivenDepth(prefixnamespace,checkdepth,"style.css",False)
                 scriptlink = DocUtils.generateRelativeLinkFromGivenDepth(prefixnamespace, checkdepth, "startscripts.js", False)
+                proprelations = DocUtils.generateRelativeLinkFromGivenDepth(prefixnamespace, checkdepth, "proprelations.js", False)
                 epsgdefslink = DocUtils.generateRelativeLinkFromGivenDepth(prefixnamespace, checkdepth, "epsgdefs.js", False)
                 vowllink = DocUtils.generateRelativeLinkFromGivenDepth(prefixnamespace, checkdepth, "vowl_result.js", False)
                 nslink=prefixnamespace+str(self.getAccessFromBaseURL(str(outpath),str(path)))
@@ -1815,7 +1816,7 @@ class OntDocGeneration:
                 relpath=DocUtils.generateRelativePathFromGivenDepth(checkdepth)
                 indexhtml=self.replaceStandardVariables(htmltemplate,"",checkdepth,str(nslink==prefixnamespace).lower())
                 indexhtml = indexhtml.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{relativepath}}",relpath).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink)\
-                    .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", nslink).replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{bibtex}}","")
+                    .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", nslink).replace("{{proprelationpath}}",proprelations).replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{bibtex}}","")
                 indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"+vowltemplate.replace("{{vowlpath}}", "minivowl_result.js")
                 if self.startconcept!=None and path==outpath and self.startconcept in uritotreeitem:
                     if self.createColl:
@@ -1838,7 +1839,7 @@ class OntDocGeneration:
                                 indexhtml+="<tr><td><img src=\""+tree["types"][item["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+item["type"]+"\"/><a href=\""+str(item["id"])+"\" target=\"_blank\">"+str(item["text"])+"</a></td>"                       
                             indexhtml+="<td>"+str(item["instancecount"])+"</td>"+exitem+"</tr>"
                 indexhtml += "</tbody></table><script>$('#indextable').DataTable();</script>"
-                indexhtml+=self.replaceStandardVariables(htmlfooter,"",checkdepth,nslink==prefixnamespace).replace("{{license}}",curlicense).replace("{{exports}}",nongeoexports).replace("{{bibtex}}","")
+                indexhtml+=self.replaceStandardVariables(htmlfooter,"",checkdepth,str(nslink==prefixnamespace).lower()).replace("{{license}}",curlicense).replace("{{exports}}",nongeoexports).replace("{{bibtex}}","")
                 #print(path)
                 with open(path + "index.html", 'w', encoding='utf-8') as f:
                     f.write(indexhtml)
