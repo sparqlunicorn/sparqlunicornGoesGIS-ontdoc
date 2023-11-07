@@ -35,7 +35,7 @@ class CKANExporter:
             classes=set()
             for item in classtree:
                 if item["type"]=="class" or item["type"]=="geoclass":
-                    classes.add(DocUtils.shortenURI(item["type"]))
+                    classes.add(DocUtils.shortenURI(item["id"]))
             f.write(json.dumps({"success": True, "result": list(classes)}))
         else:
             f.write(json.dumps({"success": True, "result": []}))
