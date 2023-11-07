@@ -9,7 +9,7 @@ from doc.docutils import DocUtils
 class CKANExporter:
 
     @staticmethod
-    def generateCKANCollection(outpath, featurecollectionspaths,classidset,version="3"):
+    def generateCKANCollection(outpath, featurecollectionspaths,classtree,version="3"):
         if not os.path.exists(outpath + "/dataset/"):
             os.makedirs(outpath + "/dataset/")
         if not os.path.exists(outpath + "/api/"):
@@ -31,8 +31,12 @@ class CKANExporter:
         f.write(json.dumps({"version": int(version)}))
         f.close()
         f = open(outpath + "/api/"+str(version)+"/action/group_list/index.json", "w")
-        if classidset!=None and len(classidset)>0:
-            f.write(json.dumps({"success": True, "result": list(classidset)}))
+        if classtree!=None and len(classtree)>0:
+            classes=set()
+            for item in classtree:
+                if item["type"]=="class" or item["type"]=="geoclass":
+                    classes.add(DocUtils.shortenURI(item["type"]))
+            f.write(json.dumps({"success": True, "result": list(classes)}))
         else:
             f.write(json.dumps({"success": True, "result": []}))
         f.close()
