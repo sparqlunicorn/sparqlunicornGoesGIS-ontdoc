@@ -28,7 +28,7 @@ class CKANExporter:
             p = Path(str(outpath + "/api/"+str(version)+"/action/group_list?all_fields=true"))
             p.symlink_to("./group_list/")
         if not os.path.exists(outpath + "/api/"+str(version)+"/action/package_search?q=&sort=&rows=50&start=0"):
-            p = Path(str(outpath + "/api/"+str(version)+"/action/package_search?q=&sort=name asc&rows=50&start=0"))
+            p = Path(str(outpath + "/api/"+str(version)+"/action/package_search?q=&sort=&rows=50&start=0"))
             p.symlink_to("./package_list/")
         f = open(outpath + "/api/"+str(version)+"/action/group_list/index.json", "w")
         f.write(json.dumps({"success": True, "result": []}))
