@@ -42,6 +42,8 @@ class CKANExporter:
             op = op.replace(".geojson", "")
             op = op.replace("//", "/")
             curcollname=coll.replace(outpath, "").replace("index.geojson", "")
+            if curcollname.endswith("/"):
+                curcollname=curcollname[0:-1]
             if op.endswith("/"):
                 op = op[0:-1]
             if not os.path.exists(op):
