@@ -1813,8 +1813,8 @@ class OntDocGeneration:
                         else:
                             ExporterUtils.exportToFunction[ex](subgraph,path + "index."+str(ex),subjectstorender,classlist,ex)
                 relpath=DocUtils.generateRelativePathFromGivenDepth(checkdepth)
-                indexhtml=self.replaceStandardVariables(htmltemplate,"",checkdepth,nslink==prefixnamespace)
-                indexhtml = indexhtml.replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{relativepath}}",relpath).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink)\
+                indexhtml=self.replaceStandardVariables(htmltemplate,"",checkdepth,str(nslink==prefixnamespace).lower())
+                indexhtml = indexhtml.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{relativepath}}",relpath).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink)\
                     .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", nslink).replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{bibtex}}","")
                 indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"+vowltemplate.replace("{{vowlpath}}", "minivowl_result.js")
                 if self.startconcept!=None and path==outpath and self.startconcept in uritotreeitem:
