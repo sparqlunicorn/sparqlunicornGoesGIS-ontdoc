@@ -48,8 +48,8 @@ class CKANExporter:
                     if not os.path.exists(outpath + "/api/"+str(version)+"/action/group_show?id="+theid):
                         os.makedirs(outpath + "/api/"+str(version)+"/action/group_show?id="+theid)
                     groupdesc={"success":True,"result":{"description":theid,"name":item["text"],"title":item["text"],"type":"group"}}
-                    with open(outpath + "/api/"+str(version)+"/action/group_show?id="+theid+"/index.json", 'w') as f:
-                        f.write(json.dumps(groupdesc))
+                    with open(outpath + "/api/"+str(version)+"/action/group_show?id="+theid+"/index.json", 'w') as fl:
+                        fl.write(json.dumps(groupdesc))
             f.write(json.dumps({"success": True, "result": list(classes)}))
         else:
             f.write(json.dumps({"success": True, "result": []}))
