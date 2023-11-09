@@ -35,14 +35,14 @@ class CKANExporter:
             classes=set()
             for item in classtree:
                 if item["type"]=="class" or item["type"]=="geoclass":
-                    classes.add(DocUtils.shortenURI(item["id"]))
-                    if not os.path.exists(outpath + "/api/"+str(version)+"/action/group_show?id="+item["id"]):
-                        os.makedirs(outpath + "/api/"+str(version)+"/action/group_show?id="+item["id"])
-                    groupdesc={"success":True,"result":{"description":item["id"],"name":item["text"],"title":item["text"],"type":"group"}}
-                    with open(outpath + "/api/"+str(version)+"/action/group_show?id="+item["id"]+"/index.json", 'w') as f:
+                    theid=DocUtils.shortenURI(item["id"])
+                    classes.add(theid)
+                    if not os.path.exists(outpath + "/api/"+str(version)+"/action/group_show?id="+theid):
+                        os.makedirs(outpath + "/api/"+str(version)+"/action/group_show?id="+theid)
+                    groupdesc={"success":True,"result":{"description":theid,"name":item["text"],"title":item["text"],"type":"group"}}
+                    with open(outpath + "/api/"+str(version)+"/action/group_show?id="+theid+"/index.json", 'w') as f:
                         f.write(json.dumps(groupdesc))
             f.write(json.dumps({"success": True, "result": list(classes)}))
-
         else:
             f.write(json.dumps({"success": True, "result": []}))
         f.close()
