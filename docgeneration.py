@@ -1855,7 +1855,7 @@ class OntDocGeneration:
         if len(iiifmanifestpaths["default"])>0:
             IIIFAPIExporter.generateIIIFCollections(self.outpath,self.deploypath,iiifmanifestpaths["default"],prefixnamespace)
         if len(featurecollectionspaths)>0 and self.ckan:
-            CKANExporter.generateCKANCollection(outpath,featurecollectionspaths,tree["core"]["data"])
+            CKANExporter.generateCKANCollection(outpath,self.deploypath,featurecollectionspaths,tree["core"]["data"])
         if len(featurecollectionspaths)>0:
             relpath=DocUtils.generateRelativePathFromGivenDepth(0)
             indexhtml = self.replaceStandardVariables(htmltemplate, "", "0", "true")
