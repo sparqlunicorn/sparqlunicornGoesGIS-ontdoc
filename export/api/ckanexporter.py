@@ -32,9 +32,9 @@ class CKANExporter:
         if not os.path.exists(outpath + "/api/"+str(version)+"action/group_list?all_fields=true"):
             p = Path(outpath + "/api/"+str(version)+"action/group_list?all_fields=true")
             p.symlink_to("./group_list/")
-        if not os.path.exists(outpath + "/api/action/package_search/"):
-            p = Path(outpath + "/api/action/package_search/")
-            p.symlink_to("../"+str(version)+"/action/package_search/")
+        if not os.path.exists(outpath + "/api/action/package_search"):
+            p = Path(outpath + "/api/action/package_search")
+            p.symlink_to("../"+str(version)+"/action/package_search")
         if not os.path.exists(outpath + "/api/action/group_list/"):
             p = Path(outpath + "/api/action/group_list/")
             p.symlink_to("../"+str(version)+"/action/group_list/")
