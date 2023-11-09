@@ -49,7 +49,7 @@ class CKANExporter:
         f.close()
         f = open(outpath + "/api/"+str(version)+"/action/group_list/index.json", "w")
         if classtree!=None and len(classtree)>0:
-            classes=set()
+            classes=[]
             for item in classtree:
                 if item["type"]=="class" or item["type"]=="geoclass":
                     theid=DocUtils.shortenURI(item["id"])
@@ -59,7 +59,7 @@ class CKANExporter:
                     groupdesc={"success":True,"result":{"description":theid,"name":item["text"],"title":item["text"],"type":"group"}}
                     with open(outpath + "/api/"+str(version)+"/action/group_show?id="+theid+"/index.json", 'w') as fl:
                         fl.write(json.dumps(groupdesc))
-            f.write(json.dumps({"success": True, "result": list(classes)}))
+            f.write(json.dumps({"success": True, "result": classes}))
         else:
             f.write(json.dumps({"success": True, "result": []}))
         f.close()
