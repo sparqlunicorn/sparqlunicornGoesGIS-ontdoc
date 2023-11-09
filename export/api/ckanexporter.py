@@ -9,7 +9,7 @@ from doc.docutils import DocUtils
 class CKANExporter:
 
     @staticmethod
-    def generateCKANCollection(outpath, featurecollectionspaths,classtree,version="3"):
+    def generateCKANCollection(outpath, deploypath, featurecollectionspaths,classtree,version="3"):
         if not os.path.exists(outpath + "/dataset/"):
             os.makedirs(outpath + "/dataset/")
         if not os.path.exists(outpath + "/api/"):
@@ -79,7 +79,7 @@ class CKANExporter:
                 op = op[0:-1]
             if not os.path.exists(op):
                 os.makedirs(op)
-            dataset={"success":True,"type":"dataset","title":curcollname,"result":{"id":curcollname,"name":curcollname,"notes":"","tags":[],"groups":[],"resources":[{"format":"ttl","url":""}]}}
+            dataset={"success":True,"type":"dataset","title":curcollname,"result":{"id":curcollname,"name":curcollname,"notes":"","tags":[],"groups":[],"resources":[{"format":"ttl","url":deploypath+"/dataset/"+curcollname+".ttl"},{"format":"application/json","url":deploypath+"/dataset/"+curcollname+".json"},{"format":"text/html","url":deploypath+"/dataset/"+curcollname+".html"}]}}
             f = open(outpath + "/dataset/"+curcollname+"_", "w")
             f.write(json.dumps(dataset))
             f.close()
