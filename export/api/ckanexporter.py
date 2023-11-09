@@ -104,7 +104,7 @@ class CKANExporter:
                 p.symlink_to(targetpath)
                 p = Path(outpath + "/api/"+str(version)+"/action/package_show?id="+str(curcollname)+".html")
                 p.symlink_to("../../"+targetpath)
-            colls.append(op[op.rfind('/') + 1:])
+            colls.append(dataset)
         f = open(outpath + "/api/"+str(version)+"/action/package_list/index.json", "w")
         f.write(json.dumps({"success": True, "result":{ "count": len(colls), "results":colls}}))
         f.close()
