@@ -53,7 +53,7 @@ class CKANExporter:
             for item in classtree:
                 if item["type"]=="class" or item["type"]=="geoclass":
                     theid=DocUtils.shortenURI(item["id"])
-                    classes.append({"description":theid,"name":item["text"],"title":item["text"],"type":"group"})
+                    classes.append({"description":theid,"display_name":item["text"],"name":item["text"],"title":item["text"],"type":"group"})
                     if not os.path.exists(outpath + "/api/"+str(version)+"/action/group_show?id="+theid):
                         os.makedirs(outpath + "/api/"+str(version)+"/action/group_show?id="+theid)
                     groupdesc={"success":True,"result":{"description":theid,"name":item["text"],"title":item["text"],"type":"group"}}
