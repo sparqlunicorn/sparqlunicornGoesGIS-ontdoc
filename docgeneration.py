@@ -9,6 +9,8 @@ from zipfile import ZipFile
 import os
 import sys
 
+
+
 if os.path.exists("ontdocscript"):
     sys.path.insert(0, os.path.dirname(os.path.realpath(__file__))+"/ontdocscript")
 else:
@@ -21,6 +23,7 @@ from export.data.exporterutils import ExporterUtils
 from export.api.iiifexporter import IIIFAPIExporter
 from export.api.ogcapifeaturesexporter import OGCAPIFeaturesExporter
 from export.api.ckanexporter import CKANExporter
+from export.api.solidexporter import SolidExporter
 import requests
 import shapely.wkt
 import shapely.geometry
@@ -1856,6 +1859,7 @@ class OntDocGeneration:
             IIIFAPIExporter.generateIIIFCollections(self.outpath,self.deploypath,iiifmanifestpaths["default"],prefixnamespace)
         if len(featurecollectionspaths)>0 and self.ckan:
             CKANExporter.generateCKANCollection(outpath,self.deploypath,featurecollectionspaths,tree["core"]["data"],self.license)
+            SolidExporter.createSolidSettings(g,outpath,self.deploypath,self.publisher,self.datasettitle,tree["core"]["data"])
         if len(featurecollectionspaths)>0:
             relpath=DocUtils.generateRelativePathFromGivenDepth(0)
             indexhtml = self.replaceStandardVariables(htmltemplate, "", "0", "true")
