@@ -79,7 +79,7 @@ class CKANExporter:
                 op = op[0:-1]
             if not os.path.exists(op):
                 os.makedirs(op)
-            dataset={"success":True,"type":"dataset","title":curcollname,"result":{"id":curcollname,"license_id":license,"license_title":license,"name":curcollname,"notes":"","tags":[],"groups":[],"resources":[{"format":"text/ttl","resource_type":"file","url":deploypath+"/dataset/"+curcollname+".ttl","state":"active","url_type":""},{"format":"application/json","resource_type":"file","url":deploypath+"/dataset/"+curcollname+".json","state":"active","url_type":""},{"format":"text/html","resource_type":"file","url":deploypath+"/dataset/"+curcollname+".html","state":"active","url_type":""}]}}
+            dataset={"success":True,"type":"dataset","title":curcollname,"result":{"id":curcollname,"license_id":license,"license_title":license,"name":curcollname,"notes":"","tags":[],"groups":[],"resources":[{"name":curcollname+"(text/ttl)","mimetype":"text/ttl","resource_type":"file","url":deploypath+"/dataset/"+curcollname+".ttl","state":"active","url_type":""},{"name":curcollname+"(application/json)","mimetype":"application/json","resource_type":"file","url":deploypath+"/dataset/"+curcollname+".json","state":"active","url_type":""},{"name":curcollname+"(text/html)","mimetype":"text/html","resource_type":"file","url":deploypath+"/dataset/"+curcollname+".html","state":"active","url_type":""}]}}
             f = open(outpath + "/dataset/"+curcollname+"_", "w")
             f.write(json.dumps(dataset))
             f.close()
