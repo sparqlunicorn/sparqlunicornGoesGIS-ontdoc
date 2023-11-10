@@ -79,7 +79,7 @@ class CKANExporter:
                 op = op[0:-1]
             if not os.path.exists(op):
                 os.makedirs(op)
-            dataset={"success":True,"type":"dataset","title":curcollname,"result":{"id":curcollname,"name":curcollname,"notes":"","tags":[],"groups":[],"resources":[{"format":"ttl","url":""}]}}
+            dataset={"success":True,"type":"dataset","title":curcollname,"result":{"id":curcollname,"name":curcollname,"notes":"","tags":[],"groups":[],"resources":[{"format":"text/ttl","url":""}]}}
             f = open(outpath + "/dataset/"+curcollname+"_", "w")
             f.write(json.dumps(dataset))
             f.close()
