@@ -1848,7 +1848,7 @@ class OntDocGeneration:
                     f.write(indexhtml)
                     f.close()
         sparqlhtml = self.replaceStandardVariables(htmltemplate, "", "0","false")
-        sparqlhtml = sparqlhtml.replace("{{iconprefixx}}",("icons/" if self.offlinecompat else "")).replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}","0").replace("{{relativepath}}",".").replace("{{toptitle}}","SPARQL Query Editor").replace("{{title}}","SPARQL Query Editor").replace("{{startscriptpath}}", "js/startscripts.js").replace("{{stylepath}}", "css/style.css")\
+        sparqlhtml = sparqlhtml.replace("{{iconprefixx}}",("icons/" if self.offlinecompat else "")).replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}","0").replace("{{relativepath}}",".").replace("{{toptitle}}","SPARQL Query Editor").replace("{{title}}","SPARQL Query Editor").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
                     .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{baseurlhtml}}", "").replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", corpusid + "_search.js").replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","").replace("{{proprelationpath}}","proprelations.js")
         sparqlhtml+=sparqltemplate
         sparqlhtml+=self.replaceStandardVariables(htmlfooter,"","0","false").replace("{{license}}",curlicense).replace("{{exports}}",nongeoexports).replace("{{bibtex}}","")
