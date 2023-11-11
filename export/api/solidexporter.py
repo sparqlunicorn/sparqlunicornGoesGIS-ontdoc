@@ -42,7 +42,7 @@ class SolidExporter:
         typeindexgraph2.add((URIRef(deploypath + "/settings/privateTypeIndex.ttl"), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://www.w3.org/ns/ldp#RDFResource")))
         typeindexgraph2.add((URIRef(deploypath + "/settings/privateTypeIndex.ttl"), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://www.w3.org/ns/solid/terms#ListedDocument")))
         typeindexgraph2.add((URIRef(deploypath + "/settings/privateTypeIndex.ttl"), URIRef("http://www.w3.org/2000/01/rdf-schema#comment"), Literal("This Document contains a list of links to other Documents, along with the type of data that is to be included in those Documents",lang="en")))
-        typeindexgraph2.add((URIRef(deploypath + "/settings/privateTypeIndex.ttl"), URIRef("http://www.w3.org/2000/01/rdf-schema#label"), Literal("Public Type Index", lang="en")))
+        typeindexgraph2.add((URIRef(deploypath + "/settings/privateTypeIndex.ttl"), URIRef("http://www.w3.org/2000/01/rdf-schema#label"), Literal("Private Type Index", lang="en")))
         typeindexgraph2.serialize(destination=outpath+"/settings/privateTypeIndex.ttl", format="ttl")
 
     @staticmethod
