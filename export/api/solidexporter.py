@@ -35,7 +35,7 @@ class SolidExporter:
         for cls in classtree:
             typeindexgraph.add((URIRef(deploypath + "/settings/publicTypeIndex.ttl"), URIRef("http://www.w3.org/2000/01/rdf-schema#member"), URIRef(deploypath + "/settings/publicTypeIndex.ttl#"+DocUtils.shortenURI(cls["id"]))))
             typeindexgraph.add((URIRef(deploypath + "/settings/publicTypeIndex.ttl#"+DocUtils.shortenURI(cls["id"])),URIRef("http://www.w3.org/ns/solid/terms#forClass"), URIRef(cls["parent"])))
-            typeindexgraph.add((URIRef(deploypath + "/settings/publicTypeIndex.ttl#"+DocUtils.shortenURI(cls["id"])),URIRef("http://www.w3.org/ns/solid/terms#instance"), URIRef(deploypath+cls["id"].replace(outpath,""))))
+            typeindexgraph.add((URIRef(deploypath + "/settings/publicTypeIndex.ttl#"+DocUtils.shortenURI(cls["id"])),URIRef("http://www.w3.org/ns/solid/terms#instance"), URIRef(deploypath+"/"+DocUtils.shortenURI(cls["id"]))))
         typeindexgraph.serialize(destination=outpath+"/settings/publicTypeIndex.ttl", format="ttl")
         typeindexgraph2=Graph()
         typeindexgraph2.add((URIRef(deploypath + "/settings/privateTypeIndex.ttl"), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://www.w3.org/ns/solid/terms#TypeIndex")))
