@@ -1859,7 +1859,7 @@ class OntDocGeneration:
             IIIFAPIExporter.generateIIIFCollections(self.outpath,self.deploypath,iiifmanifestpaths["default"],prefixnamespace)
         if len(featurecollectionspaths)>0 and self.ckan:
             CKANExporter.generateCKANCollection(outpath,self.deploypath,featurecollectionspaths,tree["core"]["data"],self.license)
-            SolidExporter.createSolidSettings(g,outpath,self.deploypath,self.publisher,self.datasettitle,tree["core"]["data"])
+            SolidExporter.createSolidSettings(self.graph,outpath,self.deploypath,self.publisher,self.datasettitle,tree["core"]["data"])
         if len(featurecollectionspaths)>0:
             relpath=DocUtils.generateRelativePathFromGivenDepth(0)
             indexhtml = self.replaceStandardVariables(htmltemplate, "", "0", "true")
