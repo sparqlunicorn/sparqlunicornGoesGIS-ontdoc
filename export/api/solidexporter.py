@@ -39,8 +39,9 @@ class SolidExporter:
         for subj,obj in graph.subject_objects("http://www.w3.org/2000/01/rdf-schema#subClassOf"):
             typeindexgraph.add((subj,URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),obj))
             typeindexgraph.add((subj, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://www.w3.org/2002/07/owl#Class")))
-            typeindexgraph.add((obj, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                                URIRef("http://www.w3.org/2002/07/owl#Class")))
+            typeindexgraph.add((obj, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://www.w3.org/2002/07/owl#Class")))
+        for obj in graph.objects(None,"http://www.w3.org/1999/02/22-rdf-syntax-ns#type"):
+            typeindexgraph.add((obj, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://www.w3.org/2002/07/owl#Class")))
         typeindexgraph.serialize(destination=outpath+"/settings/publicTypeIndex.ttl", format="ttl")
         typeindexgraph2=Graph()
         typeindexgraph2.add((URIRef(deploypath + "/settings/privateTypeIndex.ttl"), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://www.w3.org/ns/solid/terms#TypeIndex")))
