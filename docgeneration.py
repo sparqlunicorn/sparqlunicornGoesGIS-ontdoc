@@ -2511,7 +2511,7 @@ class OntDocGeneration:
         textannos = []
         foundvals=set()
         imageannos=[]
-        annobodies={}
+        annobodies=[]
         image3dannos=[]
         predobjmap={}
         isgeocollection=False
