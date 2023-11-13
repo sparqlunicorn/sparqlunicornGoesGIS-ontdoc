@@ -72,15 +72,15 @@ class IIIFAPIExporter:
                          "format": "text/html", "language": ["en"]}], "metadata": [], "items": []}
             pagecounter = 1
             for imgpath in imgpaths:
-                if imgpath not in imagetoURI:
-                    imagetoURI[imgpath] = {}
-                if "anno" not in imagetoURI[imgpath]:
-                    imagetoURI[imgpath]["anno"] = []
                 if imgpath.startswith("<svg") and "http" not in imgpath:
                     f = open(outpath + "/iiif/svg/" + DocUtils.shortenURI(curind) + "_" + str(pagecounter) + ".svg", "w", encoding="utf-8")
                     f.write(str(imgpath).replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">"))
                     f.close()
                     imgpath = outpath + "/iiif/svg/" + DocUtils.shortenURI(curind) + "_" + str(pagecounter) + ".svg"
+                if imgpath not in imagetoURI:
+                    imagetoURI[imgpath] = {}
+                if "anno" not in imagetoURI[imgpath]:
+                    imagetoURI[imgpath]["anno"] = []
                 height = 480
                 width = 640
                 if "width" not in imagetoURI[imgpath]:
