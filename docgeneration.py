@@ -8,6 +8,7 @@ from io import BytesIO
 from zipfile import ZipFile
 import os
 import sys
+import traceback
 
 
 
@@ -1544,6 +1545,7 @@ class OntDocGeneration:
                 return literal
         except Exception as e:
             print(e)
+            print(traceback.format_exc())
         return None
 
     def createOfflineCompatibleVersion(self,outpath,myhtmltemplate,templatepath,templatename):
@@ -1712,6 +1714,7 @@ class OntDocGeneration:
                         labeltouri[key]=data[key]
             except Exception as e:
                 print("Exception occured " + str(e))
+                print(traceback.format_exc())
         with open(outpath + corpusid + '_search.js', 'w', encoding='utf-8') as f:
             f.write("var search=" + json.dumps(labeltouri, indent=2, sort_keys=True))
             f.close()
@@ -1755,6 +1758,7 @@ class OntDocGeneration:
                     self.graph.parse(outpath + path+"/index.ttl")
                 except Exception as e:
                     print(e)
+                    print(traceback.format_exc())
             res=self.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace, self.graph.subject_predicates(subj),
                        self.graph,str(corpusid) + "_search.js", str(corpusid) + "_classtree.js",uritotreeitem,curlicense,subjectstorender,postprocessing,nonnsmap)
             postprocessing=res[0]
@@ -1765,6 +1769,7 @@ class OntDocGeneration:
                 print(str(subtorencounter) + "/" + str(subtorenderlen) + " " + str(outpath + path))
             #except Exception as e:
             #    print("Create HTML Exception: "+str(e))
+            #    print(traceback.format_exc())
         print("Postprocessing " + str(len(postprocessing)))
         for subj in postprocessing.subjects(None,None,True):
             path = str(subj).replace(prefixnamespace, "")
@@ -1774,6 +1779,7 @@ class OntDocGeneration:
                     self.graph.parse(outpath + path+"/index.ttl")
                 except Exception as e:
                     print(e)
+                    print(traceback.format_exc())
             self.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace, self.graph.subject_predicates(subj),
                        self.graph,str(corpusid) + "_search.js", str(corpusid) + "_classtree.js",uritotreeitem,curlicense,subjectstorender,postprocessing)
             subtorencounter += 1
@@ -2712,6 +2718,7 @@ class OntDocGeneration:
                         f.close()
                 except Exception as e:
                     print(e)
+                    print(traceback.format_exc())
         try:
             with open(completesavepath, 'w', encoding='utf-8') as f:
                 rellink=DocUtils.generateRelativeLinkFromGivenDepth(baseurl,checkdepth,searchfilename,False)
@@ -2908,6 +2915,7 @@ class OntDocGeneration:
         except Exception as inst:
             print("Could not write "+str(completesavepath))
             print(inst)
+            print(traceback.format_exc())
         return [postprocessing,nonnsmap]
 
 
@@ -3011,17 +3019,18 @@ if args.templatepath!=None:
                 print(args.templatename)
 fcounter=0
 for fp in filestoprocess:
-    #try:
-    g = Graph()
-    g.parse(fp)
-    if fcounter<len(outpath):
-        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
-    else:
-        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
-    docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
-    #except Exception as inst:
-    #    print("Could not parse "+str(fp))
-    #    print(inst)
+    try:
+        g = Graph()
+        g.parse(fp)
+        if fcounter<len(outpath):
+            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
+        else:
+            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
+        docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
+    except Exception as inst:
+        print("Could not parse "+str(fp))
+        print(inst)
+        print(traceback.format_exc())
     fcounter+=1
 curlicense=license
 if docgen!=None:
