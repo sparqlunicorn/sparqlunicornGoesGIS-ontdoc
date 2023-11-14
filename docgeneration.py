@@ -2387,7 +2387,7 @@ class OntDocGeneration:
 
     def truncateValue(self,value,limit=150):
         if len(value)>limit:
-            return value[0:limit]+"<a href=\"javascript:e.currentTarget.nextSibling.classList.toggle('visible');\">(...)</a><span style=\"visibility:hidden\">"+value[limit:]+"</span>"
+            return "<details><summary style=\"list-style-type: '(...)';\">"+value[0:limit]+"</summary>"+str(value[limit:])+"</details>"
         return value
 
     def detectStringLiteralContent(self,pred,object):
