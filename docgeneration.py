@@ -34,6 +34,7 @@ import re
 import shutil
 import json
 
+listthreshold=5
 
 templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
 
@@ -2603,7 +2604,7 @@ class OntDocGeneration:
                     comment[str(tup)]=str(predobjmap[tup][0])
                 if len(predobjmap[tup]) > 0:
                     thetable+="<td class=\"wrapword\">"
-                    if len(predobjmap[tup]) > 3:
+                    if len(predobjmap[tup]) > listthreshold:
                         thetable+="<details><summary>"+str(len(predobjmap[tup]))+" values</summary>"
                     if len(predobjmap[tup])>1:
                         thetable+="<ul>"
@@ -2644,7 +2645,7 @@ class OntDocGeneration:
                         thetable+=str(labelmap[lab])
                     if len(predobjmap[tup])>1:
                         thetable+="</ul>"
-                    if len(predobjmap[tup]) > 3:
+                    if len(predobjmap[tup]) > listthreshold:
                         thetable+="</details>"
                     thetable+="</td>"
                 else:
@@ -2678,7 +2679,7 @@ class OntDocGeneration:
                 tablecontents=self.formatPredicate(tup, baseurl, checkdepth, tablecontents, graph,True)
                 if len(subpredsmap[tup]) > 0:
                     tablecontents += "<td class=\"wrapword\">"
-                    if len(subpredsmap[tup]) > 3:
+                    if len(subpredsmap[tup]) > listthreshold:
                         tablecontents+="<details><summary>"+str(len(subpredsmap[tup]))+" values</summary>"
                     if len(subpredsmap[tup]) > 1:
                         tablecontents += "<ul>"
@@ -2707,7 +2708,7 @@ class OntDocGeneration:
                         tablecontents+=str(labelmap[lab])
                     if len(subpredsmap[tup])>1:
                         tablecontents+="</ul>"
-                    if len(subpredsmap[tup]) > 3:
+                    if len(subpredsmap[tup]) > listthreshold:
                         tablecontents+="</details>"
                     tablecontents += "</td>"
                 else:
