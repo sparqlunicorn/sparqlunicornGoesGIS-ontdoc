@@ -2678,6 +2678,8 @@ class OntDocGeneration:
                 tablecontents=self.formatPredicate(tup, baseurl, checkdepth, tablecontents, graph,True)
                 if len(subpredsmap[tup]) > 0:
                     tablecontents += "<td class=\"wrapword\">"
+                    if len(subpredsmap[tup]) > 3:
+                        tablecontents+="<details><summary>"+str(len(subpredsmap[tup]))+" values</summary>"
                     if len(subpredsmap[tup]) > 1:
                         tablecontents += "<ul>"
                     labelmap={}
@@ -2705,6 +2707,8 @@ class OntDocGeneration:
                         tablecontents+=str(labelmap[lab])
                     if len(subpredsmap[tup])>1:
                         tablecontents+="</ul>"
+                    if len(subpredsmap[tup]) > 3:
+                        tablecontents+="</details>"
                     tablecontents += "</td>"
                 else:
                     tablecontents += "<td class=\"wrapword\"></td>"
