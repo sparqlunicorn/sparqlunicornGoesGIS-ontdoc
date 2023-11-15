@@ -41,6 +41,10 @@ on:
         required: false
         default: /
         type: string
+      checkout:
+        required: false
+        default: true
+        type: boolean
       templatedir:
         required: false
         default: ontdocscript/resources/html/
@@ -117,6 +121,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
+        if: ${{ inputs.checkout }}
         uses: actions/checkout@v3
         with:
           fetch-depth: '0'
