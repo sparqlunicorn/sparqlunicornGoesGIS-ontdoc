@@ -148,4 +148,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: ${{inputs.ghpagesbranch}}
           FOLDER: ${{inputs.docpath}}/
+          clean: false
           TARGET-FOLDER: ${{inputs.ghpagesfolder}}
