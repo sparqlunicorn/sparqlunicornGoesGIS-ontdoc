@@ -2387,7 +2387,7 @@ class OntDocGeneration:
 
     def truncateValue(self,value,limit=150):
         if len(value)>limit:
-            return "<details><summary style=\"list-style-type: none;\">"+value[0:limit]+"</summary>"+str(value[limit:])+"</details>"
+            return "<details><summary style=\"list-style-type: none;\">"+value[0:limit]+" (...)</summary>"+str(value[limit:])+"</details>"
         return value
 
     def detectStringLiteralContent(self,pred,object):
