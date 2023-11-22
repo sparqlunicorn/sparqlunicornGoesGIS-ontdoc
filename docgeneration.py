@@ -36,7 +36,11 @@ import json
 
 listthreshold=5
 
-templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
+templatepath=""
+if os.path.exists("ontdocscript"):
+    templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "ontdocscript/resources/html/"))
+else:
+    templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
 
 version="SPARQLing Unicorn QGIS Plugin OntDoc Script 0.16"
 
@@ -1494,7 +1498,10 @@ class OntDocGeneration:
         self.templatename=templatename
         resolveTemplate(templatename)
         self.offlinecompat=offlinecompat
-        templatepath = os.path.abspath(os.path.join(os.path.dirname(__file__), "/resources/html/"))
+        if os.path.exists("ontdocscript"):
+            templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "ontdocscript/resources/html/"))
+        else:
+            templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
         if offlinecompat:
             global htmltemplate
             htmltemplate=self.createOfflineCompatibleVersion(outpath,htmltemplate,templatepath,templatename)
