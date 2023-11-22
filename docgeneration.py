@@ -2505,7 +2505,6 @@ class OntDocGeneration:
     def createHTML(self,savepath, predobjs, subject, baseurl, subpreds, graph, searchfilename, classtreename,uritotreeitem,curlicense,subjectstorender,postprocessing,nonnsmap=None,nonns=False,foundlabel=""):
         tablecontents = ""
         metadatatablecontents=""
-        isodd = False
         geojsonrep=None
         epsgcode=""
         foundmedia={"audio":{},"video":{},"image":{},"mesh":{}}
@@ -2657,7 +2656,6 @@ class OntDocGeneration:
                     metadatatablecontents=thetable
                 else:
                     tablecontents=thetable
-                isodd = not isodd
         subpredsmap={}
         if subpreds!=None:
             for tup in sorted(subpreds,key=lambda tup: tup[1]):
@@ -2674,7 +2672,8 @@ class OntDocGeneration:
                                 uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])][item] = 0
                             uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])][item]+=1
             for tup in subpredsmap:
-                if isodd:
+                tablecontentcounter+=1
+                if tablecontentcounter%2==0:
                     tablecontents += "<tr class=\"odd\">"
                 else:
                     tablecontents += "<tr class=\"even\">"
@@ -2716,7 +2715,6 @@ class OntDocGeneration:
                 else:
                     tablecontents += "<td class=\"wrapword\"></td>"
                 tablecontents += "</tr>"
-                isodd = not isodd
         if self.licenseuri!=None:
              ttlf.add((subject, URIRef("http://purl.org/dc/elements/1.1/license"), URIRef(self.licenseuri)))
         nonnslink=""
