@@ -2353,7 +2353,9 @@ class OntDocGeneration:
             if unitlabel!="":
                 tablecontents+=" <span style=\"font-weight:bold\">["+str(unitlabel)+"]</span>"
             if timeobj!=None:
-                tablecontents+=" <span style=\"font-weight:bold\">["+str(self.timeObjectToHTML(timeobj))+"]</span>"
+                res=str(self.timeObjectToHTML(timeobj))
+                if res!="None":
+                    tablecontents+=" <span style=\"font-weight:bold\">["+str(res)+"]</span>"
                 dateprops=timeobj
             tablecontents+="</span>"
         else:
