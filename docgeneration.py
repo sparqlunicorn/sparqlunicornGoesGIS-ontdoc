@@ -1331,6 +1331,8 @@ geoexports="""
 <option value="wkt">Well-Known-Text (WKT)</option>
 """
 
+sparqltemplate=""
+
 maptemplate="""
 <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.0.6/dist/leaflet.markercluster-src.js"></script>
