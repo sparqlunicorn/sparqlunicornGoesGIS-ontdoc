@@ -3719,11 +3719,11 @@ for fp in filestoprocess:
     try:
         g = Graph()
         g.parse(fp)
-        if args.prefixns==None:
+        if args.prefixns==None or args.prefixns=="None":
             print("No Datanamespace defined. Trying to detect it...")
-            pres=DocUtils.getDataNamespace()
+            pres=DocUtils.getDataNamespace(g)
             if pres==None:
-                args.prefixns="http://purl.org/cuneiform/"
+                args.prefixns="http://www.sparqlunicorn.link/data/"
             else:
                 args.prefixns=pres
             print("Detected "+args.prefixns+" as data namespace")
