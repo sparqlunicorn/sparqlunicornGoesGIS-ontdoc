@@ -18,6 +18,64 @@ class DocUtils:
     }
 
     @staticmethod
+    def getLDFilesFromFolder(folder):
+        directory = os.fsencode(folder)
+        files=[]
+        for file in os.listdir(directory):
+            filename = os.fsdecode(file)
+            if file.endswith(".ttl") or file.endswith(".owl") or file.endswith(".ttl") or file.endswith(
+                    "n3") or file.endswith(".nt"):
+                files.append(filename)
+        return files
+
+    @staticmethod
+    def getDataNamespace(g):
+        print("Automatic data namespace detection")
+        namespacetosub = {}
+        for sub in g.subjects(None, None, True):
+            ns = DocUtils.instanceToNS(sub)
+            if ns not in namespacetosub:
+                namespacetosub[ns] = set()
+            namespacetosub[ns].add(sub)
+        maxns=None
+        maxnsnum=-1
+        for ns in namespacetosub:
+            if len(namespacetosub[ns])>maxnsnum:
+                maxnsnum=len(namespacetosub[ns])
+                maxns=ns
+        print("Automatically detected datanamespace "+str(maxns))
+        return maxns
+
+    @staticmethod
+    def resolveWildcardPath(thepath):
+        result = []
+        if "/*" not in thepath:
+            result.append(thepath)
+            return result
+        print(thepath)
+        normpath = thepath.replace("*", "")
+        if os.path.exists(normpath):
+            files = os.listdir(normpath)
+            for file in files:
+                print(file)
+                if file.endswith(".ttl") or file.endswith(".owl") or file.endswith(".ttl") or file.endswith(
+                        "n3") or file.endswith(".nt"):
+                    result.append(normpath + file)
+        return result
+
+
+    @staticmethod
+    def instanceToNS(uri):
+        if not uri.startswith("http"):
+            return uri
+        if "#" in uri:
+            return uri[:uri.rfind("#") + 1]
+        if "/" in uri:
+            return uri[:uri.rfind("/") + 1]
+        return uri
+
+
+    @staticmethod
     def checkDepthFromPath(savepath,baseurl,subject):
         if savepath.endswith("/"):
             checkdepth = subject.replace(baseurl, "").count("/")

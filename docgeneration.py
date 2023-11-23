@@ -20,11 +20,13 @@ print(sys.path)
 print(os.path.dirname(os.path.realpath(__file__)))
 print(os.listdir(os.getcwd()))
 from doc.docutils import DocUtils
+from doc.pyowl2vowl import OWL2VOWL
 from export.data.exporterutils import ExporterUtils
 from export.api.iiifexporter import IIIFAPIExporter
 from export.api.ogcapifeaturesexporter import OGCAPIFeaturesExporter
 from export.api.ckanexporter import CKANExporter
 from export.api.solidexporter import SolidExporter
+
 import requests
 import shapely.wkt
 import shapely.geometry
@@ -2331,48 +2333,6 @@ class OntDocGeneration:
             myhtmltemplate=myhtmltemplate.replace(match,"{{relativepath}}css/"+match[match.rfind("/")+1:])
         return myhtmltemplate
 
-    def convertOWL2MiniVOWL(self,g,outpath,predicates=[],typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",labelproperty="http://www.w3.org/2000/01/rdf-schema#label"):
-        minivowlresult={"info": [{
-            "description": "Created with pyowl2vowl (version 0.1) as part of the SPARQLing Unicorn QGIS Plugin"}],
-            "nodes": [],"links": []}
-        nodes=[]
-        nodeuriToId={}
-        links=[]
-        nodecounter=0
-        for pred in g.subject_objects(URIRef(typeproperty)):
-            if str(pred[1]) not in nodeuriToId:
-                nodeuriToId[str(pred[1])]=nodecounter
-                nodecounter+=1
-                if str(pred[1])=="http://www.w3.org/2002/07/owl#Class" or str(pred[1])=="http://www.w3.org/2000/01/rdf-schema#Class" or str(pred[1])=="http://www.w3.org/2000/01/rdf-schema#Datatype":
-                    nodes.append({"name":DocUtils.shortenURI(str(pred[1])),"type":"class","uri":str(pred[1])})
-                else:
-                    nodes.append({"name": DocUtils.shortenURI(str(pred[1])), "type": "class", "uri": str(pred[1])})
-        if predicates!=[]:
-            for pred in predicates:
-                if "from" in predicates[pred] and "to" in predicates[pred]:
-                    for fromsub in predicates[pred]["from"]:
-                        if str(fromsub) in nodeuriToId:
-                            if predicates[pred]["to"]!=[]:
-                                for topred in predicates[pred]["to"]:
-                                    if "http://www.w3.org/1999/02/22-rdf-syntax-ns#" not in str(topred) and "http://www.w3.org/2002/07/owl#" not in str(topred):
-                                        links.append({"source": nodeuriToId[str(fromsub)],
-                                                      "target": nodeuriToId[str(topred)],
-                                                      "valueTo": DocUtils.shortenURI(str(pred)),
-                                                      "propertyTo": "class",
-                                                      "uriTo": str(pred)})
-        else:
-            for node in nodeuriToId:
-                for predobj in g.predicate_objects(URIRef(node)):
-                    if node in nodeuriToId and str(predobj[1]) in nodeuriToId and str(predobj[0])!=typeproperty:
-                        links.append({"source":nodeuriToId[node],"target":nodeuriToId[str(predobj[1])],"valueTo": DocUtils.shortenURI(str(predobj[0])),"propertyTo":("class" if isinstance(predobj[1],URIRef) else "datatype"), "uriTo":(str(predobj[1]) if isinstance(predobj[1],URIRef) else predobj[1].datatype)})
-        minivowlresult["nodes"]=nodes
-        minivowlresult["links"] = links
-        #print("MINIVOWL")
-        #print(minivowlresult)
-        f = open(outpath + "/minivowl_result.js", "w")
-        f.write("var minivowlresult=" + json.dumps(minivowlresult, indent=1))
-        f.close()
-
     def processLicense(self):
         if self.license==None or self.license=="" or self.license=="No License Statement":
             return ""
@@ -2626,7 +2586,7 @@ class OntDocGeneration:
             predicates[pred]["to"] = list(predicates[pred]["to"])
             predicatecounter+=1
         if self.createVOWL:
-            self.convertOWL2MiniVOWL(graph,outpath,predicates)
+            OWL2VOWL().convertOWL2MiniVOWL(graph,outpath,predicates)
         with open(outpath+"proprelations.js", 'w', encoding='utf-8') as f:
             f.write("var proprelations="+json.dumps(predicates))
             f.close()
@@ -3664,20 +3624,7 @@ class OntDocGeneration:
         return [postprocessing,nonnsmap]
 
 
-def resolveWildcardPath(thepath):
-    result=[]
-    if "/*" not in thepath:
-        result.append(thepath)
-        return result
-    print(thepath)
-    normpath=thepath.replace("*","")
-    if os.path.exists(normpath):
-        files=os.listdir(normpath)
-        for file in files:
-            print(file)
-            if file.endswith(".ttl") or file.endswith(".owl") or file.endswith(".ttl") or file.endswith("n3") or file.endswith(".nt"):
-                result.append(normpath+file)
-    return result
+
             
 prefixes={"reversed":{}}
 if os.path.exists('prefixes.json'):
@@ -3695,7 +3642,7 @@ dataexports=[]
 parser=argparse.ArgumentParser()
 parser.add_argument("-i","--input",nargs='*',help="the input TTL file(s) to parse",action="store", required=True)
 parser.add_argument("-o","--output",nargs='*',help="the output path(s)",action="store", required=True)
-parser.add_argument("-pxns","--prefixns",help="the prefixnamespace",action="store",default="http://purl.org/cuneiform/")
+parser.add_argument("-pxns","--prefixns",help="the prefixnamespace",action="store",default=None)
 parser.add_argument("-px","--prefixnsshort",help="the prefix",action="store",default="suni")
 parser.add_argument("-ip","--createIndexPages",help="create index pages?",default=True,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-cc","--createCollections",help="create collections?",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
@@ -3722,12 +3669,16 @@ parser.add_argument("-tn","--templatename",help="the name of the HTML template",
 args, unknown=parser.parse_known_args()
 print(args)
 print("The following arguments were not recognized: "+str(unknown))
+if args.input==None or args.input=="":
+    print("No input files specified... trying to find files in the script folder")
+    args.input=DocUtils.getLDFilesFromFolder(".")
+    print("Found "+str(args.input))
 for path in args.input:
     if " " in path:
         for itemm in path.split(" "):
-            filestoprocess+=resolveWildcardPath(itemm)
+            filestoprocess+=DocUtils.resolveWildcardPath(itemm)
     else:
-        filestoprocess+=resolveWildcardPath(path)
+        filestoprocess+=DocUtils.resolveWildcardPath(path)
 print("Files to process: "+str(filestoprocess))
 for path in args.output:
     if " " in path:
@@ -3763,10 +3714,19 @@ if args.templatepath!=None:
                 print(subfoldername)
                 print(args.templatename)
 fcounter=0
+docgen=None
 for fp in filestoprocess:
     try:
         g = Graph()
         g.parse(fp)
+        if args.prefixns==None:
+            print("No Datanamespace defined. Trying to detect it...")
+            pres=DocUtils.getDataNamespace()
+            if pres==None:
+                args.prefixns="http://purl.org/cuneiform/"
+            else:
+                args.prefixns=pres
+            print("Detected "+args.prefixns+" as data namespace")
         if fcounter<len(outpath):
             docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
         else:
