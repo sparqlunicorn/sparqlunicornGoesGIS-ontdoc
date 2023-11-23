@@ -446,7 +446,7 @@ function exportCSV(sepchar,filesuffix){
 
 function exportGraphML(){
 	resgml=`<?xml version="1.0" encoding="UTF-8"?>\\\\n<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:y="http://www.yworks.com/xml/graphml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">\n`
-	resgml+="<key for=\\"node\\" id=\\"nodekey\\" yfiles.type=\\"nodegraphics\\"></key><key for=\\"edge\\" id=\\"edgekey\\" yfiles.type=\\"edgegraphics\\"></key><graph id=\\"G\\" edgedefault=\\"directed\\">\n"
+	resgml+="<key for=\\"node\\" id=\\"nodekey\\" yfiles.type=\\"nodegraphics\\"></key><key for=\\"edge\\" id=\\"edgekey\\" yfiles.type=\\"edgegraphics\\"></key><graph id=\\"G\\" edgedefault=\\"directed\\">\\\\n"
 	processedURIs={}
 	literalcounter=1
 	edgecounter=0
@@ -455,49 +455,49 @@ function exportGraphML(){
 			if("features" in feature){
                 for(feat of feature["features"]){
 					if(!(feat.id in processedURIs)){
-						resgml+="<node id=\\""+feat.id+"\\" uri=\\""+feat.id+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#800080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feat.name+"</y:NodeLabel></y:ShapeNode></data></node>\n"
+						resgml+="<node id=\\""+feat.id+"\\" uri=\\""+feat.id+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#800080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feat.name+"</y:NodeLabel></y:ShapeNode></data></node>\\\\n"
 						processedURIs[feat.id]=true
 					}
 					if("properties" in feat){
                         for(prop in feat["properties"]){
 							thetarget=feat["properties"][prop]
 							if((feat["properties"][prop]+"").startsWith("http") && !(feat["properties"][prop] in processedURIs)){
-								resgml+="<node id=\\""+feat["properties"][prop]+"\\" uri=\\""+feat["properties"][prop]+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#800080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feat["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\n"
+								resgml+="<node id=\\""+feat["properties"][prop]+"\\" uri=\\""+feat["properties"][prop]+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#800080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feat["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\\\\n"
 								processedURIs[feat["properties"][prop]]=true
 							}else{
 								thetarget="literal"+literalcounter
-								resgml+="<node id=\\""+thetarget+"\\" uri=\\""+thetarget+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#F08080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feat["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\n"
+								resgml+="<node id=\\""+thetarget+"\\" uri=\\""+thetarget+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#F08080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feat["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\\\\n"
 								literalcounter+=1
 							}
-							resgml+="<edge id=\\"e"+edgecounter+"\\" uri=\\""+prop+"\\" source=\\""+feat.id+"\\" target=\\""+thetarget+"\\"><data key=\\"edgekey\\"><y:PolyLineEdge><y:EdgeLabel alignment=\\"center\\" configuration=\\"AutoFlippingLabel\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+shortenURI(prop)+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
+							resgml+="<edge id=\\"e"+edgecounter+"\\" uri=\\""+prop+"\\" source=\\""+feat.id+"\\" target=\\""+thetarget+"\\"><data key=\\"edgekey\\"><y:PolyLineEdge><y:EdgeLabel alignment=\\"center\\" configuration=\\"AutoFlippingLabel\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+shortenURI(prop)+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\\\\n"
 							edgecounter+=1
 						}
 					}
 				}
 			}else if("type" in feature && feature["type"]=="Feature"){
 				if(!(feature.id in processedURIs)){
-					resgml+="<node id=\\""+feature.id+"\\" uri=\\""+feature.id+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#800080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feature.name+"</y:NodeLabel></y:ShapeNode></data></node>\n"
+					resgml+="<node id=\\""+feature.id+"\\" uri=\\""+feature.id+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#800080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feature.name+"</y:NodeLabel></y:ShapeNode></data></node>\\\\n"
 					processedURIs[feature.id]=true
 				}
 				if("properties" in feature){
 					for(prop in feature["properties"]){
 						thetarget=feature["properties"][prop]
 						if((feature["properties"][prop]+"").startsWith("http") && !(feature["properties"][prop] in processedURIs)){
-							resgml+="<node id=\\""+feature["properties"][prop]+"\\" uri=\\""+feature["properties"][prop]+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#800080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feature["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\n"
+							resgml+="<node id=\\""+feature["properties"][prop]+"\\" uri=\\""+feature["properties"][prop]+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#800080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feature["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\\\\n"
 							processedURIs[feature["properties"][prop]]=true
 						}else{
 							thetarget="literal"+literalcounter
-							resgml+="<node id=\\""+thetarget+"\\" uri=\\""+thetarget+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#F08080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feature["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\n"
+							resgml+="<node id=\\""+thetarget+"\\" uri=\\""+thetarget+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#F08080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feature["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\\\\n"
 							literalcounter+=1
 						}
-						resgml+="<edge id=\\"e"+edgecounter+"\\" uri=\\""+prop+"\\" source=\\""+feature.id+"\\" target=\\""+thetarget+"\\"><data key=\\"edgekey\\"><y:PolyLineEdge><y:EdgeLabel alignment=\\"center\\" configuration=\\"AutoFlippingLabel\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+shortenURI(prop)+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
+						resgml+="<edge id=\\"e"+edgecounter+"\\" uri=\\""+prop+"\\" source=\\""+feature.id+"\\" target=\\""+thetarget+"\\"><data key=\\"edgekey\\"><y:PolyLineEdge><y:EdgeLabel alignment=\\"center\\" configuration=\\"AutoFlippingLabel\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+shortenURI(prop)+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\\\\n"
 						edgecounter+=1
 					}
 				}
 			}
 		}
 	}
-	resgml+="</graph>\n</graphml>\n"
+	resgml+="</graph>\\\\n</graphml>\\\\n"
 	saveTextAsFile(resgml,"graphml")
 }
 
@@ -526,13 +526,13 @@ function convertDecimalToLatLonText(D, lng){
 function exportLatLonText(){
 	res=""
 	for(point of centerpoints){
-		res+=convertDecimalToLatLonText(point["lat"],false)+" "+convertDecimalToLatLonText(point["lng"],true)+"\n"
+		res+=convertDecimalToLatLonText(point["lat"],false)+" "+convertDecimalToLatLonText(point["lng"],true)+"\\\\n"
 	}
 	saveTextAsFile(res,"txt")
 }
 
 function exportGML(){
-	resgml=">\n"
+	resgml=">\\\\n"
     resgmlhead="<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?>\\\\n<gml:FeatureCollection xmlns:gml=\\"http://www.opengis.net/gml\\" "
     nscounter=0
     nsmap={}
@@ -559,25 +559,25 @@ function exportGML(){
                             }
                             if(Array.isArray(feat["properties"][prop])){
 								for(arritem of feat["properties"][prop]){
-									resgml+="<"+shortenURI(prop,false,nsprefix)+">"+arritem+"</"+shortenURI(prop,false,nsprefix)+">\n"
+									resgml+="<"+shortenURI(prop,false,nsprefix)+">"+arritem+"</"+shortenURI(prop,false,nsprefix)+">\\\\n"
 								}
                             }else{
-                                resgml+="<"+shortenURI(prop,false,nsprefix)+">"+feat["properties"][prop]+"</"+shortenURI(prop,false,nsprefix)+">\n"
+                                resgml+="<"+shortenURI(prop,false,nsprefix)+">"+feat["properties"][prop]+"</"+shortenURI(prop,false,nsprefix)+">\\\\n"
                             }
                         }
                     }
 					if("geometry" in feat){
-						resgml+="<the_geom><gml:"+feat["geometry"]["type"]+">\n"
-						resgml+="<gml:pos>\n"
+						resgml+="<the_geom><gml:"+feat["geometry"]["type"]+">\\\\n"
+						resgml+="<gml:pos>\\\\n"
 						if(feat["geometry"]["type"].toUpperCase()=="POINT"){
-							resgml += feat["geometry"].coordinates[0] + ' ' + feat["geometry"].coordinates[1]+'\n '
+							resgml += feat["geometry"].coordinates[0] + ' ' + feat["geometry"].coordinates[1]+'\\\\n '
 						}else{
 							feat["geometry"].coordinates.forEach(function(p,i){
-								resgml += p[0] + ', ' + p[1] + '\n '
+								resgml += p[0] + ', ' + p[1] + '\\\\n '
 							})
 						}
-						resgml+="</gml:pos>\n"
-						resgml+="</gml:"+feat["geometry"]["type"]+"></the_geom>\n"
+						resgml+="</gml:pos>\\\\n"
+						resgml+="</gml:"+feat["geometry"]["type"]+"></the_geom>\\\\n"
 					}
 					resgml+="</gml:featureMember>"
 				}
@@ -601,25 +601,25 @@ function exportGML(){
                         }
                         if(Array.isArray(feature["properties"][prop])){
 							for(arritem of feature["properties"][prop]){
-								resgml+="<"+shortenURI(prop,false,nsprefix)+">"+arritem+"</"+shortenURI(prop,false,nsprefix)+">\n"
+								resgml+="<"+shortenURI(prop,false,nsprefix)+">"+arritem+"</"+shortenURI(prop,false,nsprefix)+">\\\\n"
 							}
 						}else{
-							resgml+="<"+shortenURI(prop,false,nsprefix)+">"+feature["properties"][prop]+"</"+shortenURI(prop,false,nsprefix)+">\n"
+							resgml+="<"+shortenURI(prop,false,nsprefix)+">"+feature["properties"][prop]+"</"+shortenURI(prop,false,nsprefix)+">\\\\n"
 						}
 				    }
                 }
 				if("geometry" in feature){
-					resgml+="<the_geom><gml:"+feature["geometry"]["type"]+">\n"
-					resgml+="<gml:pos>\n"
+					resgml+="<the_geom><gml:"+feature["geometry"]["type"]+">\\\\n"
+					resgml+="<gml:pos>\\\\n"
 					if(feature["geometry"]["type"].toUpperCase()=="POINT"){
-						resgml += feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1]+'\n '
+						resgml += feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1]+'\\\\n '
 					}else{
 						feature["geometry"].coordinates.forEach(function(p,i){
-							resgml += p[0] + ', ' + p[1] + '\n '
+							resgml += p[0] + ', ' + p[1] + '\\\\n '
 						})
 					}
-					resgml+="</gml:pos>\n"
-					resgml+="</gml:"+feature["geometry"]["type"]+"></the_geom>\n"
+					resgml+="</gml:pos>\\\\n"
+					resgml+="</gml:"+feature["geometry"]["type"]+"></the_geom>\\\\n"
 				}
 				resgml+="</gml:featureMember>"
             }
@@ -630,7 +630,7 @@ function exportGML(){
 }
 
 function exportKML(){
-	reskml="<?xml version=\\"1.0\\" ?>\n<kml xmlns=\\"http://www.opengis.net/kml/2.2\\">\\\\n<Document>"
+	reskml="<?xml version=\\"1.0\\" ?>\\\\n<kml xmlns=\\"http://www.opengis.net/kml/2.2\\">\\\\n<Document>"
 	reskml+="<Style></Style>\\\\n"
 	if(typeof(featurecolls)!=="undefined"){
         for(feature of featurecolls){
@@ -642,32 +642,32 @@ function exportKML(){
                         for(prop in feat["properties"]){
                             if(Array.isArray(feat["properties"][prop])){
 								for(arritem of feat["properties"][prop]){
-									reskml+="<Data name=\\""+prop+"\\"><displayName>"+shortenURI(prop)+"</displayName><value>"+arritem+"</value></Data>\n"
+									reskml+="<Data name=\\""+prop+"\\"><displayName>"+shortenURI(prop)+"</displayName><value>"+arritem+"</value></Data>\\\\n"
 								}
                             }else{
-                                reskml+="<Data name=\\""+prop+"\\"><displayName>"+shortenURI(prop)+"</displayName><value>"+feat["properties"][prop]+"</value></Data>\n"
+                                reskml+="<Data name=\\""+prop+"\\"><displayName>"+shortenURI(prop)+"</displayName><value>"+feat["properties"][prop]+"</value></Data>\\\\n"
                             }
                         }
 						reskml+="</ExtendedData>"
                     }
 					if("geometry" in feat){
-						reskml+="<"+feat["geometry"]["type"]+">\n"
+						reskml+="<"+feat["geometry"]["type"]+">\\\\n"
 						if(feat["geometry"]["type"]=="Polygon"){
 							reskml+="<outerBoundaryIs><LinearRing>"
 						}
-						reskml+="<coordinates>\n"
+						reskml+="<coordinates>\\\\n"
 						if(feat["geometry"]["type"].toUpperCase()=="POINT"){
-							reskml += feat["geometry"].coordinates[0] + ' ' + feat["geometry"].coordinates[1]+'\n '
+							reskml += feat["geometry"].coordinates[0] + ' ' + feat["geometry"].coordinates[1]+'\\\\n '
 						}else{
 							feat["geometry"].coordinates.forEach(function(p,i){
-								reskml += p[0] + ', ' + p[1] + '\n '
+								reskml += p[0] + ', ' + p[1] + '\\\\n '
 							})
 						}
-						reskml+="</coordinates>\n"
+						reskml+="</coordinates>\\\\n"
 						if(feat["geometry"]["type"]=="Polygon"){
 							reskml+="</LinearRing></outerBoundaryIs>"
 						}
-						reskml+="</"+feat["geometry"]["type"]+">\n"
+						reskml+="</"+feat["geometry"]["type"]+">\\\\n"
 					}
 					reskml+="</Placemark>"
 				}
@@ -678,32 +678,32 @@ function exportKML(){
 					for(prop in feature["properties"]){
 						if(Array.isArray(feature["properties"][prop])){
 							for(arritem of feature["properties"][prop]){
-								reskml+="<Data name=\\""+prop+"\\"><displayName>"+shortenURI(prop)+"</displayName><value>"+arritem+"</value></Data>\n"
+								reskml+="<Data name=\\""+prop+"\\"><displayName>"+shortenURI(prop)+"</displayName><value>"+arritem+"</value></Data>\\\\n"
 							}
 						}else{
-							reskml+="<Data name=\\""+prop+"\\"><displayName>"+shortenURI(prop)+"</displayName><value>"+feature["properties"][prop]+"</value></Data>\n"
+							reskml+="<Data name=\\""+prop+"\\"><displayName>"+shortenURI(prop)+"</displayName><value>"+feature["properties"][prop]+"</value></Data>\\\\n"
 						}
 				    }
 					reskml+="</ExtendedData>"
                 }
 				if("geometry" in feature){
-					reskml+="<"+feature["geometry"]["type"]+">\n"
+					reskml+="<"+feature["geometry"]["type"]+">\\\\n"
 					if(feature["geometry"]["type"]=="Polygon"){
 						reskml+="<outerBoundaryIs><LinearRing>"
 					}
-					reskml+="<coordinates>\n"
+					reskml+="<coordinates>\\\\n"
 					if(feature["geometry"]["type"].toUpperCase()=="POINT"){
-						reskml += feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1]+'\n '
+						reskml += feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1]+'\\\\n '
 					}else{
 						feature["geometry"].coordinates.forEach(function(p,i){
-							reskml += p[0] + ', ' + p[1] + '\n '
+							reskml += p[0] + ', ' + p[1] + '\\\\n '
 						})
 					}
-					reskml+="</coordinates>\n"
+					reskml+="</coordinates>\\\\n"
 					if(feature["geometry"]["type"]=="Polygon"){
 						reskml+="</LinearRing></outerBoundaryIs>"
 					}
-					reskml+="</"+feature["geometry"]["type"]+">\n"
+					reskml+="</"+feature["geometry"]["type"]+">\\\\n"
 				}
 				reskml+="</Placemark>"
             }
@@ -727,7 +727,7 @@ function exportTGFGDF(sepchar,format){
                 for(feat of feature["features"]){
                     featid=nodecounter
                     uritoNodeId[feat["id"]]=nodecounter
-                    nodes+=nodecounter+sepchar+feat["id"]+"\n"
+                    nodes+=nodecounter+sepchar+feat["id"]+"\\\\n"
                     nodecounter+=1
                     if("properties" in feat){
                         for(prop in feat["properties"]){
@@ -735,17 +735,17 @@ function exportTGFGDF(sepchar,format){
                                     for(arritem of feat["properties"][prop]){
                                             if(!(arritem in uritoNodeId)){
                                                 uritoNodeId[arritem]=nodecounter
-                                                nodes+=nodecounter+sepchar+arritem+"\n"
+                                                nodes+=nodecounter+sepchar+arritem+"\\\\n"
                                                 nodecounter+=1
                                             }
-                                            edges+=featid+sepchar+uritoNodeId[arritem]+sepchar+shortenURI(prop)+"\n"
+                                            edges+=featid+sepchar+uritoNodeId[arritem]+sepchar+shortenURI(prop)+"\\\\n"
                                     }
                             }else{
                                  if(!(feat["properties"][prop] in uritoNodeId)){
                                     uritoNodeId[feat["properties"][prop]]=nodecounter
                                     nodecounter+=1
                                  }
-                                 edges+=featid+sepchar+uritoNodeId[feat["properties"][prop]]+sepchar+shortenURI(prop)+"\n"
+                                 edges+=featid+sepchar+uritoNodeId[feat["properties"][prop]]+sepchar+shortenURI(prop)+"\\\\n"
                             }
                         }
                     }
@@ -754,7 +754,7 @@ function exportTGFGDF(sepchar,format){
                     featid=nodecounter
                     feat=feature
                     uritoNodeId[feat["id"]]=nodecounter
-                    nodes+=nodecounter+sepchar+feat["id"]+"\n"
+                    nodes+=nodecounter+sepchar+feat["id"]+"\\\\n"
                     nodecounter+=1
                     if("properties" in feat){
                         for(prop in feat["properties"]){
@@ -762,17 +762,17 @@ function exportTGFGDF(sepchar,format){
                                     for(arritem of feat["properties"][prop]){
                                             if(!(arritem in uritoNodeId)){
                                                 uritoNodeId[arritem]=nodecounter
-                                                nodes+=nodecounter+sepchar+arritem+"\n"
+                                                nodes+=nodecounter+sepchar+arritem+"\\\\n"
                                                 nodecounter+=1
                                             }
-                                            edges+=featid+sepchar+uritoNodeId[arritem]+sepchar+shortenURI(prop)+"\n"
+                                            edges+=featid+sepchar+uritoNodeId[arritem]+sepchar+shortenURI(prop)+"\\\\n"
                                     }
                             }else{
                                  if(!(feat["properties"][prop] in uritoNodeId)){
                                     uritoNodeId[feat["properties"][prop]]=nodecounter
                                     nodecounter+=1
                                  }
-                                 edges+=featid+sepchar+uritoNodeId[feat["properties"][prop]]+sepchar+shortenURI(prop)+"\n"
+                                 edges+=featid+sepchar+uritoNodeId[feat["properties"][prop]]+sepchar+shortenURI(prop)+"\\\\n"
                             }
                       }
                 }
@@ -781,9 +781,9 @@ function exportTGFGDF(sepchar,format){
     }
     resgdf+=nodes
 	if(format=="tgf"){
-		resgdf+="#\n"
+		resgdf+="#\\\\n"
 	}else{
-		resgdf+="edgedef>node1 VARCHAR,node2 VARCHAR,label VARCHAR\n"
+		resgdf+="edgedef>node1 VARCHAR,node2 VARCHAR,label VARCHAR\\\\n"
 	}
     resgdf+=edges
 	saveTextAsFile(resgdf,format)
@@ -844,9 +844,9 @@ function exportGeoURI(){
     resuri=""
     for(point of centerpoints){
 		if(typeof(epsg)!=='undefined'){
-			resuri+="geo:"+point["lng"]+","+point["lat"]+";crs="+epsg+"\n"
+			resuri+="geo:"+point["lng"]+","+point["lat"]+";crs="+epsg+"\\\\n"
 		}else{
-			resuri+="geo:"+point["lng"]+","+point["lat"]+";crs=EPSG:4326\n"
+			resuri+="geo:"+point["lng"]+","+point["lat"]+";crs=EPSG:4326\\\\n"
 		}
     }
     saveTextAsFile(resuri,"geouri")
@@ -868,7 +868,7 @@ function exportWKT(){
                             else reswkt =  reswkt + p[0] + ' ' + p[1] + ')';
                         })
                     }
-                    reswkt+=")\n"
+                    reswkt+=")\\\\n"
                 }
             }else if("geometry" in feature){
                     reswkt+=feature["geometry"]["type"].toUpperCase()+"("
@@ -880,7 +880,7 @@ function exportWKT(){
                             else reswkt =  reswkt + p[0] + ' ' + p[1] + ')';
                         })
                     }
-                    reswkt+=")\n"
+                    reswkt+=")\\\\n"
             }
             saveTextAsFile(reswkt,"wkt")
         }
@@ -894,25 +894,25 @@ function exportXYZASCII(){
             if("features" in feature){
                 for(feat of feature["features"]){
                     if(feature["geometry"]["type"].toUpperCase()=="POINT"){
-                        reswkt =  reswkt + feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1] + '\n';
+                        reswkt =  reswkt + feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1] + '\\\\n';
                     }else{
                         feature["geometry"].coordinates.forEach(function(p,i){
                             console.log(p)
-                            reswkt =  reswkt + p[0] + ' ' + p[1] + '\n';
+                            reswkt =  reswkt + p[0] + ' ' + p[1] + '\\\\n';
                         })
                     }
-                    reswkt+="\n"
+                    reswkt+="\\\\n"
                 }
             }else if("geometry" in feature){
                     if(feature["geometry"]["type"].toUpperCase()=="POINT"){
-                        reswkt =  reswkt + feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1] + '\n';
+                        reswkt =  reswkt + feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1] + '\\\\n';
                     }else{
                         feature["geometry"].coordinates.forEach(function(p,i){
                             console.log(p)
-                            reswkt =  reswkt + p[0] + ' ' + p[1] + '\n';
+                            reswkt =  reswkt + p[0] + ' ' + p[1] + '\\\\n';
                         })
                     }
-                    reswkt+="\n"
+                    reswkt+="\\\\n"
             }
             saveTextAsFile(reswkt,"xyz")
         }
@@ -1237,8 +1237,8 @@ $('span.textanno').each(function(i, obj) {
             markarea=data.substring(start,end)
             counter=0
             startindex=0
-            endindex=data.indexOf("\\n",end)
-            for(line in data.split("\\n")){
+            endindex=data.indexOf("\\\\n",end)
+            for(line in data.split("\\\\n")){
                 counter+=line.length
                 if(counter>start){
                     startindex=counter-line.length
