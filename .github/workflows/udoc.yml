@@ -20,7 +20,7 @@ on:
         type: string
       prefixns:
         required: false
-        default: http://www.sparqlunicorn.link/data/
+        default: None
         type: string
       prefixnsshort:
         required: false
