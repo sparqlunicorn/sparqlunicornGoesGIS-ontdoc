@@ -12,6 +12,7 @@ on:
         default: main
       rdffilepath:
         required: true
+        default: None
         type: string
       docpath:
         required: true
