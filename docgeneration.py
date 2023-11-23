@@ -3669,7 +3669,7 @@ parser.add_argument("-tn","--templatename",help="the name of the HTML template",
 args, unknown=parser.parse_known_args()
 print(args)
 print("The following arguments were not recognized: "+str(unknown))
-if args.input==None or args.input=="None" or args.input=="":
+if args.input==None or args.input[0]=="None" or args.input=="":
     print("No input files specified... trying to find files in the script folder")
     args.input=DocUtils.getLDFilesFromFolder(".")
     print("Found "+str(args.input))
