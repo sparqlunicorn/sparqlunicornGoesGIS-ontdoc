@@ -1794,6 +1794,7 @@ body { font-family: sans-serif; font-size: 80%; margin: 0; padding: 1.2em 2em; }
 #rdficon { float: right; position: relative; top: -28px; }
 #header { border-bottom: 2px solid #696; margin: 0 0 1.2em; padding: 0 0 0.3em; }
 #footer { border-top: 2px solid #696; margin: 1.2em 0 0; padding: 0.3em 0 0; }
+.carousel-center {margin:auto;}
 #homelink { display: inline; }
 #homelink, #homelink a { color: #666; }
 #homelink a { font-weight: bold; text-decoration: none; }
@@ -1804,6 +1805,36 @@ h2 { font-weight: normal; font-size: 124%; margin: 1.2em 0 0.2em; }
 .page-resource-uri a { color: #666; text-decoration: none; }
 .page-resource-uri a:hover { color: red; text-decoration: underline; }
 img { border: none; }
+#graph{
+    background: #fff;
+    border: 1px solid grey;
+	 position: relative;
+    display: inline-block;
+    width:100%;
+    overflow: hidden;
+}
+#content {
+    margin: 20px;
+    text-align: center;
+}
+details > pre {
+  background-color: #f5f5f5;
+  padding: 4px;
+  margin: 0;
+  box-shadow: 1px 1px 2px #bbbbbb;
+}
+#reset {
+    float: right;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}
+#distanceSlider {
+    float: right;
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+}
 table.description { border-collapse: collapse; clear: left; font-size: 100%; margin: 0 0 1em; width: 100%; }
 table.description th { background: white; text-align: left; }
 table.description td, table.description th { line-height: 1.2em; padding: 0.3em 0.5em; vertical-align: top; }
@@ -1823,11 +1854,11 @@ table.description a small, .metadata-table a small  { font-size: 100%; color: #5
 table.description small, .metadata-table a small  { font-size: 100%; color: #666; }
 table.description .property { white-space: nowrap; padding-right: 1.5em; }
 h1, h2 { color: #810; }
-body { background: #cec; }
+body { background: %%maincolorcode%%; }
 table.description .container > td { background: #c0e2c0; padding: 0.2em 0.8em; }
-table.description .even td { background: #d4f6d4; }
+table.description .even td { background: %%tablecolorcode%%; }
 table.description .odd td { background: #f0fcf0; }
-.image { background: white; float: left; margin: 0 1.5em 1.5em 0; padding: 2px; }
+.image { background: white; text-align:center; width:100% margin: 0 1.5em 1.5em 0; padding: 2px; }
 a.expander { text-decoration: none; }
 
 .metadata-label {
@@ -2029,29 +2060,29 @@ geoexports="""
 sparqltemplate=""
 
 maptemplate="""
-<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet.markercluster@1.0.6/dist/leaflet.markercluster-src.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="https://unpkg.com/leaflet.markercluster@1.0.6/dist/leaflet.markercluster-src.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster.layersupport@2.0.1/dist/leaflet.markercluster.layersupport.js"></script>
 <script src="https://unpkg.com/leaflet.featuregroup.subgroup@1.0.2/dist/leaflet.featuregroup.subgroup.js"></script>
 <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/dwilhelm89/LeafletSlider@master/dist/leaflet.SliderControl.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.1/proj4.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/albburtsev/Leaflet.geojsonCSS/leaflet.geojsoncss.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.min.js"></script><script src="https://cdn.jsdelivr.net/gh/albburtsev/Leaflet.geojsonCSS/leaflet.geojsoncss.min.js"></script>
 <script src="{{epsgdefspath}}"></script>
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css" />
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.Default.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css">
-<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.Default.css" rel="stylesheet" />
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet" >
+<link href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css" rel='stylesheet' />
 <div id="map" style="height:500px;z-index: 0;"></div><script>
 var rangesByAttribute={}
 var overlayMaps={}
 var baselayers={{baselayers}}
 var featurecolls = {{myfeature}}
+var ajax=true
 var epsg="{{epsg}}"
 var dateatt="{{dateatt}}"
 var map = L.map('map',{fullscreenControl: true,fullscreenControlOptions: {position: 'topleft'}}).setView([51.505, -0.09], 13);
 var baseMaps = {};
 props={}
-setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,dateatt)
+setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,dateatt,ajax)
 </script>
 """
 
@@ -2187,12 +2218,12 @@ class OntDocGeneration:
         self.geocollectionspaths=[]
         self.metadatatable=metadatatable
         self.templatename=templatename
-        resolveTemplate(templatename)
-        self.offlinecompat=offlinecompat
         if os.path.exists("ontdocscript"):
             templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "ontdocscript/resources/html/"))
         else:
             templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
+        resolveTemplate(templatename)
+        self.offlinecompat=offlinecompat
         if offlinecompat:
             global htmltemplate
             htmltemplate=self.createOfflineCompatibleVersion(outpath,htmltemplate,templatepath,templatename)
