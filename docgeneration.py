@@ -350,7 +350,7 @@ function exportCSV(sepchar,filesuffix){
     if(typeof(feature)!=="undefined"){
         if("features" in feature){
            for(feat of feature["features"]){
-                rescsv+="\""+feat["geometry"]["type"].toUpperCase()+"("
+                rescsv+="\\""+feat["geometry"]["type"].toUpperCase()+"("
 				if(feature["geometry"]["type"].toUpperCase()=="POINT"){
                     rescsv =  rescsv + feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1]
 				}else{
@@ -359,26 +359,26 @@ function exportCSV(sepchar,filesuffix){
 						else rescsv =  rescsv + p[0] + ' ' + p[1] + ')';
 					})
 				}
-                rescsv+=")\""+sepchar
+                rescsv+=")\\""+sepchar
                 if("properties" in feat){
                     if(gottitle==false){
-                       rescsvtitle="\"the_geom\","
+                       rescsvtitle="\\"the_geom\\","
                        for(prop in feat["properties"]){
-                          rescsvtitle+="\""+prop+"\""+sepchar
+                          rescsvtitle+="\\""+prop+"\\""+sepchar
                        }
-                       rescsvtitle+="\n"
+                       rescsvtitle+="\\\\n"
                        rescsv=rescsvtitle+rescsv
                        gottitle=true
                     }
                     for(prop in feat["properties"]){
-                        rescsv+="\""+feat["properties"][prop]+"\""+sepchar
+                        rescsv+="\\""+feat["properties"][prop]+"\\""+sepchar
                     }
                 }
-                rescsv+="\n"
+                rescsv+="\\\\n"
            }
         }else{
             gottitle=false
-            rescsv+="\""+feature["geometry"]["type"].toUpperCase()+"("
+            rescsv+="\\""+feature["geometry"]["type"].toUpperCase()+"("
 			if(feature["geometry"]["type"].toUpperCase()=="POINT"){
 				rescsv =  rescsv + feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1]
 			}else{
@@ -387,19 +387,19 @@ function exportCSV(sepchar,filesuffix){
 					else rescsv =  rescsv + p[0] + ' ' + p[1] + ')';
 				})
 			}
-            rescsv+=")\""+sepchar
+            rescsv+=")\\""+sepchar
             if("properties" in feature){
                 if(gottitle==false){
                    rescsvtitle=""
                    for(prop in feature["properties"]){
-                      rescsvtitle+="\""+prop+"\""+sepchar
+                      rescsvtitle+="\\""+prop+"\\""+sepchar
                    }
-                   rescsvtitle+="\n"
+                   rescsvtitle+="\\\\n"
                    rescsv=rescsvtitle+rescsv
                    gottitle=true
                 }
                 for(prop in feature["properties"]){
-                    rescsv+="\""+feature["properties"][prop]+"\""+sepchar
+                    rescsv+="\\""+feature["properties"][prop]+"\\""+sepchar
                 }
             }
         }
@@ -409,19 +409,19 @@ function exportCSV(sepchar,filesuffix){
            for(feat of nongeofeature["features"]){
                 if("properties" in feat){
                     if(gottitle==false){
-                       rescsvtitle="\"the_geom\","
+                       rescsvtitle="\\"the_geom\\","
                        for(prop in feat["properties"]){
-                          rescsvtitle+="\""+prop+"\""+sepchar
+                          rescsvtitle+="\\""+prop+"\\""+sepchar
                        }
-                       rescsvtitle+="\n"
+                       rescsvtitle+="\\\\n"
                        rescsv=rescsvtitle+rescsv
                        gottitle=true
                     }
                     for(prop in feat["properties"]){
-                        rescsv+="\""+feat["properties"][prop]+"\""+sepchar
+                        rescsv+="\\""+feat["properties"][prop]+"\\""+sepchar
                     }
                 }
-                rescsv+="\n"
+                rescsv+="\\\\n"
            }
         }else{
             gottitle=false
@@ -429,14 +429,14 @@ function exportCSV(sepchar,filesuffix){
                 if(gottitle==false){
                    rescsvtitle=""
                    for(prop in nongeofeature["properties"]){
-                      rescsvtitle+="\""+prop+"\""+sepchar
+                      rescsvtitle+="\\""+prop+"\\""+sepchar
                    }
-                   rescsvtitle+="\n"
+                   rescsvtitle+="\\\\n"
                    rescsv=rescsvtitle+rescsv
                    gottitle=true
                 }
                 for(prop in nongeofeature["properties"]){
-                    rescsv+="\""+nongeofeature["properties"][prop]+"\""+sepchar
+                    rescsv+="\\""+nongeofeature["properties"][prop]+"\\""+sepchar
                 }
             }
         }
@@ -445,8 +445,8 @@ function exportCSV(sepchar,filesuffix){
 }
 
 function exportGraphML(){
-	resgml=`<?xml version="1.0" encoding="UTF-8"?>\n<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:y="http://www.yworks.com/xml/graphml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">\n`
-	resgml+="<key for=\"node\" id=\"nodekey\" yfiles.type=\"nodegraphics\"></key><key for=\"edge\" id=\"edgekey\" yfiles.type=\"edgegraphics\"></key><graph id=\"G\" edgedefault=\"directed\">\n"
+	resgml=`<?xml version="1.0" encoding="UTF-8"?>\\\\n<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:y="http://www.yworks.com/xml/graphml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">\n`
+	resgml+="<key for=\\"node\\" id=\\"nodekey\\" yfiles.type=\\"nodegraphics\\"></key><key for=\\"edge\\" id=\\"edgekey\\" yfiles.type=\\"edgegraphics\\"></key><graph id=\\"G\\" edgedefault=\\"directed\\">\n"
 	processedURIs={}
 	literalcounter=1
 	edgecounter=0
@@ -455,42 +455,42 @@ function exportGraphML(){
 			if("features" in feature){
                 for(feat of feature["features"]){
 					if(!(feat.id in processedURIs)){
-						resgml+="<node id=\""+feat.id+"\" uri=\""+feat.id+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#800080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+feat.name+"</y:NodeLabel></y:ShapeNode></data></node>\n"
+						resgml+="<node id=\\""+feat.id+"\\" uri=\\""+feat.id+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#800080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feat.name+"</y:NodeLabel></y:ShapeNode></data></node>\n"
 						processedURIs[feat.id]=true
 					}
 					if("properties" in feat){
                         for(prop in feat["properties"]){
 							thetarget=feat["properties"][prop]
 							if((feat["properties"][prop]+"").startsWith("http") && !(feat["properties"][prop] in processedURIs)){
-								resgml+="<node id=\""+feat["properties"][prop]+"\" uri=\""+feat["properties"][prop]+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#800080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+feat["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\n"
+								resgml+="<node id=\\""+feat["properties"][prop]+"\\" uri=\\""+feat["properties"][prop]+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#800080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feat["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\n"
 								processedURIs[feat["properties"][prop]]=true
 							}else{
 								thetarget="literal"+literalcounter
-								resgml+="<node id=\""+thetarget+"\" uri=\""+thetarget+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#F08080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+feat["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\n"
+								resgml+="<node id=\\""+thetarget+"\\" uri=\\""+thetarget+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#F08080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feat["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\n"
 								literalcounter+=1
 							}
-							resgml+="<edge id=\"e"+edgecounter+"\" uri=\""+prop+"\" source=\""+feat.id+"\" target=\""+thetarget+"\"><data key=\"edgekey\"><y:PolyLineEdge><y:EdgeLabel alignment=\"center\" configuration=\"AutoFlippingLabel\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+shortenURI(prop)+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
+							resgml+="<edge id=\\"e"+edgecounter+"\\" uri=\\""+prop+"\\" source=\\""+feat.id+"\\" target=\\""+thetarget+"\\"><data key=\\"edgekey\\"><y:PolyLineEdge><y:EdgeLabel alignment=\\"center\\" configuration=\\"AutoFlippingLabel\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+shortenURI(prop)+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
 							edgecounter+=1
 						}
 					}
 				}
 			}else if("type" in feature && feature["type"]=="Feature"){
 				if(!(feature.id in processedURIs)){
-					resgml+="<node id=\""+feature.id+"\" uri=\""+feature.id+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#800080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+feature.name+"</y:NodeLabel></y:ShapeNode></data></node>\n"
+					resgml+="<node id=\\""+feature.id+"\\" uri=\\""+feature.id+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#800080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feature.name+"</y:NodeLabel></y:ShapeNode></data></node>\n"
 					processedURIs[feature.id]=true
 				}
 				if("properties" in feature){
 					for(prop in feature["properties"]){
 						thetarget=feature["properties"][prop]
 						if((feature["properties"][prop]+"").startsWith("http") && !(feature["properties"][prop] in processedURIs)){
-							resgml+="<node id=\""+feature["properties"][prop]+"\" uri=\""+feature["properties"][prop]+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#800080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+feature["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\n"
+							resgml+="<node id=\\""+feature["properties"][prop]+"\\" uri=\\""+feature["properties"][prop]+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#800080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feature["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\n"
 							processedURIs[feature["properties"][prop]]=true
 						}else{
 							thetarget="literal"+literalcounter
-							resgml+="<node id=\""+thetarget+"\" uri=\""+thetarget+"\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#F08080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+feature["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\n"
+							resgml+="<node id=\\""+thetarget+"\\" uri=\\""+thetarget+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#F08080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feature["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\n"
 							literalcounter+=1
 						}
-						resgml+="<edge id=\"e"+edgecounter+"\" uri=\""+prop+"\" source=\""+feature.id+"\" target=\""+thetarget+"\"><data key=\"edgekey\"><y:PolyLineEdge><y:EdgeLabel alignment=\"center\" configuration=\"AutoFlippingLabel\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">"+shortenURI(prop)+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
+						resgml+="<edge id=\\"e"+edgecounter+"\\" uri=\\""+prop+"\\" source=\\""+feature.id+"\\" target=\\""+thetarget+"\\"><data key=\\"edgekey\\"><y:PolyLineEdge><y:EdgeLabel alignment=\\"center\\" configuration=\\"AutoFlippingLabel\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+shortenURI(prop)+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\n"
 						edgecounter+=1
 					}
 				}
@@ -520,7 +520,7 @@ function convertDecimalToLatLonText(D, lng){
 	deg=D<0?-D:D;
 	min=D%1*60;
 	sec=(D*60%1*6000)/100;
-	return deg+"°"+min+"'"+sec+"\""+dir;
+	return deg+"°"+min+"'"+sec+"\\""+dir;
 }
 
 function exportLatLonText(){
@@ -533,7 +533,7 @@ function exportLatLonText(){
 
 function exportGML(){
 	resgml=">\n"
-    resgmlhead="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<gml:FeatureCollection xmlns:gml=\"http://www.opengis.net/gml\" "
+    resgmlhead="<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?>\\\\n<gml:FeatureCollection xmlns:gml=\\"http://www.opengis.net/gml\\" "
     nscounter=0
     nsmap={}
 	if(typeof(featurecolls)!=="undefined"){
@@ -547,12 +547,12 @@ function exportGML(){
                             nsprefix=""
                             if(ns in namespaces && !(ns in nsmap)){
                                 nsmap[ns]=namespaces[ns]
-                                resgmlhead+="xmlns:"+namespaces[ns]+"=\""+ns+"\" "
+                                resgmlhead+="xmlns:"+namespaces[ns]+"=\\""+ns+"\\" "
                             }
                             if(!(ns in nsmap)){
                                 nsmap[ns]="ns"+nscounter
                                 nsprefix="ns"+nscounter
-                                resgmlhead+="xmlns:"+nsprefix+"=\""+ns+"\" "
+                                resgmlhead+="xmlns:"+nsprefix+"=\\""+ns+"\\" "
                                 nscounter+=1
                             }else{
                                 nsprefix=nsmap[ns]
@@ -589,12 +589,12 @@ function exportGML(){
                         nsprefix=""
                         if(ns in namespaces && !(ns in nsmap)){
                             nsmap[ns]=namespaces[ns]
-                            resgmlhead+="xmlns:"+namespaces[ns]+"=\""+ns+"\" "
+                            resgmlhead+="xmlns:"+namespaces[ns]+"=\\""+ns+"\\" "
                         }
                         if(!(ns in nsmap)){
                             nsmap[ns]="ns"+nscounter
                             nsprefix="ns"+nscounter
-                            resgmlhead+="xmlns:"+nsprefix+"=\""+ns+"\" "
+                            resgmlhead+="xmlns:"+nsprefix+"=\\""+ns+"\\" "
                             nscounter+=1
                         }else{
                             nsprefix=nsmap[ns]
@@ -630,8 +630,8 @@ function exportGML(){
 }
 
 function exportKML(){
-	reskml="<?xml version=\"1.0\" ?>\n<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n<Document>"
-	reskml+="<Style></Style>\n"
+	reskml="<?xml version=\\"1.0\\" ?>\n<kml xmlns=\\"http://www.opengis.net/kml/2.2\\">\\\\n<Document>"
+	reskml+="<Style></Style>\\\\n"
 	if(typeof(featurecolls)!=="undefined"){
         for(feature of featurecolls){
             if("features" in feature){
@@ -642,10 +642,10 @@ function exportKML(){
                         for(prop in feat["properties"]){
                             if(Array.isArray(feat["properties"][prop])){
 								for(arritem of feat["properties"][prop]){
-									reskml+="<Data name=\""+prop+"\"><displayName>"+shortenURI(prop)+"</displayName><value>"+arritem+"</value></Data>\n"
+									reskml+="<Data name=\\""+prop+"\\"><displayName>"+shortenURI(prop)+"</displayName><value>"+arritem+"</value></Data>\n"
 								}
                             }else{
-                                reskml+="<Data name=\""+prop+"\"><displayName>"+shortenURI(prop)+"</displayName><value>"+feat["properties"][prop]+"</value></Data>\n"
+                                reskml+="<Data name=\\""+prop+"\\"><displayName>"+shortenURI(prop)+"</displayName><value>"+feat["properties"][prop]+"</value></Data>\n"
                             }
                         }
 						reskml+="</ExtendedData>"
@@ -678,10 +678,10 @@ function exportKML(){
 					for(prop in feature["properties"]){
 						if(Array.isArray(feature["properties"][prop])){
 							for(arritem of feature["properties"][prop]){
-								reskml+="<Data name=\""+prop+"\"><displayName>"+shortenURI(prop)+"</displayName><value>"+arritem+"</value></Data>\n"
+								reskml+="<Data name=\\""+prop+"\\"><displayName>"+shortenURI(prop)+"</displayName><value>"+arritem+"</value></Data>\n"
 							}
 						}else{
-							reskml+="<Data name=\""+prop+"\"><displayName>"+shortenURI(prop)+"</displayName><value>"+feature["properties"][prop]+"</value></Data>\n"
+							reskml+="<Data name=\\""+prop+"\\"><displayName>"+shortenURI(prop)+"</displayName><value>"+feature["properties"][prop]+"</value></Data>\n"
 						}
 				    }
 					reskml+="</ExtendedData>"
@@ -1273,15 +1273,15 @@ function labelFromURI(uri,label){
 }
 
 function formatHTMLTableForPropertyRelations(propuri,result,propicon){
-    dialogcontent="<h3><img src=\""+propicon+"\" height=\"25\" width=\"25\" alt=\"Instance\"/><a href=\""+propuri.replace('/index.json','/index.html')+"\" target=\"_blank\"> "+shortenURI(propuri)+"</a></h3><table border=1 id=classrelationstable><thead><tr><th>Incoming Concept</th><th>Relation</th><th>Outgoing Concept</th></tr></thead><tbody>"
+    dialogcontent="<h3><img src=\\""+propicon+"\\" height=\\"25\\" width=\\"25\\" alt=\\"Instance\\"/><a href=\\""+propuri.replace('/index.json','/index.html')+"\\" target=\\"_blank\\"> "+shortenURI(propuri)+"</a></h3><table border=1 id=classrelationstable><thead><tr><th>Incoming Concept</th><th>Relation</th><th>Outgoing Concept</th></tr></thead><tbody>"
     console.log(result)
     for(instance in result["from"]){
 //
             if(result["from"][instance]=="instancecount"){
                 continue;
             }
-            dialogcontent+="<tr><td><img src=\""+iconprefix+"class.png\" height=\"25\" width=\"25\" alt=\"Class\"/><a href=\""+result["from"][instance]+"\" target=\"_blank\">"+shortenURI(result["from"][instance])+"</a></td>"
-            dialogcontent+="<td><img src=\""+propicon+"\" height=\"25\" width=\"25\" alt=\"Instance\"/><a href=\""+propuri+"\" target=\"_blank\">"+shortenURI(propuri)+"</a></td><td></td></tr>"
+            dialogcontent+="<tr><td><img src=\\""+iconprefix+"class.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Class\\"/><a href=\\""+result["from"][instance]+"\\" target=\\"_blank\\">"+shortenURI(result["from"][instance])+"</a></td>"
+            dialogcontent+="<td><img src=\\""+propicon+"\\" height=\\"25\\" width=\\"25\\" alt=\\"Instance\\"/><a href=\\""+propuri+"\\" target=\\"_blank\\">"+shortenURI(propuri)+"</a></td><td></td></tr>"
        // }
     }
     for(instance in result["to"]){
@@ -1289,41 +1289,41 @@ function formatHTMLTableForPropertyRelations(propuri,result,propicon){
             if(result["to"][instance]=="instancecount"){
                 continue;
             }
-            dialogcontent+="<tr><td></td><td><img src=\""+propicon+"\" height=\"25\" width=\"25\" alt=\"Class\"/><a href=\""+propuri+"\" target=\"_blank\">"+shortenURI(propuri)+"</a></td>"
-            dialogcontent+="<td><img src=\""+iconprefix+"class.png\" height=\"25\" width=\"25\" alt=\"Instance\"/><a href=\""+result["to"][instance]+"\" target=\"_blank\">"+shortenURI(result["to"][instance])+"</a></td></tr>"
+            dialogcontent+="<tr><td></td><td><img src=\\""+propicon+"\\" height=\\"25\\" width=\\"25\\" alt=\\"Class\\"/><a href=\\""+propuri+"\\" target=\\"_blank\\">"+shortenURI(propuri)+"</a></td>"
+            dialogcontent+="<td><img src=\\""+iconprefix+"class.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Instance\\"/><a href=\\""+result["to"][instance]+"\\" target=\\"_blank\\">"+shortenURI(result["to"][instance])+"</a></td></tr>"
        // }
     }
     dialogcontent+="</tbody></table>"
-    dialogcontent+="<button style=\"float:right\" id=\"closebutton\" onclick='document.getElementById(\"classrelationdialog\").close()'>Close</button>"
+    dialogcontent+="<button style=\\"float:right\\" id=\\"closebutton\\" onclick='document.getElementById(\\"classrelationdialog\\").close()'>Close</button>"
     return dialogcontent
 }
 
 function determineTableCellLogo(uri){
-    result="<td><a href=\""+uri+"\" target=\"_blank\">"
+    result="<td><a href=\\""+uri+"\\" target=\\"_blank\\">"
     logourl=""
     finished=false
     if(uri in labelproperties){
-        result+="<img src=\""+iconprefix+"labelproperty.png\" height=\"25\" width=\"25\" alt=\"Label Property\"/>"
+        result+="<img src=\\""+iconprefix+"labelproperty.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Label Property\\"/>"
         logourl=iconprefix+"labelproperty.png"
         finished=true
     }
     if(!finished){
         for(ns in annotationnamespaces){
             if(uri.includes(annotationnamespaces[ns])){
-                result+="<img src=\""+iconprefix+"annotationproperty.png\" height=\"25\" width=\"25\" alt=\"Annotation Property\"/>"
+                result+="<img src=\\""+iconprefix+"annotationproperty.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Annotation Property\\"/>"
                 logourl=iconprefix+"annotationproperty.png"
                 finished=true
             }
         }
     }
     if(!finished && uri in geoproperties && geoproperties[uri]=="ObjectProperty"){
-        result+="<img src=\""+iconprefix+"geoobjectproperty.png\" height=\"25\" width=\"25\" alt=\"Geo Object Property\"/>"
+        result+="<img src=\\""+iconprefix+"geoobjectproperty.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Geo Object Property\\"/>"
         logourl=iconprefix+"geoobjectproperty.png"
     }else if(!finished && uri in geoproperties && geoproperties[uri]=="DatatypeProperty"){
-        result+="<img src=\""+iconprefix+"geodatatypeproperty.png\" height=\"25\" width=\"25\" alt=\"Geo Datatype Property\"/>"
+        result+="<img src=\\""+iconprefix+"geodatatypeproperty.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Geo Datatype Property\\"/>"
         logourl=iconprefix+"geodatatypeproperty.png"
     }else if(!finished){
-        result+="<img src=\""+iconprefix+"objectproperty.png\" height=\"25\" width=\"25\" alt=\"Object Property\"/>"
+        result+="<img src=\\""+iconprefix+"objectproperty.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Object Property\\"/>"
         logourl=iconprefix+"objectproperty.png"
     }
     result+=shortenURI(uri)+"</a></td>"
@@ -1335,15 +1335,15 @@ function formatHTMLTableForClassRelations(result,nodeicon,nodelabel,nodeid){
     if(nodelabel.includes("[")){
         nodelabel=nodelabel.substring(0,nodelabel.lastIndexOf("[")-1)
     }
-    dialogcontent="<h3><img src=\""+nodeicon+"\" height=\"25\" width=\"25\" alt=\"Instance\"/><a href=\""+nodeid.replace('/index.json','/index.html')+"\" target=\"_blank\"> "+nodelabel+"</a></h3><table border=1 id=classrelationstable><thead><tr><th>Incoming Concept</th><th>Incoming Relation</th><th>Concept</th><th>Outgoing Relation</th><th>Outgoing Concept</th></tr></thead><tbody>"
+    dialogcontent="<h3><img src=\\""+nodeicon+"\\" height=\\"25\\" width=\\"25\\" alt=\\"Instance\\"/><a href=\\""+nodeid.replace('/index.json','/index.html')+"\\" target=\\"_blank\\"> "+nodelabel+"</a></h3><table border=1 id=classrelationstable><thead><tr><th>Incoming Concept</th><th>Incoming Relation</th><th>Concept</th><th>Outgoing Relation</th><th>Outgoing Concept</th></tr></thead><tbody>"
     for(res in result["from"]){
         for(instance in result["from"][res]){
             if(instance=="instancecount"){
                 continue;
             }
-            dialogcontent+="<tr><td><img src=\""+iconprefix+"class.png\" height=\"25\" width=\"25\" alt=\"Class\"/><a href=\""+instance+"\" target=\"_blank\">"+shortenURI(instance)+"</a></td>"
+            dialogcontent+="<tr><td><img src=\\""+iconprefix+"class.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Class\\"/><a href=\\""+instance+"\\" target=\\"_blank\\">"+shortenURI(instance)+"</a></td>"
             dialogcontent+=determineTableCellLogo(res)[0]
-            dialogcontent+="<td><img src=\""+nodeicon+"\" height=\"25\" width=\"25\" alt=\"Instance\"/><a href=\""+nodeid+"\" target=\"_blank\">"+nodelabel+"</a></td><td></td><td></td></tr>"
+            dialogcontent+="<td><img src=\\""+nodeicon+"\\" height=\\"25\\" width=\\"25\\" alt=\\"Instance\\"/><a href=\\""+nodeid+"\\" target=\\"_blank\\">"+nodelabel+"</a></td><td></td><td></td></tr>"
         }
     }
     for(res in result["to"]){
@@ -1351,19 +1351,19 @@ function formatHTMLTableForClassRelations(result,nodeicon,nodelabel,nodeid){
             if(instance=="instancecount"){
                 continue;
             }
-            dialogcontent+="<tr><td></td><td></td><td><img src=\""+nodeicon+"\" height=\"25\" width=\"25\" alt=\"Instance\"/><a href=\""+nodeid+"\" target=\"_blank\">"+nodelabel+"</a></td>"
+            dialogcontent+="<tr><td></td><td></td><td><img src=\\""+nodeicon+"\\" height=\\"25\\" width=\\"25\\" alt=\\"Instance\\"/><a href=\\""+nodeid+"\\" target=\\"_blank\\">"+nodelabel+"</a></td>"
             dialogcontent+=determineTableCellLogo(res)[0]
-            dialogcontent+="<td><img src=\""+iconprefix+"class.png\" height=\"25\" width=\"25\" alt=\"Class\"/><a href=\""+instance+"\" target=\"_blank\">"+shortenURI(instance)+"</a></td></tr>"
+            dialogcontent+="<td><img src=\\""+iconprefix+"class.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Class\\"/><a href=\\""+instance+"\\" target=\\"_blank\\">"+shortenURI(instance)+"</a></td></tr>"
         }
     }
     dialogcontent+="</tbody></table>"
-    dialogcontent+="<button style=\"float:right\" id=\"closebutton\" onclick='document.getElementById(\"classrelationdialog\").close()'>Close</button>"
+    dialogcontent+="<button style=\\"float:right\\" id=\\"closebutton\\" onclick='document.getElementById(\\"classrelationdialog\\").close()'>Close</button>"
     return dialogcontent
 }
 
 function formatHTMLTableForResult(result,nodeicon){
     dialogcontent=""
-    dialogcontent="<h3><img src=\""+nodeicon+"\" height=\"25\" width=\"25\" alt=\"Instance\"/><a href=\""+nodeid.replace('/index.json','/index.html')+"\" target=\"_blank\"> "+nodelabel+"</a></h3><table border=1 id=dataschematable><thead><tr><th>Type</th><th>Relation</th><th>Value</th></tr></thead><tbody>"
+    dialogcontent="<h3><img src=\\""+nodeicon+"\\" height=\\"25\\" width=\\"25\\" alt=\\"Instance\\"/><a href=\\""+nodeid.replace('/index.json','/index.html')+"\\" target=\\"_blank\\"> "+nodelabel+"</a></h3><table border=1 id=dataschematable><thead><tr><th>Type</th><th>Relation</th><th>Value</th></tr></thead><tbody>"
     for(res in result){
         console.log(result)
         console.log(result[res])
@@ -1371,10 +1371,10 @@ function formatHTMLTableForResult(result,nodeicon){
         dialogcontent+="<tr>"
         detpropicon=""
         if(res in geoproperties && geoproperties[res]=="ObjectProperty"){
-            dialogcontent+="<td><img src=\""+iconprefix+"geoobjectproperty.png\" height=\"25\" width=\"25\" alt=\"Geo Object Property\"/>Geo Object Property</td>"
+            dialogcontent+="<td><img src=\\""+iconprefix+"geoobjectproperty.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Geo Object Property\\"/>Geo Object Property</td>"
             detpropicon=iconprefix+"geoobjectproperty.png"
         }else if((result[res][0]+"").startsWith("http")){
-            dialogcontent+="<td><img src=\""+iconprefix+"objectproperty.png\" height=\"25\" width=\"25\" alt=\"Object Property\"/>Object Property</td>"
+            dialogcontent+="<td><img src=\\""+iconprefix+"objectproperty.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Object Property\\"/>Object Property</td>"
             detpropicon=iconprefix+"objectproperty.png"
         }else{
             finished=false
@@ -1382,19 +1382,19 @@ function formatHTMLTableForResult(result,nodeicon){
             dialogcontent+=ress[0]
             detpropicon=ress[1]
         }
-        dialogcontent+="<td><a href=\""+res+"\" target=\"_blank\">"+shortenURI(res)+"</a> <a href=\"#\" onclick=\"getPropRelationDialog('"+res+"','"+detpropicon+"')\">[x]</a></td>"
+        dialogcontent+="<td><a href=\\""+res+"\\" target=\\"_blank\\">"+shortenURI(res)+"</a> <a href=\\"#\\" onclick=\\"getPropRelationDialog('"+res+"','"+detpropicon+"')\\">[x]</a></td>"
         if(Object.keys(result[res]).length>1){
             dialogcontent+="<td><ul>"
             for(resitem in result[res]){
                 if((resitem+"").startsWith("http")){
-                    dialogcontent+="<li><a href=\""+rewriteLink(resitem)+"\" target=\"_blank\">"+shortenURI(resitem)+"</a> ["+result[res][resitem]+"]</li>"
+                    dialogcontent+="<li><a href=\\""+rewriteLink(resitem)+"\\" target=\\"_blank\\">"+shortenURI(resitem)+"</a> ["+result[res][resitem]+"]</li>"
                 }else if(resitem!="instancecount"){
                     dialogcontent+="<li>"+result[res][resitem]+"</li>"
                 }
             }
             dialogcontent+="</ul></td>"
         }else if((Object.keys(result[res])[0]+"").startsWith("http")){
-            dialogcontent+="<td><a href=\""+rewriteLink(Object.keys(result[res])[0]+"")+"\" target=\"_blank\">"+shortenURI(Object.keys(result[res])[0]+"")+"</a></td>"
+            dialogcontent+="<td><a href=\\""+rewriteLink(Object.keys(result[res])[0]+"")+"\\" target=\\"_blank\\">"+shortenURI(Object.keys(result[res])[0]+"")+"</a></td>"
         }else if(Object.keys(result[res])[0]!="instancecount"){
             dialogcontent+="<td>"+Object.keys(result[res])[0]+"</td>"
         }else{
@@ -1403,7 +1403,7 @@ function formatHTMLTableForResult(result,nodeicon){
         dialogcontent+="</tr>"
     }
     dialogcontent+="</tbody></table>"
-    dialogcontent+="<button style=\"float:right\" id=\"closebutton\" onclick='document.getElementById(\"dataschemadialog\").close()'>Close</button>"
+    dialogcontent+="<button style=\\"float:right\\" id=\\"closebutton\\" onclick='document.getElementById(\\"dataschemadialog\\").close()'>Close</button>"
     return dialogcontent
 }
 
@@ -1646,14 +1646,14 @@ function createColorRangeByAttribute(propertyName,geojsonlayer){
 function generateLeafletPopup(feature, layer){
     var popup="<b>"
     if("name" in feature && feature.name!=""){
-        popup+="<a href=\""+rewriteLink(feature.id)+"\" class=\"footeruri\" target=\"_blank\">"+feature.name+"</a></b><br/><ul>"
+        popup+="<a href=\\""+rewriteLink(feature.id)+"\\" class=\\"footeruri\\" target=\\"_blank\\">"+feature.name+"</a></b><br/><ul>"
     }else{
-        popup+="<a href=\""+rewriteLink(feature.id)+"\" class=\"footeruri\" target=\"_blank\">"+feature.id.substring(feature.id.lastIndexOf('/')+1)+"</a></b><br/><ul>"
+        popup+="<a href=\\""+rewriteLink(feature.id)+"\\" class=\\"footeruri\\" target=\\"_blank\\">"+feature.id.substring(feature.id.lastIndexOf('/')+1)+"</a></b><br/><ul>"
     }
     for(prop in feature.properties){
         popup+="<li>"
         if(prop.startsWith("http")){
-            popup+="<a href=\""+prop+"\" target=\"_blank\">"+prop.substring(prop.lastIndexOf('/')+1)+"</a>"
+            popup+="<a href=\\""+prop+"\\" target=\\"_blank\\">"+prop.substring(prop.lastIndexOf('/')+1)+"</a>"
         }else{
             popup+=prop
         }
@@ -1663,7 +1663,7 @@ function generateLeafletPopup(feature, layer){
             for(item of feature.properties[prop]){
                 popup+="<li>"
                 if((item+"").startsWith("http")){
-                    popup+="<a href=\""+item+"\" target=\"_blank\">"+item.substring(item.lastIndexOf('/')+1)+"</a>"
+                    popup+="<a href=\\""+item+"\\" target=\\"_blank\\">"+item.substring(item.lastIndexOf('/')+1)+"</a>"
                 }else{
                     popup+=item
                 }
@@ -1671,7 +1671,7 @@ function generateLeafletPopup(feature, layer){
             }
             popup+="</ul>"
         }else if(Array.isArray(feature.properties[prop]) && (feature.properties[prop][0]+"").startsWith("http")){
-            popup+="<a href=\""+rewriteLink(feature.properties[prop][0])+"\" target=\"_blank\">"+feature.properties[prop][0].substring(feature.properties[prop][0].lastIndexOf('/')+1)+"</a>"
+            popup+="<a href=\\""+rewriteLink(feature.properties[prop][0])+"\\" target=\\"_blank\\">"+feature.properties[prop][0].substring(feature.properties[prop][0].lastIndexOf('/')+1)+"</a>"
         }else{
             popup+=feature.properties[prop]+""
         }
