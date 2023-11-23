@@ -89,11 +89,10 @@ before_script:
   - apt-get update
   - apt-get install python3 python3-pip git -y
   - pip3 install rdflib shapely pillow requests
-  - git clone https://github.com/sparqlunicorn/sparqlunicornGoesGIS-ontdoc.git
-  - cd sparqlunicornGoesGIS-ontdoc 
+  - git clone https://github.com/sparqlunicorn/sparqlunicornGoesGIS-ontdoc.git ontdocscript
+  - cd ontdocscript 
   - git checkout "$[[inputs.version]]" || git checkout main
   - cd ..
-  - mv sparqlunicornGoesGIS-ontdoc ontdocscript
   - cp ontdocscript/docgeneration.py . 
   - cp ontdocscript/prefixes.json .
 
