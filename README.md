@@ -14,6 +14,11 @@ Deviations from the SPARQLing Unicorn Plugin are listed as follows:
 For a usage example please refer to this repository:
 https://github.com/sparqlunicorn/sparqlunicornGoesGIS_testdata
 
+### Usage Example as Gitlab CI Workflow
+
+For a usage example please refer to this repository:
+[https://github.com/sparqlunicorn/sparqlunicornGoesGIS_testdata](https://gitlab.com/sparqlunicorn/sparqlunicornGoesGIS_testdata)
+
 ### Usage as standalone script
 
 You can use the standalone script by downloading a release or cloning this repository.
