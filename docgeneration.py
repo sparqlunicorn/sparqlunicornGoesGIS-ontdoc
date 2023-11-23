@@ -3640,8 +3640,8 @@ outpath=[]
 filestoprocess=[]
 dataexports=[]
 parser=argparse.ArgumentParser()
-parser.add_argument("-i","--input",nargs='*',help="the input TTL file(s) to parse",action="store", required=True)
-parser.add_argument("-o","--output",nargs='*',help="the output path(s)",action="store", required=True)
+parser.add_argument("-i","--input",nargs='*',help="the input TTL file(s) to parse",action="store",required=True)
+parser.add_argument("-o","--output",nargs='*',help="the output path(s)",action="store",required=True)
 parser.add_argument("-pxns","--prefixns",help="the prefixnamespace",action="store",default=None)
 parser.add_argument("-px","--prefixnsshort",help="the prefix",action="store",default="suni")
 parser.add_argument("-ip","--createIndexPages",help="create index pages?",default=True,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
@@ -3669,7 +3669,7 @@ parser.add_argument("-tn","--templatename",help="the name of the HTML template",
 args, unknown=parser.parse_known_args()
 print(args)
 print("The following arguments were not recognized: "+str(unknown))
-if args.input==None or args.input=="":
+if args.input==None or args.input=="None" or args.input=="":
     print("No input files specified... trying to find files in the script folder")
     args.input=DocUtils.getLDFilesFromFolder(".")
     print("Found "+str(args.input))
