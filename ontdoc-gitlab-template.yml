@@ -105,4 +105,4 @@ pages:
     paths:
     - "$[[inputs.docpath]]"
   rules:
-    - if: "$[[inputs.ghpages]]"
+    - if: "$[[inputs.ghpages]] == true"
