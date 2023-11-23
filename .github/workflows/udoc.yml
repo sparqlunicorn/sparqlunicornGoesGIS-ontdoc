@@ -11,19 +11,19 @@ on:
         type: string
         default: main
       rdffilepath:
-        required: true
+        required: false
         default: None
         type: string
       docpath:
-        required: true
+        required: false
         default: docs 
         type: string
       prefixns:
-        required: true
+        required: false
         default: http://www.sparqlunicorn.link/data/
         type: string
       prefixnsshort:
-        required: true
+        required: false
         default: suni
         type: string
       indexpages:
