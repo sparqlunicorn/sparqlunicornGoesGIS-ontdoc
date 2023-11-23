@@ -23,8 +23,8 @@ class DocUtils:
         files=[]
         for file in os.listdir(directory):
             filename = os.fsdecode(file)
-            if file.endswith(".ttl") or file.endswith(".owl") or file.endswith(".ttl") or file.endswith(
-                    "n3") or file.endswith(".nt"):
+            if filename.endswith(".ttl") or filename.endswith(".owl") or filename.endswith(".ttl") or filename.endswith(
+                    "n3") or filename.endswith(".nt"):
                 files.append(filename)
         return files
 
