@@ -103,3 +103,5 @@ pages:
   artifacts:
     paths:
     - $[[inputs.docpath]]
+  rules:
+    - if: $[[inputs.ghpages]]
