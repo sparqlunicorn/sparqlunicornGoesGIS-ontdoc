@@ -1,4 +1,4 @@
 var namespaces_dup =
 [
-    [ "sparqlunicornGoesGIS-ontdoc", "a00011.html", "a00011" ]
+    [ "docgeneration", "a00005.html", "a00005" ]
 ];
