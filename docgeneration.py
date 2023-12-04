@@ -3759,6 +3759,10 @@ if not os.path.exists(outpath[0]+'/index.ttl') and subrend!=None:
     for sub in subrend:
         for predobj in g.predicate_objects(sub):
             resg.add((sub,predobj[0],predobj[1]))
+            if args.solidexport:
+                resg.add((sub, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://www.w3.org/ns/ldp#Container")))
+                resg.add((sub, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://www.w3.org/ns/ldp#BasicContainer")))
+                resg.add((sub, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://www.w3.org/ns/ldp#Resource")))
     resg.serialize(outpath[0]+'/index.ttl')
 if not os.path.exists(outpath[0]+'/index.html'):
     indexf=open(outpath[0]+"/index.html","w",encoding="utf-8")
