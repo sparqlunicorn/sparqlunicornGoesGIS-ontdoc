@@ -2440,7 +2440,6 @@ class OntDocGeneration:
         paths = {}
         nonnsmap={}
         postprocessing=Graph()
-        subtorenderlen = len(subjectstorender)
         subtorencounter = 0
         for subj in subjectstorender:
             path = subj.replace(prefixnamespace, "")
@@ -2578,6 +2577,7 @@ class OntDocGeneration:
             with open(outpath + "featurecollections.html", 'w', encoding='utf-8') as f:
                 f.write(indexhtml)
                 f.close()
+        return subjectstorender
                     
     def getPropertyRelations(self,graph,outpath):
         predicates= {}
@@ -3726,6 +3726,8 @@ if args.templatepath!=None:
                 print(args.templatename)
 fcounter=0
 docgen=None
+g = Graph()
+subrend=None
 for fp in filestoprocess:
     try:
         g = Graph()
@@ -3742,7 +3744,7 @@ for fp in filestoprocess:
             docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.solidexport,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
         else:
             docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.solidexport,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
-        docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
+        subrend=docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
     except Exception as inst:
         print("Could not parse "+str(fp))
         print(inst)
@@ -3752,6 +3754,12 @@ curlicense=license
 if docgen!=None:
     curlicense=docgen.licensehtml
 print("Path exists? "+outpath[0]+'/index.html '+str(os.path.exists(outpath[0]+'/index.html')))
+if not os.path.exists(outpath[0]+'/index.ttl') and subrend!=None:
+    resg=Graph()
+    for sub in subrend:
+        for predobj in g.predicate_objects(sub):
+            resg.add((sub,predobj[0],predobj[1]))
+    resg.serialize(outpath[0]+'/index.ttl')
 if not os.path.exists(outpath[0]+'/index.html'):
     indexf=open(outpath[0]+"/index.html","w",encoding="utf-8")
     nonnslink=""
