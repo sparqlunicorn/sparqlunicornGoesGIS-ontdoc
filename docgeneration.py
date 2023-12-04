@@ -2197,7 +2197,7 @@ def resolveTemplate(templatename):
 
 class OntDocGeneration:
 
-    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,iiif,ckan=True,localOptimized=False,imagemetadata=None,startconcept=None,deploypath="",logoname="",templatename="default",offlinecompat=False,exports=["json","ttl"],datasettitle="",publisher="",publishingorg=""):
+    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,iiif,ckan=True,solidexport=True,localOptimized=False,imagemetadata=None,startconcept=None,deploypath="",logoname="",templatename="default",offlinecompat=False,exports=["json","ttl"],datasettitle="",publisher="",publishingorg=""):
         self.prefixes=prefixes
         self.prefixnamespace = prefixnamespace
         self.namespaceshort = prefixnsshort.replace("/","")
@@ -2206,6 +2206,7 @@ class OntDocGeneration:
         self.datasettitle=datasettitle
         self.logoname=logoname
         self.ckan=ckan
+        self.solidexport=solidexport
         self.publisher=publisher
         self.publishingorg=publishingorg
         self.startconcept=startconcept
@@ -2489,7 +2490,8 @@ class OntDocGeneration:
         with open(outpath + corpusid + '_search.js', 'w', encoding='utf-8') as f:
             f.write("var search=" + json.dumps(labeltouri, indent=2, sort_keys=True))
             f.close()
-        IIIFAPIExporter.generateIIIFAnnotations(outpath,imagetoURI)
+        if self.iiif:
+            IIIFAPIExporter.generateIIIFAnnotations(outpath,imagetoURI)
         if self.createIndexPages:
             for path in paths:
                 subgraph=Graph(bind_namespaces="rdflib")
@@ -2506,6 +2508,10 @@ class OntDocGeneration:
                     if nslink in sub:
                         for tup in self.graph.predicate_objects(sub):
                             subgraph.add((sub, tup[0], tup[1]))
+                            if self.solidexport:
+                                subgraph.add((URIRef(sub.replace("nslink","")),URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://www.w3.org/ns/ldp#Container")))
+                                subgraph.add((URIRef(sub.replace("nslink", "")),URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://www.w3.org/ns/ldp#BasicContainer")))
+                                subgraph.add((URIRef(sub.replace("nslink", "")),URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://www.w3.org/ns/ldp#Resource")))
                 for ex in self.exports:
                     if ex in ExporterUtils.exportToFunction:
                         if ex not in ExporterUtils.rdfformats:
@@ -2557,6 +2563,7 @@ class OntDocGeneration:
             IIIFAPIExporter.generateIIIFCollections(self.outpath,self.deploypath,iiifmanifestpaths["default"],prefixnamespace)
         if len(featurecollectionspaths)>0 and self.ckan:
             CKANExporter.generateCKANCollection(outpath,self.deploypath,featurecollectionspaths,tree["core"]["data"],self.license)
+        if self.solidexport:
             SolidExporter.createSolidSettings(self.graph,outpath,self.deploypath,self.publisher,self.datasettitle,tree["core"]["data"])
         if len(featurecollectionspaths)>0:
             relpath=DocUtils.generateRelativePathFromGivenDepth(0)
@@ -3408,6 +3415,9 @@ class OntDocGeneration:
                 tablecontents += "</tr>"
         if self.licenseuri!=None:
              ttlf.add((subject, URIRef("http://purl.org/dc/elements/1.1/license"), URIRef(self.licenseuri)))
+        if self.solidexport!=None:
+            ttlf.add((subject, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#"), URIRef("http://www.w3.org/ns/ldp#Resource")))
+            ttlf.add((subject, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#"), URIRef("https://www.iana.org/assignments/media-types/text/turtle#Resource")))
         nonnslink=""
         if nonns:
             completesavepath = savepath.replace(":","_")
@@ -3660,6 +3670,7 @@ parser.add_argument("-vowl","--createvowl",help="create vowl graph view?",action
 parser.add_argument("-of","--offlinecompat",help="built-result is offline compatible",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-ogc","--ogcapifeatures",help="create ogc api features collections?",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-iiif","--iiifmanifest",help="create iiif manifests?",action="store",default=True,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
+parser.add_argument("-solid","--solidexport",help="create solid pod deployment?",action="store",default=True,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-imgmd","--imagemetadata",help="resolve image metadata?",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-ckan","--ckanapi",help="create static ckan api docs?",action="store",default=True,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-sc","--startconcept",help="the concept suggested for browsing the HTML documentation",action="store",default=None)
@@ -3728,9 +3739,9 @@ for fp in filestoprocess:
                 args.prefixns=pres
             print("Detected "+args.prefixns+" as data namespace")
         if fcounter<len(outpath):
-            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
+            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.solidexport,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
         else:
-            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
+            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.solidexport,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
         docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
     except Exception as inst:
         print("Could not parse "+str(fp))
