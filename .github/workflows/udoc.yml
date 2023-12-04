@@ -86,6 +86,10 @@ on:
         required: false
         default: true
         type: boolean
+      solid:
+        required: false
+        default: false
+        type: boolean
       ckan:
         required: false
         default: true
@@ -146,7 +150,7 @@ jobs:
           sudo pip3 install rdflib shapely pillow
           cp ontdocscript/docgeneration.py .
           cp ontdocscript/prefixes.json .
-          python3 docgeneration.py --input "${{inputs.rdffilepath}}" --output "${{inputs.docpath}}" --prefixns "${{inputs.prefixns}}" --prefixnsshort "${{inputs.prefixnsshort}}" --createIndexPages "${{inputs.indexpages}}" --createCollections "${{inputs.createcollections}}" --labellang "${{inputs.preferredlang}}" --license "${{inputs.license}}" --logourl "${{inputs.logourl}}" --metadatatable "${{inputs.metadatatable}}" --nonnspages "${{inputs.createnonNSPages}}" --createvowl "${{inputs.createVOWL}}" --ogcapifeatures "${{inputs.ogcapifeatures}}" --iiif "${{inputs.iiif}}" --ckan "${{inputs.ckan}}" --startconcept "${{inputs.startconcept}}" --deploypath "https://${{github.repository_owner}}.github.io/${{ github.event.repository.name }}" --templatepath "${{inputs.templatedir}}" --offlinecompat "${{inputs.offlinecompat}}" --exports "${{inputs.exports}}" --datasettitle "${{inputs.datasettitle}}" --publisher "${{inputs.publisher}}" --publishingorg "${{inputs.publishingorg}}" 
+          python3 docgeneration.py --input "${{inputs.rdffilepath}}" --output "${{inputs.docpath}}" --prefixns "${{inputs.prefixns}}" --prefixnsshort "${{inputs.prefixnsshort}}" --createIndexPages "${{inputs.indexpages}}" --createCollections "${{inputs.createcollections}}" --labellang "${{inputs.preferredlang}}" --license "${{inputs.license}}" --logourl "${{inputs.logourl}}" --metadatatable "${{inputs.metadatatable}}" --nonnspages "${{inputs.createnonNSPages}}" --createvowl "${{inputs.createVOWL}}" --ogcapifeatures "${{inputs.ogcapifeatures}}" --iiif "${{inputs.iiif}}" --ckan "${{inputs.ckan}}" --solid "${{inputs.solid}}" --startconcept "${{inputs.startconcept}}" --deploypath "https://${{github.repository_owner}}.github.io/${{ github.event.repository.name }}" --templatepath "${{inputs.templatedir}}" --offlinecompat "${{inputs.offlinecompat}}" --exports "${{inputs.exports}}" --datasettitle "${{inputs.datasettitle}}" --publisher "${{inputs.publisher}}" --publishingorg "${{inputs.publishingorg}}" 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         if: ${{ inputs.ghpages }}
