@@ -51,17 +51,17 @@ templates=DocDefaults.templates
 
 def resolveTemplate(templatename):
     print(templatepath+"/"+templatename)
-    if os.path.exists(templatepath+"/templateconf.json"):
-        with open(templatepath+"/templateconf.json", 'r') as f:
+    if os.path.exists(templatepath+"/"+templatename+"/templateconf.json"):
+        with open(templatepath+"/"+templatename+"/templateconf.json", 'r') as f:
             templatefiles = json.load(f)
             for file in templatefiles:
-                if os.path.exists(templatepath + "/" + file):
-                    with open(templatepath + "/" + file["path"], 'r') as f:
+                if os.path.exists(templatepath +"/"+templatename+"/"+ file):
+                    with open(templatepath +"/"+templatename+"/"+ file["path"], 'r') as f:
                         if "name" in file:
                             templates[file["name"]]= f.read()
                         else:
                             templates[file] = f.read()
-    elif os.path.exists(templatepath+"/templates/"):
+    elif os.path.exists(templatepath+"/"+templatename+"/templates/"):
         for filename in os.listdir(templatepath+"/templates/"):
             if filename.endswith(".html") or filename.endswith(".css"):
                 with open(templatepath+"/templates/"+filename, 'r') as f:
