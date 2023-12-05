@@ -302,7 +302,7 @@ class OntDocGeneration:
             if tr["id"] not in classidset:
                 tree["core"]["data"].append(tr)
         with open(outpath + "style.css", 'w', encoding='utf-8') as f:
-            f.write(stylesheet)
+            f.write(templates["stylesheet"])
             f.close()
         with open(outpath + "startscripts.js", 'w', encoding='utf-8') as f:
             f.write(templates["startscripts"].replace("{{baseurl}}",prefixnamespace))
