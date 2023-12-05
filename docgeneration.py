@@ -167,6 +167,7 @@ class OntDocGeneration:
             if "geojson" in literaltype.lower():
                 return literal
         except Exception as e:
+            print("Literal: "+str(literal)+" "+str(literaltype))
             print(e)
             print(traceback.format_exc())
         return None
