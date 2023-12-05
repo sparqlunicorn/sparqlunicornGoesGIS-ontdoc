@@ -65,15 +65,15 @@ def resolveTemplate(templatename):
         if os.path.exists(templatepath+"/"+templatename+"/templates/layouts/") and os.path.exists(templatepath+"/"+templatename+"/templates/includes/"):
             templates["includes"]={}
             templates["layouts"] = {}
-            for filename in os.listdir(templatepath+"/"+templatename+"/templates/includes"):
+            for filename in os.listdir(templatepath+"/"+templatename+"/templates/includes/"):
                 if filename.endswith(".html") or filename.endswith(".css"):
-                    with open(templatepath+"/"+templatename+"/templates/"+filename, 'r') as f:
+                    with open(templatepath+"/"+templatename+"/templates/includes/"+filename, 'r') as f:
                         content=f.read()
                         templates["includes"][filename.replace(".html","")] = content
                         templates[filename.replace(".html", "")] = content
-            for filename in os.listdir(templatepath + "/" + templatename + "/templates/layouts"):
+            for filename in os.listdir(templatepath + "/" + templatename + "/templates/layouts/"):
                 if filename.endswith(".html") or filename.endswith(".css"):
-                    with open(templatepath + "/" + templatename + "/templates/" + filename, 'r') as f:
+                    with open(templatepath + "/" + templatename + "/templates/layouts/" + filename, 'r') as f:
                         content=f.read()
                         templates["layouts"][filename.replace(".html", "")] = content
                         templates[filename.replace(".html", "")] = content
