@@ -62,11 +62,26 @@ def resolveTemplate(templatename):
                         else:
                             templates[file] = f.read()
     elif os.path.exists(templatepath+"/"+templatename+"/templates/"):
-        for filename in os.listdir(templatepath+"/"+templatename+"/templates/"):
-            if filename.endswith(".html") or filename.endswith(".css"):
-                with open(templatepath+"/"+templatename+"/templates/"+filename, 'r') as f:
-                    global stylesheet
-                    templates[filename.replace(".html","")] = f.read()
+        if os.path.exists(templatepath+"/"+templatename+"/templates/layouts/") and os.path.exists(templatepath+"/"+templatename+"/templates/includes/"):
+            templates["includes"]={}
+            templates["layouts"] = {}
+            for filename in os.listdir(templatepath+"/"+templatename+"/templates/includes"):
+                if filename.endswith(".html") or filename.endswith(".css"):
+                    with open(templatepath+"/"+templatename+"/templates/"+filename, 'r') as f:
+                        content=f.read()
+                        templates["includes"][filename.replace(".html","")] = content
+                        templates[filename.replace(".html", "")] = content
+            for filename in os.listdir(templatepath + "/" + templatename + "/templates/layouts"):
+                if filename.endswith(".html") or filename.endswith(".css"):
+                    with open(templatepath + "/" + templatename + "/templates/" + filename, 'r') as f:
+                        content=f.read()
+                        templates["layouts"][filename.replace(".html", "")] = content
+                        templates[filename.replace(".html", "")] = content
+        else:
+            for filename in os.listdir(templatepath+"/"+templatename+"/templates/"):
+                if filename.endswith(".html") or filename.endswith(".css"):
+                    with open(templatepath+"/"+templatename+"/templates/"+filename, 'r') as f:
+                        templates[filename.replace(".html","")] = f.read()
         return False
     return True
 
@@ -155,6 +170,14 @@ class OntDocGeneration:
             print(e)
             print(traceback.format_exc())
         return None
+
+    includepattern=p = re.compile("\{% include (.+) %\}")
+
+    def getIncludesInTemplate(self,template):
+        includes=re.findall(OntDocGeneration.includepattern, template)
+        for inc in includes:
+            print("INCLUDES: "+str(inc))
+
 
     def createOfflineCompatibleVersion(self,outpath,myhtmltemplate,templatepath,templatename):
         if not os.path.isdir(outpath):
@@ -309,7 +332,6 @@ class OntDocGeneration:
         with open(outpath + "epsgdefs.js", 'w', encoding='utf-8') as f:
             f.write(templates["epsgdefs"])
             f.close()
-        pathmap = {}
         paths = {}
         nonnsmap={}
         postprocessing=Graph()
@@ -424,6 +446,8 @@ class OntDocGeneration:
                     f.write(indexhtml)
                     f.close()
         sparqlhtml = self.replaceStandardVariables(templates["htmltemplate"], "", "0","false")
+        if "layouts" in templates:
+            self.getIncludesInTemplate(sparqlhtml)
         sparqlhtml = sparqlhtml.replace("{{iconprefixx}}",("icons/" if self.offlinecompat else "")).replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}","0").replace("{{relativepath}}",".").replace("{{toptitle}}","SPARQL Query Editor").replace("{{title}}","SPARQL Query Editor").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
                     .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{baseurlhtml}}", "").replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", corpusid + "_search.js").replace("{{exports}}",templates["nongeoexports"]).replace("{{versionurl}}",DocConfig.versionurl).replace("{{version}}",DocConfig.version).replace("{{bibtex}}","").replace("{{proprelationpath}}","proprelations.js")
         sparqlhtml+=templates["sparqltemplate"]
