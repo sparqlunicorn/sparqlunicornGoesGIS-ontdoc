@@ -175,6 +175,7 @@ class OntDocGeneration:
 
     def getIncludesInTemplate(self,template):
         includes=re.findall(OntDocGeneration.includepattern, template)
+        print("INCLUDE RESULT: "+str(includes))
         for inc in includes:
             print("INCLUDES: "+str(inc))
 
