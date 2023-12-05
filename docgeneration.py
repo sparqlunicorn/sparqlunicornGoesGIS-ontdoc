@@ -171,7 +171,7 @@ class OntDocGeneration:
             print(traceback.format_exc())
         return None
 
-    includepattern=p = re.compile("\{% include (.+) %\}")
+    includepattern=p = re.compile("{% include (.+) %}")
 
     def getIncludesInTemplate(self,template):
         includes=re.findall(OntDocGeneration.includepattern, template)
