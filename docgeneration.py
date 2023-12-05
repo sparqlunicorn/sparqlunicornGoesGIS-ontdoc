@@ -455,9 +455,9 @@ class OntDocGeneration:
                         .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{baseurlhtml}}", "").replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", corpusid + "_search.js").replace("{{exports}}",templates["nongeoexports"]).replace("{{versionurl}}",DocConfig.versionurl).replace("{{version}}",DocConfig.version).replace("{{bibtex}}","").replace("{{proprelationpath}}","proprelations.js")
             sparqlhtml+=templates["sparqltemplate"]
             sparqlhtml+=self.replaceStandardVariables(templates["footer"],"","0","false").replace("{{license}}",curlicense).replace("{{exports}}",templates["nongeoexports"]).replace("{{bibtex}}","")
-        with open( outpath+"sparql.html", 'w', encoding='utf-8') as f:
-            f.write(sparqlhtml)
-            f.close()
+            with open( outpath+"sparql.html", 'w', encoding='utf-8') as f:
+                f.write(sparqlhtml)
+                f.close()
         if len(iiifmanifestpaths["default"])>0:
             IIIFAPIExporter.generateIIIFCollections(self.outpath,self.deploypath,iiifmanifestpaths["default"],prefixnamespace)
         if len(featurecollectionspaths)>0 and self.ckan:
