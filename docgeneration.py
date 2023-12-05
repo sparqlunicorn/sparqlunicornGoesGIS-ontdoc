@@ -10,8 +10,6 @@ import os
 import sys
 import traceback
 
-
-
 if os.path.exists("ontdocscript"):
     sys.path.insert(0, os.path.dirname(os.path.realpath(__file__))+"/ontdocscript")
 else:
@@ -20,6 +18,8 @@ print(sys.path)
 print(os.path.dirname(os.path.realpath(__file__)))
 print(os.listdir(os.getcwd()))
 from doc.docutils import DocUtils
+from doc.docdefaults import DocDefaults
+from doc.docconfig import DocConfig
 from doc.pyowl2vowl import OWL2VOWL
 from export.data.exporterutils import ExporterUtils
 from export.api.iiifexporter import IIIFAPIExporter
@@ -27,7 +27,6 @@ from export.api.ogcapifeaturesexporter import OGCAPIFeaturesExporter
 from export.api.ckanexporter import CKANExporter
 from export.api.solidexporter import SolidExporter
 
-import requests
 import shapely.wkt
 import shapely.geometry
 import urllib.parse
@@ -44,2160 +43,52 @@ if os.path.exists("ontdocscript"):
 else:
     templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
 
-version="SPARQLing Unicorn QGIS Plugin OntDoc Script 0.16"
-
-versionurl="https://github.com/sparqlunicorn/sparqlunicornGoesGIS-ontdoc"
-
-bibtextypemappings={"http://purl.org/ontology/bibo/Document":"@misc","http://purl.org/ontology/bibo/Article":"@article","http://purl.org/ontology/bibo/Thesis":"@phdthesis","http://purl.org/ontology/bibo/BookSection":"@inbook","http://purl.org/ontology/bibo/Book":"@book","http://purl.org/ontology/bibo/Proceedings":"@inproceedings"}
-
-labelproperties={
-    "http://www.w3.org/2004/02/skos/core#prefLabel":"DatatypeProperty",
-    "http://www.w3.org/2004/02/skos/core#prefSymbol": "DatatypeProperty",
-    "http://www.w3.org/2004/02/skos/core#altLabel": "DatatypeProperty",
-    "https://schema.org/name": "DatatypeProperty",
-    "https://schema.org/alternateName": "DatatypeProperty",
-    "http://purl.org/dc/terms/title": "DatatypeProperty",
-    "http://purl.org/dc/elements/1.1/title":"DatatypeProperty",
-    "http://www.w3.org/2004/02/skos/core#altSymbol": "DatatypeProperty",
-    "http://www.w3.org/2004/02/skos/core#hiddenLabel": "DatatypeProperty",
-    "http://www.w3.org/2000/01/rdf-schema#label": "DatatypeProperty"
-}
-
-baselayers={
-    "OpenStreetMap (OSM)":{"url":"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png","default":True,"type":"tile"}
-}
-
-metadatanamespaces=["http://purl.org/dc/terms/","http://purl.org/dc/elements/1.1/","http://www.w3.org/ns/prov#","http://www.w3.org/ns/prov-o/","http://creativecommons.org/ns#","http://www.w3.org/ns/dcat#","http://purl.org/cerif/frapo/","http://www.lido-schema.org/"]
-
-collectionclasses=["http://www.opengis.net/ont/geosparql#FeatureCollection","http://www.opengis.net/ont/geosparql#GeometryCollection","http://www.opengis.net/ont/geosparql#SpatialObjectCollection","http://www.w3.org/2004/02/skos/core#Collection","http://www.w3.org/2004/02/skos/core#OrderedCollection","https://www.w3.org/ns/activitystreams#Collection","https://www.w3.org/ns/activitystreams#OrderedCollection"]
-
-geoliteraltypes=["http://www.opengis.net/ont/geosparql#wktLiteral","http://www.opengis.net/ont/geosparql#gmlLiteral","http://www.opengis.net/ont/geosparql#kmlLiteral","http://www.opengis.net/ont/geosparql#geoJSONLiteral","http://www.opengis.net/ont/geosparql#dggsLiteral"]
-
-timeproperties=["http://www.w3.org/2006/time#inXSDDateTime","http://www.w3.org/2006/time#inXSDDate","http://www.w3.org/2006/time#inXSDDateTimeStamp","http://www.w3.org/2006/time#inXSDgYear","http://www.w3.org/2006/time#inXSDgYearMonth"]
-
-timepointerproperties=["http://www.w3.org/2006/time#hasTime", "http://www.w3.org/2006/time#hasDuration","http://www.w3.org/2006/time#hasBeginning","http://www.w3.org/2006/time#hasEnd"]
-
-timeliteraltypes={"http://www.w3.org/2001/XMLSchema#gYear":"http://www.ontology-of-units-of-measure.org/resource/om-2/year",
-"http://www.w3.org/2006/time#generalYear":"http://www.w3.org/2006/time#unitYear",
-"http://www.w3.org/2001/XMLSchema#gMonth":"http://www.ontology-of-units-of-measure.org/resource/om-2/month",
-"http://www.w3.org/TR/owl-time#generalMonth":"http://www.w3.org/2006/time#unitMonth",
-"http://www.w3.org/2001/XMLSchema#gDay":"http://www.ontology-of-units-of-measure.org/resource/om-2/day",
-"http://www.w3.org/TR/owl-time#generalDay":"http://www.w3.org/2006/time#unitDay",
-"http://www.w3.org/2001/XMLSchema#date":"","http://www.w3.org/2001/XMLSchema#dateTime":""}
-
-collectionrelationproperties={
-    "http://www.w3.org/2000/01/rdf-schema#member":"ObjectProperty",
-    "http://www.w3.org/2004/02/skos/core#member":"ObjectProperty"
-}
-
-invcollectionrelationproperties={
-    "https://www.w3.org/ns/activitystreams#partOf":"ObjectProperty"
-}
-
-valueproperties={
-    "http://www.w3.org/1999/02/22-rdf-syntax-ns#value":"DatatypeProperty",
-    "http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue":"ObjectProperty",
-    "http://www.opengis.net/ont/crs/usesValue":"ObjectProperty",
-    "http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue":"DatatypeProperty"
-}
-
-unitproperties={
-    "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit":"ObjectProperty",
-    "https://www.w3.org/ns/activitystreams#units":"DatatypeProperty"
-}
-
-labelproperties = {
-    "http://www.w3.org/2004/02/skos/core#prefLabel": "DatatypeProperty",
-    "http://www.w3.org/2004/02/skos/core#prefSymbol": "DatatypeProperty",
-    "http://www.w3.org/2004/02/skos/core#altLabel": "DatatypeProperty",
-    "https://schema.org/name": "DatatypeProperty",
-    "https://schema.org/alternateName": "DatatypeProperty",
-    "http://purl.org/dc/terms/title": "DatatypeProperty",
-    "http://purl.org/dc/elements/1.1/title": "DatatypeProperty",
-    "http://www.w3.org/2004/02/skos/core#altSymbol": "DatatypeProperty",
-    "http://www.w3.org/2004/02/skos/core#hiddenLabel": "DatatypeProperty",
-    "http://www.w3.org/2000/01/rdf-schema#label": "DatatypeProperty"
-}
-
-commentproperties={
-    "http://www.w3.org/2004/02/skos/core#definition":"DatatypeProperty",
-    "http://www.w3.org/2004/02/skos/core#note": "DatatypeProperty",
-    "http://www.w3.org/2004/02/skos/core#scopeNote": "DatatypeProperty",
-    "http://www.w3.org/2004/02/skos/core#historyNote": "DatatypeProperty",
-    "https://schema.org/description":"DatatypeProperty",
-    "http://www.w3.org/2000/01/rdf-schema#comment": "DatatypeProperty",
-    "http://purl.org/dc/terms/description": "DatatypeProperty",
-    "http://purl.org/dc/elements/1.1/description": "DatatypeProperty"
-}
-
-geopointerproperties={
-    "http://www.opengis.net/ont/geosparql#hasGeometry": "ObjectProperty",
-    "http://www.opengis.net/ont/geosparql#hasDefaultGeometry": "ObjectProperty",
-    "http://www.w3.org/2003/01/geo/wgs84_pos#geometry": "ObjectProperty",
-    "http://www.w3.org/2006/vcard/ns#hasGeo": "ObjectProperty",
-    "http://schema.org/geo": "ObjectProperty",
-    "https://schema.org/geo": "ObjectProperty",
-    "http://geovocab.org/geometry#geometry": "ObjectProperty",
-    "http://www.w3.org/ns/locn#geometry": "ObjectProperty",
-    "http://rdfs.co/juso/geometry": "ObjectProperty"
-}
-
-geolatlonproperties={
-   "http://www.w3.org/2003/01/geo/wgs84_pos#lat":"DatatypeProperty",
-   "http://www.w3.org/2003/01/geo/wgs84_pos#long": "DatatypeProperty",
-   "https://www.w3.org/ns/activitystreams#latitude": "DatatypeProperty",
-   "https://www.w3.org/ns/activitystreams#longitude": "DatatypeProperty",
-   "http://www.semanticweb.org/ontologies/2015/1/EPNet-ONTOP_Ontology#hasLatitude": "DatatypeProperty",
-   "http://www.semanticweb.org/ontologies/2015/1/EPNet-ONTOP_Ontology#hasLongitude": "DatatypeProperty",
-   "http://schema.org/longitude": "DatatypeProperty",
-   "https://schema.org/longitude": "DatatypeProperty",
-   "http://schema.org/latitude": "DatatypeProperty",
-   "https://schema.org/latitude": "DatatypeProperty",
-}
-
-geopairproperties={
-    "http://schema.org/longitude":{"type":"DatatypeProperty","pair":"http://schema.org/latitude","islong":False},
-    "http://schema.org/latitude": {"type": "DatatypeProperty", "pair": "http://schema.org/longitude","islong":True},
-    "https://schema.org/longitude": {"type": "DatatypeProperty", "pair": "https://schema.org/latitude","islong":False},
-    "https://schema.org/latitude": {"type": "DatatypeProperty", "pair": "https://schema.org/longitude","islong":True},
-    "http://www.w3.org/2003/01/geo/wgs84_pos#lat": {"type": "DatatypeProperty", "pair": "http://www.w3.org/2003/01/geo/wgs84_pos#long","islong":True},
-    "http://www.w3.org/2003/01/geo/wgs84_pos#long": {"type": "DatatypeProperty", "pair": "http://www.w3.org/2003/01/geo/wgs84_pos#lat","islong":False},
-    "http://www.semanticweb.org/ontologies/2015/1/EPNet-ONTOP_Ontology#hasLongitude": {"type": "DatatypeProperty", "pair": "http://www.semanticweb.org/ontologies/2015/1/EPNet-ONTOP_Ontology#hasLatitude","islong": False},
-    "http://www.semanticweb.org/ontologies/2015/1/EPNet-ONTOP_Ontology#hasLatitude": {"type": "DatatypeProperty", "pair": "http://www.semanticweb.org/ontologies/2015/1/EPNet-ONTOP_Ontology#hasLongitude","islong": True}
-}
-
-
-geoproperties={
-   "http://www.opengis.net/ont/geosparql#asWKT":"DatatypeProperty",
-   "http://www.opengis.net/ont/geosparql#asGML": "DatatypeProperty",
-   "http://www.opengis.net/ont/geosparql#asKML": "DatatypeProperty",
-   "http://www.opengis.net/ont/geosparql#asGeoJSON": "DatatypeProperty",
-   "http://www.opengis.net/ont/geosparql#hasGeometry": "ObjectProperty",
-   "http://www.opengis.net/ont/geosparql#hasDefaultGeometry": "ObjectProperty",
-   "http://www.w3.org/2003/01/geo/wgs84_pos#geometry": "ObjectProperty",
-   "http://www.georss.org/georss/point": "DatatypeProperty",
-   "http://www.w3.org/2006/vcard/ns#hasGeo": "ObjectProperty",
-   "http://schema.org/geo": "ObjectProperty",
-   "https://schema.org/geo": "ObjectProperty",
-   "http://purl.org/dc/terms/coverage":"DatatypeProperty",
-   "http://purl.org/dc/terms/spatial":"DatatypeProperty",
-   "http://schema.org/polygon": "DatatypeProperty",
-   "https://schema.org/polygon": "DatatypeProperty",
-   "http://geovocab.org/geometry#geometry": "ObjectProperty",
-   "http://www.w3.org/ns/locn#geometry": "ObjectProperty",
-   "http://rdfs.co/juso/geometry": "ObjectProperty",
-   "http://www.wikidata.org/prop/direct/P625":"DatatypeProperty",
-   "https://database.factgrid.de/prop/direct/P48": "DatatypeProperty",
-   "http://database.factgrid.de/prop/direct/P48":"DatatypeProperty",
-   "http://www.wikidata.org/prop/direct/P3896": "DatatypeProperty"
-}
-
-imageextensions=[".apng",".bmp",".cur",".ico",".jpg",".jpeg",".png",".gif",".tif",".svg","<svg"]
-
-meshextensions=[".ply",".nxs",".nxz"]
-
-videoextensions=[".avi",".mp4",".ogv"]
-
-audioextensions=[".aac",".mp3",".mkv",".ogg",".opus",".wav"]
-
-fileextensionmap={
-    ".apng":"image",
-    ".bmp":"image",
-    ".cur":"image",
-    ".ico":"image",
-    ".jpg":"image",
-    ".jpeg":"image",
-    ".png":"image",
-    ".gif":"image",
-    ".tif":"image",
-    ".svg":"image",
-    "<svg":"image",
-    ".ply":"mesh",
-    ".nxs":"mesh",
-    ".nxz":"mesh",
-    ".avi":"video",
-    ".mp4":"video",
-    ".ogv":"video",
-    ".aac":"audio",
-    ".mp3":"audio",
-    ".mkv":"audio",
-    ".ogg":"audio",
-    ".opus":"audio",
-    ".wav":"audio"
-}
-
-
-startscripts = """var namespaces={"rdf":"http://www.w3.org/1999/02/22-rdf-syntax-ns#","xsd":"http://www.w3.org/2001/XMLSchema#","geo":"http://www.opengis.net/ont/geosparql#","rdfs":"http://www.w3.org/2000/01/rdf-schema#","owl":"http://www.w3.org/2002/07/owl#","dc":"http://purl.org/dc/terms/","skos":"http://www.w3.org/2004/02/skos/core#"}
-var annotationnamespaces=["http://www.w3.org/2004/02/skos/core#","http://www.w3.org/2000/01/rdf-schema#","http://purl.org/dc/terms/"]
-var indexpage=false
-var rangesByAttribute={}
-var overlayMaps={}
-var baseMaps = {}
-props={}
-var geoproperties={
-   "http://www.opengis.net/ont/geosparql#asWKT":"DatatypeProperty",
-   "http://www.opengis.net/ont/geosparql#asGML": "DatatypeProperty",
-   "http://www.opengis.net/ont/geosparql#asKML": "DatatypeProperty",
-   "http://www.opengis.net/ont/geosparql#asGeoJSON": "DatatypeProperty",
-   "http://www.opengis.net/ont/geosparql#hasGeometry": "ObjectProperty",
-   "http://www.opengis.net/ont/geosparql#hasDefaultGeometry": "ObjectProperty",
-   "http://www.w3.org/2003/01/geo/wgs84_pos#geometry": "ObjectProperty",
-   "http://www.georss.org/georss/point": "DatatypeProperty",
-   "http://www.w3.org/2006/vcard/ns#hasGeo": "ObjectProperty",
-   "http://www.w3.org/2003/01/geo/wgs84_pos#lat":"DatatypeProperty",
-   "http://www.w3.org/2003/01/geo/wgs84_pos#long": "DatatypeProperty",
-   "http://www.semanticweb.org/ontologies/2015/1/EPNet-ONTOP_Ontology#hasLatitude": "DatatypeProperty",
-   "http://www.semanticweb.org/ontologies/2015/1/EPNet-ONTOP_Ontology#hasLongitude": "DatatypeProperty",
-   "http://schema.org/geo": "ObjectProperty",
-   "http://schema.org/polygon": "DatatypeProperty",
-   "https://schema.org/geo": "ObjectProperty",
-   "https://schema.org/polygon": "DatatypeProperty",
-   "http://geovocab.org/geometry#geometry": "ObjectProperty",
-   "http://www.w3.org/ns/locn#geometry": "ObjectProperty",
-   "http://rdfs.co/juso/geometry": "ObjectProperty",
-   "http://www.wikidata.org/prop/direct/P625":"DatatypeProperty",
-   "https://database.factgrid.de/prop/direct/P48": "DatatypeProperty",
-   "http://database.factgrid.de/prop/direct/P48":"DatatypeProperty",
-   "http://www.wikidata.org/prop/direct/P3896": "DatatypeProperty"
-}
-
-commentproperties={
-    "http://www.w3.org/2004/02/skos/core#definition":"DatatypeProperty",
-    "http://www.w3.org/2004/02/skos/core#note": "DatatypeProperty",
-    "http://www.w3.org/2004/02/skos/core#scopeNote": "DatatypeProperty",
-    "http://www.w3.org/2004/02/skos/core#historyNote": "DatatypeProperty",
-    "https://schema.org/description":"DatatypeProperty",
-    "http://www.w3.org/2000/01/rdf-schema#comment": "DatatypeProperty",
-    "http://purl.org/dc/terms/description": "DatatypeProperty",
-    "http://purl.org/dc/elements/1.1/description": "DatatypeProperty"
-}
-
-labelproperties={
-    "http://www.w3.org/2004/02/skos/core#prefLabel":"DatatypeProperty",
-    "http://www.w3.org/2004/02/skos/core#prefSymbol": "DatatypeProperty",
-    "http://www.w3.org/2004/02/skos/core#altLabel": "DatatypeProperty",
-    "https://schema.org/name": "DatatypeProperty",
-    "https://schema.org/alternateName": "DatatypeProperty",
-    "http://purl.org/dc/terms/title": "DatatypeProperty",
-    "http://purl.org/dc/elements/1.1/title":"DatatypeProperty",
-    "http://www.w3.org/2004/02/skos/core#altSymbol": "DatatypeProperty",
-    "http://www.w3.org/2004/02/skos/core#hiddenLabel": "DatatypeProperty",
-    "http://www.w3.org/2000/01/rdf-schema#label": "DatatypeProperty"
-}
-
-var baseurl=""
-  $( function() {
-    var availableTags = Object.keys(search)
-    $( "#search" ).autocomplete({
-      source: availableTags,
-      delay: 300
-    });
-    //console.log(availableTags)
-    setupJSTree()
-  } );
-
-function openNav() {
-  document.getElementById("mySidenav").style.width = "400px";
-}
-
-function closeNav() {
-  document.getElementById("mySidenav").style.width = "0";
-}
-
-function exportGeoJSON(){
-    if(typeof(feature) !== "undefined"){
-        saveTextAsFile(JSON.stringify(feature),"geojson")
-    }else if(window.location.href.includes("_nonns")){
-        downloadFile(window.location.href.replace(".html",".geojson"))
-    }
-}
-
-function parseWKTStringToJSON(wktstring){
-    wktstring=wktstring.substring(wktstring.lastIndexOf('(')+1,wktstring.lastIndexOf(')')-1)
-    resjson=[]
-    for(coordset of wktstring.split(",")){
-        curobject={}
-        coords=coordset.trim().split(" ")
-        console.log(coordset)
-        console.log(coords)
-        if(coords.length==3){
-            resjson.push({"x":parseFloat(coords[0]),"y":parseFloat(coords[1]),"z":parseFloat(coords[2])})
-        }else{
-            resjson.push({"x":parseFloat(coords[0]),"y":parseFloat(coords[1])})
-        }
-    }
-    console.log(resjson)
-    return resjson
-}
-
-function testRDFLibParsing(cururl){
-    var store = $rdf.graph()
-    var timeout = 5000 // 5000 ms timeout
-    var fetcher = new $rdf.Fetcher(store, timeout)
-
-    fetcher.nowOrWhenFetched(cururl, function(ok, body, response) {
-        if (!ok) {
-            console.log("Oops, something happened and couldn't fetch data " + body);
-        } else if (response.onErrorWasCalled || response.status !== 200) {
-            console.log('    Non-HTTP error reloading data! onErrorWasCalled=' + response.onErrorWasCalled + ' status: ' + response.status)
-        } else {
-            console.log("---data loaded---")
-        }
-    })
-	return store
-}
-
-function exportCSV(sepchar,filesuffix){
-    rescsv=""
-    if(typeof(feature)!=="undefined"){
-        if("features" in feature){
-           for(feat of feature["features"]){
-                rescsv+="\\""+feat["geometry"]["type"].toUpperCase()+"("
-				if(feature["geometry"]["type"].toUpperCase()=="POINT"){
-                    rescsv =  rescsv + feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1]
-				}else{
-					feature["geometry"].coordinates.forEach(function(p,i){
-						if(i<feature["geometry"].coordinates.length-1) rescsv =  rescsv + p[0] + ' ' + p[1] + ', ';
-						else rescsv =  rescsv + p[0] + ' ' + p[1] + ')';
-					})
-				}
-                rescsv+=")\\""+sepchar
-                if("properties" in feat){
-                    if(gottitle==false){
-                       rescsvtitle="\\"the_geom\\","
-                       for(prop in feat["properties"]){
-                          rescsvtitle+="\\""+prop+"\\""+sepchar
-                       }
-                       rescsvtitle+="\\\\n"
-                       rescsv=rescsvtitle+rescsv
-                       gottitle=true
-                    }
-                    for(prop in feat["properties"]){
-                        rescsv+="\\""+feat["properties"][prop]+"\\""+sepchar
-                    }
-                }
-                rescsv+="\\\\n"
-           }
-        }else{
-            gottitle=false
-            rescsv+="\\""+feature["geometry"]["type"].toUpperCase()+"("
-			if(feature["geometry"]["type"].toUpperCase()=="POINT"){
-				rescsv =  rescsv + feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1]
-			}else{
-				feature["geometry"].coordinates.forEach(function(p,i){
-					if(i<feature["geometry"].coordinates.length-1) rescsv =  rescsv + p[0] + ' ' + p[1] + ', ';
-					else rescsv =  rescsv + p[0] + ' ' + p[1] + ')';
-				})
-			}
-            rescsv+=")\\""+sepchar
-            if("properties" in feature){
-                if(gottitle==false){
-                   rescsvtitle=""
-                   for(prop in feature["properties"]){
-                      rescsvtitle+="\\""+prop+"\\""+sepchar
-                   }
-                   rescsvtitle+="\\\\n"
-                   rescsv=rescsvtitle+rescsv
-                   gottitle=true
-                }
-                for(prop in feature["properties"]){
-                    rescsv+="\\""+feature["properties"][prop]+"\\""+sepchar
-                }
-            }
-        }
-        saveTextAsFile(rescsv,filesuffix)
-    }else if(typeof(nongeofeature)!=="undefined"){
-        if("features" in nongeofeature){
-           for(feat of nongeofeature["features"]){
-                if("properties" in feat){
-                    if(gottitle==false){
-                       rescsvtitle="\\"the_geom\\","
-                       for(prop in feat["properties"]){
-                          rescsvtitle+="\\""+prop+"\\""+sepchar
-                       }
-                       rescsvtitle+="\\\\n"
-                       rescsv=rescsvtitle+rescsv
-                       gottitle=true
-                    }
-                    for(prop in feat["properties"]){
-                        rescsv+="\\""+feat["properties"][prop]+"\\""+sepchar
-                    }
-                }
-                rescsv+="\\\\n"
-           }
-        }else{
-            gottitle=false
-            if("properties" in nongeofeature){
-                if(gottitle==false){
-                   rescsvtitle=""
-                   for(prop in nongeofeature["properties"]){
-                      rescsvtitle+="\\""+prop+"\\""+sepchar
-                   }
-                   rescsvtitle+="\\\\n"
-                   rescsv=rescsvtitle+rescsv
-                   gottitle=true
-                }
-                for(prop in nongeofeature["properties"]){
-                    rescsv+="\\""+nongeofeature["properties"][prop]+"\\""+sepchar
-                }
-            }
-        }
-        saveTextAsFile(rescsv,filesuffix)
-    }
-}
-
-function exportGraphML(){
-	resgml=`<?xml version="1.0" encoding="UTF-8"?>\\\\n<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:y="http://www.yworks.com/xml/graphml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">\n`
-	resgml+="<key for=\\"node\\" id=\\"nodekey\\" yfiles.type=\\"nodegraphics\\"></key><key for=\\"edge\\" id=\\"edgekey\\" yfiles.type=\\"edgegraphics\\"></key><graph id=\\"G\\" edgedefault=\\"directed\\">\\\\n"
-	processedURIs={}
-	literalcounter=1
-	edgecounter=0
-	if(typeof(featurecolls)!=="undefined"){
-        for(feature of featurecolls){
-			if("features" in feature){
-                for(feat of feature["features"]){
-					if(!(feat.id in processedURIs)){
-						resgml+="<node id=\\""+feat.id+"\\" uri=\\""+feat.id+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#800080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feat.name+"</y:NodeLabel></y:ShapeNode></data></node>\\\\n"
-						processedURIs[feat.id]=true
-					}
-					if("properties" in feat){
-                        for(prop in feat["properties"]){
-							thetarget=feat["properties"][prop]
-							if((feat["properties"][prop]+"").startsWith("http") && !(feat["properties"][prop] in processedURIs)){
-								resgml+="<node id=\\""+feat["properties"][prop]+"\\" uri=\\""+feat["properties"][prop]+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#800080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feat["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\\\\n"
-								processedURIs[feat["properties"][prop]]=true
-							}else{
-								thetarget="literal"+literalcounter
-								resgml+="<node id=\\""+thetarget+"\\" uri=\\""+thetarget+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#F08080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feat["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\\\\n"
-								literalcounter+=1
-							}
-							resgml+="<edge id=\\"e"+edgecounter+"\\" uri=\\""+prop+"\\" source=\\""+feat.id+"\\" target=\\""+thetarget+"\\"><data key=\\"edgekey\\"><y:PolyLineEdge><y:EdgeLabel alignment=\\"center\\" configuration=\\"AutoFlippingLabel\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+shortenURI(prop)+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\\\\n"
-							edgecounter+=1
-						}
-					}
-				}
-			}else if("type" in feature && feature["type"]=="Feature"){
-				if(!(feature.id in processedURIs)){
-					resgml+="<node id=\\""+feature.id+"\\" uri=\\""+feature.id+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#800080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feature.name+"</y:NodeLabel></y:ShapeNode></data></node>\\\\n"
-					processedURIs[feature.id]=true
-				}
-				if("properties" in feature){
-					for(prop in feature["properties"]){
-						thetarget=feature["properties"][prop]
-						if((feature["properties"][prop]+"").startsWith("http") && !(feature["properties"][prop] in processedURIs)){
-							resgml+="<node id=\\""+feature["properties"][prop]+"\\" uri=\\""+feature["properties"][prop]+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#800080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feature["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\\\\n"
-							processedURIs[feature["properties"][prop]]=true
-						}else{
-							thetarget="literal"+literalcounter
-							resgml+="<node id=\\""+thetarget+"\\" uri=\\""+thetarget+"\\"><data key=\\"nodekey\\"><y:ShapeNode><y:Shape shape=\\"ellipse\\"></y:Shape><y:Fill color=\\"#F08080\\" transparent=\\"false\\"></y:Fill><y:NodeLabel alignment=\\"center\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+feature["properties"][prop]+"</y:NodeLabel></y:ShapeNode></data></node>\\\\n"
-							literalcounter+=1
-						}
-						resgml+="<edge id=\\"e"+edgecounter+"\\" uri=\\""+prop+"\\" source=\\""+feature.id+"\\" target=\\""+thetarget+"\\"><data key=\\"edgekey\\"><y:PolyLineEdge><y:EdgeLabel alignment=\\"center\\" configuration=\\"AutoFlippingLabel\\" fontSize=\\"12\\" fontStyle=\\"plain\\" hasText=\\"true\\" visible=\\"true\\" width=\\"4.0\\">"+shortenURI(prop)+"</y:EdgeLabel></y:PolyLineEdge></data></edge>\\\\n"
-						edgecounter+=1
-					}
-				}
-			}
-		}
-	}
-	resgml+="</graph>\\\\n</graphml>\\\\n"
-	saveTextAsFile(resgml,"graphml")
-}
-
-
-function convertDecimalToLatLonText(D, lng){
-	dir=""
-	if(D<0) {
-		if(lng) {
-			dir="W";
-		}else {
-			dir="S";
-		}
-	}else {
-		if(lng) {
-			dir="E";
-		}else {
-			dir="N";
-		}
-	}
-	deg=D<0?-D:D;
-	min=D%1*60;
-	sec=(D*60%1*6000)/100;
-	return deg+"°"+min+"'"+sec+"\\""+dir;
-}
-
-function exportLatLonText(){
-	res=""
-	for(point of centerpoints){
-		res+=convertDecimalToLatLonText(point["lat"],false)+" "+convertDecimalToLatLonText(point["lng"],true)+"\\\\n"
-	}
-	saveTextAsFile(res,"txt")
-}
-
-function exportGML(){
-	resgml=">\\\\n"
-    resgmlhead="<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?>\\\\n<gml:FeatureCollection xmlns:gml=\\"http://www.opengis.net/gml\\" "
-    nscounter=0
-    nsmap={}
-	if(typeof(featurecolls)!=="undefined"){
-        for(feature of featurecolls){
-            if("features" in feature){
-                for(feat of feature["features"]){
-					resgml+="<gml:featureMember>"
-					if("properties" in feat){
-                        for(prop in feat["properties"]){
-                            ns=shortenURI(prop,true)
-                            nsprefix=""
-                            if(ns in namespaces && !(ns in nsmap)){
-                                nsmap[ns]=namespaces[ns]
-                                resgmlhead+="xmlns:"+namespaces[ns]+"=\\""+ns+"\\" "
-                            }
-                            if(!(ns in nsmap)){
-                                nsmap[ns]="ns"+nscounter
-                                nsprefix="ns"+nscounter
-                                resgmlhead+="xmlns:"+nsprefix+"=\\""+ns+"\\" "
-                                nscounter+=1
-                            }else{
-                                nsprefix=nsmap[ns]
-                            }
-                            if(Array.isArray(feat["properties"][prop])){
-								for(arritem of feat["properties"][prop]){
-									resgml+="<"+shortenURI(prop,false,nsprefix)+">"+arritem+"</"+shortenURI(prop,false,nsprefix)+">\\\\n"
-								}
-                            }else{
-                                resgml+="<"+shortenURI(prop,false,nsprefix)+">"+feat["properties"][prop]+"</"+shortenURI(prop,false,nsprefix)+">\\\\n"
-                            }
-                        }
-                    }
-					if("geometry" in feat){
-						resgml+="<the_geom><gml:"+feat["geometry"]["type"]+">\\\\n"
-						resgml+="<gml:pos>\\\\n"
-						if(feat["geometry"]["type"].toUpperCase()=="POINT"){
-							resgml += feat["geometry"].coordinates[0] + ' ' + feat["geometry"].coordinates[1]+'\\\\n '
-						}else{
-							feat["geometry"].coordinates.forEach(function(p,i){
-								resgml += p[0] + ', ' + p[1] + '\\\\n '
-							})
-						}
-						resgml+="</gml:pos>\\\\n"
-						resgml+="</gml:"+feat["geometry"]["type"]+"></the_geom>\\\\n"
-					}
-					resgml+="</gml:featureMember>"
-				}
-			}else if("type" in feature && feature["type"]=="Feature"){
-				resgml+="<gml:featureMember>"
-				if("properties" in feature){
-					for(prop in feature["properties"]){
-                        ns=shortenURI(prop,true)
-                        nsprefix=""
-                        if(ns in namespaces && !(ns in nsmap)){
-                            nsmap[ns]=namespaces[ns]
-                            resgmlhead+="xmlns:"+namespaces[ns]+"=\\""+ns+"\\" "
-                        }
-                        if(!(ns in nsmap)){
-                            nsmap[ns]="ns"+nscounter
-                            nsprefix="ns"+nscounter
-                            resgmlhead+="xmlns:"+nsprefix+"=\\""+ns+"\\" "
-                            nscounter+=1
-                        }else{
-                            nsprefix=nsmap[ns]
-                        }
-                        if(Array.isArray(feature["properties"][prop])){
-							for(arritem of feature["properties"][prop]){
-								resgml+="<"+shortenURI(prop,false,nsprefix)+">"+arritem+"</"+shortenURI(prop,false,nsprefix)+">\\\\n"
-							}
-						}else{
-							resgml+="<"+shortenURI(prop,false,nsprefix)+">"+feature["properties"][prop]+"</"+shortenURI(prop,false,nsprefix)+">\\\\n"
-						}
-				    }
-                }
-				if("geometry" in feature){
-					resgml+="<the_geom><gml:"+feature["geometry"]["type"]+">\\\\n"
-					resgml+="<gml:pos>\\\\n"
-					if(feature["geometry"]["type"].toUpperCase()=="POINT"){
-						resgml += feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1]+'\\\\n '
-					}else{
-						feature["geometry"].coordinates.forEach(function(p,i){
-							resgml += p[0] + ', ' + p[1] + '\\\\n '
-						})
-					}
-					resgml+="</gml:pos>\\\\n"
-					resgml+="</gml:"+feature["geometry"]["type"]+"></the_geom>\\\\n"
-				}
-				resgml+="</gml:featureMember>"
-            }
-		}
-	}
-	resgml+="</gml:FeatureCollection>"
-	saveTextAsFile(resgmlhead+resgml,"gml")
-}
-
-function exportKML(){
-	reskml="<?xml version=\\"1.0\\" ?>\\\\n<kml xmlns=\\"http://www.opengis.net/kml/2.2\\">\\\\n<Document>"
-	reskml+="<Style></Style>\\\\n"
-	if(typeof(featurecolls)!=="undefined"){
-        for(feature of featurecolls){
-            if("features" in feature){
-                for(feat of feature["features"]){
-					reskml+="<Placemark><name>"+feat.id+"</name>"
-					if("properties" in feat){
-						reskml+="<ExtendedData>"
-                        for(prop in feat["properties"]){
-                            if(Array.isArray(feat["properties"][prop])){
-								for(arritem of feat["properties"][prop]){
-									reskml+="<Data name=\\""+prop+"\\"><displayName>"+shortenURI(prop)+"</displayName><value>"+arritem+"</value></Data>\\\\n"
-								}
-                            }else{
-                                reskml+="<Data name=\\""+prop+"\\"><displayName>"+shortenURI(prop)+"</displayName><value>"+feat["properties"][prop]+"</value></Data>\\\\n"
-                            }
-                        }
-						reskml+="</ExtendedData>"
-                    }
-					if("geometry" in feat){
-						reskml+="<"+feat["geometry"]["type"]+">\\\\n"
-						if(feat["geometry"]["type"]=="Polygon"){
-							reskml+="<outerBoundaryIs><LinearRing>"
-						}
-						reskml+="<coordinates>\\\\n"
-						if(feat["geometry"]["type"].toUpperCase()=="POINT"){
-							reskml += feat["geometry"].coordinates[0] + ' ' + feat["geometry"].coordinates[1]+'\\\\n '
-						}else{
-							feat["geometry"].coordinates.forEach(function(p,i){
-								reskml += p[0] + ', ' + p[1] + '\\\\n '
-							})
-						}
-						reskml+="</coordinates>\\\\n"
-						if(feat["geometry"]["type"]=="Polygon"){
-							reskml+="</LinearRing></outerBoundaryIs>"
-						}
-						reskml+="</"+feat["geometry"]["type"]+">\\\\n"
-					}
-					reskml+="</Placemark>"
-				}
-			}else if("type" in feature && feature["type"]=="Feature"){
-				reskml+="<Placemark><name>"+feature.id+"</name>"
-				if("properties" in feature){
-					reskml+="<ExtendedData>"
-					for(prop in feature["properties"]){
-						if(Array.isArray(feature["properties"][prop])){
-							for(arritem of feature["properties"][prop]){
-								reskml+="<Data name=\\""+prop+"\\"><displayName>"+shortenURI(prop)+"</displayName><value>"+arritem+"</value></Data>\\\\n"
-							}
-						}else{
-							reskml+="<Data name=\\""+prop+"\\"><displayName>"+shortenURI(prop)+"</displayName><value>"+feature["properties"][prop]+"</value></Data>\\\\n"
-						}
-				    }
-					reskml+="</ExtendedData>"
-                }
-				if("geometry" in feature){
-					reskml+="<"+feature["geometry"]["type"]+">\\\\n"
-					if(feature["geometry"]["type"]=="Polygon"){
-						reskml+="<outerBoundaryIs><LinearRing>"
-					}
-					reskml+="<coordinates>\\\\n"
-					if(feature["geometry"]["type"].toUpperCase()=="POINT"){
-						reskml += feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1]+'\\\\n '
-					}else{
-						feature["geometry"].coordinates.forEach(function(p,i){
-							reskml += p[0] + ', ' + p[1] + '\\\\n '
-						})
-					}
-					reskml+="</coordinates>\\\\n"
-					if(feature["geometry"]["type"]=="Polygon"){
-						reskml+="</LinearRing></outerBoundaryIs>"
-					}
-					reskml+="</"+feature["geometry"]["type"]+">\\\\n"
-				}
-				reskml+="</Placemark>"
-            }
-		}
-	}
-	reskml+="</Document></kml>"
-	saveTextAsFile(reskml,"kml")
-}
-
-function exportTGFGDF(sepchar,format){
-	resgdf=""
-	if(format=="gdf")
-		resgdf="nodedef>name VARCHAR,label VARCHAR"
-    uritoNodeId={}
-    nodecounter=0
-    nodes=""
-    edges=""
-    if(typeof(featurecolls)!=="undefined"){
-        for(feature of featurecolls){
-            if("features" in feature){
-                for(feat of feature["features"]){
-                    featid=nodecounter
-                    uritoNodeId[feat["id"]]=nodecounter
-                    nodes+=nodecounter+sepchar+feat["id"]+"\\\\n"
-                    nodecounter+=1
-                    if("properties" in feat){
-                        for(prop in feat["properties"]){
-                            if(Array.isArray(feat["properties"][prop])){
-                                    for(arritem of feat["properties"][prop]){
-                                            if(!(arritem in uritoNodeId)){
-                                                uritoNodeId[arritem]=nodecounter
-                                                nodes+=nodecounter+sepchar+arritem+"\\\\n"
-                                                nodecounter+=1
-                                            }
-                                            edges+=featid+sepchar+uritoNodeId[arritem]+sepchar+shortenURI(prop)+"\\\\n"
-                                    }
-                            }else{
-                                 if(!(feat["properties"][prop] in uritoNodeId)){
-                                    uritoNodeId[feat["properties"][prop]]=nodecounter
-                                    nodecounter+=1
-                                 }
-                                 edges+=featid+sepchar+uritoNodeId[feat["properties"][prop]]+sepchar+shortenURI(prop)+"\\\\n"
-                            }
-                        }
-                    }
-                }
-            }else if("type" in feature && feature["type"]=="Feature"){
-                    featid=nodecounter
-                    feat=feature
-                    uritoNodeId[feat["id"]]=nodecounter
-                    nodes+=nodecounter+sepchar+feat["id"]+"\\\\n"
-                    nodecounter+=1
-                    if("properties" in feat){
-                        for(prop in feat["properties"]){
-                            if(Array.isArray(feat["properties"][prop])){
-                                    for(arritem of feat["properties"][prop]){
-                                            if(!(arritem in uritoNodeId)){
-                                                uritoNodeId[arritem]=nodecounter
-                                                nodes+=nodecounter+sepchar+arritem+"\\\\n"
-                                                nodecounter+=1
-                                            }
-                                            edges+=featid+sepchar+uritoNodeId[arritem]+sepchar+shortenURI(prop)+"\\\\n"
-                                    }
-                            }else{
-                                 if(!(feat["properties"][prop] in uritoNodeId)){
-                                    uritoNodeId[feat["properties"][prop]]=nodecounter
-                                    nodecounter+=1
-                                 }
-                                 edges+=featid+sepchar+uritoNodeId[feat["properties"][prop]]+sepchar+shortenURI(prop)+"\\\\n"
-                            }
-                      }
-                }
-            }
-        }
-    }
-    resgdf+=nodes
-	if(format=="tgf"){
-		resgdf+="#\\\\n"
-	}else{
-		resgdf+="edgedef>node1 VARCHAR,node2 VARCHAR,label VARCHAR\\\\n"
-	}
-    resgdf+=edges
-	saveTextAsFile(resgdf,format)
-}
-
-function setSVGDimensions(){
-    $('svg').each(function(i, obj) {
-        console.log(obj)
-        console.log($(obj).children().first()[0])
-        if($(obj).attr("viewBox") || $(obj).attr("width") || $(obj).attr("height")){
-            return
-        }
-        maxx=Number.MIN_VALUE
-        maxy=Number.MIN_VALUE
-        minx=Number.MAX_VALUE
-        miny=Number.MAX_VALUE
-        $(obj).children().each(function(i){
-            svgbbox=$(this)[0].getBBox()
-            console.log(svgbbox)
-            if(svgbbox.x+svgbbox.width>maxx){
-                maxx=svgbbox.x+svgbbox.width
-            }
-            if(svgbbox.y+svgbbox.height>maxy){
-                maxy=svgbbox.y+svgbbox.height
-            }
-            if(svgbbox.y<miny){
-                miny=svgbbox.y
-            }
-            if(svgbbox.x<minx){
-                minx=svgbbox.x
-            }
-        });
-        console.log(""+(minx)+" "+(miny-(maxy-miny))+" "+((maxx-minx)+25)+" "+((maxy-miny)+25))
-        newviewport=""+((minx))+" "+(miny)+" "+((maxx-minx)+25)+" "+((maxy-miny)+25)
-        $(obj).attr("viewBox",newviewport)
-        $(obj).attr("width",((maxx-minx))+10)
-        $(obj).attr("height",((maxy-miny)+10))
-        console.log($(obj).hasClass("svgoverlay"))
-        if($(obj).hasClass("svgoverlay")){
-            naturalWidth=$(obj).prev().children('img')[0].naturalWidth
-            naturalHeight=$(obj).prev().children('img')[0].naturalHeight
-            currentWidth=$(obj).prev().children('img')[0].width
-            currentHeight=$(obj).prev().children('img')[0].height
-            console.log(naturalWidth+" - "+naturalHeight+" - "+currentWidth+" - "+currentHeight)
-            overlayposX = (currentWidth/naturalWidth) * minx;
-            overlayposY = (currentHeight/naturalHeight) * miny;
-            overlayposWidth = ((currentWidth/naturalWidth) * maxx)-overlayposX;
-            overlayposHeight = ((currentHeight/naturalHeight) * maxy)-overlayposY;
-            console.log(overlayposX+" - "+overlayposY+" - "+overlayposHeight+" - "+overlayposWidth)
-            $(obj).css({top: overlayposY+"px", left:overlayposX+"px", position:"absolute"})
-            $(obj).attr("height",overlayposHeight)
-            $(obj).attr("width",overlayposWidth)
-        }
-    });
-}
-
-function exportGeoURI(){
-    resuri=""
-    for(point of centerpoints){
-		if(typeof(epsg)!=='undefined'){
-			resuri+="geo:"+point["lng"]+","+point["lat"]+";crs="+epsg+"\\\\n"
-		}else{
-			resuri+="geo:"+point["lng"]+","+point["lat"]+";crs=EPSG:4326\\\\n"
-		}
-    }
-    saveTextAsFile(resuri,"geouri")
-}
-
-
-function exportWKT(){
-    if(typeof(featurecolls)!=="undefined"){
-        reswkt=""
-        for(feature of featurecolls){
-            if("features" in feature){
-                for(feat of feature["features"]){
-                    reswkt+=feat["geometry"]["type"].toUpperCase()+"("
-                    if(feature["geometry"]["type"].toUpperCase()=="POINT"){
-                        reswkt =  reswkt + feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1]
-                    }else{
-                        feature["geometry"].coordinates.forEach(function(p,i){
-                            if(i<feature["geometry"].coordinates.length-1) reswkt =  reswkt + p[0] + ' ' + p[1] + ', ';
-                            else reswkt =  reswkt + p[0] + ' ' + p[1] + ')';
-                        })
-                    }
-                    reswkt+=")\\\\n"
-                }
-            }else if("geometry" in feature){
-                    reswkt+=feature["geometry"]["type"].toUpperCase()+"("
-                    if(feature["geometry"]["type"].toUpperCase()=="POINT"){
-                        reswkt =  reswkt + feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1]
-                    }else{
-                        feature["geometry"].coordinates.forEach(function(p,i){
-                            if(i<feature["geometry"].coordinates.length-1) reswkt =  reswkt + p[0] + ' ' + p[1] + ', ';
-                            else reswkt =  reswkt + p[0] + ' ' + p[1] + ')';
-                        })
-                    }
-                    reswkt+=")\\\\n"
-            }
-            saveTextAsFile(reswkt,"wkt")
-        }
-    }
-}
-
-function exportXYZASCII(){
-    if(typeof(featurecolls)!=="undefined"){
-        reswkt=""
-        for(feature of featurecolls){
-            if("features" in feature){
-                for(feat of feature["features"]){
-                    if(feature["geometry"]["type"].toUpperCase()=="POINT"){
-                        reswkt =  reswkt + feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1] + '\\\\n';
-                    }else{
-                        feature["geometry"].coordinates.forEach(function(p,i){
-                            console.log(p)
-                            reswkt =  reswkt + p[0] + ' ' + p[1] + '\\\\n';
-                        })
-                    }
-                    reswkt+="\\\\n"
-                }
-            }else if("geometry" in feature){
-                    if(feature["geometry"]["type"].toUpperCase()=="POINT"){
-                        reswkt =  reswkt + feature["geometry"].coordinates[0] + ' ' + feature["geometry"].coordinates[1] + '\\\\n';
-                    }else{
-                        feature["geometry"].coordinates.forEach(function(p,i){
-                            console.log(p)
-                            reswkt =  reswkt + p[0] + ' ' + p[1] + '\\\\n';
-                        })
-                    }
-                    reswkt+="\\\\n"
-            }
-            saveTextAsFile(reswkt,"xyz")
-        }
-    }
-}
-
-function downloadFile(filePath){
-    var link=document.createElement('a');
-    link.href = filePath;
-    link.download = filePath.substr(filePath.lastIndexOf('/') + 1);
-    link.click();
-}
-
-function saveTextAsFile(tosave,fileext){
-    var a = document.createElement('a');
-    a.style = "display: none";
-    var blob= new Blob([tosave], {type:'text/plain'});
-    var url = window.URL.createObjectURL(blob);
-	var title=$('#title').text()
-    var filename = "res."+fileext;
-	if(typeof(title)!=='undefined'){
-		filename=title.trim()+"."+fileext
-	}
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(function(){
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-    }, 1000);
-}
-
-function download(){
-    format=$('#format').val()
-    if(format=="geojson"){
-        exportGeoJSON()
-    }else if(format=="ttl"){
-        downloadFile(window.location.href.replace(".html",".ttl"))
-    }else if(format=="json"){
-        downloadFile(window.location.href.replace(".html",".json"))
-    }else if(format=="wkt"){
-        exportWKT()
-    }else if(format=="gml"){
-        exportGML()
-    }else if(format=="kml"){
-        exportKML()
-    }else if(format=="csv"){
-        exportCSV(",",format)
-    }else if(format=="tsv"){
-        exportCSV("\t",format)
-    }else if(format=="gdf"){
-        exportTGFGDF(",",format)
-    }else if(format=="graphml"){
-        exportGraphML()
-    }else if(format=="geouri"){
-        exportGeoURI()
-    }else if(format=="tgf"){
-        exportTGFGDF(" ",format)
-    }else if(format=="xyz"){
-        exportXYZASCII()
-    }else if(format=="latlon"){
-        exportLatLonText()
-    }
-}
-
-function rewriteLink(thelink){
-    if(thelink==null){
-        rest=search[document.getElementById('search').value].replace(baseurl,"")
-    }else{
-        curlocpath=window.location.href.replace(baseurl,"")
-        rest=thelink.replace(baseurl,"")
-    }
-    if(!(rest.endsWith("/")) && !(rest.endsWith(".html"))){
-        rest+="/"
-    }
-    count=0
-    if(!indexpage){
-        count=rest.split("/").length-1
-    }
-    console.log(count)
-    counter=0
-    if (typeof relativedepth !== 'undefined'){
-        while(counter<relativedepth){
-            rest="../"+rest
-            counter+=1
-        }
-    }else{
-        while(counter<count){
-            rest="../"+rest
-            counter+=1
-        }
-    }
-    //console.log(rest)
-    //console.log(rest.endsWith("index.html"))
-	if(!rest.includes("nonns_") && !rest.endsWith(".html")){
-		rest+="index.html"
-	}
-    console.log(rest)
-    return rest
-}
-
-function followLink(thelink=null){
-    rest=rewriteLink(thelink)
-    location.href=rest
-}
-
-function changeDefLink(){
-	$('#formatlink').attr('href',definitionlinks[$('#format').val()]);
-}
-
-function changeDefLink2(){
-	$('#formatlink2').attr('href',definitionlinks[$('#format2').val()]);
-}
-
-var definitionlinks={
-    "covjson":"https://covjson.org",
-    "csv":"https://tools.ietf.org/html/rfc4180",
-    "cipher":"https://neo4j.com/docs/cypher-manual/current/",
-    "esrijson":"https://doc.arcgis.com/de/iot/ingest/esrijson.htm",
-    "geohash":"http://geohash.org",
-    "json":"https://geojson.org",
-    "gdf":"https://www.cs.nmsu.edu/~joemsong/software/ChiNet/GDF.pdf",
-    "geojsonld":"http://geojson.org/geojson-ld/",
-    "geojsonseq":"https://tools.ietf.org/html/rfc8142",
-    "geouri":"https://tools.ietf.org/html/rfc5870",
-    "gexf":"https://gephi.org/gexf/format/",
-    "gml":"https://www.ogc.org/standards/gml",
-    "gml2":"https://gephi.org/users/supported-graph-formats/gml-format/",
-    "gpx":"https://www.topografix.com/gpx.asp",
-    "graphml":"http://graphml.graphdrawing.org",
-    "gxl":"http://www.gupro.de/GXL/Introduction/intro.html",
-    "hdt":"https://www.w3.org/Submission/2011/03/",
-    "hextuples":"https://github.com/ontola/hextuples",
-    "html":"https://html.spec.whatwg.org",
-    "jsonld":"https://json-ld.org",
-    "jsonn":"",
-    "jsonp":"http://jsonp.eu",
-    "jsonseq":"https://tools.ietf.org/html/rfc7464",
-    "kml":"https://www.ogc.org/standards/kml",
-    "latlon":"",
-    "mapml":"https://maps4html.org/MapML/spec/",
-    "mvt":"https://docs.mapbox.com/vector-tiles/reference/",
-    "n3":"https://www.w3.org/TeamSubmission/n3/",
-    "nq":"https://www.w3.org/TR/n-quads/",
-    "nt":"https://www.w3.org/TR/n-triples/",
-    "olc":"https://github.com/google/open-location-code/blob/master/docs/specification.md",
-    "osm":"https://wiki.openstreetmap.org/wiki/OSM_XML",
-    "osmlink":"",
-    "rdfxml":"https://www.w3.org/TR/rdf-syntax-grammar/",
-    "rdfjson":"https://www.w3.org/TR/rdf-json/",
-    "rt":"https://afs.github.io/rdf-thrift/rdf-binary-thrift.html",
-    "svg":"https://www.w3.org/TR/SVG11/",
-    "tgf":"https://docs.yworks.com/yfiles/doc/developers-guide/tgf.html",
-    "tlp":"https://tulip.labri.fr/TulipDrupal/?q=tlp-file-format",
-    "trig":"https://www.w3.org/TR/trig/",
-    "trix":"https://www.hpl.hp.com/techreports/2004/HPL-2004-56.html",
-    "ttl":"https://www.w3.org/TR/turtle/",
-    "wkb":"https://www.iso.org/standard/40114.html",
-    "wkt":"https://www.iso.org/standard/40114.html",
-    "xls":"http://www.openoffice.org/sc/excelfileformat.pdf",
-    "xlsx":"http://www.openoffice.org/sc/excelfileformat.pdf",
-    "xyz":"https://gdal.org/drivers/raster/xyz.html",
-    "yaml":"https://yaml.org"
-    }
-
-function shortenURI(uri,getns=false,nsprefix=""){
-	prefix=""
-	if(typeof(uri)!="undefined"){
-		for(namespace in namespaces){
-			if(uri.includes(namespaces[namespace])){
-				prefix=namespace+":"
-				break
-			}
-		}
-		if(prefix=="" && nsprefix!=""){
-            prefix==nsprefix
-        }
-	}
-	if(typeof(uri)!= "undefined" && uri.includes("#") && !getns){
-		return prefix+uri.substring(uri.lastIndexOf('#')+1)
-	}
-	if(typeof(uri)!= "undefined" && uri.includes("/") && !getns){
-		return prefix+uri.substring(uri.lastIndexOf("/")+1)
-	}
-    if(typeof(uri)!= "undefined" && uri.includes("#") && getns){
-		return prefix+uri.substring(0,uri.lastIndexOf('#'))
-	}
-	if(typeof(uri)!= "undefined" && uri.includes("/") && getns){
-		return prefix+uri.substring(0,uri.lastIndexOf("/"))
-	}
-	return uri
-}
-
-
-var presenter = null;
-function setup3dhop(meshurl,meshformat) {
-  presenter = new Presenter("draw-canvas");
-  presenter.setScene({
-    meshes: {
-			"mesh_1" : { url: meshurl}
-		},
-		modelInstances : {
-			"model_1" : {
-				mesh  : "mesh_1",
-				color : [0.8, 0.7, 0.75]
-			}
-		}
-  });
-}
-
-function start3dhop(meshurl,meshformat){
-    init3dhop();
-	setup3dhop(meshurl,meshformat);
-	resizeCanvas(640,480);
-  	moveToolbar(20,20);
-}
-
-
-let camera, scene, renderer,controls;
-
-function viewGeometry(geometry) {
-  const material = new THREE.MeshPhongMaterial({
-    color: 0xffffff,
-    flatShading: true,
-    vertexColors: THREE.VertexColors,
-    wireframe: false
-  });
-  const mesh = new THREE.Mesh(geometry, material);
-  scene.add(mesh);
-}
-
-function initThreeJS(domelement,verts,meshurls) {
-    scene = new THREE.Scene();
-    minz=Number.MAX_VALUE
-    maxz=Number.MIN_VALUE
-    miny=Number.MAX_VALUE
-    maxy=Number.MIN_VALUE
-    minx=Number.MAX_VALUE
-    maxx=Number.MIN_VALUE
-	vertarray=[]
-    console.log(verts)
-    var svgShape = new THREE.Shape();
-    first=true
-    for(vert of verts){
-        if(first){
-            svgShape.moveTo(vert["x"], vert["y"]);
-           first=false
-        }else{
-            svgShape.lineTo(vert["x"], vert["y"]);
-        }
-        vertarray.push(vert["x"])
-        vertarray.push(vert["y"])
-        vertarray.push(vert["z"])
-        if(vert["z"]>maxz){
-            maxz=vert["z"]
-        }
-        if(vert["z"]<minz){
-            minz=vert["z"]
-        }
-        if(vert["y"]>maxy){
-            maxy=vert["y"]
-        }
-        if(vert["y"]<miny){
-            miny=vert["y"]
-        }
-        if(vert["x"]>maxx){
-            maxy=vert["x"]
-        }
-        if(vert["x"]<minx){
-            miny=vert["x"]
-        }
-    }
-    if(meshurls.length>0){
-        var loader = new THREE.PLYLoader();
-        loader.load(meshurls[0], viewGeometry);
-    }
-    camera = new THREE.PerspectiveCamera(90,window.innerWidth / window.innerHeight, 0.1, 150 );
-    scene.add(new THREE.AmbientLight(0x222222));
-    var light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(20, 20, 0);
-    scene.add(light);
-    var axesHelper = new THREE.AxesHelper( Math.max(maxx, maxy, maxz)*4 );
-    scene.add( axesHelper );
-    console.log("Depth: "+(maxz-minz))
-    var extrudedGeometry = new THREE.ExtrudeGeometry(svgShape, {depth: maxz-minz, bevelEnabled: false});
-    extrudedGeometry.computeBoundingBox()
-    centervec=new THREE.Vector3()
-    extrudedGeometry.boundingBox.getCenter(centervec)
-    console.log(centervec)
-    const material = new THREE.MeshBasicMaterial( { color: 0xFFFFFF, wireframe:true } );
-    const mesh = new THREE.Mesh( extrudedGeometry, material );
-    scene.add( mesh );
-    renderer = new THREE.WebGLRenderer( { antialias: false } );
-	renderer.setPixelRatio( window.devicePixelRatio );
-    renderer.setSize( 480, 500 );
-    document.getElementById(domelement).appendChild( renderer.domElement );
-	controls = new THREE.OrbitControls( camera, renderer.domElement );
-    controls.target.set( centervec.x,centervec.y,centervec.z );
-    camera.position.x= centervec.x
-    camera.position.y= centervec.y
-    camera.position.z = centervec.z+10;
-    controls.maxDistance= Math.max(maxx, maxy, maxz)*5
-    controls.update();
-    animate()
-}
-
-function animate() {
-    requestAnimationFrame( animate );
-    controls.update();
-    renderer.render( scene, camera );
-}
-
-function getTextAnnoContext(){
-$('span.textanno').each(function(i, obj) {
-    startindex=$(obj).attr("start").val()
-    endindex=$(obj).attr("end").val()
-    exact=$(obj).attr("exact").val()
-    if($(obj).attr("src")){
-        source=$(obj).attr("src").val()
-        $.get( source, function( data ) {
-            markarea=data.substring(start,end)
-            counter=0
-            startindex=0
-            endindex=data.indexOf("\\\\n",end)
-            for(line in data.split("\\\\n")){
-                counter+=line.length
-                if(counter>start){
-                    startindex=counter-line.length
-                    break
-                }
-            }
-            $(obj).html(data.substring(startindex,endindex)+"</span>".replace(markarea,"<mark>"+markarea+"</mark>"))
-        });
-    }
-  });
-}
-
-function labelFromURI(uri,label){
-    if(uri.includes("#")){
-        prefix=uri.substring(0,uri.lastIndexOf('#')-1)
-        if(label!=null){
-            return label+" ("+prefix.substring(prefix.lastIndexOf("/")+1)+":"+uri.substring(uri.lastIndexOf('#')+1)+")"
-
-        }else{
-            return uri.substring(uri.lastIndexOf('#')+1)+" ("+prefix.substring(uri.lastIndexOf("/")+1)+":"+uri.substring(uri.lastIndexOf('#')+1)+")"
-        }
-    }
-    if(uri.includes("/")){
-        prefix=uri.substring(0,uri.lastIndexOf('/')-1)
-        if(label!=null){
-            return label+" ("+prefix.substring(prefix.lastIndexOf("/")+1)+":"+uri.substring(uri.lastIndexOf('/')+1)+")"
-        }else{
-            return uri.substring(uri.lastIndexOf('/')+1)+" ("+prefix.substring(uri.lastIndexOf("/")+1)+":"+uri.substring(uri.lastIndexOf('/')+1)+")"
-        }
-    }
-    return uri
-}
-
-function formatHTMLTableForPropertyRelations(propuri,result,propicon){
-    dialogcontent="<h3><img src=\\""+propicon+"\\" height=\\"25\\" width=\\"25\\" alt=\\"Instance\\"/><a href=\\""+propuri.replace('/index.json','/index.html')+"\\" target=\\"_blank\\"> "+shortenURI(propuri)+"</a></h3><table border=1 id=classrelationstable><thead><tr><th>Incoming Concept</th><th>Relation</th><th>Outgoing Concept</th></tr></thead><tbody>"
-    console.log(result)
-    for(instance in result["from"]){
-//
-            if(result["from"][instance]=="instancecount"){
-                continue;
-            }
-            dialogcontent+="<tr><td><img src=\\""+iconprefix+"class.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Class\\"/><a href=\\""+result["from"][instance]+"\\" target=\\"_blank\\">"+shortenURI(result["from"][instance])+"</a></td>"
-            dialogcontent+="<td><img src=\\""+propicon+"\\" height=\\"25\\" width=\\"25\\" alt=\\"Instance\\"/><a href=\\""+propuri+"\\" target=\\"_blank\\">"+shortenURI(propuri)+"</a></td><td></td></tr>"
-       // }
-    }
-    for(instance in result["to"]){
-        //for(instance in result["to"][res]){
-            if(result["to"][instance]=="instancecount"){
-                continue;
-            }
-            dialogcontent+="<tr><td></td><td><img src=\\""+propicon+"\\" height=\\"25\\" width=\\"25\\" alt=\\"Class\\"/><a href=\\""+propuri+"\\" target=\\"_blank\\">"+shortenURI(propuri)+"</a></td>"
-            dialogcontent+="<td><img src=\\""+iconprefix+"class.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Instance\\"/><a href=\\""+result["to"][instance]+"\\" target=\\"_blank\\">"+shortenURI(result["to"][instance])+"</a></td></tr>"
-       // }
-    }
-    dialogcontent+="</tbody></table>"
-    dialogcontent+="<button style=\\"float:right\\" id=\\"closebutton\\" onclick='document.getElementById(\\"classrelationdialog\\").close()'>Close</button>"
-    return dialogcontent
-}
-
-function determineTableCellLogo(uri){
-    result="<td><a href=\\""+uri+"\\" target=\\"_blank\\">"
-    logourl=""
-    finished=false
-    if(uri in labelproperties){
-        result+="<img src=\\""+iconprefix+"labelproperty.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Label Property\\"/>"
-        logourl=iconprefix+"labelproperty.png"
-        finished=true
-    }
-    if(!finished){
-        for(ns in annotationnamespaces){
-            if(uri.includes(annotationnamespaces[ns])){
-                result+="<img src=\\""+iconprefix+"annotationproperty.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Annotation Property\\"/>"
-                logourl=iconprefix+"annotationproperty.png"
-                finished=true
-            }
-        }
-    }
-    if(!finished && uri in geoproperties && geoproperties[uri]=="ObjectProperty"){
-        result+="<img src=\\""+iconprefix+"geoobjectproperty.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Geo Object Property\\"/>"
-        logourl=iconprefix+"geoobjectproperty.png"
-    }else if(!finished && uri in geoproperties && geoproperties[uri]=="DatatypeProperty"){
-        result+="<img src=\\""+iconprefix+"geodatatypeproperty.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Geo Datatype Property\\"/>"
-        logourl=iconprefix+"geodatatypeproperty.png"
-    }else if(!finished){
-        result+="<img src=\\""+iconprefix+"objectproperty.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Object Property\\"/>"
-        logourl=iconprefix+"objectproperty.png"
-    }
-    result+=shortenURI(uri)+"</a></td>"
-    return [result,logourl]
-}
-
-function formatHTMLTableForClassRelations(result,nodeicon,nodelabel,nodeid){
-    dialogcontent=""
-    if(nodelabel.includes("[")){
-        nodelabel=nodelabel.substring(0,nodelabel.lastIndexOf("[")-1)
-    }
-    dialogcontent="<h3><img src=\\""+nodeicon+"\\" height=\\"25\\" width=\\"25\\" alt=\\"Instance\\"/><a href=\\""+nodeid.replace('/index.json','/index.html')+"\\" target=\\"_blank\\"> "+nodelabel+"</a></h3><table border=1 id=classrelationstable><thead><tr><th>Incoming Concept</th><th>Incoming Relation</th><th>Concept</th><th>Outgoing Relation</th><th>Outgoing Concept</th></tr></thead><tbody>"
-    for(res in result["from"]){
-        for(instance in result["from"][res]){
-            if(instance=="instancecount"){
-                continue;
-            }
-            dialogcontent+="<tr><td><img src=\\""+iconprefix+"class.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Class\\"/><a href=\\""+instance+"\\" target=\\"_blank\\">"+shortenURI(instance)+"</a></td>"
-            dialogcontent+=determineTableCellLogo(res)[0]
-            dialogcontent+="<td><img src=\\""+nodeicon+"\\" height=\\"25\\" width=\\"25\\" alt=\\"Instance\\"/><a href=\\""+nodeid+"\\" target=\\"_blank\\">"+nodelabel+"</a></td><td></td><td></td></tr>"
-        }
-    }
-    for(res in result["to"]){
-        for(instance in result["to"][res]){
-            if(instance=="instancecount"){
-                continue;
-            }
-            dialogcontent+="<tr><td></td><td></td><td><img src=\\""+nodeicon+"\\" height=\\"25\\" width=\\"25\\" alt=\\"Instance\\"/><a href=\\""+nodeid+"\\" target=\\"_blank\\">"+nodelabel+"</a></td>"
-            dialogcontent+=determineTableCellLogo(res)[0]
-            dialogcontent+="<td><img src=\\""+iconprefix+"class.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Class\\"/><a href=\\""+instance+"\\" target=\\"_blank\\">"+shortenURI(instance)+"</a></td></tr>"
-        }
-    }
-    dialogcontent+="</tbody></table>"
-    dialogcontent+="<button style=\\"float:right\\" id=\\"closebutton\\" onclick='document.getElementById(\\"classrelationdialog\\").close()'>Close</button>"
-    return dialogcontent
-}
-
-function formatHTMLTableForResult(result,nodeicon){
-    dialogcontent=""
-    dialogcontent="<h3><img src=\\""+nodeicon+"\\" height=\\"25\\" width=\\"25\\" alt=\\"Instance\\"/><a href=\\""+nodeid.replace('/index.json','/index.html')+"\\" target=\\"_blank\\"> "+nodelabel+"</a></h3><table border=1 id=dataschematable><thead><tr><th>Type</th><th>Relation</th><th>Value</th></tr></thead><tbody>"
-    for(res in result){
-        console.log(result)
-        console.log(result[res])
-        console.log(result[res].size)
-        dialogcontent+="<tr>"
-        detpropicon=""
-        if(res in geoproperties && geoproperties[res]=="ObjectProperty"){
-            dialogcontent+="<td><img src=\\""+iconprefix+"geoobjectproperty.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Geo Object Property\\"/>Geo Object Property</td>"
-            detpropicon=iconprefix+"geoobjectproperty.png"
-        }else if((result[res][0]+"").startsWith("http")){
-            dialogcontent+="<td><img src=\\""+iconprefix+"objectproperty.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Object Property\\"/>Object Property</td>"
-            detpropicon=iconprefix+"objectproperty.png"
-        }else{
-            finished=false
-            ress=determineTableCellLogo(res)
-            dialogcontent+=ress[0]
-            detpropicon=ress[1]
-        }
-        dialogcontent+="<td><a href=\\""+res+"\\" target=\\"_blank\\">"+shortenURI(res)+"</a> <a href=\\"#\\" onclick=\\"getPropRelationDialog('"+res+"','"+detpropicon+"')\\">[x]</a></td>"
-        if(Object.keys(result[res]).length>1){
-            dialogcontent+="<td><ul>"
-            for(resitem in result[res]){
-                if((resitem+"").startsWith("http")){
-                    dialogcontent+="<li><a href=\\""+rewriteLink(resitem)+"\\" target=\\"_blank\\">"+shortenURI(resitem)+"</a> ["+result[res][resitem]+"]</li>"
-                }else if(resitem!="instancecount"){
-                    dialogcontent+="<li>"+result[res][resitem]+"</li>"
-                }
-            }
-            dialogcontent+="</ul></td>"
-        }else if((Object.keys(result[res])[0]+"").startsWith("http")){
-            dialogcontent+="<td><a href=\\""+rewriteLink(Object.keys(result[res])[0]+"")+"\\" target=\\"_blank\\">"+shortenURI(Object.keys(result[res])[0]+"")+"</a></td>"
-        }else if(Object.keys(result[res])[0]!="instancecount"){
-            dialogcontent+="<td>"+Object.keys(result[res])[0]+"</td>"
-        }else{
-            dialogcontent+="<td></td>"
-        }
-        dialogcontent+="</tr>"
-    }
-    dialogcontent+="</tbody></table>"
-    dialogcontent+="<button style=\\"float:right\\" id=\\"closebutton\\" onclick='document.getElementById(\\"dataschemadialog\\").close()'>Close</button>"
-    return dialogcontent
-}
-
-function getClassRelationDialog(node){
-     nodeid=rewriteLink(normalizeNodeId(node)).replace(".html",".json")
-     nodelabel=node.text
-     nodetype=node.type
-     nodeicon=node.icon
-     props={}
-     if("data" in node){
-        props=node.data
-     }
-     console.log(nodetype)
-     if(nodetype=="class" || nodetype=="geoclass" || nodetype=="collectionclass" || nodetype=="halfgeoclass"){
-        console.log(props)
-        dialogcontent=formatHTMLTableForClassRelations(props,nodeicon,nodelabel,nodeid)
-        document.getElementById("classrelationdialog").innerHTML=dialogcontent
-        $('#classrelationstable').DataTable();
-        document.getElementById("classrelationdialog").showModal();
-     }
-}
-
-function getPropRelationDialog(propuri,propicon){
-     dialogcontent=formatHTMLTableForPropertyRelations(propuri,proprelations[propuri],propicon)
-     console.log(dialogcontent)
-     document.getElementById("classrelationdialog").innerHTML=dialogcontent
-     $('#classrelationstable').DataTable();
-     document.getElementById("classrelationdialog").showModal();
-}
-
-function normalizeNodeId(node){
-    if(node.id.includes("_suniv")){
-        return node.id.replace(/_suniv[0-9]+_/, "")
-    }
-    return node.id
-}
-
-function getDataSchemaDialog(node){
-     nodeid=rewriteLink(normalizeNodeId(node)).replace(".html",".json")
-     nodelabel=node.text
-     nodetype=node.type
-     nodeicon=node.icon
-     props={}
-     if("data" in node){
-        props=node.data
-     }
-     console.log(nodetype)
-     if(nodetype=="class" || nodetype=="halfgeoclass" || nodetype=="geoclass" || node.type=="collectionclass"){
-        console.log(props)
-        dialogcontent=formatHTMLTableForResult(props["to"],nodeicon)
-        document.getElementById("dataschemadialog").innerHTML=dialogcontent
-        $('#dataschematable').DataTable();
-        document.getElementById("dataschemadialog").showModal();
-     }else{
-         $.getJSON(nodeid, function(result){
-            dialogcontent=formatHTMLTableForResult(result,nodeicon)
-            document.getElementById("dataschemadialog").innerHTML=dialogcontent
-            $('#dataschematable').DataTable();
-            document.getElementById("dataschemadialog").showModal();
-          });
-    }
-}
-
-iconprefix="https://cdn.jsdelivr.net/gh/i3mainz/geopubby@master/public/icons/"
-
-function setupJSTree(){
-    console.log("setupJSTree")
-	if(iconprefixx!=""){
-		iconprefix=iconprefixx
-	}
-    tree["contextmenu"]={}
-    tree["core"]["check_callback"]=true
-    tree["sort"]=function(a, b) {
-        a1 = this.get_node(a);
-        b1 = this.get_node(b);
-        if (a1.icon == b1.icon){
-            return (a1.text > b1.text) ? 1 : -1;
-        } else {
-            return (a1.icon > b1.icon) ? 1 : -1;
-        }
-    }
-	tree["types"]={
-            "default": {"icon": iconprefix+"instance.png"},
-            "class": {"icon": iconprefix+"class.png"},
-            "geoclass": {"icon": iconprefix+"geoclass.png","valid_children":["class","halfgeoclass","geoclass","geoinstance"]},
-            "halfgeoclass": {"icon": iconprefix+"halfgeoclass.png"},
-            "collectionclass": {"icon": iconprefix+"collectionclass.png"},
-            "geocollection": {"icon": iconprefix+"geometrycollection.png"},
-            "featurecollection": {"icon": iconprefix+"featurecollection.png"},
-            "instance": {"icon": iconprefix+"instance.png"},
-            "geoinstance": {"icon": iconprefix+"geoinstance.png"}
-    }
-    tree["contextmenu"]["items"]=function (node) {
-        nodetype=node.type
-        thelinkpart="class"
-        if(nodetype=="instance" || nodetype=="geoinstance"){
-            thelinkpart="instance"
-        }
-        contextmenu={
-            "lookupdefinition": {
-                "separator_before": false,
-                "separator_after": false,
-                "label": "Lookup definition",
-                "icon": iconprefix+"searchclass.png",
-                "action": function (obj) {
-                    newlink=normalizeNodeId(node)
-                    var win = window.open(newlink, '_blank');
-                    win.focus();
-                }
-            },
-            "copyuriclipboard":{
-                "separator_before": false,
-                "separator_after": false,
-                "label": "Copy URI to clipboard",
-                "icon": iconprefix+thelinkpart+"link.png",
-                "action":function(obj){
-                    copyText=normalizeNodeId(node)
-                    navigator.clipboard.writeText(copyText);
-                }
-            },
-            "discoverrelations":{
-                "separator_before": false,
-                "separator_after": false,
-                "label": "Discover "+node.type+" relations",
-                "icon": iconprefix+thelinkpart+"link.png",
-                "action":function(obj){
-                    console.log("class relations")
-                    if(node.type=="class" || node.type=="halfgeoclass" || node.type=="geoclass" || node.type=="collectionclass"){
-                        getClassRelationDialog(node)
-                    }
-                }
-            },
-            "loaddataschema": {
-                "separator_before": false,
-                "separator_after": false,
-                "icon": iconprefix+node.type+"schema.png",
-                "label": "Load dataschema for "+node.type,
-                "action": function (obj) {
-                    console.log(node)
-                    console.log(node.id)
-                    console.log(baseurl)
-                    if(node.id.includes(baseurl)){
-                        getDataSchemaDialog(node)
-                    }else if(node.type=="class" || node.type=="halfgeoclass" || node.type=="geoclass" || node.type=="collectionclass"){
-                        getDataSchemaDialog(node)
-                    }
-                }
-            }
-        }
-        return contextmenu
-    }
-    $('#jstree').jstree(tree);
-    $('#jstree').bind("dblclick.jstree", function (event) {
-        var node = $(event.target).closest("li");
-        var data = node[0].id
-        if(data.includes(baseurl)){
-            console.log(node[0].id)
-            console.log(normalizeNodeId(node[0]))
-            followLink(normalizeNodeId(node[0]))
-        }else{
-            window.open(data, '_blank');
-        }
-    });
-    var to = false;
-	$('#classsearch').keyup(function () {
-        if(to) { clearTimeout(to); }
-        to = setTimeout(function () {
-            var v = $('#classsearch').val();
-            $('#jstree').jstree(true).search(v,false,true);
-        });
-    });
-}
-
-function restyleLayer(propertyName,geojsonLayer) {
-    geojsonLayer.eachLayer(function(featureInstanceLayer) {
-        propertyValue = featureInstanceLayer.feature.properties[propertyName];
-
-        // Your function that determines a fill color for a particular
-        // property name and value.
-        var myFillColor = getColor(propertyName, propertyValue);
-
-        featureInstanceLayer.setStyle({
-            fillColor: myFillColor,
-            fillOpacity: 0.8,
-            weight: 0.5
-        });
-    });
-}
-
-function createColorRangeByAttribute(propertyName,geojsonlayer){
-    var valueset={}
-    var minamount=999999,maxamount=-999999
-    var amountofrelevantitems=0
-    var stringitems=0
-    var numberitems=0
-    var amountofitems=geojsonlayer.size()
-    var maxColors=8
-    for(feat of geojsonlayer){
-        if(propertyName in feat["properties"]){
-            if(!(feat["properties"][propertyName] in valueset)){
-                valueset[feat["properties"][propertyName]]=0
-            }
-            valueset[feat["properties"][propertyName]]+=1
-            if(isNaN(feat["properties"][propertyName])){
-                stringitems+=1
-            }else{
-                numberitems+=1
-                numb=Number(feat["properties"][propertyName])
-                if(numb<minamount){
-                    minamount=numb
-                }
-                if(numb>maxamount){
-                    maxamount=numb
-                }
-            }
-            amountofrelevantitems+=1
-        }else{
-            if(!("undefined" in valueset)){
-                valueset["undefined"]=0
-            }
-            valueset["undefined"]+=1
-        }
-    }
-    if(numberitems===amountofrelevantitems){
-        myrange=maxamount-minamount
-        myrangesteps=myrange/maxColors
-        curstep=minamount
-        while(curstep<maxamount){
-            curstepstr=(curstep+"")
-            rangesByAttribute[propertyName]={cursteps:{"min":curstep,"max":curstep+myrangesteps,"label":"["+curstep+"-"+curstep+myrangesteps+"]"}}
-            curstep+=myrangesteps
-        }
-    }else if(stringitems<amountofrelevantitems){
-
-    }else if(stringitems===amountofrelevantitems){
-
-    }
-}
-
-function generateLeafletPopup(feature, layer){
-    var popup="<b>"
-    if("name" in feature && feature.name!=""){
-        popup+="<a href=\\""+rewriteLink(feature.id)+"\\" class=\\"footeruri\\" target=\\"_blank\\">"+feature.name+"</a></b><br/><ul>"
-    }else{
-        popup+="<a href=\\""+rewriteLink(feature.id)+"\\" class=\\"footeruri\\" target=\\"_blank\\">"+feature.id.substring(feature.id.lastIndexOf('/')+1)+"</a></b><br/><ul>"
-    }
-    for(prop in feature.properties){
-        popup+="<li>"
-        if(prop.startsWith("http")){
-            popup+="<a href=\\""+prop+"\\" target=\\"_blank\\">"+prop.substring(prop.lastIndexOf('/')+1)+"</a>"
-        }else{
-            popup+=prop
-        }
-        popup+=" : "
-        if(Array.isArray(feature.properties[prop]) && feature.properties[prop].length>1){
-            popup+="<ul>"
-            for(item of feature.properties[prop]){
-                popup+="<li>"
-                if((item+"").startsWith("http")){
-                    popup+="<a href=\\""+item+"\\" target=\\"_blank\\">"+item.substring(item.lastIndexOf('/')+1)+"</a>"
-                }else{
-                    popup+=item
-                }
-                popup+="</li>"
-            }
-            popup+="</ul>"
-        }else if(Array.isArray(feature.properties[prop]) && (feature.properties[prop][0]+"").startsWith("http")){
-            popup+="<a href=\\""+rewriteLink(feature.properties[prop][0])+"\\" target=\\"_blank\\">"+feature.properties[prop][0].substring(feature.properties[prop][0].lastIndexOf('/')+1)+"</a>"
-        }else{
-            popup+=feature.properties[prop]+""
-        }
-        popup+="</li>"
-    }
-    popup+="</ul>"
-    return popup
-}
-
-function fetchLayersFromList(thelist){
-	fcolls=[]
-	for(url in thelist){
-		$.ajax({
-			url:thelist[url],
-			dataType : 'json',
-			async : false,
-			success : function(data) {
-				fcolls.push(data)
-			}
-		});
-	}
-	return fcolls
-}
-
-var centerpoints=[]
-
-function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,dateatt="",ajax=true){
-	if(ajax){
-		featurecolls=fetchLayersFromList(featurecolls)
-	}
-    if(typeof (baselayers) === 'undefined' || baselayers===[]){
-        basemaps["OSM"]=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'})
-        baseMaps["OSM"].addTo(map);
-    }else{
-        first=true
-        for(bl in baselayers){
-            if("type" in baselayers[bl] && baselayers[bl]["type"]==="wms") {
-                if("layername" in baselayers[bl]){
-                    baseMaps[bl] = L.tileLayer.wms(baselayers[bl]["url"],{"layers":baselayers[bl]["layername"]})
-                }else{
-                    baseMaps[bl] = L.tileLayer.wms(baselayers[bl]["url"])
-                }
-
-            }else if(!("type" in baselayers[bl]) || baselayers[bl]["type"]==="tile"){
-                baseMaps[bl]=L.tileLayer(baselayers[bl]["url"])
-            }
-            if(first) {
-                baseMaps[bl].addTo(map);
-                first = false
-            }
-        }
-    }
-	L.control.scale({
-	position: 'bottomright',
-	imperial: false
-	}).addTo(map);
-    L.Polygon.addInitHook(function () {
-        this._latlng = this._bounds.getCenter();
-    });
-    L.Polygon.include({
-        getLatLng: function () {
-            return this._latlng;
-        },
-        setLatLng: function () {} // Dummy method.
-    });
-	var bounds = L.latLngBounds([]);
-    first=true
-    counter=1
-    for(feature of featurecolls){
-        var markercluster = L.markerClusterGroup.layerSupport({})
-        if(epsg!="" && epsg!="EPSG:4326" && epsg in epsgdefs){
-            feature=convertGeoJSON(feature,epsgdefs[epsg],null)
-        }
-        layerr=L.geoJSON.css(feature,{
-        pointToLayer: function(feature, latlng){
-                      var greenIcon = new L.Icon({
-                        iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png',
-                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-                        iconSize: [25, 41],iconAnchor: [12, 41], popupAnchor: [1, -34],shadowSize: [41, 41]
-                    });
-                    return L.marker(latlng, {icon: greenIcon});
-        },onEachFeature: function (feature, layer) {layer.bindPopup(generateLeafletPopup(feature, layer))}})
-        layername="Content "+counter
-        if("name" in feature) {
-            layername = feature["name"]
-        }else {
-            counter += 1
-        }
-		markercluster.checkIn(layerr);
-        overlayMaps[layername]=L.featureGroup.subGroup(markercluster,[layerr])
-        if(first) {
-            overlayMaps[layername].addTo(map);
-            var layerBounds = layerr.getBounds();
-            bounds.extend(layerBounds);
-            map.fitBounds(bounds);
-            first = false
-        }
-        centerpoints.push(layerr.getBounds().getCenter());
-    }
-	layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map)
-	if(dateatt!=null && dateatt!=""){
-		var sliderControl = L.control.sliderControl({
-			position: "bottomleft",
-			layer: layerr,
-			range: true,
-			rezoom: 10,
-			showAllOnStart: true,
-			timeAttribute: dateatt
-		});
-		map.addControl(sliderControl);
-		sliderControl.startSlider();
-	}
-    markercluster.addTo(map)
-}
-"""
-
-stylesheet = """
-html { margin: 0; padding: 0; }
-body { font-family: sans-serif; font-size: 80%; margin: 0; padding: 1.2em 2em; }
-#rdficon { float: right; position: relative; top: -28px; }
-#header { border-bottom: 2px solid #696; margin: 0 0 1.2em; padding: 0 0 0.3em; }
-#footer { border-top: 2px solid #696; margin: 1.2em 0 0; padding: 0.3em 0 0; }
-.carousel-center {margin:auto;}
-#homelink { display: inline; }
-#homelink, #homelink a { color: #666; }
-#homelink a { font-weight: bold; text-decoration: none; }
-#homelink a:hover { color: red; text-decoration: underline; }
-h1 { display: inline; font-weight: normal; font-size: 200%; margin: 0; text-align: left; }
-h2 { font-weight: normal; font-size: 124%; margin: 1.2em 0 0.2em; }
-.page-resource-uri { font-size: 116%; margin: 0.2em 0; }
-.page-resource-uri a { color: #666; text-decoration: none; }
-.page-resource-uri a:hover { color: red; text-decoration: underline; }
-img { border: none; }
-#graph{
-    background: #fff;
-    border: 1px solid grey;
-	 position: relative;
-    display: inline-block;
-    width:100%;
-    overflow: hidden;
-}
-#content {
-    margin: 20px;
-    text-align: center;
-}
-details > pre {
-  background-color: #f5f5f5;
-  padding: 4px;
-  margin: 0;
-  box-shadow: 1px 1px 2px #bbbbbb;
-}
-#reset {
-    float: right;
-    position: absolute;
-    right: 5px;
-    top: 5px;
-}
-#distanceSlider {
-    float: right;
-    position: absolute;
-    right: 5px;
-    bottom: 5px;
-}
-table.description { border-collapse: collapse; clear: left; font-size: 100%; margin: 0 0 1em; width: 100%; }
-table.description th { background: white; text-align: left; }
-table.description td, table.description th { line-height: 1.2em; padding: 0.3em 0.5em; vertical-align: top; }
-table.description ul { margin: 0; padding-left: 1.4em; }
-table.description li { list-style-position: outside; list-style-type: square; margin-left: 0; padding-left: 0; }
-table.description .property-column { width: 13em; }
-.ui-autocomplete {
-    max-height: 100px;
-    overflow-y: auto;
-    /* prevent horizontal scrollbar */
-    overflow-x: hidden;
-  }
-.uri { white-space: nowrap; }
-.uri a, a.uri { text-decoration: none; }
-.unbound { color: #888; }
-table.description a small, .metadata-table a small  { font-size: 100%; color: #55a; }
-table.description small, .metadata-table a small  { font-size: 100%; color: #666; }
-table.description .property { white-space: nowrap; padding-right: 1.5em; }
-h1, h2 { color: #810; }
-body { background: %%maincolorcode%%; }
-table.description .container > td { background: #c0e2c0; padding: 0.2em 0.8em; }
-table.description .even td { background: %%tablecolorcode%%; }
-table.description .odd td { background: #f0fcf0; }
-.image { background: white; text-align:center; width:100% margin: 0 1.5em 1.5em 0; padding: 2px; }
-a.expander { text-decoration: none; }
-
-.metadata-label {
-	font-size: 100%;
-	background: #f0fcf0;
-	padding: 3px;
-}
-
-.metadata-table {
-	font-size: 100%;
-	border-left: 3px solid #f0fcf0;
-	border-bottom: 3px solid #f0fcf0;
-	border-right: 3px solid #f0fcf0;
-	background: #d4f6d4;
-	border-top: 0px solid none;
-	margin: 0px;
-}
-
-.metadata-table td {
-	padding: 3px;
-}
-body {
-  font-family: "Lato", sans-serif;
-}
-
-.sidenav {
-  height: 100%;
-  width: 0;
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  right: 0;
-  background-color: #FFF;
-  overflow-x: hidden;
-  transition: 0.5s;
-}
-
-.sidenav a {
-  text-decoration: none;
-  font-size: 12px;
-  color: #818181;
-  transition: 0.3s;
-}
-
-.sidenav .closebtn {
-  position: absolute;
-  top: 0;
-  right: 25px;
-  font-size: 36px;
-  margin-left: 50px;
-}
-
-#jstree {
-	font-size: 12px;
-	background-color:white;
-	z-index: 2;
-}
-
-.jstree-contextmenu {
-z-index: 10;
-}
-
-@media screen and (max-height: 450px) {
-  .sidenav {padding-top: 15px;}
-  .sidenav a {font-size: 18px;}
-}"""
-
-htmltemplate = """<html about=\"{{subject}}\"><head><title>{{toptitle}}</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin="">
-<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
-<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"/>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css"/>
-<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.1.1/themes/default/style.min.css" />
-<link rel="stylesheet" type="text/css" href="{{stylepath}}"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/TrackballControls.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/OrbitControls.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/PLYLoader.js"></script>
-<script src="{{scriptfolderpath}}"></script><script src="{{classtreefolderpath}}"></script><script src="{{proprelationpath}}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
-<script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
-<script src="{{startscriptpath}}"></script>
-</head>
-<div id="mySidenav" class="sidenav" style="overflow:auto;">
-  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-  GeoClasses: <input type="checkbox" id="geoclasses"/><br/>
-  Search:<input type="text" id="classsearch"><br/><div id="jstree"></div>
-</div><script>var indexpage={{indexpage}}; var baseurl="{{baseurl}}"; var iconprefixx="{{iconprefixx}}"
-var relativedepth={{relativedepth}}</script>
-<body><div id="header"><h1 id="title">{{title}}</h1></div><div class="page-resource-uri"><a href="{{baseurl}}">{{baseurl}}</a> <b>powered by Static GeoPubby</b> generated using the <a style="color:blue;font-weight:bold" target="_blank" href="{{versionurl}}">{{version}}</a></div>
-</div><div id="rdficon"><span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span></div> <div class="search"><div class="ui-widget">Search: <input id="search" size="50"><button id="gotosearch" onclick="followLink()">Go</button><b>Download Options:</b>&nbsp;Format:<select id="format" onchange="changeDefLink()">	
-{{exports}}
-</select><a id="formatlink" href="#" target="_blank"><svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-info-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM8 5.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg></a>&nbsp;
-<button id="downloadButton" onclick="download()">Download</button>{{bibtex}}<br/></div></div><dialog id="classrelationdialog" width="500" height="500" modal="true"></dialog><dialog id="dataschemadialog" width="500" height="500" modal="true"></dialog>
-<div class="container-fluid"><div class="row-fluid" id="main-wrapper">
-"""
-
-
-imagecarouselheader="""<div id="imagecarousel" class="carousel slide" data-ride="carousel"><div class="carousel-inner">"""
-
-imagecarouselfooter="""</div> <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="sr-only">Previous</span>
-  </a>
-  <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="sr-only">Next</span>
-  </a></div>"""
-
-imagestemplate="""<div class="{{carousel}}" width="100%">
-<a href="{{image}}" target=\"_blank\"><img src="{{image}}" style="max-width:485px;max-height:500px" alt="{{image}}" title="{{imagetitle}}" /></a>
-</div>
-"""
-
-imageswithannotemplate="""<div class="{{carousel}}" width="100%">
-<a href=\"{{image}}\" target=\"_blank\"><img src="{{image}}" style="max-width:485px;max-height:500px" alt="{{image}}" title="{{imagetitle}}" /></a>
-{{svganno}}
-</div>
-"""
-
-
-imagestemplatesvg="""<div class="{{carousel}}" style="max-width:485px;max-height:500px">
-{{image}}
-</div>
-"""
-
-videotemplate="""
-<div class="video">
-<video width="320" height="240" controls>
-  <source src="{{video}}">
-Your browser does not support the video tag.
-</video>
-</div>
-"""
-
-audiotemplate="""
-<div class="audio">
-<audio controls>
-  <source src="{{audio}}">
-Your browser does not support the audio element.
-</audio>
-</div>
-"""
-
-threejstemplate="""
-<script src="https://cdn.jsdelivr.net/npm/three/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/TrackballControls.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/OrbitControls.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/PLYLoader.js"></script>
-<div id="threejs" class="threejscontainer" style="max-width:485px;max-height:500px">
-</div>
-<script>$(document).ready(function(){initThreeJS('threejs',parseWKTStringToJSON("{{wktstring}}"),{{meshurls}})})</script>
-"""
-
-image3dtemplate="""<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/3DHOP@4.3/minimal/stylesheet/3dhop.css"/>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/3DHOP@4.3/minimal/js/spidergl.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/3DHOP@4.3/minimal/js/corto.em.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/3DHOP@4.3/minimal/js/corto.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/3DHOP@4.3/minimal/js/presenter.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/3DHOP@4.3/minimal/js/nexus.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/3DHOP@4.3/minimal/js/ply.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/3DHOP@4.3/minimal/js/trackball_sphere.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/3DHOP@4.3/minimal/js/trackball_turntable.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/3DHOP@4.3/minimal/js/trackball_turntable_pan.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/3DHOP@4.3/minimal/js/trackball_pantilt.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/3DHOP@4.3/minimal/js/init.js"></script>
-<div id="3dhop" class="tdhop" onmousedown="if (event.preventDefault) event.preventDefault()"><div id="tdhlg"></div>
-<div id="toolbar"><img id="home"     title="Home"                  src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/3DHOP@4.3/minimal/skins/dark/home.png"            /><br/>
-<img id="zoomin"   title="Zoom In"               src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/3DHOP@4.3/minimal/skins/dark/zoomin.png"          /><br/>
-<img id="zoomout"  title="Zoom Out"              src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/3DHOP@4.3/minimal/skins/dark/zoomout.png"         /><br/>
-<img id="light_on" title="Disable Light Control" src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/3DHOP@4.3/minimal/skins/dark/lightcontrol_on.png" style="position:absolute; visibility:hidden;"/>
-<img id="light"    title="Enable Light Control"  src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/3DHOP@4.3/minimal/skins/dark/lightcontrol.png"    /><br/>
-<img id="full_on"  title="Exit Full Screen"      src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/3DHOP@4.3/minimal/skins/dark/full_on.png"         style="position:absolute; visibility:hidden;"/>
-<img id="full"     title="Full Screen"           src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/3DHOP@4.3/minimal/skins/dark/full.png"            />
-</div><canvas id="draw-canvas" style="background-color:white"></canvas></div><script>$(document).ready(function(){
-start3dhop("{{meshurl}}","{{meshformat}}")});</script>"""
-
-nongeoexports="""
-<option value="csv">Comma Separated Values (CSV)</option>
-<option value="geojson">(Geo)JSON</option>
-<option value="json">JSON-LD</option>
-<option value="tgf">Trivial Graph Format (TGF)</option>
-<option value="ttl" selected>Turtle (TTL)</option>
-"""
-
-geoexports="""
-<option value="csv">Comma Separated Values (CSV)</option>
-<option value="geojson">(Geo)JSON</option>
-<option value="tgf">Trivial Graph Format (TGF)</option>
-<option value="ttl" selected>Turtle (TTL)</option>
-<option value="wkt">Well-Known-Text (WKT)</option>
-"""
-
-sparqltemplate=""
-
-maptemplate="""
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="https://unpkg.com/leaflet.markercluster@1.0.6/dist/leaflet.markercluster-src.js"></script>
-<script src="https://unpkg.com/leaflet.markercluster.layersupport@2.0.1/dist/leaflet.markercluster.layersupport.js"></script>
-<script src="https://unpkg.com/leaflet.featuregroup.subgroup@1.0.2/dist/leaflet.featuregroup.subgroup.js"></script>
-<script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/dwilhelm89/LeafletSlider@master/dist/leaflet.SliderControl.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.min.js"></script><script src="https://cdn.jsdelivr.net/gh/albburtsev/Leaflet.geojsonCSS/leaflet.geojsoncss.min.js"></script>
-<script src="{{epsgdefspath}}"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css" rel="stylesheet" />
-<link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.Default.css" rel="stylesheet" />
-<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet" >
-<link href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css" rel='stylesheet' />
-<div id="map" style="height:500px;z-index: 0;"></div><script>
-var rangesByAttribute={}
-var overlayMaps={}
-var baselayers={{baselayers}}
-var featurecolls = {{myfeature}}
-var ajax=true
-var epsg="{{epsg}}"
-var dateatt="{{dateatt}}"
-var map = L.map('map',{fullscreenControl: true,fullscreenControlOptions: {position: 'topleft'}}).setView([51.505, -0.09], 13);
-var baseMaps = {};
-props={}
-setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,dateatt,ajax)
-</script>
-"""
-
-vowltemplate=""
-
-htmlcommenttemplate="""<p class="comment"><b>Description:</b> {{comment}}</p>"""
-
-htmltabletemplate="""<div style="overflow-x:auto;"><table border=1 width=100% class=description><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>{{tablecontent}}</tbody></table></div>"""
-
-htmlfooter="""<div id="footer"><div class="container-fluid"><b>Download Options:</b>&nbsp;Format:<select id="format" onchange="changeDefLink()">	
-{{exports}}
-</select><a id="formatlink2" href="#" target="_blank"><svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-info-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM8 5.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg></a>&nbsp;
-<button id="downloadButton" onclick="download()">Download</button>{{license}}{{bibtex}}</div></div></body><script>$(document).ready(function(){setSVGDimensions()})</script></html>"""
-
-licensetemplate=""""""
-
-classtreequery="""PREFIX owl: <http://www.w3.org/2002/07/owl#>\n
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n
-        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n
-        SELECT DISTINCT ?subject ?label ?supertype\n
-        WHERE {\n
-           { ?individual rdf:type ?subject . } UNION { ?subject rdf:type owl:Class . } UNION { ?subject rdf:type rdfs:Class . } .\n
-           OPTIONAL { ?subject rdfs:subClassOf ?supertype } .\n
-           OPTIONAL { ?subject rdfs:label ?label. filter(langMatches(lang(?label),\"en\")) }
-           OPTIONAL { ?subject rdfs:label ?label }.\n
-            FILTER (\n
-                (\n
-                ?subject != owl:Class &&\n
-                ?subject != rdf:List &&\n
-                ?subject != rdf:Property &&\n
-                ?subject != rdfs:Class &&\n
-                ?subject != rdfs:Datatype &&\n
-                ?subject != rdfs:ContainerMembershipProperty &&\n
-                ?subject != owl:DatatypeProperty &&\n
-                ?subject != owl:AnnotationProperty &&\n
-                ?subject != owl:Restriction &&\n
-                ?subject != owl:ObjectProperty &&\n
-                ?subject != owl:NamedIndividual &&\n
-                ?subject != owl:Ontology) )\n
-        }"""
-
 featurecollectionspaths={}
 iiifmanifestpaths={"default":[]}
 imagetoURI={}
-epsgdefs="var epsgdefs={}"
-rdfformats=["ttl","trix","trig","n3","nquads","nt","xml"]
+
+templates=DocDefaults.templates
 
 def resolveTemplate(templatename):
     print(templatepath+"/"+templatename)
-    if os.path.exists(templatepath+"/"+templatename):
-        if os.path.exists(templatepath+"/"+templatename+"/css/style.css"):
-            with open(templatepath+"/"+templatename+"/css/style.css", 'r') as file:
-                global stylesheet
-                stylesheet=file.read()
-        if os.path.exists(templatepath+"/"+templatename+"/js/startscripts.js"):
-            with open(templatepath+"/"+templatename+"/js/startscripts.js", 'r') as file:
-                global startscripts
-                startscripts=file.read()
-        if os.path.exists(templatepath+"/"+templatename+"/js/epsgdefs.js"):
-            with open(templatepath+"/"+templatename+"/js/epsgdefs.js", 'r') as file:
-                global epsgdefs
-                epsgdefs=file.read()
-        if os.path.exists(templatepath+"/"+templatename+"/templates/header.html"):
-            with open(templatepath+"/"+templatename+"/templates/header.html", 'r') as file:
-                global htmltemplate
-                htmltemplate=file.read()
-        if os.path.exists(templatepath+"/"+templatename+"/templates/sparql.html"):
-            with open(templatepath+"/"+templatename+"/templates/sparql.html", 'r') as file:
-                global sparqltemplate
-                sparqltemplate=file.read()
-        if os.path.exists(templatepath+"/"+templatename+"/templates/footer.html"):
-            with open(templatepath+"/"+templatename+"/templates/footer.html", 'r') as file:
-                global htmlfooter
-                htmlfooter=file.read()
-        if os.path.exists(templatepath+"/"+templatename+"/templates/geoexports.html"):
-            with open(templatepath+"/"+templatename+"/templates/geoexports.html", 'r') as file:
-                global geoexports
-                geoexports=file.read()
-        if os.path.exists(templatepath+"/"+templatename+"/templates/nongeoexports.html"):
-            with open(templatepath+"/"+templatename+"/templates/nongeoexports.html", 'r') as file:
-                global nongeoexports
-                nongeoexports=file.read()
-        if os.path.exists(templatepath+"/"+templatename+"/templates/3dtemplate.html"):
-            with open(templatepath+"/"+templatename+"/templates/3dtemplate.html", 'r') as file:
-                global image3dtemplate
-                image3dtemplate=file.read()
-        if os.path.exists(templatepath+"/"+templatename+"/templates/threejstemplate.html"):
-            with open(templatepath+"/"+templatename+"/templates/threejstemplate.html", 'r') as file:
-                global threejstemplate
-                threejstemplate=file.read()
-        if os.path.exists(templatepath+"/"+templatename+"/templates/vowlwrapper.html"):
-            with open(templatepath+"/"+templatename+"/templates/vowlwrapper.html", 'r') as file:
-                global vowltemplate
-                vowltemplate=file.read()
-        if os.path.exists(templatepath+"/"+templatename+"/templates/audiotemplate.html"):
-            with open(templatepath+"/"+templatename+"/templates/audiotemplate.html", 'r') as file:
-                global audiotemplate
-                audiotemplate=file.read()
-        if os.path.exists(templatepath+"/"+templatename+"/templates/videotemplate.html"):
-            with open(templatepath+"/"+templatename+"/templates/videotemplate.html", 'r') as file:
-                global videotemplate
-                videotemplate=file.read()
-        if os.path.exists(templatepath+"/"+templatename+"/templates/maptemplate.html"):
-            with open(templatepath+"/"+templatename+"/templates/maptemplate.html", 'r') as file:
-                global maptemplate
-                maptemplate=file.read()
-        return True
-    return False
+    if os.path.exists(templatepath+"/"+templatename+"/templateconf.json"):
+        with open(templatepath+"/"+templatename+"/templateconf.json", 'r') as f:
+            templatefiles = json.load(f)
+            for file in templatefiles:
+                if os.path.exists(templatepath +"/"+templatename+"/"+ file):
+                    with open(templatepath +"/"+templatename+"/"+ file["path"], 'r') as f:
+                        if "name" in file:
+                            templates[file["name"]]= f.read()
+                        else:
+                            templates[file] = f.read()
+    elif os.path.exists(templatepath+"/"+templatename+"/templates/"):
+        if os.path.exists(templatepath+"/"+templatename+"/templates/layouts/") and os.path.exists(templatepath+"/"+templatename+"/templates/includes/"):
+            templates["includes"]={}
+            templates["layouts"] = {}
+            for filename in os.listdir(templatepath+"/"+templatename+"/templates/includes/"):
+                if filename.endswith(".html") or filename.endswith(".css"):
+                    with open(templatepath+"/"+templatename+"/templates/includes/"+filename, 'r') as f:
+                        content=f.read()
+                        templates["includes"][filename.replace(".html","")] = content
+                        templates[filename.replace(".html", "")] = content
+            for filename in os.listdir(templatepath + "/" + templatename + "/templates/layouts/"):
+                if filename.endswith(".html") or filename.endswith(".css"):
+                    with open(templatepath + "/" + templatename + "/templates/layouts/" + filename, 'r') as f:
+                        content=f.read()
+                        templates["layouts"][filename.replace(".html", "")] = content
+                        templates[filename.replace(".html", "")] = content
+        else:
+            for filename in os.listdir(templatepath+"/"+templatename+"/templates/"):
+                if filename.endswith(".html") or filename.endswith(".css"):
+                    with open(templatepath+"/"+templatename+"/templates/"+filename, 'r') as f:
+                        templates[filename.replace(".html","")] = f.read()
+        return False
+    return True
 
 
 class OntDocGeneration:
 
-    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,iiif,ckan=True,localOptimized=False,imagemetadata=None,startconcept=None,deploypath="",logoname="",templatename="default",offlinecompat=False,exports=["json","ttl"],datasettitle="",publisher="",publishingorg=""):
+    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,iiif,ckan=True,solidexport=True,localOptimized=False,imagemetadata=None,startconcept=None,deploypath="",logoname="",templatename="default",offlinecompat=False,exports=["json","ttl"],datasettitle="",publisher="",publishingorg=""):
         self.prefixes=prefixes
         self.prefixnamespace = prefixnamespace
         self.namespaceshort = prefixnsshort.replace("/","")
@@ -2206,6 +97,7 @@ class OntDocGeneration:
         self.datasettitle=datasettitle
         self.logoname=logoname
         self.ckan=ckan
+        self.solidexport=solidexport
         self.publisher=publisher
         self.publishingorg=publishingorg
         self.startconcept=startconcept
@@ -2227,12 +119,9 @@ class OntDocGeneration:
         resolveTemplate(templatename)
         self.offlinecompat=offlinecompat
         if offlinecompat:
-            global htmltemplate
-            htmltemplate=self.createOfflineCompatibleVersion(outpath,htmltemplate,templatepath,templatename)
-            global maptemplate
-            maptemplate=self.createOfflineCompatibleVersion(outpath,maptemplate,templatepath,templatename)
-            global sparqltemplate
-            sparqltemplate=self.createOfflineCompatibleVersion(outpath,sparqltemplate,templatepath,templatename)
+            templates["htmltemplate"]=self.createOfflineCompatibleVersion(outpath,templates["htmltemplate"],templatepath,templatename)
+            templates["maptemplate"]=self.createOfflineCompatibleVersion(outpath,templates["maptemplate"],templatepath,templatename)
+            templates["sparqltemplate"]=self.createOfflineCompatibleVersion(outpath,templates["sparqltemplate"],templatepath,templatename)
         self.license=license
         self.licenseuri=None
         self.licensehtml=None
@@ -2244,7 +133,7 @@ class OntDocGeneration:
         for nstup in self.graph.namespaces():
             if str(nstup[1]) not in prefixes["reversed"]:
                 prefixes["reversed"][str(nstup[1])]=str(nstup[0])
-        self.preparedclassquery=prepareQuery(classtreequery)
+        self.preparedclassquery=prepareQuery(DocConfig.classtreequery)
         if prefixnamespace==None or prefixnsshort==None or prefixnamespace=="" or prefixnsshort=="":
             self.namespaceshort = "suni"
             self.prefixnamespace = "http://purl.org/suni/"
@@ -2278,9 +167,19 @@ class OntDocGeneration:
             if "geojson" in literaltype.lower():
                 return literal
         except Exception as e:
+            print("Literal: "+str(literal)+" "+str(literaltype))
             print(e)
             print(traceback.format_exc())
         return None
+
+    includepattern=p = re.compile("{% include (.+) %}")
+
+    def getIncludesInTemplate(self,template):
+        includes=re.findall(OntDocGeneration.includepattern, template)
+        print("INCLUDE RESULT: "+str(includes))
+        for inc in includes:
+            print("INCLUDES: "+str(inc))
+
 
     def createOfflineCompatibleVersion(self,outpath,myhtmltemplate,templatepath,templatename):
         if not os.path.isdir(outpath):
@@ -2366,7 +265,7 @@ class OntDocGeneration:
 
     def replaceStandardVariables(self,template,subject,checkdepth,indexpage):
         template=template.replace("{{indexpage}}",str(indexpage)).replace("{{subject}}",str(subject)).replace("{{relativedepth}}",str(checkdepth))\
-            .replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{deploypath}}",self.deploypath)\
+            .replace("{{versionurl}}",DocConfig.versionurl).replace("{{version}}",DocConfig.version).replace("{{deploypath}}",self.deploypath)\
             .replace("{{publishingorg}}",self.publishingorg).replace("{{publisher}}",self.publisher).replace("{{datasettitle}}",self.datasettitle)\
             .replace("{{logo}}",self.logoname)
         return template
@@ -2394,7 +293,7 @@ class OntDocGeneration:
             if prefixnamespace in sub and (isinstance(sub,URIRef) or isinstance(sub,BNode)):
                 subjectstorender.add(sub)
                 for tup in self.graph.predicate_objects(sub):
-                    if str(tup[0]) in labelproperties:
+                    if str(tup[0]) in DocConfig.labelproperties:
                         labeltouri[str(tup[1])] = str(sub)
                         uritolabel[str(sub)] = {"label":str(tup[1])}
                         break
@@ -2427,19 +326,17 @@ class OntDocGeneration:
             if tr["id"] not in classidset:
                 tree["core"]["data"].append(tr)
         with open(outpath + "style.css", 'w', encoding='utf-8') as f:
-            f.write(stylesheet)
+            f.write(templates["stylesheet"])
             f.close()
         with open(outpath + "startscripts.js", 'w', encoding='utf-8') as f:
-            f.write(startscripts.replace("{{baseurl}}",prefixnamespace))
+            f.write(templates["startscripts"].replace("{{baseurl}}",prefixnamespace))
             f.close()
         with open(outpath + "epsgdefs.js", 'w', encoding='utf-8') as f:
-            f.write(epsgdefs)
+            f.write(templates["epsgdefs"])
             f.close()
-        pathmap = {}
         paths = {}
         nonnsmap={}
         postprocessing=Graph()
-        subtorenderlen = len(subjectstorender)
         subtorencounter = 0
         for subj in subjectstorender:
             path = subj.replace(prefixnamespace, "")
@@ -2489,7 +386,8 @@ class OntDocGeneration:
         with open(outpath + corpusid + '_search.js', 'w', encoding='utf-8') as f:
             f.write("var search=" + json.dumps(labeltouri, indent=2, sort_keys=True))
             f.close()
-        IIIFAPIExporter.generateIIIFAnnotations(outpath,imagetoURI)
+        if self.iiif:
+            IIIFAPIExporter.generateIIIFAnnotations(outpath,imagetoURI)
         if self.createIndexPages:
             for path in paths:
                 subgraph=Graph(bind_namespaces="rdflib")
@@ -2506,6 +404,10 @@ class OntDocGeneration:
                     if nslink in sub:
                         for tup in self.graph.predicate_objects(sub):
                             subgraph.add((sub, tup[0], tup[1]))
+                            if self.solidexport:
+                                subgraph.add((URIRef(sub.replace("nslink","")),URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://www.w3.org/ns/ldp#Container")))
+                                subgraph.add((URIRef(sub.replace("nslink", "")),URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://www.w3.org/ns/ldp#BasicContainer")))
+                                subgraph.add((URIRef(sub.replace("nslink", "")),URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://www.w3.org/ns/ldp#Resource")))
                 for ex in self.exports:
                     if ex in ExporterUtils.exportToFunction:
                         if ex not in ExporterUtils.rdfformats:
@@ -2515,10 +417,10 @@ class OntDocGeneration:
                         else:
                             ExporterUtils.exportToFunction[ex](subgraph,path + "index."+str(ex),subjectstorender,classlist,ex)
                 relpath=DocUtils.generateRelativePathFromGivenDepth(checkdepth)
-                indexhtml=self.replaceStandardVariables(htmltemplate,"",checkdepth,str(nslink==prefixnamespace).lower())
+                indexhtml=self.replaceStandardVariables(templates["htmltemplate"],"",checkdepth,str(nslink==prefixnamespace).lower())
                 indexhtml = indexhtml.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{relativepath}}",relpath).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink)\
-                    .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", nslink).replace("{{proprelationpath}}",proprelations).replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",nongeoexports).replace("{{bibtex}}","")
-                indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"+vowltemplate.replace("{{vowlpath}}", "minivowl_result.js")
+                    .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", nslink).replace("{{proprelationpath}}",proprelations).replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",templates["nongeoexports"]).replace("{{bibtex}}","")
+                indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"+templates["vowltemplate"].replace("{{vowlpath}}", "minivowl_result.js")
                 if self.startconcept!=None and path==outpath and self.startconcept in uritotreeitem:
                     if self.createColl:
                         indexhtml+="<p>Start exploring the graph here: <img src=\""+tree["types"][uritotreeitem[self.startconcept][-1]["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+uritotreeitem[self.startconcept][-1]["type"]+"\"/><a href=\""+DocUtils.generateRelativeLinkFromGivenDepth(prefixnamespace,0,str(self.startconcept),True)+"\">"+DocUtils.shortenURI(self.startconcept)+"</a></p>"
@@ -2540,37 +442,45 @@ class OntDocGeneration:
                                 indexhtml+="<tr><td><img src=\""+tree["types"][item["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+item["type"]+"\"/><a href=\""+str(item["id"])+"\" target=\"_blank\">"+str(item["text"])+"</a></td>"                       
                             indexhtml+="<td>"+str(item["instancecount"])+"</td>"+exitem+"</tr>"
                 indexhtml += "</tbody></table><script>$('#indextable').DataTable();</script>"
-                indexhtml+=self.replaceStandardVariables(htmlfooter,"",checkdepth,str(nslink==prefixnamespace).lower()).replace("{{license}}",curlicense).replace("{{exports}}",nongeoexports).replace("{{bibtex}}","")
+                indexhtml+=self.replaceStandardVariables(templates["footer"],"",checkdepth,str(nslink==prefixnamespace).lower()).replace("{{license}}",curlicense).replace("{{exports}}",templates["nongeoexports"]).replace("{{bibtex}}","")
                 #print(path)
                 with open(path + "index.html", 'w', encoding='utf-8') as f:
                     f.write(indexhtml)
                     f.close()
-        sparqlhtml = self.replaceStandardVariables(htmltemplate, "", "0","false")
-        sparqlhtml = sparqlhtml.replace("{{iconprefixx}}",("icons/" if self.offlinecompat else "")).replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}","0").replace("{{relativepath}}",".").replace("{{toptitle}}","SPARQL Query Editor").replace("{{title}}","SPARQL Query Editor").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
-                    .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{baseurlhtml}}", "").replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", corpusid + "_search.js").replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","").replace("{{proprelationpath}}","proprelations.js")
-        sparqlhtml+=sparqltemplate
-        sparqlhtml+=self.replaceStandardVariables(htmlfooter,"","0","false").replace("{{license}}",curlicense).replace("{{exports}}",nongeoexports).replace("{{bibtex}}","")
-        with open( outpath+"sparql.html", 'w', encoding='utf-8') as f:
-            f.write(sparqlhtml)
-            f.close()
+
+        if "layouts" in templates:
+            for template in templates["layouts"]:
+                if template!="main":
+                    self.getIncludesInTemplate(template)
+        else:
+            sparqlhtml = self.replaceStandardVariables(templates["htmltemplate"], "", "0", "false")
+            sparqlhtml = sparqlhtml.replace("{{iconprefixx}}",("icons/" if self.offlinecompat else "")).replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}","0").replace("{{relativepath}}",".").replace("{{toptitle}}","SPARQL Query Editor").replace("{{title}}","SPARQL Query Editor").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
+                        .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{baseurlhtml}}", "").replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", corpusid + "_search.js").replace("{{exports}}",templates["nongeoexports"]).replace("{{versionurl}}",DocConfig.versionurl).replace("{{version}}",DocConfig.version).replace("{{bibtex}}","").replace("{{proprelationpath}}","proprelations.js")
+            sparqlhtml+=templates["sparqltemplate"]
+            sparqlhtml+=self.replaceStandardVariables(templates["footer"],"","0","false").replace("{{license}}",curlicense).replace("{{exports}}",templates["nongeoexports"]).replace("{{bibtex}}","")
+            with open( outpath+"sparql.html", 'w', encoding='utf-8') as f:
+                f.write(sparqlhtml)
+                f.close()
         if len(iiifmanifestpaths["default"])>0:
             IIIFAPIExporter.generateIIIFCollections(self.outpath,self.deploypath,iiifmanifestpaths["default"],prefixnamespace)
         if len(featurecollectionspaths)>0 and self.ckan:
             CKANExporter.generateCKANCollection(outpath,self.deploypath,featurecollectionspaths,tree["core"]["data"],self.license)
+        if self.solidexport:
             SolidExporter.createSolidSettings(self.graph,outpath,self.deploypath,self.publisher,self.datasettitle,tree["core"]["data"])
         if len(featurecollectionspaths)>0:
             relpath=DocUtils.generateRelativePathFromGivenDepth(0)
-            indexhtml = self.replaceStandardVariables(htmltemplate, "", "0", "true")
+            indexhtml = self.replaceStandardVariables(templates["htmltemplate"], "", "0", "true")
             indexhtml = indexhtml.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{baseurl}}", prefixnamespace).replace("{{relativepath}}",relpath).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}", "vowl_result.js")\
-                    .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{nonnslink}}","").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",nongeoexports).replace("{{bibtex}}","")
+                    .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{nonnslink}}","").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",templates["nongeoexports"]).replace("{{bibtex}}","")
             OGCAPIFeaturesExporter.generateOGCAPIFeaturesPages(outpath,self.deploypath,featurecollectionspaths,prefixnamespace,self.ogcapifeatures,True)
             indexhtml+= "<p>This page shows feature collections present in the linked open data export</p>"
             indexhtml+="<script src=\"features.js\"></script>"
-            indexhtml+=maptemplate.replace("var ajax=true","var ajax=false").replace("var featurecolls = {{myfeature}}","").replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(0)).replace("{{baselayers}}",json.dumps(baselayers).replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{dateatt}}", ""))
-            indexhtml+= self.replaceStandardVariables(htmlfooter,"","0","true").replace("{{license}}", curlicense).replace("{{subject}}","").replace("{{exports}}", nongeoexports).replace("{{bibtex}}","")
+            indexhtml+=templates["maptemplate"].replace("var ajax=true","var ajax=false").replace("var featurecolls = {{myfeature}}","").replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(0)).replace("{{baselayers}}",json.dumps(DocConfig.baselayers).replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{dateatt}}", ""))
+            indexhtml+= self.replaceStandardVariables(templates["footer"],"","0","true").replace("{{license}}", curlicense).replace("{{subject}}","").replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}","")
             with open(outpath + "featurecollections.html", 'w', encoding='utf-8') as f:
                 f.write(indexhtml)
                 f.close()
+        return subjectstorender
                     
     def getPropertyRelations(self,graph,outpath):
         predicates= {}
@@ -2605,9 +515,9 @@ class OntDocGeneration:
                 isgeo=False
                 isfeature = False
                 for geotup in graph.predicate_objects(tup[0]):
-                    if str(geotup[0]) in geopointerproperties:
+                    if str(geotup[0]) in DocConfig.geopointerproperties:
                         isfeature=True
-                    elif str(geotup[0]) in geoproperties:
+                    elif str(geotup[0]) in DocConfig.geoproperties:
                         isgeo=True
                 if isgeo:
                     classToGeoColl[str(tup[1])]+=1
@@ -2661,7 +571,7 @@ class OntDocGeneration:
                     restext= DocUtils.shortenURI(str(obj))
                     if res!=None:
                         restext+= " (" + res["uri"] + ")"
-                if str(obj) not in collectionclasses:
+                if str(obj) not in DocConfig.collectionclasses:
                     result.append({"id": str(obj), "parent": cls,"type": "instance","text": restext, "data":{}})
                 else:
                     result.append({"id": str(obj), "parent": cls, "type": "class", "text": restext, "data": {}})
@@ -2726,7 +636,7 @@ class OntDocGeneration:
                     classlist[item]["item"]["text"]=classlist[item]["item"]["text"][0:classlist[item]["item"]["text"].rfind("[")-1]+" ["+str(classlist[item]["items"])+"]"
                 else:
                     classlist[item]["item"]["text"]=classlist[item]["item"]["text"]+" ["+str(classlist[item]["items"])+"]"
-            if item in collectionclasses:
+            if item in DocConfig.collectionclasses:
                 classlist[item]["item"]["type"] = "collectionclass"
             elif classlist[item]["items"]==classlist[item]["geoitems"] and classlist[item]["items"]>0 and classlist[item]["geoitems"]>0:
                 classlist[item]["item"]["type"]="geoclass"
@@ -2789,8 +699,8 @@ class OntDocGeneration:
                 if "pages" not in bibtexitem:	
                     bibtexitem["pages"]={}	
                 bibtexitem["pages"]["end"]=str(tup[1])	
-            elif str(tup[0]) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" and str(tup[1]) in bibtextypemappings:	
-                bibtexitem["type"]=bibtextypemappings[str(tup[1])]	             
+            elif str(tup[0]) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" and str(tup[1]) in DocConfig.bibtextypemappings:
+                bibtexitem["type"]=DocConfig.bibtextypemappings[str(tup[1])]
             elif str(tup[0]) in bibtexmappings:	
                 if isinstance(tup[1],URIRef):	
                     bibtexitem[bibtexmappings[str(tup[0])]]=DocUtils.getLabelForObject(tup[1],graph)
@@ -2822,15 +732,15 @@ class OntDocGeneration:
     def resolveTimeObject(self,pred,obj,graph,timeobj):
         if str(pred)=="http://www.w3.org/2006/time#hasBeginning":
             for tobj2 in graph.predicate_objects(obj):
-                if str(tobj2[0]) in timeproperties:
+                if str(tobj2[0]) in DocConfig.timeproperties:
                     timeobj["begin"]=tobj2[1]
         elif str(pred)=="http://www.w3.org/2006/time#hasEnd":
             for tobj2 in graph.predicate_objects(obj):
-                if str(tobj2[0]) in timeproperties:
+                if str(tobj2[0]) in DocConfig.timeproperties:
                     timeobj["end"]=tobj2[1]
         elif str(pred)=="http://www.w3.org/2006/time#hasTime":
             for tobj2 in graph.predicate_objects(obj):
-                if str(tobj2[0]) in timeproperties:
+                if str(tobj2[0]) in DocConfig.timeproperties:
                     timeobj["timepoint"]=tobj2[1]
         return timeobj
 
@@ -2838,23 +748,23 @@ class OntDocGeneration:
         timeres=None
         if "begin" in timeobj and "end" in timeobj:
             timeres=str(timeobj["begin"])+" "
-            if str(timeobj["begin"].datatype) in timeliteraltypes:
-                timeres+=DocUtils.createURILink(self.prefixes,timeliteraltypes[str(timeobj["begin"].datatype)])
+            if str(timeobj["begin"].datatype) in DocConfig.timeliteraltypes:
+                timeres+=DocUtils.createURILink(self.prefixes,DocConfig.timeliteraltypes[str(timeobj["begin"].datatype)])
             timeres+=" - "+str(timeobj["end"])
-            if str(timeobj["end"].datatype) in timeliteraltypes:
-                timeres+=DocUtils.createURILink(self.prefixes,timeliteraltypes[str(timeobj["end"].datatype)])
+            if str(timeobj["end"].datatype) in DocConfig.timeliteraltypes:
+                timeres+=DocUtils.createURILink(self.prefixes,DocConfig.timeliteraltypes[str(timeobj["end"].datatype)])
         elif "begin" in timeobj and not "end" in timeobj:
             timeres=str(timeobj["begin"])
-            if str(timeobj["begin"].datatype) in timeliteraltypes:
-                timeres+=DocUtils.createURILink(self.prefixes,timeliteraltypes[str(timeobj["begin"].datatype)])
+            if str(timeobj["begin"].datatype) in DocConfig.timeliteraltypes:
+                timeres+=DocUtils.createURILink(self.prefixes,DocConfig.timeliteraltypes[str(timeobj["begin"].datatype)])
         elif "begin" not in timeobj and "end" in timeobj:
             timeres=str(timeobj["end"])
-            if str(timeobj["end"].datatype) in timeliteraltypes:
-                timeres+=DocUtils.createURILink(self.prefixes,timeliteraltypes[str(timeobj["end"].datatype)])
+            if str(timeobj["end"].datatype) in DocConfig.timeliteraltypes:
+                timeres+=DocUtils.createURILink(self.prefixes,DocConfig.timeliteraltypes[str(timeobj["end"].datatype)])
         elif "timepoint" in timeobj:
             timeres=timeobj["timepoint"]
-            if str(timeobj["timepoint"].datatype) in timeliteraltypes:
-                timeres+=DocUtils.createURILink(self.prefixes,timeliteraltypes[str(timeobj["timepoint"].datatype)])
+            if str(timeobj["timepoint"].datatype) in DocConfig.timeliteraltypes:
+                timeres+=DocUtils.createURILink(self.prefixes,DocConfig.timeliteraltypes[str(timeobj["timepoint"].datatype)])
         return timeres
 
     def resolveTimeLiterals(self,pred,obj,graph):
@@ -2862,16 +772,16 @@ class OntDocGeneration:
         if isinstance(obj,URIRef) and str(pred)=="http://www.w3.org/2006/time#hasTime":         
             for tobj in graph.predicate_objects(obj):
                 timeobj=self.resolveTimeObject(tobj[0],tobj[1],graph,timeobj)
-        elif isinstance(obj,URIRef) and str(pred) in timepointerproperties: 
+        elif isinstance(obj,URIRef) and str(pred) in DocConfig.timepointerproperties:
             timeobj=self.resolveTimeObject(pred,obj,graph,timeobj)
         elif isinstance(obj,Literal):
             timeobj=self.resolveTimeObject(pred,obj,graph,timeobj)
         return timeobj
 
     def resolveGeoLiterals(self,pred,object,graph,geojsonrep,nonns,subject=None):
-        if subject!=None and isinstance(object, Literal) and (str(pred) in geopairproperties):
-            pairprop = geopairproperties[str(pred)]["pair"]
-            latorlong = geopairproperties[str(pred)]["islong"]
+        if subject!=None and isinstance(object, Literal) and (str(pred) in DocConfig.geopairproperties):
+            pairprop = DocConfig.geopairproperties[str(pred)]["pair"]
+            latorlong = DocConfig.geopairproperties[str(pred)]["islong"]
             othervalue = ""
             for obj in graph.objects(subject, URIRef(pairprop)):
                 othervalue = str(obj)
@@ -2880,13 +790,13 @@ class OntDocGeneration:
             else:
                 geojsonrep = {"type": "Point", "coordinates": [float(str(object)), float(str(othervalue))]}
         elif isinstance(object, Literal) and (
-                str(pred) in geoproperties or str(object.datatype) in geoliteraltypes):
+                str(pred) in DocConfig.geoproperties or str(object.datatype) in DocConfig.geoliteraltypes):
             geojsonrep = self.processLiteral(str(object), str(object.datatype), "")
         elif isinstance(object, URIRef) and nonns:
             for pobj in graph.predicate_objects(object):
                 if isinstance(pobj[1], Literal) and (
-                        str(pobj[0]) in geoproperties or str(
-                    pobj[1].datatype) in geoliteraltypes):
+                        str(pobj[0]) in DocConfig.geoproperties or str(
+                    pobj[1].datatype) in DocConfig.geoliteraltypes):
                     geojsonrep = self.processLiteral(str(pobj[1]), str(pobj[1].datatype), "")
         return geojsonrep
 
@@ -2894,9 +804,9 @@ class OntDocGeneration:
         geoprop=False
         annosource=None
         incollection=False
-        if pred in geopointerproperties:
+        if pred in DocConfig.geopointerproperties:
             geoprop=True
-        if pred in collectionrelationproperties:
+        if pred in DocConfig.collectionrelationproperties:
             incollection=True
         foundval=None
         foundunit=None
@@ -2905,7 +815,7 @@ class OntDocGeneration:
         bibtex=None
         timeobj=None
         for tup in graph.predicate_objects(object):
-            if str(tup[0]) in labelproperties:
+            if str(tup[0]) in DocConfig.labelproperties:
                 if tup[1].language==self.labellang:
                     label=str(tup[1])
                 onelabel=str(tup[1])
@@ -2932,7 +842,7 @@ class OntDocGeneration:
                 print("Found annosource "+str(tup[1])+" from "+str(object)+" Imageannos: "+str(len(imageannos)))
             if (pred == "http://purl.org/dc/terms/isReferencedBy" or pred=="http://purl.org/spar/cito/hasCitingEntity") and tup[0] == URIRef(self.typeproperty) and ("http://purl.org/ontology/bibo/" in str(tup[1])):	
                 bibtex=self.resolveBibtexReference(graph.predicate_objects(object),object,graph)
-            if pred in timepointerproperties:
+            if pred in DocConfig.timepointerproperties:
                 timeobj=self.resolveTimeLiterals(pred,object,graph)
             if not nonns:
                 geojsonrep=self.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep,nonns)
@@ -2940,13 +850,13 @@ class OntDocGeneration:
                 foundmedia["image"][str(tup[1])]={}
             elif incollection and "http" in str(tup[1]):
                 ext="."+''.join(filter(str.isalpha,str(tup[1]).split(".")[-1]))
-                if ext in fileextensionmap:
-                    foundmedia[fileextensionmap[ext]][str(tup[1])]={}
-            if str(tup[0]) in valueproperties:
+                if ext in DocConfig.fileextensionmap:
+                    foundmedia[DocConfig.fileextensionmap[ext]][str(tup[1])]={}
+            if str(tup[0]) in DocConfig.valueproperties:
                 if tempvalprop == None and str(tup[0]) == "http://www.w3.org/ns/oa#hasSource":
                     tempvalprop = str(tup[0])
                     foundval = str(tup[1])
-                if str(tup[0]) != "http://www.w3.org/ns/oa#hasSource" and valueproperties[
+                if str(tup[0]) != "http://www.w3.org/ns/oa#hasSource" and DocConfig.valueproperties[
                     str(tup[0])] == "DatatypeProperty" and (isinstance(tup[1], Literal) or isinstance(tup[1], URIRef)):
                     tempvalprop = str(tup[0])
                     foundval = str(tup[1])
@@ -2955,18 +865,18 @@ class OntDocGeneration:
                     for inttup in graph.predicate_objects(tup[1]):
                         if str(inttup[0]) == "http://www.w3.org/ns/oa#hasSelector":
                             for valtup in graph.predicate_objects(inttup[1]):
-                                if str(valtup[0]) in unitproperties:
+                                if str(valtup[0]) in DocConfig.unitproperties:
                                     foundunit = str(valtup[1])
-                                if str(valtup[0]) in valueproperties and (
+                                if str(valtup[0]) in DocConfig.valueproperties and (
                                         isinstance(valtup[1], Literal) or isinstance(valtup[1], URIRef)):
                                     foundval = str(valtup[1])
                 else:
                     for valtup in graph.predicate_objects(tup[1]):
-                        if str(valtup[0]) in unitproperties:
+                        if str(valtup[0]) in DocConfig.unitproperties:
                             foundunit=str(valtup[1])
-                        if str(valtup[0]) in valueproperties and isinstance(valtup[1],Literal):
+                        if str(valtup[0]) in DocConfig.valueproperties and isinstance(valtup[1],Literal):
                             foundval=str(valtup[1])
-            if str(tup[0]) in unitproperties:
+            if str(tup[0]) in DocConfig.unitproperties:
                 foundunit=tup[1]
         if foundunit!=None and foundval!=None:
             if "http" in foundunit:
@@ -3058,7 +968,7 @@ class OntDocGeneration:
                 objstring=str(object).replace("<", "&lt").replace(">", "&gt;")
                 if str(object.datatype)=="http://www.w3.org/2001/XMLSchema#anyURI":
                     objstring="<a href=\""+str(object)+"\">"+str(object)+"</a>"
-                if str(object.datatype) in timeliteraltypes and dateprops!=None and DocUtils.shortenURI(str(pred),True) not in metadatanamespaces and str(pred) not in dateprops:
+                if str(object.datatype) in DocConfig.timeliteraltypes and dateprops!=None and DocUtils.shortenURI(str(pred),True) not in DocConfig.metadatanamespaces and str(pred) not in dateprops:
                     dateprops.append(str(pred))
                 if res != None:
                     tablecontents += "<span property=\"" + str(pred) + "\" content=\"" + str(
@@ -3130,7 +1040,7 @@ class OntDocGeneration:
         for uri in uristorender:	
             label=""	
             for tup in graph.predicate_objects(URIRef(uri)):
-                if str(tup[0]) in labelproperties:	
+                if str(tup[0]) in DocConfig.labelproperties:
                     label = str(tup[1])	
             if uri in uritotreeitem:
                 res = DocUtils.replaceNameSpacesInLabel(self.prefixes,str(uri))
@@ -3161,7 +1071,7 @@ class OntDocGeneration:
             label=None
             added=[]
             for tup in graph.predicate_objects(sub):
-                if str(tup[0]) in labelproperties:
+                if str(tup[0]) in DocConfig.labelproperties:
                     if tup[1].language == self.labellang:
                         label = str(tup[1])
                         break
@@ -3172,7 +1082,7 @@ class OntDocGeneration:
                     if str(tup[0]) not in uristorender[str(tup[1])]:
                         uristorender[str(tup[1])][str(tup[0])]=[]
                     for objtup in graph.predicate_objects(tup[1]):
-                        if str(objtup[0]) in labelproperties:
+                        if str(objtup[0]) in DocConfig.labelproperties:
                             uritolabel[str(tup[1])] = str(objtup[1])
                     toadd={"sub":sub,"label":onelabel}
                     added.append(toadd)
@@ -3257,7 +1167,7 @@ class OntDocGeneration:
                             nonnsmap[str(tup[1])]=set()	
                         nonnsmap[str(tup[1])].add(subject)
             for tup in sorted(predobjmap):
-                if self.metadatatable and tup not in labelproperties and DocUtils.shortenURI(str(tup),True) in metadatanamespaces:
+                if self.metadatatable and tup not in DocConfig.labelproperties and DocUtils.shortenURI(str(tup),True) in DocConfig.metadatanamespaces:
                     thetable=metadatatablecontents
                     metadatatablecontentcounter+=1
                     if metadatatablecontentcounter%2==0:
@@ -3282,17 +1192,17 @@ class OntDocGeneration:
                 elif str(tup)==self.typeproperty:
                     for tp in predobjmap[tup]:
                         thetypes.add(str(tp))
-                        if str(tp) in bibtextypemappings:
+                        if str(tp) in DocConfig.bibtextypemappings:
                             itembibtex="<details><summary>[BIBTEX]</summary><pre>"+str(self.resolveBibtexReference(graph.predicate_objects(subject),subject,graph))+"</pre></details>"
                             break
                 thetable=self.formatPredicate(tup, baseurl, checkdepth, thetable, graph,inverse)
-                if str(tup) in labelproperties:
+                if str(tup) in DocConfig.labelproperties:
                     for lab in predobjmap[tup]:
                         if lab.language==self.labellang:
                             foundlabel=lab
                     if foundlabel=="":
                         foundlabel = str(predobjmap[tup][0])
-                if str(tup) in commentproperties:
+                if str(tup) in DocConfig.commentproperties:
                     comment[str(tup)]=str(predobjmap[tup][0])
                 if len(predobjmap[tup]) > 0:
                     thetable+="<td class=\"wrapword\">"
@@ -3302,7 +1212,7 @@ class OntDocGeneration:
                         thetable+="<ul>"
                     labelmap={}
                     for item in predobjmap[tup]:
-                        if ("POINT" in str(item).upper() or "POLYGON" in str(item).upper() or "LINESTRING" in str(item).upper()) and tup in valueproperties and self.typeproperty in predobjmap and URIRef("http://www.w3.org/ns/oa#WKTSelector") in predobjmap[self.typeproperty]:
+                        if ("POINT" in str(item).upper() or "POLYGON" in str(item).upper() or "LINESTRING" in str(item).upper()) and tup in DocConfig.valueproperties and self.typeproperty in predobjmap and URIRef("http://www.w3.org/ns/oa#WKTSelector") in predobjmap[self.typeproperty]:
                             image3dannos.append({"value":str(item)})
                         elif "<svg" in str(item):
                             foundmedia["image"][str(item)]={}
@@ -3311,9 +1221,9 @@ class OntDocGeneration:
                                 ext = "." + ''.join(filter(str.isalpha, str(item.value).split(".")[-1]))
                             else:
                                 ext = "." + ''.join(filter(str.isalpha, str(item).split(".")[-1]))
-                            if ext in fileextensionmap:
-                                foundmedia[fileextensionmap[ext]][str(item)]={}
-                        elif tup in valueproperties:
+                            if ext in DocConfig.fileextensionmap:
+                                foundmedia[DocConfig.fileextensionmap[ext]][str(item)]={}
+                        elif tup in DocConfig.valueproperties:
                             foundvals.add(str(item))
                         res=self.createHTMLTableValueEntry(subject, tup, item, ttlf, graph,
                                               baseurl, checkdepth,geojsonrep,foundmedia,imageannos,textannos,image3dannos,annobodies,dateprops,inverse,nonns)
@@ -3343,7 +1253,7 @@ class OntDocGeneration:
                 else:
                     thetable += "<td class=\"wrapword\"></td>"
                 thetable += "</tr>"
-                if self.metadatatable and tup not in labelproperties and DocUtils.shortenURI(str(tup), True) in metadatanamespaces:
+                if self.metadatatable and tup not in DocConfig.labelproperties and DocUtils.shortenURI(str(tup), True) in DocConfig.metadatanamespaces:
                     metadatatablecontents=thetable
                 else:
                     tablecontents=thetable
@@ -3408,6 +1318,9 @@ class OntDocGeneration:
                 tablecontents += "</tr>"
         if self.licenseuri!=None:
              ttlf.add((subject, URIRef("http://purl.org/dc/elements/1.1/license"), URIRef(self.licenseuri)))
+        if self.solidexport!=None:
+            ttlf.add((subject, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://www.w3.org/ns/ldp#Resource")))
+            ttlf.add((subject, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("https://www.iana.org/assignments/media-types/text/turtle#Resource")))
         nonnslink=""
         if nonns:
             completesavepath = savepath.replace(":","_")
@@ -3434,49 +1347,49 @@ class OntDocGeneration:
                 epsgdefslink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "epsgdefs.js", False)
                 rellink7 = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "vowl_result.js", False)
                 if geojsonrep != None:
-                    myexports=geoexports
+                    myexports=templates["geoexports"]
                 else:
-                    myexports=nongeoexports
+                    myexports=templates["nongeoexports"]
                 relpath=DocUtils.generateRelativePathFromGivenDepth(checkdepth)
                 if foundlabel != "":
-                    f.write(self.replaceStandardVariables(htmltemplate,subject,checkdepth,"false").replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{baseurl}}",baseurl).replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{toptitle}}", foundlabel).replace(
+                    f.write(self.replaceStandardVariables(templates["htmltemplate"],subject,checkdepth,"false").replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{baseurl}}",baseurl).replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{toptitle}}", foundlabel).replace(
                         "{{startscriptpath}}", rellink4).replace("{{bibtex}}",itembibtex).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{title}}",
                                                                                                     "<a href=\"" + str(subject) + "\">" + str(foundlabel) + "</a>").replace(
                         "{{baseurl}}", baseurl).replace("{{tablecontent}}", tablecontents).replace("{{description}}","").replace(
                         "{{scriptfolderpath}}", rellink).replace("{{classtreefolderpath}}", rellink2).replace("{{exports}}",myexports).replace("{{nonnslink}}",str(nonnslink)).replace("{{subjectencoded}}",urllib.parse.quote(str(subject))))
                 else:
-                    f.write(self.replaceStandardVariables(htmltemplate,subject,checkdepth,"false").replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{baseurl}}",baseurl).replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{indexpage}}","false").replace("{{toptitle}}", DocUtils.shortenURI(str(subject))).replace(
+                    f.write(self.replaceStandardVariables(templates["htmltemplate"],subject,checkdepth,"false").replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{baseurl}}",baseurl).replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{indexpage}}","false").replace("{{toptitle}}", DocUtils.shortenURI(str(subject))).replace(
                         "{{startscriptpath}}", rellink4).replace("{{bibtex}}",itembibtex).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{title}}","<a href=\"" + str(subject) + "\">" + DocUtils.shortenURI(str(subject)) + "</a>").replace(
                         "{{baseurl}}", baseurl).replace("{{description}}","").replace(
                         "{{scriptfolderpath}}", rellink).replace("{{classtreefolderpath}}", rellink2).replace("{{exports}}",myexports).replace("{{nonnslink}}",str(nonnslink)).replace("{{subjectencoded}}",urllib.parse.quote(str(subject))))
                 for comm in comment:
-                    f.write(htmlcommenttemplate.replace("{{comment}}", DocUtils.shortenURI(comm) + ":" + comment[comm]))
+                    f.write(templates["htmlcommenttemplate"].replace("{{comment}}", DocUtils.shortenURI(comm) + ":" + comment[comm]))
                 for fval in foundvals:
-                    f.write(htmlcommenttemplate.replace("{{comment}}", "<b>Value:<mark>" + str(fval) + "</mark></b>"))
+                    f.write(templates["htmlcommenttemplate"].replace("{{comment}}", "<b>Value:<mark>" + str(fval) + "</mark></b>"))
                 if len(foundmedia["mesh"])>0 and len(image3dannos)>0:
                     if self.iiif:
-                        iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,self.outpath,self.deploypath,foundmedia["mesh"],image3dannos,annobodies,str(subject),self.prefixnamespace,imagetoURI, self.imagemetadata,metadatanamespaces,foundlabel,comment,thetypes,predobjmap,"Model"))
+                        iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,self.outpath,self.deploypath,foundmedia["mesh"],image3dannos,annobodies,str(subject),self.prefixnamespace,imagetoURI, self.imagemetadata,DocConfig.metadatanamespaces,foundlabel,comment,thetypes,predobjmap,"Model"))
                     for anno in image3dannos:
                         if ("POINT" in anno["value"].upper() or "POLYGON" in anno["value"].upper() or "LINESTRING" in anno["value"].upper()):
-                            f.write(threejstemplate.replace("{{wktstring}}",anno["value"]).replace("{{meshurls}}",str(list(foundmedia["mesh"]))))
+                            f.write(templates["threejstemplate"].replace("{{wktstring}}",anno["value"]).replace("{{meshurls}}",str(list(foundmedia["mesh"]))))
                 elif len(foundmedia["mesh"])>0 and len(image3dannos)==0:
                     print("Found 3D Model: "+str(foundmedia["mesh"]))
                     if self.iiif:
-                        iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,self.outpath,self.deploypath,foundmedia["mesh"],image3dannos,annobodies,str(subject),self.prefixnamespace,imagetoURI, self.imagemetadata,metadatanamespaces,foundlabel,comment,thetypes,predobjmap,"Model"))
+                        iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,self.outpath,self.deploypath,foundmedia["mesh"],image3dannos,annobodies,str(subject),self.prefixnamespace,imagetoURI, self.imagemetadata,DocConfig.metadatanamespaces,foundlabel,comment,thetypes,predobjmap,"Model"))
                     for curitem in foundmedia["mesh"]:
                         format="ply"
                         if ".nxs" in curitem or ".nxz" in curitem:
                             format="nexus"
-                        f.write(image3dtemplate.replace("{{meshurl}}",curitem).replace("{{meshformat}}",format))
+                        f.write(templates["image3dtemplate"].replace("{{meshurl}}",curitem).replace("{{meshformat}}",format))
                         break
                 elif len(foundmedia["mesh"])==0 and len(image3dannos)>0:
                     for anno in image3dannos:
                         if ("POINT" in anno["value"].upper() or "POLYGON" in anno["value"].upper() or "LINESTRING" in anno["value"].upper()):
-                            f.write(threejstemplate.replace("{{wktstring}}",anno["value"]).replace("{{meshurls}}","[]"))
+                            f.write(templates["threejstemplate"].replace("{{wktstring}}",anno["value"]).replace("{{meshurls}}","[]"))
                 carousel="image"
                 if len(foundmedia["image"])>3:
                     carousel="carousel-item active"
-                    f.write(imagecarouselheader)
+                    f.write(templates["imagecarouselheader"])
                 #if self.iiif and len(annobodies)>0:
                 #    if target not in imagetoURI:
                 #        imagetoURI[target]={"uri":{str(subject):{"bodies":[]}}}
@@ -3486,7 +1399,7 @@ class OntDocGeneration:
                 #        imagetoURI[target]["uri"][str(subject)]["bodies"]+=annobodies
                 if len(imageannos)>0 and len(foundmedia["image"])>0:
                     if self.iiif:
-                        iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,self.outpath,self.deploypath,foundmedia["image"],imageannos,annobodies,str(subject),self.prefixnamespace,imagetoURI, self.imagemetadata,metadatanamespaces,foundlabel,comment,thetypes,predobjmap,"Image"))
+                        iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,self.outpath,self.deploypath,foundmedia["image"],imageannos,annobodies,str(subject),self.prefixnamespace,imagetoURI, self.imagemetadata,DocConfig.metadatanamespaces,foundlabel,comment,thetypes,predobjmap,"Image"))
                     for image in foundmedia["image"]:
                         if image not in imagetoURI or "uri" not in imagetoURI[image]:
                             imagetoURI[image]={"uri":{}}
@@ -3495,12 +1408,12 @@ class OntDocGeneration:
                         annostring=""
                         for anno in imageannos:
                             annostring+=anno["value"].replace("<svg>","<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
-                        f.write(imageswithannotemplate.replace("{{carousel}}",carousel+"\" style=\"position: relative;display: inline-block;").replace("{{image}}",str(image)).replace("{{svganno}}",annostring).replace("{{imagetitle}}",str(image)[0:str(image).rfind('.')]))
+                        f.write(templates["imageswithannotemplate"].replace("{{carousel}}",carousel+"\" style=\"position: relative;display: inline-block;").replace("{{image}}",str(image)).replace("{{svganno}}",annostring).replace("{{imagetitle}}",str(image)[0:str(image).rfind('.')]))
                         if len(foundmedia["image"])>3:
                             carousel="carousel-item"
                 elif len(foundmedia["image"])>0:
                     if self.iiif:
-                        iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,self.outpath,self.deploypath,foundmedia["image"],imageannos,annobodies,str(subject),self.prefixnamespace,imagetoURI, self.imagemetadata,metadatanamespaces,foundlabel,comment,thetypes,predobjmap,"Image"))
+                        iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,self.outpath,self.deploypath,foundmedia["image"],imageannos,annobodies,str(subject),self.prefixnamespace,imagetoURI, self.imagemetadata,DocConfig.metadatanamespaces,foundlabel,comment,thetypes,predobjmap,"Image"))
                     for image in foundmedia["image"]:
                         if image not in imagetoURI or "uri" not in imagetoURI[image]:
                             imagetoURI[image]={"uri":{}}
@@ -3510,15 +1423,15 @@ class OntDocGeneration:
                             continue
                         if "<svg" in image:
                             if "<svg>" in image:
-                                f.write(imagestemplatesvg.replace("{{carousel}}",carousel).replace("{{image}}", str(image.replace("<svg>","<svg class=\"svgview\">"))))
+                                f.write(templates["imagestemplatesvg"].replace("{{carousel}}",carousel).replace("{{image}}", str(image.replace("<svg>","<svg class=\"svgview\">"))))
                             else:
-                                f.write(imagestemplatesvg.replace("{{carousel}}",carousel).replace("{{image}}",str(image)))
+                                f.write(templates["imagestemplatesvg"].replace("{{carousel}}",carousel).replace("{{image}}",str(image)))
                         else:
-                            f.write(imagestemplate.replace("{{carousel}}",carousel).replace("{{image}}",str(image)).replace("{{imagetitle}}",str(image)[0:str(image).rfind('.')]))
+                            f.write(templates["imagestemplate"].replace("{{carousel}}",carousel).replace("{{image}}",str(image)).replace("{{imagetitle}}",str(image)[0:str(image).rfind('.')]))
                         if len(foundmedia["image"])>3:
                             carousel="carousel-item"
                 if len(foundmedia["image"])>3:
-                    f.write(imagecarouselfooter)
+                    f.write(templates["imagecarouselfooter"])
                 if len(textannos) > 0:
                     for textanno in textannos:
                         if isinstance(textanno, dict):
@@ -3531,15 +1444,15 @@ class OntDocGeneration:
                                     textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
                                     textanno["exact"]) + "\"><mark>" + str(textanno["exact"]) + "</mark></span>")
                 if len(foundmedia["audio"])>0 and self.iiif:
-                    iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,self.outpath,self.deploypath,foundmedia["audio"],None,None,str(subject),self.prefixnamespace,imagetoURI, self.imagemetadata,metadatanamespaces,foundlabel,comment,thetypes,predobjmap,"Audio"))
+                    iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,self.outpath,self.deploypath,foundmedia["audio"],None,None,str(subject),self.prefixnamespace,imagetoURI, self.imagemetadata,DocConfig.metadatanamespaces,foundlabel,comment,thetypes,predobjmap,"Audio"))
                 for audio in foundmedia["audio"]:
                     imagetoURI[audio]={"uri":str(subject)}
-                    f.write(audiotemplate.replace("{{audio}}",str(audio)))
+                    f.write(templates["audiotemplate"].replace("{{audio}}",str(audio)))
                 if len(foundmedia["video"])>0 and self.iiif:
-                    iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,self.outpath,self.deploypath,foundmedia["video"],None,None,str(subject),self.prefixnamespace,imagetoURI, self.imagemetadata,metadatanamespaces,foundlabel,comment,thetypes,predobjmap,"Video"))
+                    iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,self.outpath,self.deploypath,foundmedia["video"],None,None,str(subject),self.prefixnamespace,imagetoURI, self.imagemetadata,DocConfig.metadatanamespaces,foundlabel,comment,thetypes,predobjmap,"Video"))
                 for video in foundmedia["video"]:
                     imagetoURI[video]={"uri":str(subject)}
-                    f.write(videotemplate.replace("{{video}}",str(video)))
+                    f.write(templates["videotemplate"].replace("{{video}}",str(video)))
                 if geojsonrep!=None and not isgeocollection:
                     if uritotreeitem!=None and str(subject) in uritotreeitem:
                         uritotreeitem[str(subject)][-1]["type"]="geoinstance"
@@ -3553,7 +1466,7 @@ class OntDocGeneration:
                         epsgcode="EPSG:"+geojsonrep["crs"]
                     if len(hasnonns)>0:
                         self.geocache[str(subject)]=jsonfeat
-                    f.write(maptemplate.replace("var ajax=true","var ajax=false").replace("{{myfeature}}","["+json.dumps(jsonfeat)+"]").replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace("{{epsg}}",epsgcode).replace("{{baselayers}}",json.dumps(baselayers)).replace("{{epsgdefspath}}", epsgdefslink).replace("{{dateatt}}", ""))
+                    f.write(templates["maptemplate"].replace("var ajax=true","var ajax=false").replace("{{myfeature}}","["+json.dumps(jsonfeat)+"]").replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace("{{epsg}}",epsgcode).replace("{{baselayers}}",json.dumps(DocConfig.baselayers)).replace("{{epsgdefspath}}", epsgdefslink).replace("{{dateatt}}", ""))
                 elif isgeocollection or nonns:
                     if foundlabel!=None and foundlabel!="":
                         featcoll={"type":"FeatureCollection", "id":subject,"name":str(foundlabel), "features":[]}
@@ -3566,13 +1479,13 @@ class OntDocGeneration:
                         for memberid in graph.objects(subject,memberpred,True):
                             for geoinstance in graph.predicate_objects(memberid,True):
                                 geojsonrep=None
-                                if geoinstance!=None and isinstance(geoinstance[1], Literal) and (str(geoinstance[0]) in geoproperties or str(geoinstance[1].datatype) in geoliteraltypes):
+                                if geoinstance!=None and isinstance(geoinstance[1], Literal) and (str(geoinstance[0]) in DocConfig.geoproperties or str(geoinstance[1].datatype) in DocConfig.geoliteraltypes):
                                     geojsonrep = self.processLiteral(str(geoinstance[1]), str(geoinstance[1].datatype), "")
                                     uritotreeitem[str(subject)][-1]["type"] = "geocollection"
-                                elif geoinstance!=None and str(geoinstance[0]) in geopointerproperties:
+                                elif geoinstance!=None and str(geoinstance[0]) in DocConfig.geopointerproperties:
                                     uritotreeitem[str(subject)][-1]["type"] = "featurecollection"
                                     for geotup in graph.predicate_objects(geoinstance[1],True):
-                                        if isinstance(geotup[1], Literal) and (str(geotup[0]) in geoproperties or str(geotup[1].datatype) in geoliteraltypes):
+                                        if isinstance(geotup[1], Literal) and (str(geotup[0]) in DocConfig.geoproperties or str(geotup[1].datatype) in DocConfig.geoliteraltypes):
                                             geojsonrep = self.processLiteral(str(geotup[1]), str(geotup[1].datatype), "")
                                 if geojsonrep!=None:
                                     if uritotreeitem !=None and str(memberid) in uritotreeitem:
@@ -3604,18 +1517,18 @@ class OntDocGeneration:
                                 if dateatt not in feat["properties"]:
                                     feat["properties"][dateatt]=""
                         if self.localOptimized:
-                            f.write(maptemplate.replace("var ajax=true","var ajax=false").replace("{{myfeature}}","["+json.dumps(featcoll)+"]").replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace("{{baselayers}}",json.dumps(baselayers)).replace("{{epsgdefspath}}", epsgdefslink).replace("{{dateatt}}", dateatt))
+                            f.write(templates["maptemplate"].replace("var ajax=true","var ajax=false").replace("{{myfeature}}","["+json.dumps(featcoll)+"]").replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace("{{baselayers}}",json.dumps(DocConfig.baselayers)).replace("{{epsgdefspath}}", epsgdefslink).replace("{{dateatt}}", dateatt))
                         else:
-                            f.write(maptemplate.replace("{{myfeature}}","[\""+DocUtils.shortenURI(str(completesavepath.replace(".html",".geojson")))+"\"]").replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace("{{baselayers}}",json.dumps(baselayers)).replace("{{epsgdefspath}}", epsgdefslink).replace("{{dateatt}}", dateatt))
+                            f.write(templates["maptemplate"].replace("{{myfeature}}","[\""+DocUtils.shortenURI(str(completesavepath.replace(".html",".geojson")))+"\"]").replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace("{{baselayers}}",json.dumps(DocConfig.baselayers)).replace("{{epsgdefspath}}", epsgdefslink).replace("{{dateatt}}", dateatt))
                         with open(completesavepath.replace(".html",".geojson"), 'w', encoding='utf-8') as fgeo:
                             featurecollectionspaths[completesavepath.replace(".html",".geojson")]={"name":featcoll["name"],"id":featcoll["id"]}
                             fgeo.write(json.dumps(featcoll))
                             fgeo.close()
-                f.write(htmltabletemplate.replace("{{tablecontent}}", tablecontents))
+                f.write(templates["htmltabletemplate"].replace("{{tablecontent}}", tablecontents))
                 if metadatatablecontentcounter>=0:
                     f.write("<h5>Metadata</h5>")
-                    f.write(htmltabletemplate.replace("{{tablecontent}}", metadatatablecontents))
-                f.write(self.replaceStandardVariables(htmlfooter,"",checkdepth,"false").replace("{{exports}}",myexports).replace("{{license}}",curlicense).replace("{{bibtex}}",""))
+                    f.write(templates["htmltabletemplate"].replace("{{tablecontent}}", metadatatablecontents))
+                f.write(self.replaceStandardVariables(templates["footer"],"",checkdepth,"false").replace("{{exports}}",myexports).replace("{{license}}",curlicense).replace("{{bibtex}}",""))
                 f.close()
         except Exception as inst:
             print("Could not write "+str(completesavepath))
@@ -3660,6 +1573,7 @@ parser.add_argument("-vowl","--createvowl",help="create vowl graph view?",action
 parser.add_argument("-of","--offlinecompat",help="built-result is offline compatible",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-ogc","--ogcapifeatures",help="create ogc api features collections?",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-iiif","--iiifmanifest",help="create iiif manifests?",action="store",default=True,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
+parser.add_argument("-solid","--solidexport",help="create solid pod deployment?",action="store",default=True,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-imgmd","--imagemetadata",help="resolve image metadata?",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-ckan","--ckanapi",help="create static ckan api docs?",action="store",default=True,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
 parser.add_argument("-sc","--startconcept",help="the concept suggested for browsing the HTML documentation",action="store",default=None)
@@ -3715,6 +1629,8 @@ if args.templatepath!=None:
                 print(args.templatename)
 fcounter=0
 docgen=None
+g = Graph()
+subrend=None
 for fp in filestoprocess:
     try:
         g = Graph()
@@ -3728,10 +1644,10 @@ for fp in filestoprocess:
                 args.prefixns=pres
             print("Detected "+args.prefixns+" as data namespace")
         if fcounter<len(outpath):
-            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
+            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.solidexport,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
         else:
-            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
-        docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
+            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.solidexport,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
+        subrend=docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
     except Exception as inst:
         print("Could not parse "+str(fp))
         print(inst)
@@ -3741,13 +1657,23 @@ curlicense=license
 if docgen!=None:
     curlicense=docgen.licensehtml
 print("Path exists? "+outpath[0]+'/index.html '+str(os.path.exists(outpath[0]+'/index.html')))
+if not os.path.exists(outpath[0]+'/index.ttl') and subrend!=None:
+    resg=Graph()
+    for sub in subrend:
+        for predobj in g.predicate_objects(sub):
+            resg.add((sub,predobj[0],predobj[1]))
+            if args.solidexport:
+                resg.add((sub, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://www.w3.org/ns/ldp#Container")))
+                resg.add((sub, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://www.w3.org/ns/ldp#BasicContainer")))
+                resg.add((sub, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://www.w3.org/ns/ldp#Resource")))
+    resg.serialize(outpath[0]+'/index.ttl')
 if not os.path.exists(outpath[0]+'/index.html'):
     indexf=open(outpath[0]+"/index.html","w",encoding="utf-8")
     nonnslink=""
     relpath=""
-    indexhtml=docgen.replaceStandardVariables(htmltemplate,"","0","true")
+    indexhtml=docgen.replaceStandardVariables(templates["htmltemplate"],"","0","true")
     indexhtml = indexhtml.replace("{{iconprefixx}}",(relpath+"icons/" if args.offlinecompat else "")).replace("{{baseurl}}", args.prefixns).replace("{{relativepath}}",relpath).replace("{{relativedepth}}","0").replace("{{toptitle}}","Index page").replace("{{title}}","Index page").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
-        .replace("{{classtreefolderpath}}",args.prefixnsshort + "_classtree.js").replace("{{baseurlhtml}}", ".").replace("{{nonnslink}}",str(nonnslink)).replace("{{proprelationpath}}", "proprelations.js").replace("{{scriptfolderpath}}", args.prefixnsshort+ '_search.js').replace("{{exports}}",nongeoexports).replace("{{bibtex}}","")
+        .replace("{{classtreefolderpath}}",args.prefixnsshort + "_classtree.js").replace("{{baseurlhtml}}", ".").replace("{{nonnslink}}",str(nonnslink)).replace("{{proprelationpath}}", "proprelations.js").replace("{{scriptfolderpath}}", args.prefixnsshort+ '_search.js').replace("{{exports}}",templates["nongeoexports"]).replace("{{bibtex}}","")
     indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"
     indexhtml+="<table class=\"description\" border=1 id=indextable><thead><tr><th>Dataset</th></tr></thead><tbody>"
     subfolders= [f.path for f in os.scandir(outpath[0]) if f.is_dir()]
@@ -3755,7 +1681,7 @@ if not os.path.exists(outpath[0]+'/index.html'):
     for path in subfolders:
         indexhtml+="<tr><td><a href=\""+path.replace(outpath[0]+"/","")+"/index.html\">"+path.replace(outpath[0]+"/","")+"</a></td></tr>"
     indexhtml+="</tbody></table>"
-    indexhtml+=htmlfooter.replace("{{license}}",curlicense).replace("{{exports}}",nongeoexports).replace("{{bibtex}}","")
+    indexhtml+=templates["footer"].replace("{{license}}",curlicense).replace("{{exports}}",templates["nongeoexports"]).replace("{{bibtex}}","")
     #print(indexhtml)
     indexf.write(indexhtml)
     indexf.close()
