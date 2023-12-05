@@ -180,23 +180,22 @@ Variables</h2></td></tr>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keyword">with</span> open(templatepath+<span class="stringliteral">&quot;/templateconf.json&quot;</span>, <span class="stringliteral">&#39;r&#39;</span>) <span class="keyword">as</span> f:</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            templatefiles = json.load(f)</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            <span class="keywordflow">for</span> file <span class="keywordflow">in</span> templatefiles:</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                <span class="keywordflow">if</span> os.path.exists(templatepath + <span class="stringliteral">&quot;/&quot;</span> + file[<span class="stringliteral">&quot;path&quot;</span>]):</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                    <span class="keyword">with</span> open(templatepath + <span class="stringliteral">&quot;/&quot;</span> + templatename + <span class="stringliteral">&quot;/css/style.css&quot;</span>, <span class="stringliteral">&#39;r&#39;</span>) <span class="keyword">as</span> file:</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                        <span class="keyword">global</span> stylesheet</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                        <span class="keywordflow">if</span> <span class="stringliteral">&quot;name&quot;</span> <span class="keywordflow">in</span> file:</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                            templates[file[<span class="stringliteral">&quot;name&quot;</span>]]= file.read()</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                        <span class="keywordflow">else</span>:</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                            templates[file] = file.read()</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordflow">elif</span> os.path.exists(templatepath+<span class="stringliteral">&quot;/templates/&quot;</span>):</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        <span class="keywordflow">for</span> filename <span class="keywordflow">in</span> os.listdir(templatepath+<span class="stringliteral">&quot;/templates/&quot;</span>):</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;            <span class="keywordflow">if</span> filename.endswith(<span class="stringliteral">&quot;.html&quot;</span>) <span class="keywordflow">or</span> filename.endswith(<span class="stringliteral">&quot;.py&quot;</span>):</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                <span class="keyword">with</span> open(templatepath+<span class="stringliteral">&quot;/templates/&quot;</span>+filename, <span class="stringliteral">&#39;r&#39;</span>) <span class="keyword">as</span> f:</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                    <span class="keyword">global</span> stylesheet</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                    templates[filename.replace(<span class="stringliteral">&quot;.html&quot;</span>,<span class="stringliteral">&quot;&quot;</span>)] = f.read()</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">True</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">False</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                <span class="keywordflow">if</span> os.path.exists(templatepath + <span class="stringliteral">&quot;/&quot;</span> + file):</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                    <span class="keyword">with</span> open(templatepath + <span class="stringliteral">&quot;/&quot;</span> + file[<span class="stringliteral">&quot;path&quot;</span>], <span class="stringliteral">&#39;r&#39;</span>) <span class="keyword">as</span> f:</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                        <span class="keywordflow">if</span> <span class="stringliteral">&quot;name&quot;</span> <span class="keywordflow">in</span> file:</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                            templates[file[<span class="stringliteral">&quot;name&quot;</span>]]= f.read()</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                        <span class="keywordflow">else</span>:</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                            templates[file] = f.read()</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordflow">elif</span> os.path.exists(templatepath+<span class="stringliteral">&quot;/templates/&quot;</span>):</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="keywordflow">for</span> filename <span class="keywordflow">in</span> os.listdir(templatepath+<span class="stringliteral">&quot;/templates/&quot;</span>):</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;            <span class="keywordflow">if</span> filename.endswith(<span class="stringliteral">&quot;.html&quot;</span>) <span class="keywordflow">or</span> filename.endswith(<span class="stringliteral">&quot;.css&quot;</span>):</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                <span class="keyword">with</span> open(templatepath+<span class="stringliteral">&quot;/templates/&quot;</span>+filename, <span class="stringliteral">&#39;r&#39;</span>) <span class="keyword">as</span> f:</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                    <span class="keyword">global</span> stylesheet</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                    templates[filename.replace(<span class="stringliteral">&quot;.html&quot;</span>,<span class="stringliteral">&quot;&quot;</span>)] = f.read()</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">False</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">True</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
 <div class="ttc" id="aa00012_html_a70693e89faf57869eb56269649123220"><div class="ttname"><a href="a00012.html#a70693e89faf57869eb56269649123220">sparqlunicornGoesGIS-ontdoc.docgeneration.resolveTemplate</a></div><div class="ttdeci">def resolveTemplate(templatename)</div><div class="ttdef"><b>Definition:</b> docgeneration.py:52</div></div>
 </div><!-- fragment -->
 </div>
