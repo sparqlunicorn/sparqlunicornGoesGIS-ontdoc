@@ -64,7 +64,7 @@ def resolveTemplate(templatename):
     elif os.path.exists(templatepath+"/"+templatename+"/templates/"):
         for filename in os.listdir(templatepath+"/"+templatename+"/templates/"):
             if filename.endswith(".html") or filename.endswith(".css"):
-                with open(templatepath+"/templates/"+templatename+"/"+filename, 'r') as f:
+                with open(templatepath+"/"+templatename+"/templates/"+filename, 'r') as f:
                     global stylesheet
                     templates[filename.replace(".html","")] = f.read()
         return False
