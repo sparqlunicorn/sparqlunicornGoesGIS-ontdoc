@@ -55,21 +55,20 @@ def resolveTemplate(templatename):
         with open(templatepath+"/templateconf.json", 'r') as f:
             templatefiles = json.load(f)
             for file in templatefiles:
-                if os.path.exists(templatepath + "/" + file["path"]):
-                    with open(templatepath + "/" + templatename + "/css/style.css", 'r') as file:
-                        global stylesheet
+                if os.path.exists(templatepath + "/" + file):
+                    with open(templatepath + "/" + file["path"], 'r') as f:
                         if "name" in file:
-                            templates[file["name"]]= file.read()
+                            templates[file["name"]]= f.read()
                         else:
-                            templates[file] = file.read()
+                            templates[file] = f.read()
     elif os.path.exists(templatepath+"/templates/"):
         for filename in os.listdir(templatepath+"/templates/"):
-            if filename.endswith(".html") or filename.endswith(".py"):
+            if filename.endswith(".html") or filename.endswith(".css"):
                 with open(templatepath+"/templates/"+filename, 'r') as f:
                     global stylesheet
                     templates[filename.replace(".html","")] = f.read()
-        return True
-    return False
+        return False
+    return True
 
 
 class OntDocGeneration:
