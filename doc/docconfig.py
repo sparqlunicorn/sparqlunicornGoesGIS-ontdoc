@@ -44,7 +44,9 @@ class DocConfig:
         "http://www.w3.org/1999/02/22-rdf-syntax-ns#value":"DatatypeProperty",
         "http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue":"ObjectProperty",
         "http://www.opengis.net/ont/crs/usesValue":"ObjectProperty",
-        "http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue":"DatatypeProperty"
+        "http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue":"DatatypeProperty",
+        "http://www.w3.org/ns/sosa/hasResult": "ObjectProperty",
+        "http://www.w3.org/ns/sosa/hasSimpleResult":"DatatypeProperty"
     }
 
     unitproperties={
@@ -140,7 +142,7 @@ class DocConfig:
 
     imageextensions=[".apng",".bmp",".cur",".ico",".jpg",".jpeg",".png",".gif",".tif",".svg","<svg"]
 
-    meshextensions=[".ply",".nxs",".nxz"]
+    meshextensions=[".gltf",".obj",".ply",".nxs",".nxz"]
 
     videoextensions=[".avi",".mp4",".ogv"]
 
@@ -161,6 +163,8 @@ class DocConfig:
         ".ply":"mesh",
         ".nxs":"mesh",
         ".nxz":"mesh",
+        ".gltf":"mesh",
+        ".obj":"mesh",
         ".avi":"video",
         ".mp4":"video",
         ".ogv":"video",

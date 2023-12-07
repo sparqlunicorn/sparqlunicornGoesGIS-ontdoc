@@ -1380,7 +1380,10 @@ class OntDocGeneration:
                         format="ply"
                         if ".nxs" in curitem or ".nxz" in curitem:
                             format="nexus"
-                        f.write(templates["image3dtemplate"].replace("{{meshurl}}",curitem).replace("{{meshformat}}",format))
+                        elif format=="gltf":
+                            f.write(templates["threejstemplate"].replace("{{wktstring}}", "").replace(
+                                "{{meshurls}}", "[]"))
+                        f.write(templates["3dtemplate"].replace("{{meshurl}}",curitem).replace("{{meshformat}}",format))
                         break
                 elif len(foundmedia["mesh"])==0 and len(image3dannos)>0:
                     for anno in image3dannos:
@@ -1453,6 +1456,7 @@ class OntDocGeneration:
                 for video in foundmedia["video"]:
                     imagetoURI[video]={"uri":str(subject)}
                     f.write(templates["videotemplate"].replace("{{video}}",str(video)))
+
                 if geojsonrep!=None and not isgeocollection:
                     if uritotreeitem!=None and str(subject) in uritotreeitem:
                         uritotreeitem[str(subject)][-1]["type"]="geoinstance"

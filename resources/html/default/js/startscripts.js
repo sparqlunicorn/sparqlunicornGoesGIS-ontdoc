@@ -960,8 +960,22 @@ function initThreeJS(domelement,verts,meshurls) {
         }
     }
     if(meshurls.length>0){
-        var loader = new THREE.PLYLoader();
-        loader.load(meshurls[0], viewGeometry);
+        if(meshurls[0].includes(".ply")){
+            var loader = new THREE.PLYLoader();
+            loader.load(meshurls[0], viewGeometry);
+        }else if(meshurls[0].includes(".obj")){
+            var loader= new THREE.OBJLoader();
+            loader.load(meshurls[0],function ( object ) {scene.add( object );})
+        }else if(meshurls[0].includes(".gltf")){
+            var loader = new THREE.GLTFLoader();
+            loader.load(meshurls[0], function ( gltf )
+            {
+                object = gltf.scene;
+                object.position.x = 0;
+                object.position.y = 0;
+                scene.add(object);
+            });
+        }
     }
     camera = new THREE.PerspectiveCamera(90,window.innerWidth / window.innerHeight, 0.1, 150 );
     scene.add(new THREE.AmbientLight(0x222222));
