@@ -907,17 +907,6 @@ function start3dhop(meshurl,meshformat){
 
 let camera, scene, renderer,controls;
 
-function viewGeometry(geometry) {
-  const material = new THREE.MeshPhongMaterial({
-    color: 0xffffff,
-    flatShading: true,
-    vertexColors: THREE.VertexColors,
-    wireframe: false
-  });
-  const mesh = new THREE.Mesh(geometry, material);
-  scene.add(mesh);
-}
-
 function initThreeJS(domelement,verts,meshurls) {
     scene = new THREE.Scene();
     minz=Number.MAX_VALUE
@@ -927,6 +916,8 @@ function initThreeJS(domelement,verts,meshurls) {
     minx=Number.MAX_VALUE
     maxx=Number.MIN_VALUE
 	vertarray=[]
+    const annotations=new THREE.Group();
+	const objects=new THREE.Group();
     console.log(verts)
     var svgShape = new THREE.Shape();
     first=true
@@ -959,13 +950,30 @@ function initThreeJS(domelement,verts,meshurls) {
             miny=vert["x"]
         }
     }
+    const gui = new dat.GUI({autoPlace: true})
+	gui.domElement.id="gui"
+	const geometryFolder = gui.addFolder("Mesh");
+	geometryFolder.open();
+	const lightingFolder = geometryFolder.addFolder("Lighting");
+	const geometryF = geometryFolder.addFolder("Geometry");
+	geometryF.open();
     if(meshurls.length>0){
         if(meshurls[0].includes(".ply")){
             var loader = new THREE.PLYLoader();
-            loader.load(meshurls[0], viewGeometry);
+            loader.load(meshurls[0], function(object){
+                const material = new THREE.MeshPhongMaterial({
+                    color: 0xffffff,
+                    flatShading: true,
+                    vertexColors: THREE.VertexColors,
+                    wireframe: false
+                });
+                const mesh = new THREE.Mesh(object, material);
+                objects.add(mesh);
+                scene.add(objects);
+            });
         }else if(meshurls[0].includes(".obj")){
             var loader= new THREE.OBJLoader();
-            loader.load(meshurls[0],function ( object ) {scene.add( object );})
+            loader.load(meshurls[0],function ( object ) {objects.add(object);scene.add(objects);})
         }else if(meshurls[0].includes(".gltf")){
             var loader = new THREE.GLTFLoader();
             loader.load(meshurls[0], function ( gltf )
@@ -973,7 +981,8 @@ function initThreeJS(domelement,verts,meshurls) {
                 object = gltf.scene;
                 object.position.x = 0;
                 object.position.y = 0;
-                scene.add(object);
+                objects.add(object)
+                scene.add(objects);
             });
         }
     }
@@ -982,6 +991,9 @@ function initThreeJS(domelement,verts,meshurls) {
     var light = new THREE.DirectionalLight(0xffffff, 1);
     light.position.set(20, 20, 0);
     scene.add(light);
+    lightingFolder.add(light.position, "x").min(-5).max(5).step(0.01).name("X Position")
+	lightingFolder.add(light.position, "y").min(-5).max(5).step(0.01).name("Y Position")
+	lightingFolder.add(light.position, "z").min(-5).max(5).step(0.01).name("Z Position")
     var axesHelper = new THREE.AxesHelper( Math.max(maxx, maxy, maxz)*4 );
     scene.add( axesHelper );
     console.log("Depth: "+(maxz-minz))
@@ -992,7 +1004,8 @@ function initThreeJS(domelement,verts,meshurls) {
     console.log(centervec)
     const material = new THREE.MeshBasicMaterial( { color: 0xFFFFFF, wireframe:true } );
     const mesh = new THREE.Mesh( extrudedGeometry, material );
-    scene.add( mesh );
+    annotations.add(mesh)
+    scene.add( annotations );
     renderer = new THREE.WebGLRenderer( { antialias: false } );
 	renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( 480, 500 );
@@ -1004,6 +1017,13 @@ function initThreeJS(domelement,verts,meshurls) {
     camera.position.z = centervec.z+10;
     controls.maxDistance= Math.max(maxx, maxy, maxz)*5
     controls.update();
+    const updateCamera = () => {
+		camera.updateProjectionMatrix();
+	}
+	const cameraFolder = geometryFolder.addFolder("Camera");
+	cameraFolder.add (camera, 'fov', 1, 180).name('Zoom').onChange(updateCamera);
+    gui.add(objects, 'visible').name('Meshes')
+    gui.add(annotations, 'visible').name('Annotations')
     animate()
 }
 
