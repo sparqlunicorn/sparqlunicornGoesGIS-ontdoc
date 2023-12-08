@@ -738,7 +738,7 @@ class OntDocGeneration:
             for tobj2 in graph.predicate_objects(obj):
                 if str(tobj2[0]) in DocConfig.timeproperties:
                     timeobj["end"]=tobj2[1]
-        elif str(pred)=="http://www.w3.org/2006/time#hasTime":
+        elif str(pred)=="http://www.w3.org/2006/time#hasTime" or str(pred)=="http://www.w3.org/ns/sosa/phenomenonTime" or str(pred)=="http://www.w3.org/ns/sosa/resultTime":
             for tobj2 in graph.predicate_objects(obj):
                 if str(tobj2[0]) in DocConfig.timeproperties:
                     timeobj["timepoint"]=tobj2[1]
@@ -769,7 +769,7 @@ class OntDocGeneration:
 
     def resolveTimeLiterals(self,pred,obj,graph):
         timeobj={}
-        if isinstance(obj,URIRef) and str(pred)=="http://www.w3.org/2006/time#hasTime":         
+        if isinstance(obj,URIRef) and (str(pred)=="http://www.w3.org/2006/time#hasTime" or str(pred)=="http://www.w3.org/ns/sosa/phenomenonTime" or str(pred)=="http://www.w3.org/ns/sosa/resultTime"):
             for tobj in graph.predicate_objects(obj):
                 timeobj=self.resolveTimeObject(tobj[0],tobj[1],graph,timeobj)
         elif isinstance(obj,URIRef) and str(pred) in DocConfig.timepointerproperties:
@@ -1123,6 +1123,7 @@ class OntDocGeneration:
         image3dannos=[]
         predobjmap={}
         isgeocollection=False
+        isobservationcollection=False
         comment={}
         parentclass=None
         inverse=False
@@ -1189,6 +1190,10 @@ class OntDocGeneration:
                     isgeocollection=True
                     uritotreeitem["http://www.opengis.net/ont/geosparql#GeometryCollection"][-1]["instancecount"] += 1
                     thetypes.add(str("http://www.opengis.net/ont/geosparql#GeometryCollection"))
+                elif str(tup)==self.typeproperty and URIRef("http://www.w3.org/ns/sosa/ObservationCollection") in predobjmap[tup]:
+                    isobservationcollection=True
+                    uritotreeitem["http://www.w3.org/ns/sosa/ObservationCollection"][-1]["instancecount"] += 1
+                    thetypes.add(str("http://www.w3.org/ns/sosa/ObservationCollection"))
                 elif str(tup)==self.typeproperty:
                     for tp in predobjmap[tup]:
                         thetypes.add(str(tp))
@@ -1457,6 +1462,33 @@ class OntDocGeneration:
                     imagetoURI[video]={"uri":str(subject)}
                     f.write(templates["videotemplate"].replace("{{video}}",str(video)))
 
+                if isobservationcollection:
+                    memberpred = URIRef("http://www.w3.org/2000/01/rdf-schema#member")
+                    xValues=[]
+                    xLabel="Value"
+                    timeValues=[]
+                    yLabel="Time"
+                    for memberid in graph.objects(subject, memberpred, True):
+                        gottime=None
+                        gotvalue=None
+                        for observ in graph.predicate_objects(memberid, True):
+                            if observ[0]==URIRef("http://www.w3.org/ns/sosa/hasSimpleResult"):
+                                xValues.append(str(observ[1]))
+                                gotvalue=str(observ[1])
+                            if observ[0] == URIRef("http://www.w3.org/ns/sosa/phenomenonTime"):
+                                timeValues.append(self.resolveTimeLiterals(observ[0],observ[1],graph)["timepoint"])
+                                timeValues.append(str(observ[1]))
+                                gottime=str(observ[1])
+                            if observ[0] == URIRef("http://www.w3.org/ns/sosa/hasResult"):
+                                for val in graph.predicate_objects(observ[1]):
+                                    if str(val[0]) in DocConfig.valueproperties and val[1]!=None and str(val[1])!="":
+                                        xValues.append(str(val[1]))
+                                    if str(val[0]) in DocConfig.unitproperties and val[1]!=None and str(val[1])!="":
+                                        xLabel="Value ("+str(val[1])+")"
+                        if gottime!=None and gotvalue!=None:
+                            xValues.append(gotvalue)
+                            timeValues.append(gottime)
+                    f.write(templates["chartviewtemplate"].replace("{{xValues}}", str(xValues)).replace("{{yValues}}",str(timeValues)).replace("{{xLabel}}",str(xLabel)).replace("{{yLabel}}",str(yLabel)))
                 if geojsonrep!=None and not isgeocollection:
                     if uritotreeitem!=None and str(subject) in uritotreeitem:
                         uritotreeitem[str(subject)][-1]["type"]="geoinstance"
@@ -1479,7 +1511,7 @@ class OntDocGeneration:
                     thecrs=set()
                     dateatt=""
                     if isgeocollection and not nonns:
-                        memberpred=URIRef("http://www.w3.org/2000/01/rdf-schema#member")
+                        memberpred = URIRef("http://www.w3.org/2000/01/rdf-schema#member")
                         for memberid in graph.objects(subject,memberpred,True):
                             for geoinstance in graph.predicate_objects(memberid,True):
                                 geojsonrep=None

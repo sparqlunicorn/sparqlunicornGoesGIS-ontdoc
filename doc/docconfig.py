@@ -21,7 +21,7 @@ class DocConfig:
 
     timeproperties=["http://www.w3.org/2006/time#inXSDDateTime","http://www.w3.org/2006/time#inXSDDate","http://www.w3.org/2006/time#inXSDDateTimeStamp","http://www.w3.org/2006/time#inXSDgYear","http://www.w3.org/2006/time#inXSDgYearMonth"]
 
-    timepointerproperties=["http://www.w3.org/2006/time#hasTime", "http://www.w3.org/2006/time#hasDuration","http://www.w3.org/2006/time#hasBeginning","http://www.w3.org/2006/time#hasEnd"]
+    timepointerproperties=["http://www.w3.org/2006/time#hasTime", "http://www.w3.org/2006/time#hasDuration", "http://www.w3.org/2006/time#hasBeginning", "http://www.w3.org/2006/time#hasEnd", "http://www.w3.org/ns/sosa/phenomenonTime", "http://www.w3.org/ns/sosa/resultTime"]
 
     timeliteraltypes={"http://www.w3.org/2001/XMLSchema#gYear":"http://www.ontology-of-units-of-measure.org/resource/om-2/year",
     "http://www.w3.org/2006/time#generalYear":"http://www.w3.org/2006/time#unitYear",
