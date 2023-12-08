@@ -151,6 +151,22 @@ class IIIFAPIExporter:
                 "class": besttype}
 
     @staticmethod
+    def generateImageGrid(deploypath,imagespaths,imagegridtemplate,targetfile=None):
+        categories=set()
+        imghtml=""
+        for imgpath in sorted(imagespaths, key=lambda k: k['label'], reverse=False):
+            categories.add(DocUtils.shortenURI(imgpath["class"]))
+            imghtml+="<li data-groups='[\"all\",\"red\",\""+str(imgpath["class"])+"\"]' style=\"width:25%;background-color:white;border-radius:25px;\"><figure class=\"col-3@sm picture-item\"><div class=\"aspect aspect--16x9\"><div class=\"aspect__inner\">"
+            imghtml+="<a href=\""+str(deploypath)+"\"><img src=\"{{site.baseurl}}/assets/images/placeholder.png\" loading=\"lazy\" class=\"imgborder\" onerror=\"this.onerror=null; this.src='{{site.baseurl_root}}/assets/images/placeholder.png'\" alt=\"{{textName}}\"/></a></div></div>"
+            imghtml+="<figcaption style=\"color:black\"><a href="+str(deploypath)+"/"+imgpath["url"]+"\" style=\"font-weight:bold;color:black\">"+str(imgpath["label"])+"</a></figcaption></figure></li>"
+        if targetfile!=None:
+            f = open(targetfile, "w")
+            f.write(imagegridtemplate.replace("{{imagecontainers}}",imghtml).replace("{{categories}}",str(categories)))
+            f.close()
+        else:
+            return imagegridtemplate.replace("{{imagecontainers}}",imghtml).replace("{{categories}}",str(categories))
+
+    @staticmethod
     def generateIIIFCollections(outpath, deploypath, imagespaths, prefixnamespace):
         if not os.path.exists(outpath + "/iiif/collection/"):
             os.makedirs(outpath + "/iiif/collection/")

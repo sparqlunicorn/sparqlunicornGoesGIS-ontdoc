@@ -463,6 +463,7 @@ class OntDocGeneration:
                 f.close()
         if len(iiifmanifestpaths["default"])>0:
             IIIFAPIExporter.generateIIIFCollections(self.outpath,self.deploypath,iiifmanifestpaths["default"],prefixnamespace)
+            IIIFAPIExporter.generateImageGrid(self.deploypath, iiifmanifestpaths["default"], templates["imagegrid"], outpath+"imagegrid.html")
         if len(featurecollectionspaths)>0 and self.ckan:
             CKANExporter.generateCKANCollection(outpath,self.deploypath,featurecollectionspaths,tree["core"]["data"],self.license)
         if self.solidexport:
