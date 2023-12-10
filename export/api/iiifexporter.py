@@ -158,13 +158,13 @@ class IIIFAPIExporter:
             print("IMAGEPATH: "+str(imgpath))
             categories.add(DocUtils.shortenURI(imgpath["class"]))
             for imgp in imgpath["imgpath"]:
-                imghtml+="<li data-groups='[\"all\",\"red\",\"\"]' style=\"width:25%;background-color:white;border-radius:25px;\"><figure class=\"col-3@sm picture-item\"><div class=\"aspect aspect--16x9\"><div class=\"aspect__inner\">"
+                imghtml+="<li data-groups='[\"all\",\"red\",\""+str(imgpath["class"])+"\"]' style=\"width:25%;background-color:white;border-radius:25px;\"><figure class=\"col-3@sm picture-item\"><div class=\"aspect aspect--16x9\"><div class=\"aspect__inner\">"
                 imghtml+="<a href=\""+str(deploypath)+"\"><img src=\""+str(imgp)+"\" loading=\"lazy\" class=\"imgborder\" onerror=\"this.onerror=null; this.src='{{site.baseurl_root}}/assets/images/placeholder.png'\" alt=\""+str(imgpath["label"])+"\"/></a></div></div>"
-                imghtml+="<figcaption style=\"color:black\"><a href="+str(deploypath)+"/"+imgpath["url"].replace(outpath, deploypath).replace("/manifest.json", "")+"\" style=\"font-weight:bold;color:black\">"
+                imghtml+="<figcaption style=\"color:black\"><a href="+str(deploypath)+"/"+imgpath["ind"]+"\" style=\"font-weight:bold;color:black\">"
                 if imgpath["label"]!="":
                    imghtml+=str(imgpath["label"])+"</a></figcaption></figure></li>"
                 else:
-                   imghtml +=  DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", "")) + "</a></figcaption></figure></li>"
+                   imghtml += DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", "")) + "</a></figcaption></figure></li>"
         if targetfile!=None:
             f = open(targetfile, "w")
             f.write(imagegridtemplate.replace("{{imagecontainers}}",imghtml).replace("{{categories}}",str(categories).replace("{","").replace("}","")))
