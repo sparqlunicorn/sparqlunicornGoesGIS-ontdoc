@@ -41,12 +41,12 @@ class IIIFAPIExporter:
     @staticmethod
     def generateIIIFManifest(g, outpath, deploypath, imgpaths, annos, annobodies, curind, prefixnamespace, imagetoURI, imagemetadata,metadatanamespaces, label="",
                              summary="", thetypes=None, predobjmap=None, maintype="Image"):
-        print("GENERATE IIIF Manifest for " + str(outpath) + " " + str(curind) + " " + str(label) + " " + str(
-            summary) + " " + str(annobodies))
-        print(predobjmap)
-        print(outpath)
-        print(curind)
-        print(DocUtils.shortenURI(curind))
+        #print("GENERATE IIIF Manifest for " + str(outpath) + " " + str(curind) + " " + str(label) + " " + str(
+        #    summary) + " " + str(annobodies))
+        #print(predobjmap)
+        #print(outpath)
+        #print(curind)
+        #print(DocUtils.shortenURI(curind))
         if not os.path.exists(outpath + "/iiif/mf/" + DocUtils.shortenURI(curind) + "/manifest.json"):
             if not os.path.exists(outpath + "/iiif/mf/"):
                 os.makedirs(outpath + "/iiif/mf/")
@@ -54,7 +54,7 @@ class IIIFAPIExporter:
                 os.makedirs(outpath + "/iiif/images/")
             if not os.path.exists(outpath + "/iiif/svg/"):
                 os.makedirs(outpath + "/iiif/svg/")
-            print(label)
+            #print(label)
             if label != "":
                 curiiifmanifest = {"@context": "http://iiif.io/api/presentation/3/context.json",
                                    "id": deploypath + "/iiif/mf/" + DocUtils.shortenURI(curind) + "/manifest.json",
@@ -86,18 +86,18 @@ class IIIFAPIExporter:
                 if "width" not in imagetoURI[imgpath]:
                     res = DocUtils.checkImgMetadataRDF(g, imgpath)
                     if "width" in res:
-                        print("Found image width in KG: " + str(res["width"]))
+                        #print("Found image width in KG: " + str(res["width"]))
                         imagetoURI[imgpath]["width"] = res["width"]
                     if "height" in res:
                         imagetoURI[imgpath]["height"] = res["height"]
-                        print("Found image height in KG: " + str(res["width"]))
+                        #print("Found image height in KG: " + str(res["width"]))
                 if imgpath not in imagetoURI or "width" not in imagetoURI[imgpath]:
                     if imagemetadata:
                         try:
-                            print("Loading image for " + str(imgpath))
+                            #print("Loading image for " + str(imgpath))
                             response = requests.get(imgpath)
                             im = Image.open(BytesIO(response.content))
-                            print(im.size)
+                            #print(im.size)
                             # print(type(im.size))
                             w, h = im.size
                             width = w
