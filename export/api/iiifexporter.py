@@ -154,7 +154,7 @@ class IIIFAPIExporter:
     def generateImageGrid(outpath,deploypath,imagespaths,imagegridtemplate,targetfile=None):
         categories=set()
         imghtml=""
-        for imgpath in sorted(imagespaths):
+        for imgpath in imagespaths:
             print("IMAGEPATH: "+str(imgpath))
             categories.add(DocUtils.shortenURI(imgpath["class"]))
             for imgp in imgpath["imgpath"]:
