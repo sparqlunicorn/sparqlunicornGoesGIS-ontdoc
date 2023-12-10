@@ -801,7 +801,7 @@ class OntDocGeneration:
                     geojsonrep = self.processLiteral(str(pobj[1]), str(pobj[1].datatype), "")
         return geojsonrep
 
-    def searchObjectConnectionsForAggregateData(self,graph,object,pred,geojsonrep,foundmedia,imageannos,textannos,image3dannos,annobodies,label,unitlabel,nonns):
+    def searchObjectConnectionsForAggregateData(self,graph,object,pred,geojsonrep,foundmedia,imageannos,textannos,image3dannos,annobodies,label,unitlabel,nonns,inverse):
         geoprop=False
         annosource=None
         incollection=False
@@ -853,6 +853,12 @@ class OntDocGeneration:
                 ext="."+''.join(filter(str.isalpha,str(tup[1]).split(".")[-1]))
                 if ext in DocConfig.fileextensionmap:
                     foundmedia[DocConfig.fileextensionmap[ext]][str(tup[1])]={}
+            if not inverse and str(tup[0])=="http://www.w3.org/2000/01/rdf-schema#member" and (object, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://www.w3.org/ns/sosa/ObservationCollection")) in graph:
+                for valtup in graph.predicate_objects(tup[1]):
+                    if str(valtup[0]) in DocConfig.unitproperties:
+                        foundunit = str(valtup[1])
+                    if str(valtup[0]) in DocConfig.valueproperties and isinstance(valtup[1], Literal):
+                        foundval = str(valtup[1])
             if str(tup[0]) in DocConfig.valueproperties:
                 if tempvalprop == None and str(tup[0]) == "http://www.w3.org/ns/oa#hasSource":
                     tempvalprop = str(tup[0])
@@ -871,6 +877,10 @@ class OntDocGeneration:
                                 if str(valtup[0]) in DocConfig.valueproperties and (
                                         isinstance(valtup[1], Literal) or isinstance(valtup[1], URIRef)):
                                     foundval = str(valtup[1])
+                elif DocConfig.valueproperties[str(tup[0])]=="DatatypeProperty":
+                    if str(tup[0]) in DocConfig.valueproperties and isinstance(tup[1], Literal):
+                        tempvalprop = str(tup[0])
+                        foundval = str(tup[1])
                 else:
                     for valtup in graph.predicate_objects(tup[1]):
                         if str(valtup[0]) in DocConfig.unitproperties:
@@ -917,7 +927,7 @@ class OntDocGeneration:
                 ttlf.add((subject,URIRef(pred),object))
             label = ""
             unitlabel=""
-            mydata=self.searchObjectConnectionsForAggregateData(graph,object,pred,geojsonrep,foundmedia,imageannos,textannos,image3dannos,annobodies,label,unitlabel,nonns)
+            mydata=self.searchObjectConnectionsForAggregateData(graph,object,pred,geojsonrep,foundmedia,imageannos,textannos,image3dannos,annobodies,label,unitlabel,nonns,inverse)
             label=mydata["label"]
             if label=="":
                 label=str(DocUtils.shortenURI(str(object)))
@@ -1462,7 +1472,6 @@ class OntDocGeneration:
                 for video in foundmedia["video"]:
                     imagetoURI[video]={"uri":str(subject)}
                     f.write(templates["videotemplate"].replace("{{video}}",str(video)))
-
                 if isobservationcollection:
                     memberpred = URIRef("http://www.w3.org/2000/01/rdf-schema#member")
                     xValues=[]
