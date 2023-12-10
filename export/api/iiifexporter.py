@@ -155,6 +155,7 @@ class IIIFAPIExporter:
         categories=set()
         imghtml=""
         for imgpath in sorted(imagespaths, key=lambda k: k['label'], reverse=False):
+            print("IMAGEPATH: "+str(imgpath))
             categories.add(DocUtils.shortenURI(imgpath["class"]))
             imghtml+="<li data-groups='[\"all\",\"red\",\""+str(imgpath["class"])+"\"]' style=\"width:25%;background-color:white;border-radius:25px;\"><figure class=\"col-3@sm picture-item\"><div class=\"aspect aspect--16x9\"><div class=\"aspect__inner\">"
             imghtml+="<a href=\""+str(deploypath)+"\"><img src=\"{{site.baseurl}}/assets/images/placeholder.png\" loading=\"lazy\" class=\"imgborder\" onerror=\"this.onerror=null; this.src='{{site.baseurl_root}}/assets/images/placeholder.png'\" alt=\"{{textName}}\"/></a></div></div>"
