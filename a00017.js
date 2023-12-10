@@ -25,7 +25,7 @@ var a00017 =
     [ "resolveGeoLiterals", "a00017.html#a1d81ed6468b6668c74195a253811f6d5", null ],
     [ "resolveTimeLiterals", "a00017.html#ac9eaaac4b5fa31878eedb135332b2cca", null ],
     [ "resolveTimeObject", "a00017.html#ad270c2b885dd47555264be522e2987ae", null ],
-    [ "searchObjectConnectionsForAggregateData", "a00017.html#ab49ea2b0601791797d599d8f76fbab33", null ],
+    [ "searchObjectConnectionsForAggregateData", "a00017.html#a0b6777c954e16da9d3c3a27261b89131", null ],
     [ "timeObjectToHTML", "a00017.html#addbf5c36beffa071064e4c860bbbdee2", null ],
     [ "truncateValue", "a00017.html#a3600c87bdadf23ca16ce89c426744b6f", null ],
     [ "ckan", "a00017.html#a09b309fcb58081110bc19e6ce22b63cb", null ],
