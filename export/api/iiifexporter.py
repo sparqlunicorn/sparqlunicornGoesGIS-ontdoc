@@ -167,10 +167,10 @@ class IIIFAPIExporter:
                    imghtml +=  DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", "")) + "</a></figcaption></figure></li>"
         if targetfile!=None:
             f = open(targetfile, "w")
-            f.write(imagegridtemplate.replace("{{imagecontainers}}",imghtml).replace("{{categories}}",str(categories)))
+            f.write(imagegridtemplate.replace("{{imagecontainers}}",imghtml).replace("{{categories}}",str(categories).replace("{","").replace("}","")))
             f.close()
         else:
-            return imagegridtemplate.replace("{{imagecontainers}}",imghtml).replace("{{categories}}",str(categories))
+            return imagegridtemplate.replace("{{imagecontainers}}",imghtml).replace("{{categories}}",str(categories).replace("{","").replace("}",""))
 
     @staticmethod
     def generateIIIFCollections(outpath, deploypath, imagespaths, prefixnamespace):
