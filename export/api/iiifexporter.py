@@ -152,8 +152,6 @@ class IIIFAPIExporter:
 
     @staticmethod
     def generateImageGrid(outpath,deploypath,imagespaths,imagegridtemplate,targetfile=None):
-        print("IMAGEGRID")
-        print(imagespaths)
         categories=set()
         imghtml=""
         for imgpath in sorted(imagespaths, key=lambda k: k['label'], reverse=False):
