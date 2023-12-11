@@ -466,7 +466,7 @@ class OntDocGeneration:
             IIIFAPIExporter.generateIIIFCollections(self.outpath,self.deploypath,iiifmanifestpaths["default"],prefixnamespace)
             indexhtml = self.replaceStandardVariables(templates["htmltemplate"], "", "0", "true")
             indexhtml = indexhtml.replace("{{iconprefixx}}",(relpath + "icons/" if self.offlinecompat else "")).replace("{{baseurl}}",prefixnamespace).replace(
-                "{{relativepath}}", relpath).replace("{{toptitle}}", "Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace(
+                "{{relativepath}}", relpath).replace("{{toptitle}}", "Feature Collection Overview").replace("{{title}}","Image Grid View").replace(
                 "{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}","vowl_result.js") \
                 .replace("{{classtreefolderpath}}", corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace(
                 "{{nonnslink}}", "").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}",corpusid + '_search.js').replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "")
