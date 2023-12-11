@@ -91,14 +91,12 @@ ul li {
   padding-bottom: 56.25%;
 }
 </style>
-
-<div class="row">
-  <ul class="shuffle-filter" id="shuffle-categories">
-  <li class="selected" data-target="all">All</li>
-  </ul>
-  <ul class="shuffle-container">
-      {{imagecontainers}}
-  </ul>
+<ul class="shuffle-filter" id="shuffle-categories">
+<li class="selected" data-target="all">All</li>
+</ul>
+<ul class="shuffle-container">
+    {{imagecontainers}}
+</ul>
 <script>
 window.onload = function () {
 categories="<li class=\"selected\" data-target=\"all\">All</li>"
@@ -123,4 +121,4 @@ var shuffleInstance = new Shuffle(element, {
     shuffleInstance.filter(keyword);
   });
 }
-</script></div>
+</script>
