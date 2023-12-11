@@ -97,6 +97,7 @@ The following vocabularies are supported by the ontology documentation tool and 
 * [FOAF Vocabulary](http://xmlns.com/foaf/0.1/)
 * [GeoSPARQL 1.0 and 1.1 vocabulary](https://github.com/opengeospatial/ogc-geosparql)
 * [SKOS Vocabulary](https://www.w3.org/TR/swbp-skos-core-spec/)
+* [SOSA Ontology](https://www.w3.org/TR/vocab-ssn/)
 * [Unit of Measurements Ontology](https://github.com/HajoRijgersberg/OM)
 * [W3C Web Annotation Data Model](https://www.w3.org/TR/annotation-model/)
 * [W3C Geo Vocabulary](https://www.w3.org/2003/01/geo/)
