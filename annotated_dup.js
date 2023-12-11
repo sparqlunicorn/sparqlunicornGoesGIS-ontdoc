@@ -1,8 +1,6 @@
 var annotated_dup =
 [
-    [ "sparqlunicornGoesGIS-ontdoc", "a00011.html", [
-      [ "docgeneration", "a00012.html", [
-        [ "OntDocGeneration", "a00017.html", "a00017" ]
-      ] ]
+    [ "docgeneration", "a00005.html", [
+      [ "OntDocGeneration", "a00009.html", "a00009" ]
     ] ]
 ];
