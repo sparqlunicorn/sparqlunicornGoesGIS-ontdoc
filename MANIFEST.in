@@ -1,3 +1,3 @@
 # MANIFEST.in
 
-include resources/*
+recursive-include resources/*
