@@ -148,7 +148,7 @@ class IIIFAPIExporter:
         if besttype == "" and len(thetypes) > 0:
             besttype = next(iter(thetypes))
         return {"url": outpath + "/iiif/mf/" + DocUtils.shortenURI(curind) + "/manifest.json", "imgpath": list(imgpaths.keys()), "label": str(label),
-                "class": besttype}
+                "class": besttype,"ind":curind}
 
     @staticmethod
     def generateImageGrid(outpath,deploypath,imagespaths,imagegridtemplate,targetfile=None):
