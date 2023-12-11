@@ -151,7 +151,7 @@ class IIIFAPIExporter:
                 "class": besttype,"ind":curind}
 
     @staticmethod
-    def generateImageGrid(outpath,deploypath,imagespaths,imagegridtemplate,targetfile=None):
+    def generateImageGrid(outpath,deploypath,imagespaths,imagegridtemplate,headertemplate,footertemplate,targetfile=None):
         categories=set()
         imghtml=""
         for imgpath in imagespaths:
@@ -167,10 +167,15 @@ class IIIFAPIExporter:
                    imghtml += DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", "")) + "</a></figcaption></figure></li>"
         if targetfile!=None:
             f = open(targetfile, "w")
+            f.write(headertemplate)
             f.write(imagegridtemplate.replace("{{imagecontainers}}",imghtml).replace("{{categories}}",str(categories).replace("{","").replace("}","")))
+            f.write(footertemplate)
             f.close()
         else:
-            return imagegridtemplate.replace("{{imagecontainers}}",imghtml).replace("{{categories}}",str(categories).replace("{","").replace("}",""))
+            imggrid=headertemplate
+            imggrid+=imagegridtemplate.replace("{{imagecontainers}}",imghtml).replace("{{categories}}",str(categories).replace("{","").replace("}",""))
+            imggrid+=footertemplate
+            return imggrid
 
     @staticmethod
     def generateIIIFCollections(outpath, deploypath, imagespaths, prefixnamespace):

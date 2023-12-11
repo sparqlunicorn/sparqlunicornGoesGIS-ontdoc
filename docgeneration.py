@@ -461,15 +461,21 @@ class OntDocGeneration:
             with open( outpath+"sparql.html", 'w', encoding='utf-8') as f:
                 f.write(sparqlhtml)
                 f.close()
+        relpath = DocUtils.generateRelativePathFromGivenDepth(0)
         if len(iiifmanifestpaths["default"])>0:
             IIIFAPIExporter.generateIIIFCollections(self.outpath,self.deploypath,iiifmanifestpaths["default"],prefixnamespace)
-            IIIFAPIExporter.generateImageGrid(self.outpath,self.deploypath, iiifmanifestpaths["default"], templates["imagegrid"], outpath+"imagegrid.html")
+            indexhtml = self.replaceStandardVariables(templates["htmltemplate"], "", "0", "true")
+            indexhtml = indexhtml.replace("{{iconprefixx}}",(relpath + "icons/" if self.offlinecompat else "")).replace("{{baseurl}}",prefixnamespace).replace(
+                "{{relativepath}}", relpath).replace("{{toptitle}}", "Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace(
+                "{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}","vowl_result.js") \
+                .replace("{{classtreefolderpath}}", corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace(
+                "{{nonnslink}}", "").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}",corpusid + '_search.js').replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "")
+            IIIFAPIExporter.generateImageGrid(self.outpath,self.deploypath, iiifmanifestpaths["default"], templates["imagegrid"],indexhtml,self.replaceStandardVariables(templates["footer"],"","0","true").replace("{{license}}", curlicense).replace("{{subject}}","").replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}",""), outpath+"imagegrid.html")
         if len(featurecollectionspaths)>0 and self.ckan:
             CKANExporter.generateCKANCollection(outpath,self.deploypath,featurecollectionspaths,tree["core"]["data"],self.license)
         if self.solidexport:
             SolidExporter.createSolidSettings(self.graph,outpath,self.deploypath,self.publisher,self.datasettitle,tree["core"]["data"])
         if len(featurecollectionspaths)>0:
-            relpath=DocUtils.generateRelativePathFromGivenDepth(0)
             indexhtml = self.replaceStandardVariables(templates["htmltemplate"], "", "0", "true")
             indexhtml = indexhtml.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{baseurl}}", prefixnamespace).replace("{{relativepath}}",relpath).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}", "vowl_result.js")\
                     .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{nonnslink}}","").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",templates["nongeoexports"]).replace("{{bibtex}}","")
