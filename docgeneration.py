@@ -677,7 +677,7 @@ class OntDocGeneration:
                       "http://purl.org/dc/terms/issued":"year",	
                       "http://purl.org/ontology/bibo/number":"number",	
                       "http://purl.org/ontology/bibo/publisher":"publisher",
-                      "http://purl.org/dc/terms/publisher":"publishter",
+                      "http://purl.org/dc/terms/publisher":"publisher",
                       "http://purl.org/dc/terms/language":"language",                      
                       "http://purl.org/ontology/bibo/issuer": "journal",	
                       "http://purl.org/ontology/bibo/volume":"volume",	
