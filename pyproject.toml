@@ -1,0 +1,53 @@
+# pyproject.toml
+
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sparqlunicorn_ontdoc"
+version = "0.16.0"
+description = "Generates HTML documentation from RDF files"
+readme = "README.md"
+authors = [{ name = "Timo Homburg", email = "qgisplugin@sparqlunicorn.link" }, { name = "Florian Thiery", email = "qgisplugin@sparqlunicorn.link" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["feed", "reader", "tutorial"]
+dependencies = [
+"pillow>=10.0.1",
+"rdflib>=6.2.0",
+"requests>=2.31.0",
+"shapely>=1.7.1"
+]
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+dev = ["black", "bumpver", "isort", "pip-tools", "pytest"]
+
+[project.urls]
+Homepage = "https://github.com/sparqlunicorn/sparqlunicornGoesGIS-ontdoc/"
+
+[project.scripts]
+sparqlunicorn-ontdoc = "sparqlunicorn_ontdoc.docgeneration:main"
+
+[tool.bumpver]
+current_version = "0.16.0"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message  = "Bump version {old_version} -> {new_version}"
+commit          = true
+tag             = true
+push            = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
+"src/sparqlunicorn_ontdoc/doc/docdefaults.py" = ["{version}"]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
