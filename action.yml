@@ -1,128 +1,148 @@
-name: SPARQLing Unicorn Ontology Documentation
-
-permissions:
-  contents: write
- 
-on:
-  workflow_call:
-    inputs:
+name: 'sparqlunicorn-ontdoc'
+description: 'Generates HTML documentation from RDF files'
+inputs:
+   inputs:
       version:
         required: false
         type: string
+        description: "The version of the script to execute as indicated by its branch name"
         default: main
       rdffilepath:
         required: false
+        description: "The filepath(s) to the RDF files to process"
         default: None
         type: string
       docpath:
         required: false
+        description: "The output path where the documentation is stored"
         default: docs 
         type: string
       prefixns:
         required: false
+        description: "The namespace which should be documented"
         default: None
         type: string
       prefixnsshort:
         required: false
+        description: "The prefix describing the namespace to be documented"
         default: suni
         type: string
       indexpages:
         required: false
+        description: "Indicates whether to create index pages for navigation"
         default: true
         type: boolean
       ghpages:
         required: false
+        description: "Indicates whether to create a deployment to a pages branch"
         default: true
         type: boolean
       ghpagesbranch:
         required: false
+        description: "The branch to deploy the documentation to"
         default: gh-pages
         type: string
       ghpagesfolder:
         required: false
+        description: "The folder which is used for the pages deployment"
         default: /
         type: string
       checkout:
         required: false
+        description: "Indicates whether a checkout of the target repository should be performed"
         default: true
         type: boolean
       templatedir:
         required: false
-        default: resources/html/
+        description: "The path or URL of the HTML documentation template to use"
+        default: ontdocscript/resources/html/
         type: string
       createcollections:
         required: false
+        description: "Indicates whether additional collections should be created for better navigation"
         default: false
         type: boolean
       preferredlang:
         required: false
+        description: "The preferred language to be displayed in the HTML deployment, pending availability"
         default: en
         type: string
       license:
         required: false
+        description: "The license under which the data in the knowledge graph is published"
         default: ""
         type: string
       logourl:
         required: false
+        description: "The URL pointing to a logo which should be used in the HTML template"
         default: ""
         type: string
       metadatatable:
         required: false
+        description: "Indicates whether an additional table for metadata should be created in the HTML view"
         default: false
         type: boolean
       createnonNSPages:
         required: false
+        description: "Create pages for linked instances not in the target namespace"
         default: false
         type: boolean
       createVOWL:
         required: false
+        description: "Creates Visual OWL documentation"
         default: false
         type: boolean
       ogcapifeatures:
         required: false
+        description: "Creates OGC API Features Static API documentation for exposing geodata"
         default: true
         type: boolean
       iiif:
         required: false
+        description: "Creates IIIF manifest files"
         default: true
         type: boolean
       solid:
         required: false
+        description: "Create additional documents for Solid pod deployments"
         default: false
         type: boolean
       ckan:
         required: false
+        description: "Creates CKAN static API documents"
         default: true
         type: boolean
       startconcept:
         required: false
+        description: "The URI of the concept which is recommended for starting to explore the knowledge graph"
         default: ""
         type: string
       offlinecompat:
         required: false
+        description: "Create portable version of HTML documentation"
         default: false
         type: boolean
       exports:
         required: false
+        description: "Define data exports in addition to the HTML deployment"
         default: "ttl"
         type: string
       datasettitle:
         required: false
+        description: "A title for the HTML deployment"
         default: ""
         type: string
       publisher:
         required: false
+        description: "The publisher of the HTML deployment"
         default: ""
         type: string
       publishingorg:
         required: false
+        description: "The publishing organization of the HTML deployment"
         default: ""
         type: string
-
-
-jobs:
-  ontdoc-action:
-    name: Ontology Documentation
+runs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -148,9 +168,9 @@ jobs:
       - name: Generate Ontology Documentation
         run: |
           sudo pip3 install rdflib shapely pillow
-          ls
-          pwd
-          python3 ontdocscript/src/sparqlunicorn_ontdoc/docgeneration.py --input "${{inputs.rdffilepath}}" --output "${{inputs.docpath}}" --prefixns "${{inputs.prefixns}}" --prefixnsshort "${{inputs.prefixnsshort}}" --createIndexPages "${{inputs.indexpages}}" --createCollections "${{inputs.createcollections}}" --labellang "${{inputs.preferredlang}}" --license "${{inputs.license}}" --logourl "${{inputs.logourl}}" --metadatatable "${{inputs.metadatatable}}" --nonnspages "${{inputs.createnonNSPages}}" --createvowl "${{inputs.createVOWL}}" --ogcapifeatures "${{inputs.ogcapifeatures}}" --iiif "${{inputs.iiif}}" --ckan "${{inputs.ckan}}" --startconcept "${{inputs.startconcept}}" --deploypath "https://${{github.repository_owner}}.github.io/${{ github.event.repository.name }}" --templatepath "${{inputs.templatedir}}" --offlinecompat "${{inputs.offlinecompat}}" --exports "${{inputs.exports}}" --datasettitle "${{inputs.datasettitle}}"    
+          cp ontdocscript/docgeneration.py .
+          cp ontdocscript/prefixes.json .
+          python3 docgeneration.py --input "${{inputs.rdffilepath}}" --output "${{inputs.docpath}}" --prefixns "${{inputs.prefixns}}" --prefixnsshort "${{inputs.prefixnsshort}}" --createIndexPages "${{inputs.indexpages}}" --createCollections "${{inputs.createcollections}}" --labellang "${{inputs.preferredlang}}" --license "${{inputs.license}}" --logourl "${{inputs.logourl}}" --metadatatable "${{inputs.metadatatable}}" --nonnspages "${{inputs.createnonNSPages}}" --createvowl "${{inputs.createVOWL}}" --ogcapifeatures "${{inputs.ogcapifeatures}}" --iiif "${{inputs.iiif}}" --ckan "${{inputs.ckan}}" --solid "${{inputs.solid}}" --startconcept "${{inputs.startconcept}}" --deploypath "https://${{github.repository_owner}}.github.io/${{ github.event.repository.name }}" --templatepath "${{inputs.templatedir}}" --offlinecompat "${{inputs.offlinecompat}}" --exports "${{inputs.exports}}" --datasettitle "${{inputs.datasettitle}}" --publisher "${{inputs.publisher}}" --publishingorg "${{inputs.publishingorg}}" 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         if: ${{ inputs.ghpages }}

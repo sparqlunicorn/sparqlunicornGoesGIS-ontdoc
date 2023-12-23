@@ -1,4 +1,7 @@
 # SPARQL Unicorn Ontology Documentation
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8190763.svg)](https://doi.org/10.5281/zenodo.8190763)
+
 This repository hosts a standalone version of the HTML documentation feature included in the SPARQLing Unicorn QGIS Plugin.
 
 Rather than initiating the documentation generation within the SPARQLing Unicorn QGIS Plugin, this python script allows the generation of the documentation standalone or as a Github Action.
@@ -13,6 +16,11 @@ Deviations from the SPARQLing Unicorn Plugin are listed as follows:
 
 For a usage example please refer to this repository:
 https://github.com/sparqlunicorn/sparqlunicornGoesGIS_testdata
+
+### Usage Example as Gitlab CI Workflow
+
+For a usage example please refer to this repository:
+[https://gitlab.com/sparqlunicorn/sparqlunicornGoesGIS_testdata](https://gitlab.com/sparqlunicorn/sparqlunicornGoesGIS_testdata)
 
 ### Usage as standalone script
 

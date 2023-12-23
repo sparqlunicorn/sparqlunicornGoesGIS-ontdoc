@@ -1,0 +1,101 @@
+spec:
+  inputs:
+    version:
+        type: string
+        default: main
+    rdffilepath:
+        default: ""
+        type: string
+    docpath:
+        default: public 
+        type: string
+    prefixns:
+        default: http://www.sparqlunicorn.link/data/
+        type: string
+    prefixnsshort:
+        default: suni
+        type: string
+    indexpages:
+        default: true
+        type: boolean
+    ghpages:
+        default: true
+        type: boolean
+    ghpagesbranch:
+        default: gh-pages
+        type: string
+    ghpagesfolder:
+        default: /
+        type: string
+    checkout:
+        default: true
+        type: boolean
+    templatedir:
+        default: resources/html/
+        type: string
+    createcollections:
+        default: false
+        type: boolean
+    preferredlang:
+        default: en
+        type: string
+    license:
+        default: ""
+        type: string
+    logourl:
+        default: ""
+        type: string
+    metadatatable:
+        default: false
+        type: boolean
+    createnonNSPages:
+        default: false
+        type: boolean
+    createVOWL:
+        default: false
+        type: boolean
+    ogcapifeatures:
+        default: true
+        type: boolean
+    iiif:
+        default: true
+        type: boolean
+    ckan:
+        default: true
+        type: boolean
+    startconcept:
+        default: ""
+        type: string
+    offlinecompat:
+        default: false
+        type: boolean
+    exports:
+        default: "ttl"
+        type: string
+    datasettitle:
+        default: ""
+        type: string
+    publisher:
+        default: ""
+        type: string
+    publishingorg:
+        default: ""
+        type: string
+
+---
+image: ubuntu:latest
+
+pages:
+  stage: deploy
+  script: 
+  - apt-get update
+  - apt-get install python3 python3-pip git -y
+  - pip3 install rdflib shapely pillow requests
+  - git clone https://github.com/sparqlunicorn/sparqlunicornGoesGIS-ontdoc.git ontdocscript
+  - cd ontdocscript
+  - git checkout "$[[inputs.version]]" || git checkout main
+  - cd ..
+  - python3 ontdocscript/src/sparqlunicorn_ontdoc/docgeneration.py --input "$[[inputs.rdffilepath]]" --output "$[[inputs.docpath]]" --prefixns "$[[inputs.prefixns]]" --prefixnsshort "$[[inputs.prefixnsshort]]" --createIndexPages "$[[inputs.indexpages]]" --createCollections "$[[inputs.createcollections]]" --labellang "$[[inputs.preferredlang]]" --license "$[[inputs.license]]" --logourl "$[[inputs.logourl]]" --metadatatable "$[[inputs.metadatatable]]" --nonnspages "$[[inputs.createnonNSPages]]" --createvowl "$[[inputs.createVOWL]]" --ogcapifeatures "$[[inputs.ogcapifeatures]]" --iiif "$[[inputs.iiif]]" --ckan "$[[inputs.ckan]]" --startconcept "$[[inputs.startconcept]]" --deploypath "https://$CI_PROJECT_NAMESPACE.github.io/$CI_PROJECT_NAME" --templatepath "$[[inputs.templatedir]]" --offlinecompat "$[[inputs.offlinecompat]]" --exports "$[[inputs.exports]]" --datasettitle "$[[inputs.datasettitle]]" --publisher "$[[inputs.publisher]]" --publishingorg "$[[inputs.publishingorg]]" 
+  artifacts:
+    paths:
+    - "$[[inputs.docpath]]"

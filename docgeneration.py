@@ -3366,8 +3366,9 @@ parser.add_argument("-sc","--startconcept",help="the concept suggested for brows
 parser.add_argument("-dp","--deploypath",help="the deploypath where the documentation will be hosted",action="store",default="")
 parser.add_argument("-tp","--templatepath",help="the path of the HTML template",action="store",default="resources/html/")
 parser.add_argument("-tn","--templatename",help="the name of the HTML template",action="store",default="default")
-args=parser.parse_args()
+args, unknown=parser.parse_known_args()
 print(args)
+print("The following arguments were not recognized: "+str(unknown))
 for path in args.input:
     if " " in path:
         for itemm in path.split(" "):
@@ -3410,17 +3411,17 @@ if args.templatepath!=None:
                 print(args.templatename)
 fcounter=0
 for fp in filestoprocess:
-    #try:
-    g = Graph()
-    g.parse(fp)
-    if fcounter<len(outpath):
-        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle)
-    else:
-        docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle)
-    docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
-    #except Exception as inst:
-    # 	print("Could not parse "+str(fp))
-    # 	print(inst)
+    try:
+        g = Graph()
+        g.parse(fp)
+        if fcounter<len(outpath):
+            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle)
+        else:
+            docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.localOptimized,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle)
+        docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
+    except Exception as inst:
+     	print("Could not parse "+str(fp))
+     	print(inst)
     fcounter+=1
 curlicense=license
 if docgen!=None:
@@ -3429,9 +3430,9 @@ print("Path exists? "+outpath[0]+'/index.html '+str(os.path.exists(outpath[0]+'/
 if not os.path.exists(outpath[0]+'/index.html'):
     indexf=open(outpath[0]+"/index.html","w",encoding="utf-8")
     nonnslink=""
-    relpath=self.generateRelativePathFromGivenDepth(baseurl,0)
-    indexhtml = htmltemplate.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{deploypath}}",self.deploypath).replace("{{datasettitle}}",self.datasettitle).replace("{{logo}}",args.logourl).replace("{{baseurl}}", args.prefixns).replace("{{relativepath}}",relpath).replace("{{relativedepth}}","0").replace("{{toptitle}}","Index page").replace("{{title}}","Index page").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
-        .replace("{{classtreefolderpath}}",args.prefixnsshort + "_classtree.js").replace("{{baseurlhtml}}", ".").replace("{{nonnslink}}",str(nonnslink)).replace("{{proprelationpath}}", "proprelations.js").replace("{{scriptfolderpath}}", args.prefixnsshort+ '_search.js').replace("{{subject}}","").replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
+    relpath=""
+    indexhtml = htmltemplate.replace("{{iconprefixx}}",(relpath+"icons/" if args.offlinecompat else "")).replace("{{deploypath}}",args.deploypath).replace("{{datasettitle}}",args.datasettitle).replace("{{logo}}",args.logourl).replace("{{baseurl}}", args.prefixns).replace("{{relativepath}}",relpath).replace("{{relativedepth}}","0").replace("{{toptitle}}","Index page").replace("{{title}}","Index page").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
+        .replace("{{classtreefolderpath}}",args.prefixnsshort + "_classtree.js").replace("{{baseurlhtml}}", ".").replace("{{nonnslink}}",str(nonnslink)).replace("{{proprelationpath}}", "proprelations.js").replace("{{scriptfolderpath}}", args.prefixnsshort+ '_search.js').replace("{{exports}}",nongeoexports).replace("{{versionurl}}",versionurl).replace("{{version}}",version).replace("{{bibtex}}","")
     indexhtml=indexhtml.replace("{{indexpage}}","true")	
     indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"
     indexhtml+="<table class=\"description\" border=1 id=indextable><thead><tr><th>Dataset</th></tr></thead><tbody>"
