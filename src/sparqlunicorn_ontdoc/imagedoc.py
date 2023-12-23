@@ -16,9 +16,22 @@ def getImageMetadataFromURL(imgpath):
     if imgpath not in imagetoURI or "width" not in imagetoURI[imgpath]:
         imagetoURI[imgpath]={}
         try:
-            #print("Loading image for "+str(imgpath))
+            print("Loading image for "+str(imgpath))
             response = requests.get(imgpath)
             im = Image.open(BytesIO(response.content))
+            exif_data = im.getexif()
+            print(exif_data)
+            info_dict = {
+                "Filename": im.filename,
+                "Image Size": im.size,
+                "Image Height": im.height,
+                "Image Width": im.width,
+                "Image Format": im.format,
+                "Image Mode": im.mode,
+                "Image is Animated": getattr(im, "is_animated", False),
+                "Frames in Image": getattr(im, "n_frames", 1)
+            }
+            print(info_dict)
             #print(im.size)
             #print(type(im.size))
             w, h = im.size

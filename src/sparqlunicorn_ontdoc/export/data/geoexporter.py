@@ -33,6 +33,21 @@ class GeoExporter:
 
     @staticmethod
     def convertTTLToGeoJSON(g, file, subjectstorender=None,classlist=None, formatt="json"):
+        res=GeoExporter.preprocessGeometryData(g,file,subjectstorender,classlist,formatt)
+        typeToFields=res[0]
+        typeToRes=res[1]
+        for type in typeToFields:
+            f = open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
+                type) + "." + formatt, "w", encoding="utf-8")
+            resjson={"type":"FeatureCollection","features":[]}
+            for res in typeToRes[type]:
+                resjson["features"].append({"type":"Feature","properties":res,"geometry":{"type":"Point","coordinates":[]}})
+            f.write(json.dumps(resjson))
+            f.close()
+        return None
+
+    @staticmethod
+    def preprocessGeometryData(g,file,subjectstorender,classlist,formatt):
         if subjectstorender == None:
             subjectstorender = g.subjects(None, None, True)
         geoclasslist=GeoExporter.filterGeoClasses(classlist)
@@ -49,6 +64,13 @@ class GeoExporter:
             for tup in g.predicate_objects(sub):
                 res[str(tup[0])] = str(tup[1])
             typeToRes[subjectsToType[str(sub)]].append(res)
+        return [typeToFields,typeToRes]
+
+    @staticmethod
+    def convertTTLToKML(g, file, subjectstorender=None,classlist=None, formatt="json"):
+        res=GeoExporter.preprocessGeometryData(g,file,subjectstorender,classlist,formatt)
+        typeToFields=res[0]
+        typeToRes=res[1]
         for type in typeToFields:
             f = open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
                 type) + "." + formatt, "w", encoding="utf-8")

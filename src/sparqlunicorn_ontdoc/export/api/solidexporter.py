@@ -17,6 +17,8 @@ class SolidExporter:
             os.makedirs(outpath + "/profile/")
         webidprofilegraph=Graph()
         webidprofilegraph.add((URIRef(outpath+"/profile/card"), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://xmlns.com/foaf/0.1/PersonalProfileDocument")))
+        preferencesgraph=Graph()
+        preferencesgraph.serialize(destination=outpath+"/settings/prefs.ttl", format="ttl")
         publisheruri=publisher
         if not publisher.startswith("http"):
             publisheruri=deploypath+"/profile/card#"+str(publisher)
@@ -60,6 +62,10 @@ class SolidExporter:
         graph.add((URIRef(str(deploypath) + str(datasetname)),URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://www.w3.org/ns/pim/space#Storage")))
         graph.add((URIRef(str(deploypath) + str(datasetname)), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
                    Literal("Solid Storage for "+str(datasetname))))
+
+    @staticmethod
+    def createSolidDocumentIndex():
+        print("Create document index")
 
     @staticmethod
     def addSolidContainer(graph,deploypath,datasetname,collections):
