@@ -24,7 +24,7 @@
 */
 var NAVTREE =
 [
-  [ "SPARQLing Unicorn Ontology Documentation", "index.html", ]
+  [ "SPARQLing Unicorn QGIS Plugin", "index.html", ]
 ];
 
 var NAVTREEINDEX =
