@@ -3392,7 +3392,7 @@ for expo in args.exports:
         dataexports.append(expo)
 print("EXPORTS: "+str(dataexports))
 if args.templatepath!=None:
-    templatepath=os.path.abspath(os.path.dirname(__file__))+args.templatepath
+    templatepath = os.path.abspath(os.path.join(os.path.dirname(__file__), args.templatepath))
     if templatepath.startswith("http") and templatepath.endswith(".zip"):
         with urlopen(templatepath) as zipresp:
             with ZipFile(BytesIO(zipresp.read())) as zfile:
