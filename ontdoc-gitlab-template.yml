@@ -85,10 +85,6 @@ spec:
 ---
 image: ubuntu:latest
 
-
-before_script:
-
-
 pages:
   stage: deploy
   script: 
