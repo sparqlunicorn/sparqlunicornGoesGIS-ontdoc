@@ -94,10 +94,12 @@ pages:
   - git clone https://github.com/sparqlunicorn/sparqlunicornGoesGIS-ontdoc.git ontdocscript
   - cd ontdocscript 
   - git checkout "$[[inputs.version]]" || git checkout main
-  - cd ..
-  - cp ontdocscript/docgeneration.py . 
-  - cp ontdocscript/prefixes.json .
+  - cd src/sparqlunicorn_ontdoc
   - python3 docgeneration.py --input "$[[inputs.rdffilepath]]" --output "$[[inputs.docpath]]" --prefixns "$[[inputs.prefixns]]" --prefixnsshort "$[[inputs.prefixnsshort]]" --createIndexPages "$[[inputs.indexpages]]" --createCollections "$[[inputs.createcollections]]" --labellang "$[[inputs.preferredlang]]" --license "$[[inputs.license]]" --logourl "$[[inputs.logourl]]" --metadatatable "$[[inputs.metadatatable]]" --nonnspages "$[[inputs.createnonNSPages]]" --createvowl "$[[inputs.createVOWL]]" --ogcapifeatures "$[[inputs.ogcapifeatures]]" --iiif "$[[inputs.iiif]]" --ckan "$[[inputs.ckan]]" --startconcept "$[[inputs.startconcept]]" --deploypath "https://$CI_PROJECT_NAMESPACE.github.io/$CI_PROJECT_NAME" --templatepath "$[[inputs.templatedir]]" --offlinecompat "$[[inputs.offlinecompat]]" --exports "$[[inputs.exports]]" --datasettitle "$[[inputs.datasettitle]]" --publisher "$[[inputs.publisher]]" --publishingorg "$[[inputs.publishingorg]]"
+  - mv $[[inputs.docpath]] ../../../    
+  #- cp ontdocscript/docgeneration.py . 
+  #- cp ontdocscript/prefixes.json .
+  #- python3 docgeneration.py --input "$[[inputs.rdffilepath]]" --output "$[[inputs.docpath]]" --prefixns "$[[inputs.prefixns]]" --prefixnsshort "$[[inputs.prefixnsshort]]" --createIndexPages "$[[inputs.indexpages]]" --createCollections "$[[inputs.createcollections]]" --labellang "$[[inputs.preferredlang]]" --license "$[[inputs.license]]" --logourl "$[[inputs.logourl]]" --metadatatable "$[[inputs.metadatatable]]" --nonnspages "$[[inputs.createnonNSPages]]" --createvowl "$[[inputs.createVOWL]]" --ogcapifeatures "$[[inputs.ogcapifeatures]]" --iiif "$[[inputs.iiif]]" --ckan "$[[inputs.ckan]]" --startconcept "$[[inputs.startconcept]]" --deploypath "https://$CI_PROJECT_NAMESPACE.github.io/$CI_PROJECT_NAME" --templatepath "$[[inputs.templatedir]]" --offlinecompat "$[[inputs.offlinecompat]]" --exports "$[[inputs.exports]]" --datasettitle "$[[inputs.datasettitle]]" --publisher "$[[inputs.publisher]]" --publishingorg "$[[inputs.publishingorg]]"
   artifacts:
     paths:
     - "$[[inputs.docpath]]"
