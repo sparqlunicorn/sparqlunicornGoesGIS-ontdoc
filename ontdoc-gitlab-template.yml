@@ -31,7 +31,7 @@ spec:
         default: true
         type: boolean
     templatedir:
-        default: ontdocscript/resources/html/
+        default: resources/html/
         type: string
     createcollections:
         default: false
@@ -85,16 +85,15 @@ spec:
 ---
 image: ubuntu:latest
 
+
 before_script:
   - apt-get update
   - apt-get install python3 python3-pip git -y
   - pip3 install rdflib shapely pillow requests
   - git clone https://github.com/sparqlunicorn/sparqlunicornGoesGIS-ontdoc.git ontdocscript
-  - cd ontdocscript 
+  - cd ontdocscript
   - git checkout "$[[inputs.version]]" || git checkout main
   - cd ..
-  - cp ontdocscript/docgeneration.py . 
-  - cp ontdocscript/prefixes.json .
 
 pages:
   stage: deploy
