@@ -704,7 +704,7 @@ class OntDocGeneration:
                       "http://purl.org/dc/terms/issued":"year",	
                       "http://purl.org/ontology/bibo/number":"number",	
                       "http://purl.org/ontology/bibo/publisher":"publisher",
-                      "http://purl.org/dc/terms/publisher":"publishter",
+                      "http://purl.org/dc/terms/publisher":"publisher",
                       "http://purl.org/dc/terms/language":"language",                      
                       "http://purl.org/ontology/bibo/issuer": "journal",	
                       "http://purl.org/ontology/bibo/volume":"volume",	
@@ -1516,16 +1516,15 @@ class OntDocGeneration:
                         gotvalue=None
                         for observ in graph.predicate_objects(memberid, True):
                             if observ[0]==URIRef("http://www.w3.org/ns/sosa/hasSimpleResult"):
-                                xValues.append(str(observ[1]))
                                 gotvalue=str(observ[1])
                             if observ[0] == URIRef("http://www.w3.org/ns/sosa/phenomenonTime"):
-                                timeValues.append(self.resolveTimeLiterals(observ[0],observ[1],graph)["timepoint"])
-                                timeValues.append(str(observ[1]))
-                                gottime=str(observ[1])
+                                for val in graph.predicate_objects(observ[1]):
+                                    if str(val[0]) in DocConfig.timeproperties:
+                                        gottime=str(val[1])			
                             if observ[0] == URIRef("http://www.w3.org/ns/sosa/hasResult"):
                                 for val in graph.predicate_objects(observ[1]):
                                     if str(val[0]) in DocConfig.valueproperties and val[1]!=None and str(val[1])!="":
-                                        xValues.append(str(val[1]))
+                                        gotvalue=str(val[1])
                                     if str(val[0]) in DocConfig.unitproperties and val[1]!=None and str(val[1])!="":
                                         xLabel="Value ("+str(val[1])+")"
                         if gottime!=None and gotvalue!=None:
