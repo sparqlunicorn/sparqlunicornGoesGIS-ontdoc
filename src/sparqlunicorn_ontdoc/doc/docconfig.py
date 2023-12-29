@@ -13,15 +13,29 @@ class DocConfig:
         "OpenStreetMap (OSM)":{"url":"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png","default":True,"type":"tile"}
     }
 
+    lexicontypes = {"http://www.w3.org/ns/lemon/lexicog#Entry": "","http://www.w3.org/ns/lemon/ontolex#Entry": "",
+                    "http://www.w3.org/ns/lemon/lexicog#LexicalEntry": "","http://www.w3.org/ns/lemon/ontolex#LexicalEntry": "",
+                    "http://www.w3.org/ns/lemon/ontolex#Word": "","http://www.w3.org/ns/lemon/lexicog#Word": ""}
+
+    #,"http://www.w3.org/ns/lemon/ontolex#Form":""
+
     metadatanamespaces=["http://purl.org/dc/terms/","http://purl.org/dc/elements/1.1/","http://www.w3.org/ns/prov#","http://www.w3.org/ns/prov-o/","http://creativecommons.org/ns#","http://www.w3.org/ns/dcat#","http://purl.org/cerif/frapo/","http://www.lido-schema.org/"]
 
-    collectionclasses=["http://www.opengis.net/ont/geosparql#FeatureCollection","http://www.opengis.net/ont/geosparql#GeometryCollection","http://www.opengis.net/ont/geosparql#SpatialObjectCollection","http://www.w3.org/2004/02/skos/core#Collection","http://www.w3.org/2004/02/skos/core#OrderedCollection","https://www.w3.org/ns/activitystreams#Collection","https://www.w3.org/ns/activitystreams#OrderedCollection"]
+    collectionclasses = {"http://www.opengis.net/ont/geosparql#FeatureCollection": "geocollection",
+                         "http://www.w3.org/ns/lemon/lime#Lexicon": "lexicon",
+                         "http://www.w3.org/ns/sosa/ObservationCollection": "observationcollection",
+                         "http://www.opengis.net/ont/geosparql#GeometryCollection": "geocollection",
+                         "http://www.opengis.net/ont/geosparql#SpatialObjectCollection": "geocollection",
+                         "http://www.w3.org/2004/02/skos/core#Collection": "collection",
+                         "http://www.w3.org/2004/02/skos/core#OrderedCollection": "collection",
+                         "https://www.w3.org/ns/activitystreams#Collection": "collection",
+                         "https://www.w3.org/ns/activitystreams#OrderedCollection": "collection"}
 
     geoliteraltypes=["http://www.opengis.net/ont/geosparql#wktLiteral","http://www.opengis.net/ont/geosparql#gmlLiteral","http://www.opengis.net/ont/geosparql#kmlLiteral","http://www.opengis.net/ont/geosparql#geoJSONLiteral","http://www.opengis.net/ont/geosparql#dggsLiteral"]
 
-    timeproperties=["http://www.w3.org/2006/time#inXSDDateTime","http://www.w3.org/2006/time#inXSDDate","http://www.w3.org/2006/time#inXSDDateTimeStamp","http://www.w3.org/2006/time#inXSDgYear","http://www.w3.org/2006/time#inXSDgYearMonth"]
+    timeproperties=["http://www.cidoc-crm.org/cidoc-crm/P79_beginning_is_qualified_by","http://www.cidoc-crm.org/cidoc-crm/P80_end_is_qualified_by","http://www.w3.org/2006/time#inXSDDateTime","http://www.w3.org/2006/time#inXSDDate","http://www.w3.org/2006/time#inXSDDateTimeStamp","http://www.w3.org/2006/time#inXSDgYear","http://www.w3.org/2006/time#inXSDgYearMonth"]
 
-    timepointerproperties=["http://www.w3.org/2006/time#hasTime", "http://www.w3.org/2006/time#hasDuration", "http://www.w3.org/2006/time#hasBeginning", "http://www.w3.org/2006/time#hasEnd", "http://www.w3.org/ns/sosa/phenomenonTime", "http://www.w3.org/ns/sosa/resultTime"]
+    timepointerproperties=["http://www.cidoc-crm.org/cidoc-crm/P4_has_time-span","http://www.w3.org/2006/time#hasTime", "http://www.w3.org/2006/time#hasDuration", "http://www.w3.org/2006/time#hasBeginning", "http://www.w3.org/2006/time#hasEnd", "http://www.w3.org/ns/sosa/phenomenonTime", "http://www.w3.org/ns/sosa/resultTime"]
 
     timeliteraltypes={"http://www.w3.org/2001/XMLSchema#gYear":"http://www.ontology-of-units-of-measure.org/resource/om-2/year",
     "http://www.w3.org/2006/time#generalYear":"http://www.w3.org/2006/time#unitYear",
@@ -33,7 +47,8 @@ class DocConfig:
 
     collectionrelationproperties={
         "http://www.w3.org/2000/01/rdf-schema#member":"ObjectProperty",
-        "http://www.w3.org/2004/02/skos/core#member":"ObjectProperty"
+        "http://www.w3.org/2004/02/skos/core#member":"ObjectProperty",
+        "http://www.w3.org/ns/lemon/lime#entry": "ObjectProperty",
     }
 
     invcollectionrelationproperties={

@@ -1,0 +1,6 @@
+
+class PageUtils:
+
+    vocabToPage={}
+
+    classtoPages={}
