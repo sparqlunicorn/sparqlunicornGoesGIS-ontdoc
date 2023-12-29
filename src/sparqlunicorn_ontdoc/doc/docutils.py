@@ -4,7 +4,7 @@ import json
 import shapely
 import traceback
 
-from docconfig import DocConfig
+from doc.docconfig import DocConfig
 
 
 class DocUtils:
