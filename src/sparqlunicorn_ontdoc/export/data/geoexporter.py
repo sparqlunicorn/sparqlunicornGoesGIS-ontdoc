@@ -3,8 +3,6 @@ import os
 
 from doc.docutils import DocUtils
 
-from src.sparqlunicorn_ontdoc.doc.docconfig import DocConfig
-
 
 class GeoExporter:
 
