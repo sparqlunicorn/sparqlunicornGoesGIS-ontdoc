@@ -1501,7 +1501,7 @@ class OntDocGeneration:
         return [postprocessing,nonnsmap]
 
     def processCollectionPages(self,pagesmap,graph,subject,f):
-        if "obvervationcollection" in pagesmap:
+        if "observationcollection" in pagesmap:
             ObservationPage().generateCollectionWidget(graph, templates, subject, f)
         if "lexicon" in pagesmap:
             LexiconPage().generateCollectionWidget(graph,templates,subject,f)
