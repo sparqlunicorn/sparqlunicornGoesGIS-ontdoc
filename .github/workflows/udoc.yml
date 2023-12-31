@@ -43,7 +43,7 @@ on:
         type: string
       templatedir:
         required: false
-        default: ontdocscript/resources/html/
+        default: ontdocscript/src/sparqlunicorn_ontdoc/resources/html/
         type: string
       createcollections:
         required: false
