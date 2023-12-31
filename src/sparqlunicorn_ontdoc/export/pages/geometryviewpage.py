@@ -52,14 +52,14 @@ class GeometryViewPage:
                 for geoinstance in graph.predicate_objects(memberid, True):
                     geojsonrep = None
                     if geoinstance != None and isinstance(geoinstance[1], Literal) and (
-                            str(geoinstance[0]) in DocUtils.geoproperties or str(
-                        geoinstance[1].datatype) in DocUtils.geoliteraltypes):
+                            str(geoinstance[0]) in DocConfig.geoproperties or str(
+                        geoinstance[1].datatype) in DocConfig.geoliteraltypes):
                         geojsonrep = DocUtils.processLiteral(str(geoinstance[1]), str(geoinstance[1].datatype), "")
                         uritotreeitem[str(subject)][-1]["type"] = "geocollection"
-                    elif geoinstance != None and str(geoinstance[0]) in DocUtils.geopointerproperties:
+                    elif geoinstance != None and str(geoinstance[0]) in DocConfig.geopointerproperties:
                         uritotreeitem[str(subject)][-1]["type"] = "featurecollection"
                         for geotup in graph.predicate_objects(geoinstance[1], True):
-                            if isinstance(geotup[1], Literal) and (str(geotup[0]) in DocUtils.geoproperties or str(
+                            if isinstance(geotup[1], Literal) and (str(geotup[0]) in DocConfig.geoproperties or str(
                                     geotup[1].datatype) in DocUtils.geoliteraltypes):
                                 geojsonrep = DocUtils.processLiteral(str(geotup[1]), str(geotup[1].datatype), "")
                     if geojsonrep != None and "coordinates" in geojsonrep and len(geojsonrep["coordinates"]) > 0:
