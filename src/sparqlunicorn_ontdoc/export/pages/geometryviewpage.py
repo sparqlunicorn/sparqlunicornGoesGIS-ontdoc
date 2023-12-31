@@ -10,7 +10,6 @@ import json
 class GeometryViewPage:
 
     def generatePageWidget(self,graph,templates,subject,f,uritotreeitem,geojsonrep,predobjmap,geocache,parameters={},onlybody=False):
-        print("PageWidget")
         if uritotreeitem != None and str(subject) in uritotreeitem:
             uritotreeitem[str(subject)][-1]["type"] = "geoinstance"
         props = predobjmap
@@ -36,7 +35,6 @@ class GeometryViewPage:
         return geocache
 
     def generateCollectionWidget(self,graph,templates,subject,f,uritotreeitem,featurecollectionspaths,parameters={"foundlabel":""}):
-        print("CollectionWidget")
         if parameters.get("foundlabel") != None and parameters.get("foundlabel") != "":
             featcoll = {"type": "FeatureCollection", "id": subject, "name": str(parameters["foundlabel"]),
                         "features": []}

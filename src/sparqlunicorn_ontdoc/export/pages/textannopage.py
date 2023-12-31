@@ -5,7 +5,6 @@ class TextAnnoPage:
     tableheader="<thead><th>Annotation</th><th>Position</th><th>Annotation Body</th></thead>"
 
     def generatePageWidget(self, textannos, f, onlybody=False):
-        print("PageWidget")
         for textanno in textannos:
             if isinstance(textanno, dict):
                 if "src" in textanno:

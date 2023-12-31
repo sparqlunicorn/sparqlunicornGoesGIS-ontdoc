@@ -4,7 +4,6 @@ from doc.docconfig import DocConfig
 class ObservationPage:
 
     def generatePageWidget(self,graph,memberid,templates,f,pageWidget=False):
-        print("PageWidget")
         gottime = None
         gotvalue = None
         xLabel=None
