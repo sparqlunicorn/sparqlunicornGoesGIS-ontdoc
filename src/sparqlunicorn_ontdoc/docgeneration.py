@@ -841,7 +841,7 @@ class OntDocGeneration:
             if pred in DocConfig.timepointerproperties:
                 timeobj=self.resolveTimeLiterals(pred,object,graph)
             if not nonns:
-                geojsonrep=self.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep,nonns)
+                geojsonrep=DocUtils.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep,nonns)
             if incollection and "<svg" in str(tup[1]):
                 foundmedia["image"][str(tup[1])]={}
             elif incollection and "http" in str(tup[1]):
