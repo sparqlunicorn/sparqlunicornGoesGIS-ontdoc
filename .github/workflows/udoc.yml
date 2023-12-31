@@ -43,7 +43,7 @@ on:
         type: string
       templatedir:
         required: false
-        default: ontdocscript/resources/html/
+        default: resources/html/
         type: string
       createcollections:
         required: false
