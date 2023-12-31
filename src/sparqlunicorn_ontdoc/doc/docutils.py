@@ -188,7 +188,7 @@ class DocUtils:
         label=""
         onelabel=DocUtils.shortenURI(str(obj))
         for tup in graph.predicate_objects(obj):
-            if str(tup[0]) in DocUtils.labelproperties:
+            if str(tup[0]) in DocConfig.labelproperties:
                 # Check for label property
                 if tup[1].language==labellang:
                     label=str(tup[1])
