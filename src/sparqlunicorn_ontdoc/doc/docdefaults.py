@@ -80,6 +80,10 @@ class DocDefaults:
       document.getElementById("mySidenav").style.width = "0";
     }
     
+    function exportChartJS(){
+        saveTextAsFile(JSON.stringify({"xValues":xValues,"yValues":yValues}),"json")
+    }
+    
     function exportGeoJSON(){
         if(typeof(feature) !== "undefined"){
             saveTextAsFile(JSON.stringify(feature),"geojson")
