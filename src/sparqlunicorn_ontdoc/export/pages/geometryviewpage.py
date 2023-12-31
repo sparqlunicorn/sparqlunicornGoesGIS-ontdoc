@@ -60,7 +60,7 @@ class GeometryViewPage:
                         uritotreeitem[str(subject)][-1]["type"] = "featurecollection"
                         for geotup in graph.predicate_objects(geoinstance[1], True):
                             if isinstance(geotup[1], Literal) and (str(geotup[0]) in DocConfig.geoproperties or str(
-                                    geotup[1].datatype) in DocUtils.geoliteraltypes):
+                                    geotup[1].datatype) in DocConfig.geoliteraltypes):
                                 geojsonrep = DocUtils.processLiteral(str(geotup[1]), str(geotup[1].datatype), "")
                     if geojsonrep != None and "coordinates" in geojsonrep and len(geojsonrep["coordinates"]) > 0:
                         if uritotreeitem != None and str(memberid) in uritotreeitem:
