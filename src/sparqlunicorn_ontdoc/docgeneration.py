@@ -31,8 +31,6 @@ from export.api.ogcapifeaturesexporter import OGCAPIFeaturesExporter
 from export.api.ckanexporter import CKANExporter
 from export.api.solidexporter import SolidExporter
 
-import shapely.wkt
-import shapely.geometry
 import urllib.parse
 import argparse
 import re
@@ -43,11 +41,7 @@ import pkgutil
 
 listthreshold=5
 
-templatepath=""
-if os.path.exists("ontdocscript"):
-    templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "ontdocscript/resources/html/"))
-else:
-    templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
+templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
 
 featurecollectionspaths={}
 iiifmanifestpaths={"default":[]}
