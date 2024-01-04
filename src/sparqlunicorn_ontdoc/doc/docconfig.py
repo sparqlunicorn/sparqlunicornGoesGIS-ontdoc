@@ -30,6 +30,7 @@ class DocConfig:
     collectionclasses = {
                          "http://www.w3.org/2006/vcard/ns#Group":"personcollection",
                          "http://purl.org/ontology/bibo/Collection":"bibcollction",
+                         "http://www.w3.org/ns/dcat#Catalog":"datasetcollection",
                          "http://www.opengis.net/ont/geosparql#FeatureCollection": "geocollection",
                          "http://www.w3.org/ns/lemon/lime#Lexicon": "lexicon",
                          "http://www.w3.org/ns/sosa/ObservationCollection": "observationcollection",
@@ -39,7 +40,7 @@ class DocConfig:
                          "http://www.w3.org/2004/02/skos/core#OrderedCollection": "collection",
                          "https://www.w3.org/ns/activitystreams#Collection": "collection",
                          "https://www.w3.org/ns/activitystreams#OrderedCollection": "collection"
-                         }
+    }
 
     geoliteraltypes=["http://www.opengis.net/ont/geosparql#wktLiteral","http://www.opengis.net/ont/geosparql#gmlLiteral","http://www.opengis.net/ont/geosparql#kmlLiteral","http://www.opengis.net/ont/geosparql#geoJSONLiteral","http://www.opengis.net/ont/geosparql#dggsLiteral"]
 

@@ -6,9 +6,11 @@ class PersonPage:
     vcardprops=["http://www.w3.org/2006/vcard/ns#hasGender","http://www.w3.org/2006/vcard/ns#bday","http://www.w3.org/2006/vcard/ns#hasPhoto","http://www.w3.org/2006/vcard/ns#given-name","http://www.w3.org/2006/vcard/ns#hasName","http://www.w3.org/2006/vcard/ns#family-name"]
 
     def extractPersonMetadata(self,subject,graph):
+        thevcard={}
         for pprop in graph.predicate_objects(subject, True):
-            if str(pprop) in self.vcardprops:
-                print("Vcardprop")
+            if str(pprop[0]) in self.vcardprops:
+                thevcard[str(pprop[0])]=str(pprop[1])
+        return thevcard
 
 
 
