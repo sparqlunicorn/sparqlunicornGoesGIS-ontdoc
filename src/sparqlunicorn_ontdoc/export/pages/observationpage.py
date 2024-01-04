@@ -3,6 +3,12 @@ from doc.docconfig import DocConfig
 
 class ObservationPage:
 
+    def collectionConstraint(self):
+        return ["http://www.w3.org/ns/sosa/ObservationCollection"]
+
+    def pageWidgetConstraint(self):
+        return ["http://www.w3.org/ns/sosa/Observation"]
+
     def generatePageWidget(self,graph,memberid,templates,f,pageWidget=False):
         gottime = None
         gotvalue = None

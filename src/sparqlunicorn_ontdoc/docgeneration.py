@@ -24,7 +24,7 @@ print(os.listdir(os.getcwd()))
 from doc.docutils import DocUtils
 from doc.docdefaults import DocDefaults
 from doc.docconfig import DocConfig
-from doc.pyowl2vowl import OWL2VOWL
+from src.sparqlunicorn_ontdoc.export.data.vowlexporter import OWL2VOWL
 from export.data.exporterutils import ExporterUtils
 from export.api.iiifexporter import IIIFAPIExporter
 from export.api.ogcapifeaturesexporter import OGCAPIFeaturesExporter
@@ -36,8 +36,6 @@ import argparse
 import re
 import shutil
 import json
-import pkgutil
-
 
 listthreshold=5
 
@@ -507,7 +505,7 @@ class OntDocGeneration:
             predicates[pred]["to"] = list(predicates[pred]["to"])
             predicatecounter+=1
         if self.createVOWL:
-            OWL2VOWL().convertOWL2MiniVOWL(graph,outpath,predicates)
+            OWL2VOWL().convertOWL2MiniVOWL(graph,outpath,"minivowl_result.js",predicates)
         with open(outpath+"proprelations.js", 'w', encoding='utf-8') as f:
             f.write("var proprelations="+json.dumps(predicates))
             f.close()

@@ -7,21 +7,30 @@ class DocConfig:
 
     versionurl="https://github.com/sparqlunicorn/sparqlunicornGoesGIS-ontdoc"
 
-    bibtextypemappings={"http://purl.org/ontology/bibo/Document":"@misc","http://purl.org/ontology/bibo/Article":"@article","http://purl.org/ontology/bibo/Thesis":"@phdthesis","http://purl.org/ontology/bibo/BookSection":"@inbook","http://purl.org/ontology/bibo/Book":"@book","http://purl.org/ontology/bibo/Proceedings":"@inproceedings"}
+    bibtextypemappings={"http://purl.org/ontology/bibo/Document":"@misc","http://purl.org/ontology/bibo/Article":"@article",
+                        "http://purl.org/ontology/bibo/AcademicArticle": "@article",
+                        "http://purl.org/ontology/bibo/Thesis":"@phdthesis","http://purl.org/ontology/bibo/BookSection":"@inbook",
+                        "http://purl.org/ontology/bibo/EditedBook": "@book","http://purl.org/ontology/bibo/Report": "@report",
+                        "http://purl.org/ontology/bibo/Book":"@book","http://purl.org/ontology/bibo/Proceedings":"@inproceedings"}
 
     baselayers={
         "OpenStreetMap (OSM)":{"url":"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png","default":True,"type":"tile"}
     }
 
-    lexicontypes = {"http://www.w3.org/ns/lemon/lexicog#Entry": "","http://www.w3.org/ns/lemon/ontolex#Entry": "",
-                    "http://www.w3.org/ns/lemon/lexicog#LexicalEntry": "","http://www.w3.org/ns/lemon/ontolex#LexicalEntry": "",
-                    "http://www.w3.org/ns/lemon/ontolex#Word": "","http://www.w3.org/ns/lemon/lexicog#Word": ""}
+    lexicontypes = {
+        "http://www.w3.org/ns/lemon/lexicog#Entry": "","http://www.w3.org/ns/lemon/ontolex#Entry": "",
+        "http://www.w3.org/ns/lemon/lexicog#LexicalEntry": "","http://www.w3.org/ns/lemon/ontolex#LexicalEntry": "",
+        "http://www.w3.org/ns/lemon/ontolex#Word": "","http://www.w3.org/ns/lemon/lexicog#Word": ""
+    }
 
     #,"http://www.w3.org/ns/lemon/ontolex#Form":""
 
     metadatanamespaces=["http://purl.org/dc/terms/","http://purl.org/dc/elements/1.1/","http://www.w3.org/ns/prov#","http://www.w3.org/ns/prov-o/","http://creativecommons.org/ns#","http://www.w3.org/ns/dcat#","http://purl.org/cerif/frapo/","http://www.lido-schema.org/"]
 
-    collectionclasses = {"http://www.opengis.net/ont/geosparql#FeatureCollection": "geocollection",
+    collectionclasses = {
+                         "http://www.w3.org/2006/vcard/ns#Group":"personcollection",
+                         "http://purl.org/ontology/bibo/Collection":"bibcollction",
+                         "http://www.opengis.net/ont/geosparql#FeatureCollection": "geocollection",
                          "http://www.w3.org/ns/lemon/lime#Lexicon": "lexicon",
                          "http://www.w3.org/ns/sosa/ObservationCollection": "observationcollection",
                          "http://www.opengis.net/ont/geosparql#GeometryCollection": "geocollection",
@@ -29,7 +38,8 @@ class DocConfig:
                          "http://www.w3.org/2004/02/skos/core#Collection": "collection",
                          "http://www.w3.org/2004/02/skos/core#OrderedCollection": "collection",
                          "https://www.w3.org/ns/activitystreams#Collection": "collection",
-                         "https://www.w3.org/ns/activitystreams#OrderedCollection": "collection"}
+                         "https://www.w3.org/ns/activitystreams#OrderedCollection": "collection"
+                         }
 
     geoliteraltypes=["http://www.opengis.net/ont/geosparql#wktLiteral","http://www.opengis.net/ont/geosparql#gmlLiteral","http://www.opengis.net/ont/geosparql#kmlLiteral","http://www.opengis.net/ont/geosparql#geoJSONLiteral","http://www.opengis.net/ont/geosparql#dggsLiteral"]
 
@@ -37,7 +47,8 @@ class DocConfig:
 
     timepointerproperties=["http://www.cidoc-crm.org/cidoc-crm/P4_has_time-span","http://www.w3.org/2006/time#hasTime", "http://www.w3.org/2006/time#hasDuration", "http://www.w3.org/2006/time#hasBeginning", "http://www.w3.org/2006/time#hasEnd", "http://www.w3.org/ns/sosa/phenomenonTime", "http://www.w3.org/ns/sosa/resultTime"]
 
-    timeliteraltypes={"http://www.w3.org/2001/XMLSchema#gYear":"http://www.ontology-of-units-of-measure.org/resource/om-2/year",
+    timeliteraltypes={
+    "http://www.w3.org/2001/XMLSchema#gYear":"http://www.ontology-of-units-of-measure.org/resource/om-2/year",
     "http://www.w3.org/2006/time#generalYear":"http://www.w3.org/2006/time#unitYear",
     "http://www.w3.org/2001/XMLSchema#gMonth":"http://www.ontology-of-units-of-measure.org/resource/om-2/month",
     "http://www.w3.org/TR/owl-time#generalMonth":"http://www.w3.org/2006/time#unitMonth",

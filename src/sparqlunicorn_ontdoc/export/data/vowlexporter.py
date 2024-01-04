@@ -32,7 +32,7 @@ class OWL2VOWL():
     #        for tuppred in g.objects(subj,URIRef(typeproperty)):
     #            subjclasses.add(tuppred)
 
-    def convertOWL2MiniVOWL(self,g,outpath,predicates=[],typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",labelproperty="http://www.w3.org/2000/01/rdf-schema#label"):
+    def convertOWL2MiniVOWL(self,g,outpath,outfile=None,predicates=[],typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",labelproperty="http://www.w3.org/2000/01/rdf-schema#label"):
         minivowlresult={"info": [{
             "description": "Created with pyowl2vowl (version 0.1) as part of the SPARQLing Unicorn QGIS Plugin"}],
             "nodes": [],"links": []}
@@ -68,11 +68,13 @@ class OWL2VOWL():
                         links.append({"source":nodeuriToId[node],"target":nodeuriToId[str(predobj[1])],"valueTo": self.getIRILabel(str(predobj[0])),"propertyTo":("class" if isinstance(predobj[1],URIRef) else "datatype"), "uriTo":(str(predobj[1]) if isinstance(predobj[1],URIRef) else predobj[1].datatype)})
         minivowlresult["nodes"]=nodes
         minivowlresult["links"] = links
-        f = open(outpath + "/minivowl_result.js", "w")
-        f.write("var minivowlresult=" + json.dumps(minivowlresult, indent=1))
-        f.close()
+        if outfile!=None:
+            f = open(outpath + "/"+str(outfile), "w")
+            f.write("var minivowlresult=" + json.dumps(minivowlresult, indent=1))
+            f.close()
+        return minivowlresult
 
-    def convertOWL2VOWL(self,g,outpath,typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",labelproperty="http://www.w3.org/2000/01/rdf-schema#label"):
+    def convertOWL2VOWL(self,g,outpath,outfile=None,typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",labelproperty="http://www.w3.org/2000/01/rdf-schema#label"):
         vowlresult = {"_comment": "Created with pyowl2vowl (version 0.1) as part of the SPARQLing Unicorn QGIS Plugin",
                       "header": {"prefixList": {}, "baseIris": [], "languages": []}, "namespace": [], "class": [],
                       "classAttribute": [], "property": [], "propertyAttribute": []}
@@ -155,6 +157,8 @@ class OWL2VOWL():
         vowlresult["propertyAttribute"]=propAttributes
         vowlresult["class"]=classes
         vowlresult["classAttribute"]=classAttributes
-        f=open(outpath+"/vowl_result.js","w")
-        f.write("var vowlresult="+json.dumps(vowlresult,indent=1))
-        f.close()
+        if outfile!=None:
+            f=open(outpath+"/"+str(outfile),"w")
+            f.write("var vowlresult="+json.dumps(vowlresult,indent=1))
+            f.close()
+        return vowlresult

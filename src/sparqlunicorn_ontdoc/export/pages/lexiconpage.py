@@ -1,10 +1,18 @@
 from rdflib import URIRef, Literal
 from doc.docutils import DocUtils
+from doc.docconfig import DocConfig
 
 
 class LexiconPage:
 
     tableheader="<thead><th>Lemma</th><th>Lexical Category</th><th>Language</th><th>Forms</th><th>Senses</th></thead>"
+
+    def collectionConstraint(self):
+        return ["http://www.w3.org/ns/lemon/lime#Lexicon"]
+
+    def pageWidgetConstraint(self):
+        return DocConfig.lexicontypes
+
 
     def extractLexEntry(self,graph,subject):
         forms = []
