@@ -1,14 +1,19 @@
-from src.sparqlunicorn_ontdoc.doc.docconfig import DocConfig
-
+from doc.docconfig import DocConfig
+from doc.docutils import DocUtils
 
 class PersonPage:
 
     vcardprops={
         "http://xmlns.com/foaf/0.1/birthday":"BDAY",
-        "http://xmlns.com/foaf/0.1/family_name":"N",
+        "http://xmlns.com/foaf/0.1/familyName":"N",
+        "http://xmlns.com/foaf/0.1/family_name": "N",
+        "http://xmlns.com/foaf/0.1/firstName": "N",
+        "http://xmlns.com/foaf/0.1/lastName": "N",
         "http://xmlns.com/foaf/0.1/fullName":"FN",
-        "http://xmlns.com/foaf/0.1/givenname":"N",
+        "http://xmlns.com/foaf/0.1/givenname": "N",
+        "http://xmlns.com/foaf/0.1/givenName":"N",
         "http://xmlns.com/foaf/0.1/homePage":"URL",
+        "http://xmlns.com/foaf/0.1/gender": "GENDER",
         "http://xmlns.com/foaf/0.1/img":"PHOTO",
         "http://xmlns.com/foaf/0.1/logo":"LOGO",
         "http://xmlns.com/foaf/0.1/mbox":"EMAIL",
@@ -71,15 +76,22 @@ class PersonPage:
         return thevcard
 
     def vcardToHTML(self,vcard):
-        result=""
-
+        result="<table id=\"person\" border=\"1\"><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>"
+        for prop in vcard:
+            result+="<tr><td><a href=\""+str(prop)+"\">"+str(DocUtils.shortenURI(prop))+"</a></td>"
+            if "http" in vcard[prop]:
+                result+="<td><a href=\""+str(vcard[prop])+"\">"+str(DocUtils.shortenURI(vcard[prop]))+"</a></td></tr>"
+            else:
+                result += "<td>" + str(vcard[prop]) + "</td></tr>"
+        result+="</tbody></table><script>$('#person').DataTable();</script>"
         return result
 
-
-    def collectionConstraint(self):
+    @staticmethod
+    def collectionConstraint():
         return DocConfig.collectionclasses
 
-    def pageWidgetConstraint(self):
+    @staticmethod
+    def pageWidgetConstraint():
         return ["http://xmlns.com/foaf/0.1/Person","http://www.w3.org/2006/vcard/ns#Individual","http://schema.org/Person","http://dbpedia.org/ontology/Person","http://www.wikidata.org/entity/Q5"]
 
     def generatePageWidget(self, graph, subject, templates, f=None, pageWidget=False):

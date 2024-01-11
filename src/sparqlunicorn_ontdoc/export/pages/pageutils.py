@@ -24,7 +24,7 @@ class PageUtils:
                     for const in self.pageTypes[type].collectionConstraint():
                         self.collectionConstraints[const]=self.pageTypes[type]
                     for const in self.pageTypes[type].pageWidgetConstraint():
-                        self.collectionConstraints[const]=self.pageTypes[type]
+                        self.widgetConstraints[const]=self.pageTypes[type]
             except:
                 print("PageType Constraints parsing failed")
 

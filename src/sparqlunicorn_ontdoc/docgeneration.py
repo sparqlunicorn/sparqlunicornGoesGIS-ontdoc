@@ -14,7 +14,7 @@ from export.pages.bibpage import BibPage
 from export.pages.lexiconpage import LexiconPage
 from export.pages.observationpage import ObservationPage
 from export.pages.geometryviewpage import GeometryViewPage
-
+from export.pages.personpage import PersonPage
 
 if os.path.exists("ontdocscript"):
     sys.path.insert(0, os.path.dirname(os.path.realpath(__file__))+"/ontdocscript/src/sparqlunicorn_ontdoc/")
@@ -1351,6 +1351,8 @@ class OntDocGeneration:
                 for type in curtypes:
                     if type in DocConfig.lexicontypes:
                         LexiconPage().generatePageWidget(graph, subject, f, {}, False)
+                    if type in PersonPage.pageWidgetConstraint():
+                        PersonPage().generatePageWidget(graph, subject, templates, f, True)
                 self.processCollectionPages(collections,graph,subject,f)
                 if geojsonrep != None and "geocollection" not in collections:
                     self.geocache = GeometryViewPage().generatePageWidget(graph, templates, subject, f, uritotreeitem,
