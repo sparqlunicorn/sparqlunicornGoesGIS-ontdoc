@@ -46,6 +46,22 @@ class GeoExporter:
 
 
     @staticmethod
+    def convertTTLToGML(g, file, subjectstorender=None,classlist=None, formatt="json"):
+        res=GeoExporter.preprocessGeometryData(g,file,subjectstorender,classlist,formatt)
+        typeToFields=res[0]
+        typeToRes=res[1]
+        typeToGeom=res[2]
+        for type in typeToFields:
+            f = open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
+                type) + "." + formatt, "w", encoding="utf-8")
+            resjson={"type":"FeatureCollection","features":[]}
+            for res in typeToRes[type]:
+                resjson["features"].append({"type":"Feature","properties":res,"geometry":typeToGeom[type]})
+            f.write(json.dumps(resjson))
+            f.close()
+        return None
+
+    @staticmethod
     def convertTTLToGeoJSON(g, file, subjectstorender=None,classlist=None, formatt="json"):
         res=GeoExporter.preprocessGeometryData(g,file,subjectstorender,classlist,formatt)
         typeToFields=res[0]

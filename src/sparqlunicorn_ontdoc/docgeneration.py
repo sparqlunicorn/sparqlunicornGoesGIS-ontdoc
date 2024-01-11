@@ -10,9 +10,11 @@ import os
 import sys
 import traceback
 
+from export.pages.bibpage import BibPage
 from export.pages.lexiconpage import LexiconPage
 from export.pages.observationpage import ObservationPage
 from export.pages.geometryviewpage import GeometryViewPage
+
 
 if os.path.exists("ontdocscript"):
     sys.path.insert(0, os.path.dirname(os.path.realpath(__file__))+"/ontdocscript/src/sparqlunicorn_ontdoc/")
@@ -24,7 +26,8 @@ print(os.listdir(os.getcwd()))
 from doc.docutils import DocUtils
 from doc.docdefaults import DocDefaults
 from doc.docconfig import DocConfig
-from src.sparqlunicorn_ontdoc.export.data.vowlexporter import OWL2VOWL
+from doc.literalutils import LiteralUtils
+from export.data.vowlexporter import OWL2VOWL
 from export.data.exporterutils import ExporterUtils
 from export.api.iiifexporter import IIIFAPIExporter
 from export.api.ogcapifeaturesexporter import OGCAPIFeaturesExporter
@@ -378,7 +381,6 @@ class OntDocGeneration:
         self.checkGeoInstanceAssignment(uritotreeitem)
         classlist=self.assignGeoClassesToTree(tree)
         if self.generatePagesForNonNS:
-            #self.detectURIsConnectedToSubjects(subjectstorender, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace)
             labeltouri=self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace,uritotreeitem,labeltouri)
         with open(outpath + corpusid + "_classtree.js", 'w', encoding='utf-8') as f:
             f.write("var tree=" + json.dumps(tree, indent=2))
@@ -671,73 +673,6 @@ class OntDocGeneration:
                         for item in uritotreeitem[uri]:
                             item["type"]=thetype
 
-
-    def resolveBibtexReference(self,predobjs,item,graph):	
-        bibtexmappings={"http://purl.org/dc/elements/1.1/title":"title",
-                      "http://purl.org/dc/terms/title":"title",	        
-                      "http://purl.org/dc/terms/created":"year",	
-                      "http://purl.org/dc/terms/issued":"year",	
-                      "http://purl.org/ontology/bibo/number":"number",	
-                      "http://purl.org/ontology/bibo/publisher":"publisher",
-                      "http://purl.org/dc/terms/publisher":"publisher",
-                      "http://purl.org/dc/terms/language":"language",                      
-                      "http://purl.org/ontology/bibo/issuer": "journal",	
-                      "http://purl.org/ontology/bibo/volume":"volume",	
-                      "http://purl.org/ontology/bibo/doi": "doi",	
-                      "http://purl.org/ontology/bibo/eissn": "eissn",	
-                      "http://purl.org/ontology/bibo/eprint": "eprint",	
-                      "http://purl.org/ontology/bibo/url": "url",	
-                      "http://purl.org/ontology/bibo/issn": "issn",	
-                      "http://purl.org/ontology/bibo/isbn": "isbn",	
-                      "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":"type"	
-                      }	
-        bibtexitem={"type":"@misc"}	
-        for tup in predobjs:	
-            if str(tup[0])=="http://purl.org/dc/elements/1.1/creator" or str(tup[0])=="http://purl.org/dc/terms/creator":	
-                if "author" not in bibtexitem:	
-                    bibtexitem["author"]=[]	
-                if isinstance(tup[1],URIRef):	
-                    bibtexitem["author"].append(DocUtils.getLabelForObject(tup[1],graph))
-                else:	
-                    bibtexitem["author"].append(str(tup[1]))	
-            elif str(tup[0]) == "http://purl.org/ontology/bibo/pageStart":
-                if "pages" not in bibtexitem:	
-                    bibtexitem["pages"]={}	
-                bibtexitem["pages"]["start"]=str(tup[1])	
-            elif str(tup[0]) == "http://purl.org/ontology/bibo/pageEnd":
-                if "pages" not in bibtexitem:	
-                    bibtexitem["pages"]={}	
-                bibtexitem["pages"]["end"]=str(tup[1])	
-            elif str(tup[0]) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" and str(tup[1]) in DocConfig.bibtextypemappings:
-                bibtexitem["type"]=DocConfig.bibtextypemappings[str(tup[1])]
-            elif str(tup[0]) in bibtexmappings:	
-                if isinstance(tup[1],URIRef):	
-                    bibtexitem[bibtexmappings[str(tup[0])]]=DocUtils.getLabelForObject(tup[1],graph)
-                else:	
-                    bibtexitem[bibtexmappings[str(tup[0])]]=str(tup[1])          	
-        res=bibtexitem["type"]+"{"+DocUtils.shortenURI(item)+",\n"	
-        for bibpart in sorted(bibtexitem):
-            if bibpart=="type":
-                continue
-            res += bibpart + "={"
-            if bibpart=="author":
-                first=True	
-                for author in bibtexitem["author"]:	
-                    if first:	
-                        res+=author+" "	
-                        first=False	
-                    else:	
-                        res+="and "+author+" "	
-                res=res[0:-1]
-                res+="},\n"	
-            elif bibpart=="pages":	
-                res+=bibtexitem[bibpart]["start"]+"--"+bibtexitem[bibpart]["end"]+"},\n"
-            else:	
-                res+=str(bibtexitem[bibpart])+"},\n"
-        res=res[0:-2]
-        res+="\n}"
-        return res
-
     def resolveTimeObject(self,pred,obj,graph,timeobj):
         if str(pred)=="http://www.w3.org/2006/time#hasBeginning":
             for tobj2 in graph.predicate_objects(obj):
@@ -829,11 +764,11 @@ class OntDocGeneration:
                 annosource = str(tup[1])
                 print("Found annosource "+str(tup[1])+" from "+str(object)+" Imageannos: "+str(len(imageannos)))
             if (pred == "http://purl.org/dc/terms/isReferencedBy" or pred=="http://purl.org/spar/cito/hasCitingEntity") and tup[0] == URIRef(self.typeproperty) and ("http://purl.org/ontology/bibo/" in str(tup[1])):	
-                bibtex=self.resolveBibtexReference(graph.predicate_objects(object),object,graph)
+                bibtex=BibPage.resolveBibtexReference(graph.predicate_objects(object),object,graph)
             if pred in DocConfig.timepointerproperties:
                 timeobj=self.resolveTimeLiterals(pred,object,graph)
             if not nonns:
-                geojsonrep=DocUtils.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep,nonns)
+                geojsonrep=LiteralUtils.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep,nonns)
             if incollection and "<svg" in str(tup[1]):
                 foundmedia["image"][str(tup[1])]={}
             elif incollection and "http" in str(tup[1]):
@@ -978,7 +913,7 @@ class OntDocGeneration:
                         object).replace("<", "&lt").replace(">", "&gt;").replace("\"", "'") + "\" datatype=\"" + str(
                         object.datatype) + "\">" + self.truncateValue(objstring) + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"" + str(
                         object.datatype) + "\">" + DocUtils.shortenURI(str(object.datatype)) + "</a>)</small></span>"
-                geojsonrep=DocUtils.resolveGeoLiterals(URIRef(pred), object, graph, geojsonrep,nonns,subject)
+                geojsonrep=LiteralUtils.resolveGeoLiterals(URIRef(pred), object, graph, geojsonrep,nonns,subject)
             else:
                 if object.language != None:
                     tablecontents += "<span property=\"" + str(pred) + "\" content=\"" + str(object).replace("<", "&lt").replace(">", "&gt;").replace("\"","'") + "\" datatype=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\" xml:lang=\"" + str(object.language) + "\">" + self.truncateValue(str(object).replace("<", "&lt").replace(">", "&gt;")) + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\">rdf:langString</a>) (<a href=\"http://www.lexvo.org/page/iso639-1/"+str(object.language)+"\" target=\"_blank\">iso6391:" + str(object.language) + "</a>)</small></span>"
@@ -1060,42 +995,6 @@ class OntDocGeneration:
     def polygonToPath(self,svg):
         svg=svg.replace("<polygon","<path").replace("points=\"","d=\"M").replace("\"></polygon>"," Z\"></polygon>")
         return svg.replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">")            
-            
-    def detectURIsConnectedToSubjects(self,subjectstorender,graph,prefixnamespace,corpusid,outpath,curlicense,baseurl):
-        uristorender={}
-        uritolabel={}
-        for sub in subjectstorender:
-            onelabel=""
-            label=None
-            added=[]
-            for tup in graph.predicate_objects(sub):
-                if str(tup[0]) in DocConfig.labelproperties:
-                    if tup[1].language == self.labellang:
-                        label = str(tup[1])
-                        break
-                    onelabel = str(tup[1])
-                if isinstance(tup[1],URIRef) and prefixnamespace not in str(tup[1]) and "http://www.w3.org/1999/02/22-rdf-syntax-ns#" not in str(tup[1]):
-                    if str(tup[1]) not in uristorender:
-                        uristorender[str(tup[1])]={}
-                    if str(tup[0]) not in uristorender[str(tup[1])]:
-                        uristorender[str(tup[1])][str(tup[0])]=[]
-                    for objtup in graph.predicate_objects(tup[1]):
-                        if str(objtup[0]) in DocConfig.labelproperties:
-                            uritolabel[str(tup[1])] = str(objtup[1])
-                    toadd={"sub":sub,"label":onelabel}
-                    added.append(toadd)
-                    uristorender[str(tup[1])][str(tup[0])].append(toadd)
-            for item in added:
-                if label!=None:
-                    item["label"]=label
-                else:
-                    item["label"]=onelabel
-        #print(uristorender)
-        for uri in uristorender:
-            thelabel=""
-            if uri in uritolabel:
-                thelabel=uritolabel[uri]
-            self.createHTML(outpath+"nonns_"+DocUtils.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri)), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, subjectstorender, Graph(),None,True,thelabel)
 
     def getAccessFromBaseURL(self,baseurl,savepath):
         return savepath.replace(baseurl, "")
@@ -1191,7 +1090,7 @@ class OntDocGeneration:
                             collections.add(DocConfig.collectionclasses[str(tp)])
                         if str(tp) in DocConfig.bibtextypemappings:
                             itembibtex = "<details><summary>[BIBTEX]</summary><pre>" + str(
-                                self.resolveBibtexReference(graph.predicate_objects(subject), subject,
+                                BibPage.resolveBibtexReference(graph.predicate_objects(subject), subject,
                                                             graph)) + "</pre></details>"
                 thetable=self.formatPredicate(tup, baseurl, checkdepth, thetable, graph,inverse)
                 if str(tup) in DocConfig.labelproperties:
@@ -1337,29 +1236,25 @@ class OntDocGeneration:
                     print(traceback.format_exc())
         try:
             with open(completesavepath, 'w', encoding='utf-8') as f:
-                rellink=DocUtils.generateRelativeLinkFromGivenDepth(baseurl,checkdepth,searchfilename,False)
-                rellink2 = DocUtils.generateRelativeLinkFromGivenDepth(baseurl,checkdepth,classtreename,False)
-                rellink3 = DocUtils.generateRelativeLinkFromGivenDepth(baseurl,checkdepth,"style.css",False)
-                rellink4 = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "startscripts.js", False)
-                rellink5 = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "proprelations.js", False)
+                searchfilelink=DocUtils.generateRelativeLinkFromGivenDepth(baseurl,checkdepth,searchfilename,False)
+                classtreelink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl,checkdepth,classtreename,False)
+                csslink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl,checkdepth,"style.css",False)
+                startscriptlink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "startscripts.js", False)
+                proprelationslink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "proprelations.js", False)
                 epsgdefslink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "epsgdefs.js", False)
-                rellink7 = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "vowl_result.js", False)
+                vowlresultlink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "vowl_result.js", False)
                 if geojsonrep != None:
                     myexports=templates["geoexports"]
                 else:
                     myexports=templates["nongeoexports"]
                 relpath=DocUtils.generateRelativePathFromGivenDepth(checkdepth)
-                if foundlabel != "":
-                    f.write(self.replaceStandardVariables(templates["htmltemplate"],subject,checkdepth,"false").replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{baseurl}}",baseurl).replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{toptitle}}", foundlabel).replace(
-                        "{{startscriptpath}}", rellink4).replace("{{bibtex}}",itembibtex).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{title}}",
-                                                                                                    "<a href=\"" + str(subject) + "\">" + str(foundlabel) + "</a>").replace(
-                        "{{baseurl}}", baseurl).replace("{{tablecontent}}", tablecontents).replace("{{description}}","").replace(
-                        "{{scriptfolderpath}}", rellink).replace("{{classtreefolderpath}}", rellink2).replace("{{exports}}",myexports).replace("{{nonnslink}}",str(nonnslink)).replace("{{subjectencoded}}",urllib.parse.quote(str(subject))))
-                else:
-                    f.write(self.replaceStandardVariables(templates["htmltemplate"],subject,checkdepth,"false").replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{baseurl}}",baseurl).replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{indexpage}}","false").replace("{{toptitle}}", DocUtils.shortenURI(str(subject))).replace(
-                        "{{startscriptpath}}", rellink4).replace("{{bibtex}}",itembibtex).replace("{{vowlpath}}", rellink7).replace("{{proprelationpath}}", rellink5).replace("{{stylepath}}", rellink3).replace("{{title}}","<a href=\"" + str(subject) + "\">" + DocUtils.shortenURI(str(subject)) + "</a>").replace(
-                        "{{baseurl}}", baseurl).replace("{{description}}","").replace(
-                        "{{scriptfolderpath}}", rellink).replace("{{classtreefolderpath}}", rellink2).replace("{{exports}}",myexports).replace("{{nonnslink}}",str(nonnslink)).replace("{{subjectencoded}}",urllib.parse.quote(str(subject))))
+                if foundlabel==None or foundlabel=="":
+                    foundlabel=DocUtils.shortenURI(str(subject))
+                f.write(self.replaceStandardVariables(templates["htmltemplate"],subject,checkdepth,"false").replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{baseurl}}",baseurl).replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{toptitle}}", foundlabel).replace(
+                    "{{startscriptpath}}", startscriptlink).replace("{{bibtex}}",itembibtex).replace("{{vowlpath}}", vowlresultlink).replace("{{proprelationpath}}", proprelationslink).replace("{{stylepath}}", csslink).replace("{{title}}",
+                                                                                                "<a href=\"" + str(subject) + "\">" + str(foundlabel) + "</a>").replace(
+                    "{{baseurl}}", baseurl).replace("{{tablecontent}}", tablecontents).replace("{{description}}","").replace(
+                    "{{scriptfolderpath}}", searchfilelink).replace("{{classtreefolderpath}}", classtreelink).replace("{{exports}}",myexports).replace("{{nonnslink}}",str(nonnslink)).replace("{{subjectencoded}}",urllib.parse.quote(str(subject))))
                 for comm in comment:
                     f.write(templates["htmlcommenttemplate"].replace("{{comment}}", DocUtils.shortenURI(comm) + ":" + comment[comm]))
                 for fval in foundvals:

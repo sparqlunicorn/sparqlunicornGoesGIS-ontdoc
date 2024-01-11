@@ -10,6 +10,7 @@ class BibPage:
     def collectionConstraint(self):
         return ["http://purl.org/ontology/bibo/Collection"]
 
+    @staticmethod
     def resolveBibtexReference(self, predobjs, item, graph):
         bibtexmappings = {"http://purl.org/dc/elements/1.1/title": "title",
                           "http://purl.org/dc/terms/title": "title",
@@ -80,7 +81,7 @@ class BibPage:
 
     def generatePageWidget(self,graph,memberid,templates,f,pageWidget=False):
         print("PageWidget")
-        self.resolveBibtexReference(memberid,graph)
+        BibPage.resolveBibtexReference(memberid,graph)
 
     def generateCollectionWidget(self, graph,templates, subject, f):
         print("CollectionWidget")
