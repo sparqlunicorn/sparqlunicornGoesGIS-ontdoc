@@ -95,7 +95,6 @@ class PersonPage:
         return ["http://xmlns.com/foaf/0.1/Person","http://www.w3.org/2006/vcard/ns#Individual","http://schema.org/Person","http://dbpedia.org/ontology/Person","http://www.wikidata.org/entity/Q5"]
 
     def generatePageWidget(self, graph, subject, templates, f=None, pageWidget=False):
-        print("PageWidget")
         vcard=self.extractPersonMetadata(subject,graph)
         if pageWidget and f!=None:
             f.write(self.vcardToHTML(vcard))
@@ -104,7 +103,6 @@ class PersonPage:
 
 
     def generateCollectionWidget(self, graph, templates, subject, f=None):
-        print("CollectionWidget")
         vcards=[]
         for person in graph.predicate_objects(subject):
             if str(person[0]) in DocConfig.collectionrelationproperties:

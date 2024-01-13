@@ -80,11 +80,9 @@ class BibPage:
         return res
 
     def generatePageWidget(self,graph,memberid,templates,f,pageWidget=False):
-        print("PageWidget")
         BibPage.resolveBibtexReference(memberid,graph)
 
     def generateCollectionWidget(self, graph,templates, subject, f):
-        print("CollectionWidget")
         for bibentry in graph.objects(subject, URIRef("http://www.w3.org/ns/lemon/lime#entry"), True):
             self.generatePageWidget(graph,bibentry,f,True)
 

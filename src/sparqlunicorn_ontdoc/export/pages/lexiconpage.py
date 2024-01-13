@@ -45,7 +45,6 @@ class LexiconPage:
         return {"lemma":lemma,"lexcat":lexcat,"language":language,"forms":forms,"senses":senses}
 
     def generatePageWidget(self,graph,subject,f,onlybody=False):
-        print("PageWidget")
         lexentry=self.extractLexEntry(graph,subject)
         if not onlybody:
             f.write("<table id=\"lexicon\">"+self.tableheader+"<tbody>")

@@ -8,14 +8,12 @@ from collections import OrderedDict
 class CIDOCOverviewPage:
 
     def pageWidgetConstraint(self):
-        print("PageWidgetConstraint")
         return ["http://www.cidoc-crm.org/cidoc-crm/E22_Man-Made_Object","http://www.cidoc-crm.org/cidoc-crm/Thing"]
 
     def collectionConstraint(self):
         return DocConfig.collectionclasses
 
     def generatePageWidget(self,graph,subject,f,onlybody=False):
-        print("PageWidget")
         resmap=OrderedDict()
         resmap["P2_has_type"]=None
         resmap["P43_has_dimension"]=None
