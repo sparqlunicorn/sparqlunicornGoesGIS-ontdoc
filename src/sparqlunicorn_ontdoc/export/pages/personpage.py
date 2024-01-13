@@ -1,5 +1,6 @@
 from doc.docconfig import DocConfig
 from doc.docutils import DocUtils
+import json
 
 class PersonPage:
 
@@ -83,7 +84,7 @@ class PersonPage:
                 result+="<td><a href=\""+str(vcard[prop]["value"])+"\" class=\""+str(prop)+"\">"+str(DocUtils.shortenURI(vcard[prop]["value"]))+"</a></td></tr>"
             else:
                 result += "<td class=\""+str(prop)+"\">" + str(vcard[prop]["value"]) + "</td></tr>"
-        result+="</tbody></table><script>$('#person').DataTable();</script><button id=\"vcard\">Download VCard</button>"
+        result+="</tbody></table><script>vcard="+json.dumps(vcard)+"; $('#person').DataTable();</script><button id=\"vcard\" onclick=\"saveTextAsFile(JSON.stringify(vcard),'json')\">Download VCard</button>"
         return result
 
     @staticmethod

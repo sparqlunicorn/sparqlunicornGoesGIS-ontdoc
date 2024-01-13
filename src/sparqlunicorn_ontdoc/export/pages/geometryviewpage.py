@@ -8,8 +8,6 @@ import shapely.geometry
 import json
 
 
-
-
 class GeometryViewPage:
 
     def generatePageWidget(self,graph,templates,subject,f,uritotreeitem,geojsonrep,predobjmap,geocache,parameters={},onlybody=False):
