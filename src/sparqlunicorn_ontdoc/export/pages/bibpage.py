@@ -11,7 +11,7 @@ class BibPage:
         return ["http://purl.org/ontology/bibo/Collection"]
 
     @staticmethod
-    def resolveBibtexReference(self, predobjs, item, graph):
+    def resolveBibtexReference(predobjs, item, graph):
         bibtexmappings = {"http://purl.org/dc/elements/1.1/title": "title",
                           "http://purl.org/dc/terms/title": "title",
                           "http://purl.org/dc/terms/created": "year",
