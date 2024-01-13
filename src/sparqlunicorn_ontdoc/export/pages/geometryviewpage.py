@@ -1,10 +1,13 @@
 from rdflib import URIRef, Literal
 from doc.docconfig import DocConfig
 from doc.docutils import DocUtils
+from doc.literalutils import LiteralUtils
 
 import shapely.wkt
 import shapely.geometry
 import json
+
+
 
 
 class GeometryViewPage:
@@ -54,14 +57,14 @@ class GeometryViewPage:
                     if geoinstance != None and isinstance(geoinstance[1], Literal) and (
                             str(geoinstance[0]) in DocConfig.geoproperties or str(
                         geoinstance[1].datatype) in DocConfig.geoliteraltypes):
-                        geojsonrep = DocUtils.processLiteral(str(geoinstance[1]), str(geoinstance[1].datatype), "")
+                        geojsonrep = LiteralUtils.processLiteral(str(geoinstance[1]), str(geoinstance[1].datatype), "")
                         uritotreeitem[str(subject)][-1]["type"] = "geocollection"
                     elif geoinstance != None and str(geoinstance[0]) in DocConfig.geopointerproperties:
                         uritotreeitem[str(subject)][-1]["type"] = "featurecollection"
                         for geotup in graph.predicate_objects(geoinstance[1], True):
                             if isinstance(geotup[1], Literal) and (str(geotup[0]) in DocConfig.geoproperties or str(
                                     geotup[1].datatype) in DocConfig.geoliteraltypes):
-                                geojsonrep = DocUtils.processLiteral(str(geotup[1]), str(geotup[1].datatype), "")
+                                geojsonrep = LiteralUtils.processLiteral(str(geotup[1]), str(geotup[1].datatype), "")
                     if geojsonrep != None and "coordinates" in geojsonrep and len(geojsonrep["coordinates"]) > 0:
                         if uritotreeitem != None and str(memberid) in uritotreeitem:
                             featcoll["features"].append({"type": "Feature", 'id': str(memberid),
