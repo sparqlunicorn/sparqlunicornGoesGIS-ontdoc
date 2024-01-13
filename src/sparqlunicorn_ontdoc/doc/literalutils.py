@@ -29,7 +29,7 @@ class LiteralUtils:
                 if isinstance(pobj[1], Literal) and (
                         str(pobj[0]) in DocConfig.geoproperties or str(
                     pobj[1].datatype) in DocConfig.geoliteraltypes):
-                    geojsonrep = DocUtils.processLiteral(str(pobj[1]), str(pobj[1].datatype), "")
+                    geojsonrep = LiteralUtils.processLiteral(str(pobj[1]), str(pobj[1].datatype), "")
         return geojsonrep
 
     @staticmethod
