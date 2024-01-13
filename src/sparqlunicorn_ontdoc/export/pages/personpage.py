@@ -72,18 +72,18 @@ class PersonPage:
         thevcard={}
         for pprop in graph.predicate_objects(subject, True):
             if str(pprop[0]) in self.vcardprops:
-                thevcard[self.vcardprops[str(pprop[0])]]=str(pprop[1])
+                thevcard[self.vcardprops[str(pprop[0])]]={"value":str(pprop[1]),"prop":str(pprop[0])}
         return thevcard
 
     def vcardToHTML(self,vcard):
-        result="<table id=\"person\" border=\"1\"><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>"
+        result="<table id=\"person\" class=\"vcard\" border=\"1\"><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>"
         for prop in vcard:
-            result+="<tr><td><a href=\""+str(prop)+"\">"+str(DocUtils.shortenURI(prop))+"</a></td>"
+            result+="<tr><td><a href=\""+str(vcard[prop]["prop"])+"\">"+str(DocUtils.shortenURI(prop))+"</a></td>"
             if "http" in vcard[prop]:
-                result+="<td><a href=\""+str(vcard[prop])+"\">"+str(DocUtils.shortenURI(vcard[prop]))+"</a></td></tr>"
+                result+="<td><a href=\""+str(vcard[prop]["value"])+"\" class=\""+str(prop)+"\">"+str(DocUtils.shortenURI(vcard[prop]["value"]))+"</a></td></tr>"
             else:
-                result += "<td>" + str(vcard[prop]) + "</td></tr>"
-        result+="</tbody></table><script>$('#person').DataTable();</script>"
+                result += "<td class=\""+str(prop)+"\">" + str(vcard[prop]["value"]) + "</td></tr>"
+        result+="</tbody></table><script>$('#person').DataTable();</script><button id=\"vcard\">Download VCard</button>"
         return result
 
     @staticmethod

@@ -1056,7 +1056,6 @@ class OntDocGeneration:
                 if isinstance(tup[1],URIRef):
                     for item in graph.objects(tup[1],URIRef(self.typeproperty)):
                         thetypes.add(str(item))
-                        curtypes.add(str(item))
                         if parentclass!=None:
                             if item not in uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])]:
                                 uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])][item] = 0

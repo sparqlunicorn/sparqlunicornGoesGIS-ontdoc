@@ -60,7 +60,7 @@ class DocConfig:
     collectionrelationproperties={
         "http://www.w3.org/2000/01/rdf-schema#member":"ObjectProperty",
         "http://www.w3.org/2004/02/skos/core#member":"ObjectProperty",
-        "http://www.w3.org/ns/lemon/lime#entry": "ObjectProperty",
+        "http://www.w3.org/ns/lemon/lexicog#entry": "ObjectProperty",
         "http://www.w3.org/2006/vcard/ns#hasMember":"ObjectProperty",
         "http://www.w3.org/ns/dcat#dataset":"ObjectProperty",
         "http://www.w3.org/ns/dcat#resource":"ObjectProperty",

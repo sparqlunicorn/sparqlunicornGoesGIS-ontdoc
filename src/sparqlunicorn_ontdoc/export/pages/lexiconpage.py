@@ -64,7 +64,7 @@ class LexiconPage:
 
     def generateCollectionWidget(self,graph,templates,subject,f):
         f.write("<table id=\"lexicon\">"+self.tableheader+"<tbody>")
-        for lexentry in graph.objects(subject, URIRef("http://www.w3.org/ns/lemon/lime#entry"), True):
+        for lexentry in graph.objects(subject, URIRef("http://www.w3.org/ns/lemon/lexicog#entry"), True):
             self.generatePageWidget(graph,lexentry,f,True)
         f.write("</tbody></table>")
 
