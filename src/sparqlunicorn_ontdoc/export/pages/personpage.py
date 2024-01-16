@@ -162,7 +162,7 @@ class PersonPage:
                     result += "<td class=\"" + str(self.vcardTohCard[hcard[prop]["prop"]]) + "\">" + str(hcard[prop]["value"]) + "</td></tr>"
                 else:
                     result += "<td class=\""+str(prop)+"\">" + str(hcard[prop]["value"]) + "</td></tr>"
-        result+="</tbody></table><script>$('#person').DataTable();</script><button id=\"vcard\" onclick=\"saveTextAsFile(JSON.stringify('"+str(PersonPage.vcardJSONToString(vcard))+"'),'vcard'')\">Download VCard</button>"
+        result += "</tbody></table><script>$('#person').DataTable();</script><button id=\"vcard\" onclick=\"saveTextAsFile(`" + str(PersonPage.vcardJSONToString(vcard)) + "`,'vcard')\">Download VCard</button>"
         return result
 
     @staticmethod
@@ -170,7 +170,7 @@ class PersonPage:
         res="BEGIN:VCARD\nVERSION:4.0\n"
         res+="PROFILE:VCARD\n"
         for key in vcard:
-            res+=str(key).upper()+":"+str(vcard[key])+"\n"
+            res+=str(key).upper()+":"+str(vcard[key]["value"])+"\n"
         res+="END:VCARD\n"
         return res
 

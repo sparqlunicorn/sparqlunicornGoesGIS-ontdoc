@@ -546,7 +546,7 @@ class OntDocGeneration:
                 graph.add((URIRef(colluri), URIRef(self.typeproperty),URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection")))
             else:
                 graph.add((URIRef(colluri),URIRef(self.typeproperty),URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
-            graph.add((URIRef(colluri),URIRef("http://www.w3.org/2000/01/rdf-schema#label"),Literal(str(DocUtils.shortenURI(cls))+" Instances Collection")))
+            graph.add((URIRef(colluri),URIRef("http://www.w3.org/2000/01/rdf-schema#label"),Literal(str(DocUtils.shortenURI(cls))+" Instances Collection",lang="en")))
             for instance in classToInstances[cls]:
                 graph.add((URIRef(colluri),URIRef("http://www.w3.org/2000/01/rdf-schema#member"),URIRef(instance)))
         return graph
