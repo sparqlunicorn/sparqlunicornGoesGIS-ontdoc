@@ -1,5 +1,5 @@
-from ...doc.docutils import DocUtils
-from ...sparqlutils import SPARQLUtils
+from doc.docutils import DocUtils
+from doc.docconfig import DocConfig
 
 
 class PersonPage:
@@ -176,7 +176,7 @@ class PersonPage:
 
     @staticmethod
     def collectionConstraint():
-        return SPARQLUtils.collectionclasses
+        return DocConfig.collectionclasses
 
     @staticmethod
     def pageWidgetConstraint():
@@ -193,6 +193,6 @@ class PersonPage:
         print("CollectionWidget")
         vcards=[]
         for person in graph.predicate_objects(subject):
-            if str(person[0]) in SPARQLUtils.collectionrelationproperties:
+            if str(person[0]) in DocConfig.collectionrelationproperties:
                 vcards.append(self.generatePageWidget(graph,person[1],templates,f,True))
         return vcards
