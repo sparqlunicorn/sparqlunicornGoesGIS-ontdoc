@@ -140,28 +140,39 @@ class PersonPage:
 
     def extractPersonMetadata(self,subject,graph):
         thevcard={}
+        thehcard={}
         for pprop in graph.predicate_objects(subject, True):
+            if str(pprop[0]) in self.vcardTohCard:
+                thehcard[str(self.vcardTohCard[str(pprop[0])])]={"value":str(pprop[1]),"prop":str(pprop[0])}
             if str(pprop[0]) in self.vcardprops:
                 if self.vcardprops[str(pprop[0])] in thevcard:
                     thevcard[self.vcardprops[str(pprop[0])]]["value"]+=" "+str(pprop[1])
                 else:
                     thevcard[self.vcardprops[str(pprop[0])]]={"value":str(pprop[1]),"prop":str(pprop[0])}
-        return thevcard
+        return {"vcard":thevcard,"hcard":thehcard}
 
-    def vcardToHTML(self,vcard):
+    def hcardToHTML(self,vcard,hcard):
         result="<table id=\"person\" class=\"h-card\" border=\"1\"><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>"
-        for prop in vcard:
-            result+="<tr><td><a href=\""+str(vcard[prop]["prop"])+"\">"+str(DocUtils.shortenURI(prop))+"</a></td>"
-            if "http" in vcard[prop]:
-                result+="<td><a href=\""+str(vcard[prop]["value"])+"\" class=\""+str(prop)+"\">"+str(DocUtils.shortenURI(vcard[prop]["value"]))+"</a></td></tr>"
+        for prop in hcard:
+            result+="<tr><td><a href=\""+str(hcard[prop]["prop"])+"\">"+str(DocUtils.shortenURI(hcard[prop]["prop"]))+"</a></td>"
+            if "http" in hcard[prop]:
+                result+="<td><a href=\""+str(hcard[prop]["value"])+"\" class=\""+str(prop)+"\">"+str(DocUtils.shortenURI(hcard[prop]["value"]))+"</a></td></tr>"
             else:
-                if vcard[prop]["prop"] in self.vcardTohCard:
-                    result += "<td class=\"" + str(self.vcardTohCard[vcard[prop]["prop"]]) + "\">" + str(vcard[prop]["value"]) + "</td></tr>"
+                if hcard[prop]["prop"] in self.vcardTohCard:
+                    result += "<td class=\"" + str(self.vcardTohCard[hcard[prop]["prop"]]) + "\">" + str(hcard[prop]["value"]) + "</td></tr>"
                 else:
-                    result += "<td class=\""+str(prop)+"\">" + str(vcard[prop]["value"]) + "</td></tr>"
-        result+="</tbody></table><script>$('#person').DataTable();</script><button id=\"vcard\">Download VCard</button>"
+                    result += "<td class=\""+str(prop)+"\">" + str(hcard[prop]["value"]) + "</td></tr>"
+        result+="</tbody></table><script>$('#person').DataTable();</script><button id=\"vcard\" onclick=\"saveTextAsFile(JSON.stringify('"+str(PersonPage.vcardJSONToString(vcard))+"'),'vcard'')\">Download VCard</button>"
         return result
 
+    @staticmethod
+    def vcardJSONToString(vcard):
+        res="BEGIN:VCARD\nVERSION:4.0\n"
+        res+="PROFILE:VCARD\n"
+        for key in vcard:
+            res+=str(key).upper()+":"+str(vcard[key])+"\n"
+        res+="END:VCARD\n"
+        return res
 
     @staticmethod
     def collectionConstraint():
@@ -173,10 +184,10 @@ class PersonPage:
 
     def generatePageWidget(self, graph, subject, templates, f=None, pageWidget=False):
         print("PageWidget")
-        vcard=self.extractPersonMetadata(subject,graph)
+        vcardres=self.extractPersonMetadata(subject,graph)
         if pageWidget and f!=None:
-            f.write(self.vcardToHTML(vcard))
-        return vcard
+            f.write(self.hcardToHTML(vcardres["vcard"],vcardres["hcard"]))
+        return vcardres["vcard"]
 
     def generateCollectionWidget(self, graph, templates, subject, f=None):
         print("CollectionWidget")

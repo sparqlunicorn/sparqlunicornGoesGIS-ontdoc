@@ -14,7 +14,6 @@ class CardDAVExporter:
         f.close()
 
 
-
     def generateCardDAVCollection(self, outpath, deploypath, graph,subject,license="",version="3"):
         if not os.path.exists(outpath + "/addressbook/"):
             os.makedirs(outpath + "/addressbook/")
