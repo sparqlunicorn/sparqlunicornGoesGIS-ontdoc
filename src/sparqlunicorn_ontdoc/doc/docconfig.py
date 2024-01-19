@@ -49,7 +49,7 @@ class DocConfig:
         "http://www.w3.org/2006/vcard/ns#Individual": {"class":"http://www.w3.org/2006/vcard/ns#Group","prop":"http://www.w3.org/2006/vcard/ns#hasMember"},
         "http://xmlns.com/foaf/0.1/Person": {"class":"http://www.w3.org/2006/vcard/ns#Group","prop":"http://www.w3.org/2006/vcard/ns#hasMember"},
         "http://www.w3.org/ns/lemon/ontolex#LexicalEntry": {"class":"http://www.w3.org/ns/lemon/lime#Lexicon","prop":"http://www.w3.org/ns/lemon/lexicog#entry"},
-        "http://www.w3.org/ns/dcat#Dataset": {"class":"http://www.w3.org/ns/lemon/lime#Catalog","prop":"http://www.w3.org/ns/dcat#dataset"},
+        "http://www.w3.org/ns/dcat#Dataset": {"class":"http://www.w3.org/ns/dcat#Catalog","prop":"http://www.w3.org/ns/dcat#dataset"},
         "http://www.w3.org/ns/sosa/Observation":{"class":"http://www.w3.org/ns/sosa/ObservationCollection","prop":"http://www.w3.org/2000/01/rdf-schema#member"},
         "http://purl.org/ontology/bibo/Document": {"class": "http://purl.org/ontology/bibo/Collection",
                                                    "prop": "http://www.w3.org/2000/01/rdf-schema#member"},
