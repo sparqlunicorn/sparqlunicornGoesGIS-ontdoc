@@ -1405,6 +1405,7 @@ class OntDocGeneration:
 
 def main():          
     prefixes={"reversed":{}}
+    print("PREFIX EXISTS? "+resourcepath+'prefixes.json '+str(os.path.exists(resourcepath+'prefixes.json')))
     if os.path.exists(resourcepath+'prefixes.json'):
         with open(resourcepath+'prefixes.json', encoding="utf-8") as f:
             prefixes = json.load(f)
