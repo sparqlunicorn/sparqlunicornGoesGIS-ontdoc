@@ -43,6 +43,7 @@ import json
 listthreshold=5
 
 templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
+resourcepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/"))
 
 featurecollectionspaths={}
 iiifmanifestpaths={"default":[]}
@@ -1404,7 +1405,7 @@ class OntDocGeneration:
 
 def main():          
     prefixes={"reversed":{}}
-    if os.path.exists('prefixes.json'):
+    if os.path.exists(resourcepath+'prefixes.json'):
         with open('prefixes.json', encoding="utf-8") as f:
             prefixes = json.load(f)
        
