@@ -1406,7 +1406,7 @@ class OntDocGeneration:
 def main():          
     prefixes={"reversed":{}}
     if os.path.exists(resourcepath+'prefixes.json'):
-        with open('prefixes.json', encoding="utf-8") as f:
+        with open(resourcepath+'prefixes.json', encoding="utf-8") as f:
             prefixes = json.load(f)
        
     prefixes["reversed"]["http://purl.org/cuneiform/"]="cunei"
