@@ -16,10 +16,7 @@ from export.pages.observationpage import ObservationPage
 from export.pages.geometryviewpage import GeometryViewPage
 from export.pages.personpage import PersonPage
 
-if os.path.exists("ontdocscript"):
-    sys.path.insert(0, os.path.dirname(os.path.realpath(__file__))+"/ontdocscript/src/sparqlunicorn_ontdoc/")
-else:
-    sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 print(sys.path)
 print(os.path.dirname(os.path.realpath(__file__)))
 print(os.listdir(os.getcwd()))
@@ -1405,9 +1402,9 @@ class OntDocGeneration:
 
 def main():          
     prefixes={"reversed":{}}
-    print("PREFIX EXISTS? "+resourcepath+'prefixes.json '+str(os.path.exists(resourcepath+'prefixes.json')))
-    if os.path.exists(resourcepath+'prefixes.json'):
-        with open(resourcepath+'prefixes.json', encoding="utf-8") as f:
+    print("PREFIX EXISTS? "+resourcepath+'/prefixes.json '+str(os.path.exists(resourcepath+'/prefixes.json')))
+    if os.path.exists(resourcepath+'/prefixes.json'):
+        with open(resourcepath+'/prefixes.json', encoding="utf-8") as f:
             prefixes = json.load(f)
        
     prefixes["reversed"]["http://purl.org/cuneiform/"]="cunei"
