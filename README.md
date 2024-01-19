@@ -95,11 +95,12 @@ optional arguments:
 
 The following vocabularies are supported by the ontology documentation tool and may be rendered in a specific way in HTML:
  
-* [BIBO Vocabulary](http://purl.org/ontology/bibo/)
+* [BIBO Vocabulary](http://purl.org/ontology/bibo/) [Example Dataset (Ancient Ports)](https://github.com/archaeolink/AncientPorts_RDF)
 * [Dublin Core DCTerms](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/)
-* [FOAF Vocabulary](http://xmlns.com/foaf/0.1/)
-* [GeoSPARQL 1.0 and 1.1 vocabulary](https://github.com/opengeospatial/ogc-geosparql)
+* [FOAF Vocabulary](http://xmlns.com/foaf/0.1/) [Example Dataset (Ancient Ports)](https://github.com/archaeolink/AncientPorts_RDF)
+* [GeoSPARQL 1.0 and 1.1 vocabulary](https://github.com/opengeospatial/ogc-geosparql) [Example Dataset (CIGS)](https://github.com/archaeolink/CIGS_RDF)
 * [SKOS Vocabulary](https://www.w3.org/TR/swbp-skos-core-spec/)
+* [SOSA Ontology](https://www.w3.org/TR/vocab-ssn/) [Example Dataset (hgis_stats)](https://github.com/Research-Squirrel-Engineers/hgis_stats)
 * [Unit of Measurements Ontology](https://github.com/HajoRijgersberg/OM)
 * [W3C Web Annotation Data Model](https://www.w3.org/TR/annotation-model/)
 * [W3C Geo Vocabulary](https://www.w3.org/2003/01/geo/)
