@@ -600,6 +600,8 @@ class OntDocGeneration:
               URIRef(self.deploypath+"/index.ttl")))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#feature"),
               URIRef("http://www.w3.org/ns/formats/Turtle")))
+        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#feature"),
+              URIRef("http://www.w3.org/ns/formats/RDFa")))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#classes"),
               Literal(numclasses,datatype="http://www.w3.org/2001/XMLSchema#integer")))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#entities"),
@@ -617,8 +619,8 @@ class OntDocGeneration:
         for ns_prefix, namespace in g.namespaces():
             g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#vocabulary"),
                   URIRef(namespace)))
-            if namespace in DocConfig.namespaceToTopic:
-                for entry in DocConfig.namespaceToTopic[namespace]:
+            if str(namespace) in DocConfig.namespaceToTopic:
+                for entry in DocConfig.namespaceToTopic[str(namespace)]:
                     g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/subject"),
                            URIRef(DocConfig.namespaceToTopic[entry])))
         g.serialize(self.outpath+"/void.ttl", encoding="utf-8")
