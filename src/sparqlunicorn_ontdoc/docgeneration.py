@@ -674,7 +674,7 @@ class OntDocGeneration:
                 if str(obj) not in uritotreeitem:
                     uritotreeitem[str(obj)]=[]
                 uritotreeitem[str(obj)].append(result[-1])
-                classidset.add(str(obj))
+                #classidset.add(str(obj))
             res = DocUtils.replaceNameSpacesInLabel(self.prefixes,str(cls))
             if ress[cls]["super"] == None:
                 restext = DocUtils.shortenURI(str(cls))
