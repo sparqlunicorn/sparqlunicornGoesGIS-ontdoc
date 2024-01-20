@@ -579,42 +579,42 @@ class OntDocGeneration:
         print("void")
         g=Graph()
         voidds=self.prefixnamespace+"theds"
-        g.add(URIRef(voidds),URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://rdfs.org/ns/void#Dataset"))
-        g.add(URIRef(voidds), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
-              Literal(dsname,lang="en"))
-        g.add(URIRef(voidds), URIRef("http://purl.org/dc/terms/title"),
-              Literal(dsname,lang="en"))
-        g.add(URIRef(voidds), URIRef("http://purl.org/dc/terms/modified"),
-              Literal(self.modtime,datatype="http://www.w3.org/2001/XMLSchema#dateTime"))
-        g.add(URIRef(voidds), URIRef("http://purl.org/dc/terms/license"),
-              URIRef(self.licenseuri))
-        g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#dataDump"),
-              URIRef(self.deploypath+"/index.ttl"))
-        g.add(URIRef(voidds), URIRef("http://xmlns.com/foaf/0.1/homepage"),
-              URIRef(self.deploypath))
-        g.add(URIRef(voidds), URIRef("http://xmlns.com/foaf/0.1/page"),
-              URIRef(self.deploypath+"/index.html"))
-        g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#dataDump"),
-              URIRef(self.deploypath+"/index.ttl"))
-        g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#feature"),
-              URIRef("http://www.w3.org/ns/formats/Turtle"))
-        g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#classes"),
-              Literal(numclasses,datatype="http://www.w3.org/2001/XMLSchema#integer"))
-        g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#entities"),
-              Literal(numinds,datatype="http://www.w3.org/2001/XMLSchema#integer"))
-        g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#distinctObjects"),
-              Literal(numobjects,datatype="http://www.w3.org/2001/XMLSchema#integer"))
-        g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#distinctSubjects"),
-              Literal(numsubjects,datatype="http://www.w3.org/2001/XMLSchema#integer"))
-        g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#properties"),
-              Literal(numpredicates,datatype="http://www.w3.org/2001/XMLSchema#integer"))
-        g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#triples"),
-              Literal(numtriples,datatype="http://www.w3.org/2001/XMLSchema#integer"))
-        g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#uriSpace"),
-              Literal(self.prefixnamespace,datatype="http://www.w3.org/2001/XMLSchema#string"))
+        g.add((URIRef(voidds),URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://rdfs.org/ns/void#Dataset")))
+        g.add((URIRef(voidds), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
+              Literal(dsname,lang="en")))
+        g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/title"),
+              Literal(dsname,lang="en")))
+        g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/modified"),
+              Literal(self.modtime,datatype="http://www.w3.org/2001/XMLSchema#dateTime")))
+        g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/license"),
+              URIRef(self.licenseuri)))
+        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#dataDump"),
+              URIRef(self.deploypath+"/index.ttl")))
+        g.add((URIRef(voidds), URIRef("http://xmlns.com/foaf/0.1/homepage"),
+              URIRef(self.deploypath)))
+        g.add((URIRef(voidds), URIRef("http://xmlns.com/foaf/0.1/page"),
+              URIRef(self.deploypath+"/index.html")))
+        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#dataDump"),
+              URIRef(self.deploypath+"/index.ttl")))
+        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#feature"),
+              URIRef("http://www.w3.org/ns/formats/Turtle")))
+        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#classes"),
+              Literal(numclasses,datatype="http://www.w3.org/2001/XMLSchema#integer")))
+        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#entities"),
+              Literal(numinds,datatype="http://www.w3.org/2001/XMLSchema#integer")))
+        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#distinctObjects"),
+              Literal(numobjects,datatype="http://www.w3.org/2001/XMLSchema#integer")))
+        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#distinctSubjects"),
+              Literal(numsubjects,datatype="http://www.w3.org/2001/XMLSchema#integer")))
+        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#properties"),
+              Literal(numpredicates,datatype="http://www.w3.org/2001/XMLSchema#integer")))
+        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#triples"),
+              Literal(numtriples,datatype="http://www.w3.org/2001/XMLSchema#integer")))
+        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#uriSpace"),
+              Literal(self.prefixnamespace,datatype="http://www.w3.org/2001/XMLSchema#string")))
         for ns_prefix, namespace in g.namespaces():
-            g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#vocabulary"),
-                  URIRef(namespace))
+            g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#vocabulary"),
+                  URIRef(namespace)))
         g.serialize(self.outpath+"/void.ttl", encoding="utf-8")
         return g
 
