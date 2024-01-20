@@ -20,6 +20,7 @@ sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 print(sys.path)
 print(os.path.dirname(os.path.realpath(__file__)))
 print(os.listdir(os.getcwd()))
+from datetime import datetime
 from doc.docutils import DocUtils
 from doc.docdefaults import DocDefaults
 from doc.docconfig import DocConfig
@@ -1560,8 +1561,7 @@ def main():
         try:
             g = Graph()
             g.parse(fp)
-            modtimed=os.path.getmtime(fp)
-            modtime = modtimed.strftime("%Y-%m-%dT%H:%M:%S")
+            modtime=datetime.fromtimestamp(os.path.getmtime(fp)).strftime("%Y-%m-%dT%H:%M:%S")
             if args.prefixns==None or args.prefixns=="None":
                 print("No Datanamespace defined. Trying to detect it...")
                 pres=DocUtils.getDataNamespace(g)
