@@ -282,7 +282,9 @@ class OntDocGeneration:
         uritotreeitem={}
         curlicense=self.processLicense()
         self.licensehtml=curlicense
-        numprops=self.getPropertyRelations(self.graph, outpath)
+        res=self.getPropertyRelations(self.graph, outpath)
+        numprops=res["preds"]
+        numobjects=res["objs"]
         if self.createColl:
             self.graph=self.createCollections(self.graph,prefixnamespace)
         if self.logoname!=None and self.logoname!="" and not self.logoname.startswith("http"):
@@ -384,7 +386,7 @@ class OntDocGeneration:
                 self.updateProgressBar(subtorencounter, subtorenderlen,"Processing Subject URIs")
         self.checkGeoInstanceAssignment(uritotreeitem)
         classlist=self.assignGeoClassesToTree(tree)
-        voidgraph=self.createVoidDataset(self.datasettitle,len(self.graph),numclasses,numinds,numprops,numsubjects,0)
+        voidgraph=self.createVoidDataset(self.datasettitle,len(self.graph),numclasses,numinds,numprops,numsubjects,numobjects)
         self.graph+=voidgraph
         if self.generatePagesForNonNS:
             labeltouri=self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace,uritotreeitem,labeltouri)
@@ -502,6 +504,7 @@ class OntDocGeneration:
     def getPropertyRelations(self,graph,outpath):
         predicates= {}
         predicatecounter=0
+        objects=set()
         for pred in graph.predicates(None,None,True):
             predicates[pred]={"from":set(),"to":set()}
             for tup in graph.subject_objects(pred):
@@ -509,6 +512,7 @@ class OntDocGeneration:
                     predicates[pred]["from"].add(item)
                 for item in graph.objects(tup[1], URIRef(self.typeproperty),True):
                     predicates[pred]["to"].add(item)
+                objects.add(str(tup[1]))
             predicates[pred]["from"]=list(predicates[pred]["from"])
             predicates[pred]["to"] = list(predicates[pred]["to"])
             predicatecounter+=1
@@ -517,7 +521,7 @@ class OntDocGeneration:
         with open(outpath+"proprelations.js", 'w', encoding='utf-8') as f:
             f.write("var proprelations="+json.dumps(predicates))
             f.close()
-        return predicatecounter
+        return {"preds":predicatecounter,"objs":len(objects)}
 
     def createCollections(self,graph,namespace):
         classToInstances={}
@@ -574,11 +578,7 @@ class OntDocGeneration:
         return graph
 
 
-    def vocabulariesToDCSubjects(self,vocabs):
-        print("vocabstosubjects")
-
     def createVoidDataset(self,dsname,numtriples,numclasses,numinds,numpredicates,numsubjects,numobjects):
-        print("void")
         g=Graph()
         voidds=self.prefixnamespace+"theds"
         g.add((URIRef(voidds),URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://rdfs.org/ns/void#Dataset")))
