@@ -89,9 +89,10 @@ def resolveTemplate(templatename):
 
 class OntDocGeneration:
 
-    def __init__(self, prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,iiif,ckan=True,solidexport=True,localOptimized=False,imagemetadata=None,startconcept=None,deploypath="",logoname="",templatename="default",offlinecompat=False,exports=["json","ttl"],datasettitle="",publisher="",publishingorg=""):
+    def __init__(self, prefixes,modtime,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,iiif,ckan=True,solidexport=True,localOptimized=False,imagemetadata=None,startconcept=None,deploypath="",logoname="",templatename="default",offlinecompat=False,exports=["json","ttl"],datasettitle="",publisher="",publishingorg=""):
         self.prefixes=prefixes
         self.prefixnamespace = prefixnamespace
+        self.modtime=modtime
         self.namespaceshort = prefixnsshort.replace("/","")
         self.outpath=outpath
         self.exports=exports
@@ -280,7 +281,7 @@ class OntDocGeneration:
         uritotreeitem={}
         curlicense=self.processLicense()
         self.licensehtml=curlicense
-        self.getPropertyRelations(self.graph, outpath)
+        numprops=self.getPropertyRelations(self.graph, outpath)
         if self.createColl:
             self.graph=self.createCollections(self.graph,prefixnamespace)
         if self.logoname!=None and self.logoname!="" and not self.logoname.startswith("http"):
@@ -298,6 +299,7 @@ class OntDocGeneration:
                         labeltouri[str(tup[1])] = str(sub)
                         uritolabel[str(sub)] = {"label":str(tup[1])}
                         break
+        numsubjects=len(subjectstorender)
         if os.path.exists(outpath + corpusid + '_search.js'):
             try:
                 with open(outpath + corpusid + '_search.js', 'r', encoding='utf-8') as f:
@@ -326,6 +328,7 @@ class OntDocGeneration:
         for tr in prevtree:
             if tr["id"] not in classidset:
                 tree["core"]["data"].append(tr)
+        numclasses=len(classidset)
         with open(outpath + "style.css", 'w', encoding='utf-8') as f:
             f.write(templates["stylesheet"])
             f.close()
@@ -378,6 +381,8 @@ class OntDocGeneration:
                 self.updateProgressBar(subtorencounter, subtorenderlen,"Processing Subject URIs")
         self.checkGeoInstanceAssignment(uritotreeitem)
         classlist=self.assignGeoClassesToTree(tree)
+        voidgraph=self.createVoidDataset(self.datasettitle,len(self.graph),numclasses,numsubjects,numprops,numsubjects,0)
+        self.graph+=voidgraph
         if self.generatePagesForNonNS:
             labeltouri=self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace,uritotreeitem,labeltouri)
         with open(outpath + corpusid + "_classtree.js", 'w', encoding='utf-8') as f:
@@ -509,6 +514,7 @@ class OntDocGeneration:
         with open(outpath+"proprelations.js", 'w', encoding='utf-8') as f:
             f.write("var proprelations="+json.dumps(predicates))
             f.close()
+        return predicatecounter
 
     def createCollections(self,graph,namespace):
         classToInstances={}
@@ -563,6 +569,55 @@ class OntDocGeneration:
             for instance in classToInstances[cls]:
                 graph.add((URIRef(colluri),URIRef(collrelprop),URIRef(instance)))
         return graph
+
+
+    def vocabulariesToDCSubjects(self,vocabs):
+        print("vocabstosubjects")
+
+    def createVoidDataset(self,dsname,numtriples,numclasses,numinds,numpredicates,numsubjects,numobjects):
+        print("void")
+        g=Graph()
+        voidds=self.prefixnamespace+"theds"
+        g.add(URIRef(voidds),URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://rdfs.org/ns/void#Dataset"))
+        g.add(URIRef(voidds), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
+              Literal(dsname,lang="en"))
+        g.add(URIRef(voidds), URIRef("http://purl.org/dc/terms/title"),
+              Literal(dsname,lang="en"))
+        g.add(URIRef(voidds), URIRef("http://purl.org/dc/terms/modified"),
+              Literal(self.modtime,datatype="http://www.w3.org/2001/XMLSchema#dateTime"))
+        g.add(URIRef(voidds), URIRef("http://purl.org/dc/terms/license"),
+              URIRef(self.licenseuri))
+        g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#dataDump"),
+              URIRef(self.deploypath+"/index.ttl"))
+        g.add(URIRef(voidds), URIRef("http://xmlns.com/foaf/0.1/homepage"),
+              URIRef(self.deploypath))
+        g.add(URIRef(voidds), URIRef("http://xmlns.com/foaf/0.1/page"),
+              URIRef(self.deploypath+"/index.html"))
+        g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#dataDump"),
+              URIRef(self.deploypath+"/index.ttl"))
+        g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#feature"),
+              URIRef("http://www.w3.org/ns/formats/Turtle"))
+        g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#classes"),
+              Literal(numclasses,datatype="http://www.w3.org/2001/XMLSchema#integer"))
+        g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#entities"),
+              Literal(numinds,datatype="http://www.w3.org/2001/XMLSchema#integer"))
+        g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#distinctObjects"),
+              Literal(numobjects,datatype="http://www.w3.org/2001/XMLSchema#integer"))
+        g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#distinctSubjects"),
+              Literal(numsubjects,datatype="http://www.w3.org/2001/XMLSchema#integer"))
+        g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#properties"),
+              Literal(numpredicates,datatype="http://www.w3.org/2001/XMLSchema#integer"))
+        g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#triples"),
+              Literal(numtriples,datatype="http://www.w3.org/2001/XMLSchema#integer"))
+        g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#uriSpace"),
+              Literal(self.prefixnamespace,datatype="http://www.w3.org/2001/XMLSchema#string"))
+        for ns_prefix, namespace in g.namespaces():
+            g.add(URIRef(voidds), URIRef("http://rdfs.org/ns/void#vocabulary"),
+                  URIRef(namespace))
+        g.serialize(self.outpath+"/void.ttl", encoding="utf-8")
+        return g
+
+
 
     def getClassTree(self,graph, uritolabel,classidset,uritotreeitem):
         results = graph.query(self.preparedclassquery)
@@ -1414,7 +1469,6 @@ def main():
     if os.path.exists(resourcepath+'/prefixes.json'):
         with open(resourcepath+'/prefixes.json', encoding="utf-8") as f:
             prefixes = json.load(f)
-       
     prefixes["reversed"]["http://purl.org/cuneiform/"]="cunei"
     prefixes["reversed"]["http://purl.org/graphemon/"]="graphemon"
     prefixes["reversed"]["http://www.opengis.net/ont/crs/"]="geocrs"
@@ -1506,6 +1560,8 @@ def main():
         try:
             g = Graph()
             g.parse(fp)
+            modtimed=os.path.getmtime(fp)
+            modtime = modtimed.strftime("%Y-%m-%dT%H:%M:%S")
             if args.prefixns==None or args.prefixns=="None":
                 print("No Datanamespace defined. Trying to detect it...")
                 pres=DocUtils.getDataNamespace(g)
@@ -1515,9 +1571,9 @@ def main():
                     args.prefixns=pres
                 print("Detected "+args.prefixns+" as data namespace")
             if fcounter<len(outpath):
-                docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.solidexport,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
+                docgen=OntDocGeneration(prefixes,modtime,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.solidexport,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
             else:
-                docgen=OntDocGeneration(prefixes,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.solidexport,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
+                docgen=OntDocGeneration(prefixes,modtime,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.solidexport,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
             subrend=docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
         except Exception as inst:
             print("Could not parse "+str(fp))
