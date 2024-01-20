@@ -298,11 +298,17 @@ class OntDocGeneration:
         for sub in self.graph.subjects(None,None,True):
             if (prefixnamespace in sub and (isinstance(sub,URIRef)) or isinstance(sub,BNode)):
                 subjectstorender.add(sub)
+                label=DocUtils.shortenURI(str(sub))
                 for tup in self.graph.predicate_objects(sub):
                     if str(tup[0]) in DocConfig.labelproperties:
                         labeltouri[str(tup[1])] = str(sub)
                         uritolabel[str(sub)] = {"label":str(tup[1])}
-                        break
+                        label=str(tup[1])
+                    break
+                if isinstance(sub,BNode):
+                    for tup in self.graph.objects(None,self.typeproperty):
+                        if tup==URIRef("http://www.w3.org/2002/07/owl#Restriction"):
+                            self.graph.add((sub,URIRef("http://www.w3.org/2000/01/rdf-schema#label"),Literal(label+" [Restriction]",lang="en")))
             numsubjects+=1
         numinds=len(subjectstorender)
         if os.path.exists(outpath + corpusid + '_search.js'):
