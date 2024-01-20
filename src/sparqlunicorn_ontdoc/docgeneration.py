@@ -386,7 +386,7 @@ class OntDocGeneration:
                 self.updateProgressBar(subtorencounter, subtorenderlen,"Processing Subject URIs")
         self.checkGeoInstanceAssignment(uritotreeitem)
         classlist=self.assignGeoClassesToTree(tree)
-        voidgraph=self.createVoidDataset(self.datasettitle,len(self.graph),numclasses,numinds,numprops,numsubjects,numobjects)
+        voidgraph=self.createVoidDataset(self.datasettitle,len(self.graph),numclasses,numinds,numprops,numsubjects,numobjects,self.startconcept)
         self.graph+=voidgraph
         if self.generatePagesForNonNS:
             labeltouri=self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace,uritotreeitem,labeltouri)
@@ -578,7 +578,7 @@ class OntDocGeneration:
         return graph
 
 
-    def createVoidDataset(self,dsname,numtriples,numclasses,numinds,numpredicates,numsubjects,numobjects):
+    def createVoidDataset(self,dsname,numtriples,numclasses,numinds,numpredicates,numsubjects,numobjects,startconcept=None):
         g=Graph()
         voidds=self.prefixnamespace+"theds"
         g.add((URIRef(voidds),URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://rdfs.org/ns/void#Dataset")))
@@ -602,6 +602,11 @@ class OntDocGeneration:
               URIRef("http://www.w3.org/ns/formats/Turtle")))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#feature"),
               URIRef("http://www.w3.org/ns/formats/RDFa")))
+        if startconcept!=None:
+            g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#rootResource"),
+                  URIRef(startconcept)))
+            g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#exampleResource"),
+                  URIRef(startconcept)))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#classes"),
               Literal(numclasses,datatype="http://www.w3.org/2001/XMLSchema#integer")))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#entities"),
@@ -625,7 +630,6 @@ class OntDocGeneration:
                            URIRef(entry)))
         g.serialize(self.outpath+"/void.ttl", encoding="utf-8")
         return g
-
 
 
     def getClassTree(self,graph, uritolabel,classidset,uritotreeitem):
