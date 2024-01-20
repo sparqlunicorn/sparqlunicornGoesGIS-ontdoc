@@ -292,6 +292,7 @@ class OntDocGeneration:
             self.logoname=outpath+"/logo/logo."+self.logoname[self.logoname.rfind("."):]
         self.updateProgressBar(0, 1, "Creating classtree and search index")
         subjectstorender = set()
+        numsubjects=0
         for sub in self.graph.subjects(None,None,True):
             if prefixnamespace in sub and (isinstance(sub,URIRef) or isinstance(sub,BNode)):
                 subjectstorender.add(sub)
@@ -300,7 +301,8 @@ class OntDocGeneration:
                         labeltouri[str(tup[1])] = str(sub)
                         uritolabel[str(sub)] = {"label":str(tup[1])}
                         break
-        numsubjects=len(subjectstorender)
+            numsubjects+=1
+        numinds=len(subjectstorender)
         if os.path.exists(outpath + corpusid + '_search.js'):
             try:
                 with open(outpath + corpusid + '_search.js', 'r', encoding='utf-8') as f:
@@ -382,7 +384,7 @@ class OntDocGeneration:
                 self.updateProgressBar(subtorencounter, subtorenderlen,"Processing Subject URIs")
         self.checkGeoInstanceAssignment(uritotreeitem)
         classlist=self.assignGeoClassesToTree(tree)
-        voidgraph=self.createVoidDataset(self.datasettitle,len(self.graph),numclasses,numsubjects,numprops,numsubjects,0)
+        voidgraph=self.createVoidDataset(self.datasettitle,len(self.graph),numclasses,numinds,numprops,numsubjects,0)
         self.graph+=voidgraph
         if self.generatePagesForNonNS:
             labeltouri=self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace,uritotreeitem,labeltouri)
@@ -615,6 +617,10 @@ class OntDocGeneration:
         for ns_prefix, namespace in g.namespaces():
             g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#vocabulary"),
                   URIRef(namespace)))
+            if namespace in DocConfig.namespaceToTopic:
+                for entry in DocConfig.namespaceToTopic[namespace]:
+                    g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/subject"),
+                           URIRef(DocConfig.namespaceToTopic[entry])))
         g.serialize(self.outpath+"/void.ttl", encoding="utf-8")
         return g
 
