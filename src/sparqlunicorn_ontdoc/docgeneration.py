@@ -296,7 +296,7 @@ class OntDocGeneration:
         subjectstorender = set()
         numsubjects=0
         for sub in self.graph.subjects(None,None,True):
-            if prefixnamespace in sub and (isinstance(sub,URIRef) or isinstance(sub,BNode)):
+            if (prefixnamespace in sub and (isinstance(sub,URIRef)) or isinstance(sub,BNode)):
                 subjectstorender.add(sub)
                 for tup in self.graph.predicate_objects(sub):
                     if str(tup[0]) in DocConfig.labelproperties:
