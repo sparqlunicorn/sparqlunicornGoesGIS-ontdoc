@@ -622,7 +622,7 @@ class OntDocGeneration:
             if str(namespace) in DocConfig.namespaceToTopic:
                 for entry in DocConfig.namespaceToTopic[str(namespace)]:
                     g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/subject"),
-                           URIRef(DocConfig.namespaceToTopic[str(namespace)][entry])))
+                           URIRef(entry)))
         g.serialize(self.outpath+"/void.ttl", encoding="utf-8")
         return g
 
