@@ -300,6 +300,7 @@ class OntDocGeneration:
                 subjectstorender.add(sub)
                 label=DocUtils.shortenURI(str(sub))
                 restriction=False
+                ressubcls=""
                 for tup in self.graph.predicate_objects(sub):
                     if str(tup[0]) in DocConfig.labelproperties:
                         labeltouri[str(tup[1])] = str(sub)
@@ -307,12 +308,11 @@ class OntDocGeneration:
                         label=str(tup[1])
                     elif str(tup[1]) == "http://www.w3.org/2002/07/owl#Restriction":
                             restriction = True
-                    #elif str(tup[1]) == "http://www.w3.org/2000/01/rdf-schema#subClassOf":
-                    #     self.graph.add((sub, URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
-                    #                    Literal(label + " [Restriction]", lang="en")))
+                    elif str(tup[0]) == "http://www.w3.org/2000/01/rdf-schema#subClassOf":
+                         ressubcls=str(tup[1])
                 if isinstance(sub,BNode) and restriction:
                     self.graph.add((sub, URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
-                                        Literal(label + " [Restriction]", lang="en")))
+                                        Literal(label + " [Restriction of "+str(ressubcls)+"]", lang="en")))
             numsubjects+=1
         numinds=len(subjectstorender)
         if os.path.exists(outpath + corpusid + '_search.js'):
