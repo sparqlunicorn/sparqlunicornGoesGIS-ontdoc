@@ -588,8 +588,9 @@ class OntDocGeneration:
               Literal(dsname,lang="en")))
         g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/modified"),
               Literal(self.modtime,datatype="http://www.w3.org/2001/XMLSchema#dateTime")))
-        g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/license"),
-              URIRef(self.licenseuri)))
+        if self.licenseuri!=None:
+            g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/license"),
+                  URIRef(self.licenseuri)))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#dataDump"),
               URIRef(self.deploypath+"/index.ttl")))
         g.add((URIRef(voidds), URIRef("http://xmlns.com/foaf/0.1/homepage"),
