@@ -15,6 +15,8 @@ from export.pages.lexiconpage import LexiconPage
 from export.pages.observationpage import ObservationPage
 from export.pages.geometryviewpage import GeometryViewPage
 from export.pages.personpage import PersonPage
+from export.data.voidexporter import VoidExporter
+from export.pages.owltimepage import OWLTimePage
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 print(sys.path)
@@ -280,11 +282,12 @@ class OntDocGeneration:
         labeltouri = {}
         uritolabel = {}
         uritotreeitem={}
+        voidstats={"http://rdfs.org/ns/void#classes":0,"http://rdfs.org/ns/void#entities":0,"http://rdfs.org/ns/void#distinctObjects":0,"http://rdfs.org/ns/void#distinctSubjects":0,"http://rdfs.org/ns/void#properties":0,"http://rdfs.org/ns/void#triples":0}
         curlicense=self.processLicense()
         self.licensehtml=curlicense
         res=self.getPropertyRelations(self.graph, outpath)
-        numprops=res["preds"]
-        numobjects=res["objs"]
+        voidstats["http://rdfs.org/ns/void#properties"]=res["preds"]
+        voidstats["http://rdfs.org/ns/void#entities"]=res["objs"]
         if self.createColl:
             self.graph=self.createCollections(self.graph,prefixnamespace)
         if self.logoname!=None and self.logoname!="" and not self.logoname.startswith("http"):
@@ -294,7 +297,6 @@ class OntDocGeneration:
             self.logoname=outpath+"/logo/logo."+self.logoname[self.logoname.rfind("."):]
         self.updateProgressBar(0, 1, "Creating classtree and search index")
         subjectstorender = set()
-        numsubjects=0
         for sub in self.graph.subjects(None,None,True):
             if (prefixnamespace in sub and (isinstance(sub,URIRef)) or isinstance(sub,BNode)):
                 subjectstorender.add(sub)
@@ -312,9 +314,9 @@ class OntDocGeneration:
                          ressubcls=str(tup[1])
                 if isinstance(sub,BNode) and restriction:
                     self.graph.add((sub, URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
-                                        Literal(label + " [Restriction of "+str(ressubcls)+"]", lang="en")))
-            numsubjects+=1
-        numinds=len(subjectstorender)
+                                        Literal(label + " [Restriction]", lang="en")))
+            voidstats["http://rdfs.org/ns/void#distinctSubjects"] +=1
+        voidstats["http://rdfs.org/ns/void#entities"]=len(subjectstorender)
         if os.path.exists(outpath + corpusid + '_search.js'):
             try:
                 with open(outpath + corpusid + '_search.js', 'r', encoding='utf-8') as f:
@@ -343,7 +345,9 @@ class OntDocGeneration:
         for tr in prevtree:
             if tr["id"] not in classidset:
                 tree["core"]["data"].append(tr)
-        numclasses=len(classidset)
+        voidstats["http://rdfs.org/ns/void#classes"]=len(classidset)
+        voidgraph=VoidExporter.createVoidDataset(self.datasettitle,len(self.graph),voidstats,self.startconcept)
+        self.voidstatshtml=VoidExporter.toHTML(voidstats)
         with open(outpath + "style.css", 'w', encoding='utf-8') as f:
             f.write(templates["stylesheet"])
             f.close()
@@ -396,7 +400,6 @@ class OntDocGeneration:
                 self.updateProgressBar(subtorencounter, subtorenderlen,"Processing Subject URIs")
         self.checkGeoInstanceAssignment(uritotreeitem)
         classlist=self.assignGeoClassesToTree(tree)
-        voidgraph=self.createVoidDataset(self.datasettitle,len(self.graph),numclasses,numinds,numprops,numsubjects,numobjects,self.startconcept)
         self.graph+=voidgraph
         if self.generatePagesForNonNS:
             labeltouri=self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace,uritotreeitem,labeltouri)
@@ -465,7 +468,7 @@ class OntDocGeneration:
                                 indexhtml+="<tr><td><img src=\""+tree["types"][item["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+item["type"]+"\"/><a href=\""+str(item["id"])+"\" target=\"_blank\">"+str(item["text"])+"</a></td>"                       
                             indexhtml+="<td>"+str(item["instancecount"])+"</td>"+exitem+"</tr>"
                 indexhtml += "</tbody></table><script>$('#indextable').DataTable();</script>"
-                indexhtml+=self.replaceStandardVariables(templates["footer"],"",checkdepth,str(nslink==prefixnamespace).lower()).replace("{{license}}",curlicense).replace("{{exports}}",templates["nongeoexports"]).replace("{{bibtex}}","")
+                indexhtml+=self.replaceStandardVariables(templates["footer"],"",checkdepth,str(nslink==prefixnamespace).lower()).replace("{{license}}",curlicense).replace("{{exports}}",templates["nongeoexports"]).replace("{{bibtex}}","").replace("{{stats}}",self.voidstatshtml)
                 #print(path)
                 with open(path + "index.html", 'w', encoding='utf-8') as f:
                     f.write(indexhtml)
@@ -479,7 +482,7 @@ class OntDocGeneration:
             sparqlhtml = sparqlhtml.replace("{{iconprefixx}}",("icons/" if self.offlinecompat else "")).replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}","0").replace("{{relativepath}}",".").replace("{{toptitle}}","SPARQL Query Editor").replace("{{title}}","SPARQL Query Editor").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
                         .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{baseurlhtml}}", "").replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", corpusid + "_search.js").replace("{{exports}}",templates["nongeoexports"]).replace("{{versionurl}}",DocConfig.versionurl).replace("{{version}}",DocConfig.version).replace("{{bibtex}}","").replace("{{proprelationpath}}","proprelations.js")
             sparqlhtml+=templates["sparqltemplate"]
-            sparqlhtml+=self.replaceStandardVariables(templates["footer"],"","0","false").replace("{{license}}",curlicense).replace("{{exports}}",templates["nongeoexports"]).replace("{{bibtex}}","")
+            sparqlhtml+=self.replaceStandardVariables(templates["footer"],"","0","false").replace("{{license}}",curlicense).replace("{{exports}}",templates["nongeoexports"]).replace("{{bibtex}}","").replace("{{stats}}",self.voidstatshtml)
             with open( outpath+"sparql.html", 'w', encoding='utf-8') as f:
                 f.write(sparqlhtml)
                 f.close()
@@ -505,7 +508,7 @@ class OntDocGeneration:
             indexhtml+= "<p>This page shows feature collections present in the linked open data export</p>"
             indexhtml+="<script src=\"features.js\"></script>"
             indexhtml+=templates["maptemplate"].replace("var ajax=true","var ajax=false").replace("var featurecolls = {{myfeature}}","").replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(0)).replace("{{baselayers}}",json.dumps(DocConfig.baselayers).replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{dateatt}}", ""))
-            indexhtml+= self.replaceStandardVariables(templates["footer"],"","0","true").replace("{{license}}", curlicense).replace("{{subject}}","").replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}","")
+            indexhtml+= self.replaceStandardVariables(templates["footer"],"","0","true").replace("{{license}}", curlicense).replace("{{subject}}","").replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}","").replace("{{stats}}",self.voidstatshtml)
             with open(outpath + "featurecollections.html", 'w', encoding='utf-8') as f:
                 f.write(indexhtml)
                 f.close()
@@ -586,62 +589,6 @@ class OntDocGeneration:
             for instance in classToInstances[cls]:
                 graph.add((URIRef(colluri),URIRef(collrelprop),URIRef(instance)))
         return graph
-
-
-    def createVoidDataset(self,dsname,numtriples,numclasses,numinds,numpredicates,numsubjects,numobjects,startconcept=None):
-        g=Graph()
-        voidds=self.prefixnamespace+"theds"
-        g.add((URIRef(voidds),URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://rdfs.org/ns/void#Dataset")))
-        g.add((URIRef(voidds), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
-              Literal(dsname,lang="en")))
-        g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/title"),
-              Literal(dsname,lang="en")))
-        g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/modified"),
-              Literal(self.modtime,datatype="http://www.w3.org/2001/XMLSchema#dateTime")))
-        if self.licenseuri!=None:
-            g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/license"),
-                  URIRef(self.licenseuri)))
-        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#dataDump"),
-              URIRef(self.deploypath+"/index.ttl")))
-        g.add((URIRef(voidds), URIRef("http://xmlns.com/foaf/0.1/homepage"),
-              URIRef(self.deploypath)))
-        g.add((URIRef(voidds), URIRef("http://xmlns.com/foaf/0.1/page"),
-              URIRef(self.deploypath+"/index.html")))
-        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#dataDump"),
-              URIRef(self.deploypath+"/index.ttl")))
-        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#feature"),
-              URIRef("http://www.w3.org/ns/formats/Turtle")))
-        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#feature"),
-              URIRef("http://www.w3.org/ns/formats/RDFa")))
-        if startconcept!=None:
-            g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#rootResource"),
-                  URIRef(startconcept)))
-            g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#exampleResource"),
-                  URIRef(startconcept)))
-        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#classes"),
-              Literal(numclasses,datatype="http://www.w3.org/2001/XMLSchema#integer")))
-        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#entities"),
-              Literal(numinds,datatype="http://www.w3.org/2001/XMLSchema#integer")))
-        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#distinctObjects"),
-              Literal(numobjects,datatype="http://www.w3.org/2001/XMLSchema#integer")))
-        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#distinctSubjects"),
-              Literal(numsubjects,datatype="http://www.w3.org/2001/XMLSchema#integer")))
-        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#properties"),
-              Literal(numpredicates,datatype="http://www.w3.org/2001/XMLSchema#integer")))
-        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#triples"),
-              Literal(numtriples,datatype="http://www.w3.org/2001/XMLSchema#integer")))
-        g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#uriSpace"),
-              Literal(self.prefixnamespace,datatype="http://www.w3.org/2001/XMLSchema#string")))
-        for ns_prefix, namespace in g.namespaces():
-            g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#vocabulary"),
-                  URIRef(namespace)))
-            if str(namespace) in DocConfig.namespaceToTopic:
-                for entry in DocConfig.namespaceToTopic[str(namespace)]:
-                    g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/subject"),
-                           URIRef(entry)))
-        g.serialize(self.outpath+"/void.ttl", encoding="utf-8")
-        return g
-
 
     def getClassTree(self,graph, uritolabel,classidset,uritotreeitem):
         results = graph.query(self.preparedclassquery)
@@ -768,55 +715,6 @@ class OntDocGeneration:
                         for item in uritotreeitem[uri]:
                             item["type"]=thetype
 
-    def resolveTimeObject(self,pred,obj,graph,timeobj):
-        if str(pred)=="http://www.w3.org/2006/time#hasBeginning":
-            for tobj2 in graph.predicate_objects(obj):
-                if str(tobj2[0]) in DocConfig.timeproperties:
-                    timeobj["begin"]=tobj2[1]
-        elif str(pred)=="http://www.w3.org/2006/time#hasEnd":
-            for tobj2 in graph.predicate_objects(obj):
-                if str(tobj2[0]) in DocConfig.timeproperties:
-                    timeobj["end"]=tobj2[1]
-        elif str(pred)=="http://www.w3.org/2006/time#hasTime" or str(pred)=="http://www.w3.org/ns/sosa/phenomenonTime" or str(pred)=="http://www.w3.org/ns/sosa/resultTime":
-            for tobj2 in graph.predicate_objects(obj):
-                if str(tobj2[0]) in DocConfig.timeproperties:
-                    timeobj["timepoint"]=tobj2[1]
-        return timeobj
-
-    def timeObjectToHTML(self,timeobj):
-        timeres=None
-        if "begin" in timeobj and "end" in timeobj:
-            timeres=str(timeobj["begin"])+" "
-            if str(timeobj["begin"].datatype) in DocConfig.timeliteraltypes:
-                timeres+=DocUtils.createURILink(self.prefixes,DocConfig.timeliteraltypes[str(timeobj["begin"].datatype)])
-            timeres+=" - "+str(timeobj["end"])
-            if str(timeobj["end"].datatype) in DocConfig.timeliteraltypes:
-                timeres+=DocUtils.createURILink(self.prefixes,DocConfig.timeliteraltypes[str(timeobj["end"].datatype)])
-        elif "begin" in timeobj and not "end" in timeobj:
-            timeres=str(timeobj["begin"])
-            if str(timeobj["begin"].datatype) in DocConfig.timeliteraltypes:
-                timeres+=DocUtils.createURILink(self.prefixes,DocConfig.timeliteraltypes[str(timeobj["begin"].datatype)])
-        elif "begin" not in timeobj and "end" in timeobj:
-            timeres=str(timeobj["end"])
-            if str(timeobj["end"].datatype) in DocConfig.timeliteraltypes:
-                timeres+=DocUtils.createURILink(self.prefixes,DocConfig.timeliteraltypes[str(timeobj["end"].datatype)])
-        elif "timepoint" in timeobj:
-            timeres=timeobj["timepoint"]
-            if str(timeobj["timepoint"].datatype) in DocConfig.timeliteraltypes:
-                timeres+=DocUtils.createURILink(self.prefixes,DocConfig.timeliteraltypes[str(timeobj["timepoint"].datatype)])
-        return timeres
-
-    def resolveTimeLiterals(self,pred,obj,graph):
-        timeobj={}
-        if isinstance(obj,URIRef) and (str(pred)=="http://www.w3.org/2006/time#hasTime" or str(pred)=="http://www.w3.org/ns/sosa/phenomenonTime" or str(pred)=="http://www.w3.org/ns/sosa/resultTime"):
-            for tobj in graph.predicate_objects(obj):
-                timeobj=self.resolveTimeObject(tobj[0],tobj[1],graph,timeobj)
-        elif isinstance(obj,URIRef) and str(pred) in DocConfig.timepointerproperties:
-            timeobj=self.resolveTimeObject(pred,obj,graph,timeobj)
-        elif isinstance(obj,Literal):
-            timeobj=self.resolveTimeObject(pred,obj,graph,timeobj)
-        return timeobj
-
 
     def searchObjectConnectionsForAggregateData(self,graph,object,pred,geojsonrep,foundmedia,imageannos,textannos,image3dannos,annobodies,label,unitlabel,nonns,inverse):
         geoprop=False
@@ -861,7 +759,7 @@ class OntDocGeneration:
             if (pred == "http://purl.org/dc/terms/isReferencedBy" or pred=="http://purl.org/spar/cito/hasCitingEntity") and tup[0] == URIRef(self.typeproperty) and ("http://purl.org/ontology/bibo/" in str(tup[1])):	
                 bibtex=BibPage.resolveBibtexReference(graph.predicate_objects(object),object,graph)
             if pred in DocConfig.timepointerproperties:
-                timeobj=self.resolveTimeLiterals(pred,object,graph)
+                timeobj=OWLTimePage.resolveTimeLiterals(pred,object,graph)
             if not nonns:
                 geojsonrep=LiteralUtils.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep,nonns)
             if incollection and "<svg" in str(tup[1]):
@@ -982,7 +880,7 @@ class OntDocGeneration:
             if unitlabel!="":
                 tablecontents+=" <span style=\"font-weight:bold\">["+str(unitlabel)+"]</span>"
             if timeobj!=None:
-                res=str(self.timeObjectToHTML(timeobj))
+                res=str(OWLTimePage.timeObjectToHTML(timeobj,self.prefixes))
                 if res!="None":
                     tablecontents+=" <span style=\"font-weight:bold\">["+str(res)+"]</span>"
                 dateprops=timeobj
@@ -1634,7 +1532,7 @@ def main():
         for path in subfolders:
             indexhtml+="<tr><td><a href=\""+path.replace(outpath[0]+"/","")+"/index.html\">"+path.replace(outpath[0]+"/","")+"</a></td></tr>"
         indexhtml+="</tbody></table>"
-        indexhtml+=templates["footer"].replace("{{license}}",curlicense).replace("{{exports}}",templates["nongeoexports"]).replace("{{bibtex}}","")
+        indexhtml+=templates["footer"].replace("{{license}}",curlicense).replace("{{exports}}",templates["nongeoexports"]).replace("{{bibtex}}","").replace("{{stats}}","")
         #print(indexhtml)
         indexf.write(indexhtml)
         indexf.close()
