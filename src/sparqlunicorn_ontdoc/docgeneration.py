@@ -288,6 +288,10 @@ class OntDocGeneration:
         res=self.getPropertyRelations(self.graph, outpath)
         voidstats["http://rdfs.org/ns/void#properties"]=res["preds"]
         voidstats["http://rdfs.org/ns/void#distinctObjects"]=res["objs"]
+        dsname=self.datasettitle
+        if dsname==None or dsname=="":
+            dsname="dataset"
+        voidds=prefixnamespace+dsname
         if self.createColl:
             self.graph=self.createCollections(self.graph,prefixnamespace)
         if self.logoname!=None and self.logoname!="" and not self.logoname.startswith("http"):
@@ -302,7 +306,8 @@ class OntDocGeneration:
                 subjectstorender.add(sub)
                 label=DocUtils.shortenURI(str(sub))
                 restriction=False
-                ressubcls=""
+                self.graph.add((sub, URIRef("http://rdfs.org/ns/void#inDataset"),
+                                URIRef(voidds)))
                 for tup in self.graph.predicate_objects(sub):
                     if str(tup[0]) in DocConfig.labelproperties:
                         labeltouri[str(tup[1])] = str(sub)

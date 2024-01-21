@@ -25,7 +25,7 @@ class DocConfig:
 
     #,"http://www.w3.org/ns/lemon/ontolex#Form":""
 
-    metadatanamespaces=["http://purl.org/dc/terms/","http://purl.org/dc/elements/1.1/","http://www.w3.org/ns/prov#","http://www.w3.org/ns/prov-o/","http://creativecommons.org/ns#","http://www.w3.org/ns/dcat#","http://purl.org/cerif/frapo/","http://www.lido-schema.org/"]
+    metadatanamespaces=["http://rdfs.org/ns/void#","http://purl.org/dc/terms/","http://purl.org/dc/elements/1.1/","http://www.w3.org/ns/prov#","http://www.w3.org/ns/prov-o/","http://creativecommons.org/ns#","http://www.w3.org/ns/dcat#","http://purl.org/cerif/frapo/","http://www.lido-schema.org/"]
 
     collectionclasses = {
                          "http://www.w3.org/2006/vcard/ns#Group":"personcollection",

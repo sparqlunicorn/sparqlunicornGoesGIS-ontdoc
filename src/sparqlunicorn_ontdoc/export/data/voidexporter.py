@@ -10,7 +10,7 @@ class VoidExporter:
     def createVoidDataset(dsname,prefixnamespace,deploypath,outpath,licenseuri,modtime,stats,startconcept=None):
         g=Graph()
         if dsname==None or dsname=="":
-            dsname="theds"
+            dsname="dataset"
         voidds=prefixnamespace+dsname
         g.add((URIRef(voidds),URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://rdfs.org/ns/void#Dataset")))
         g.add((URIRef(voidds), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
