@@ -354,6 +354,7 @@ class OntDocGeneration:
         voidstats["http://rdfs.org/ns/void#triples"] = len(self.graph)
         voidgraph=VoidExporter.createVoidDataset(self.datasettitle,prefixnamespace,self.deploypath,self.outpath,self.licenseuri,self.modtime,voidstats,self.startconcept)
         self.voidstatshtml=VoidExporter.toHTML(voidstats,self.deploypath)
+        self.graph+=voidgraph
         with open(outpath + "style.css", 'w', encoding='utf-8') as f:
             f.write(templates["stylesheet"])
             f.close()
@@ -406,7 +407,6 @@ class OntDocGeneration:
                 self.updateProgressBar(subtorencounter, subtorenderlen,"Processing Subject URIs")
         self.checkGeoInstanceAssignment(uritotreeitem)
         classlist=self.assignGeoClassesToTree(tree)
-        self.graph+=voidgraph
         if self.generatePagesForNonNS:
             labeltouri=self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, corpusid, outpath, self.license,prefixnamespace,uritotreeitem,labeltouri)
         with open(outpath + corpusid + "_classtree.js", 'w', encoding='utf-8') as f:
