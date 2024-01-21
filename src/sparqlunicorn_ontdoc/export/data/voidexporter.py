@@ -58,6 +58,6 @@ class VoidExporter:
         result="<details>"
         result+="<table><thead><th>Property</th><th>Value</th></thead><tbody>"
         for stat in stats:
-            result="<tr><td><a href=\""+str(stat)+"\" target=\"_blank\">"+str(DocUtils.shortenURI(stat))+"</a></td><td>"+stats[stat]+"<a href=\"http://www.w3.org/2001/XMLSchema#integer\">(xsd:integer)</a></td></tr>"
+            result="<tr><td><a href=\""+str(stat)+"\" target=\"_blank\">"+str(DocUtils.shortenURI(stat))+"</a></td><td>"+str(stats[stat])+"<a href=\"http://www.w3.org/2001/XMLSchema#integer\" style=\"color:#666;\">(xsd:integer)</a></td></tr>"
         result+="</tbody></table></details>"
         return result
