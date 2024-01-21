@@ -54,8 +54,8 @@ class VoidExporter:
         return g
 
     @staticmethod
-    def toHTML(stats):
-        result="<details><summary>Dataset Statistics</summary>"
+    def toHTML(stats,deploypath):
+        result="<details><summary>Dataset Statistics <a href=\""+str(deploypath)+"/void.ttl"+"\" target=\"_blank\">[VOID]</a></summary>"
         result+="<table><thead><th>Property</th><th>Value</th></thead><tbody>"
         for stat in stats:
             result+="<tr><td><a href=\""+str(stat)+"\" target=\"_blank\">"+str(DocUtils.shortenURI(stat))+"</a></td><td>"+str(stats[stat])+"<a href=\"http://www.w3.org/2001/XMLSchema#integer\" style=\"color:#666;\">(xsd:integer)</a></td></tr>"
