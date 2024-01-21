@@ -301,6 +301,7 @@ class OntDocGeneration:
             self.logoname=outpath+"/logo/logo."+self.logoname[self.logoname.rfind("."):]
         self.updateProgressBar(0, 1, "Creating classtree and search index")
         subjectstorender = set()
+        subjectstorender(URIRef(voidds))
         for sub in self.graph.subjects(None,None,True):
             if (prefixnamespace in sub and (isinstance(sub,URIRef)) or isinstance(sub,BNode)):
                 subjectstorender.add(sub)
@@ -352,7 +353,7 @@ class OntDocGeneration:
                 tree["core"]["data"].append(tr)
         voidstats["http://rdfs.org/ns/void#classes"]=len(classidset)
         voidstats["http://rdfs.org/ns/void#triples"] = len(self.graph)
-        voidgraph=VoidExporter.createVoidDataset(self.datasettitle,prefixnamespace,self.deploypath,self.outpath,self.licenseuri,self.modtime,voidstats,self.startconcept)
+        voidgraph=VoidExporter.createVoidDataset(self.datasettitle,prefixnamespace,self.deploypath,self.outpath,self.licenseuri,self.modtime,self.labellang,voidstats,self.startconcept)
         self.voidstatshtml=VoidExporter.toHTML(voidstats,self.deploypath)
         self.graph+=voidgraph
         with open(outpath + "style.css", 'w', encoding='utf-8') as f:

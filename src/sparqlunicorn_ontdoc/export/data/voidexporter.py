@@ -7,7 +7,7 @@ from doc.docutils import DocUtils
 class VoidExporter:
 
     @staticmethod
-    def createVoidDataset(dsname,prefixnamespace,deploypath,outpath,licenseuri,modtime,stats,startconcept=None):
+    def createVoidDataset(dsname,prefixnamespace,deploypath,outpath,licenseuri,modtime,language,stats,startconcept=None):
         g=Graph()
         if dsname==None or dsname=="":
             dsname="dataset"
@@ -17,6 +17,9 @@ class VoidExporter:
               Literal(dsname,lang="en")))
         g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/title"),
               Literal(dsname,lang="en")))
+        if language!=None and language!="":
+            g.add((URIRef(voidds), URIRef("http://purl.org/dc/elements/1.1/"),
+                  URIRef("http://www.lexvo.org/page/iso639-1/"+str(language))))
         g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/modified"),
               Literal(modtime,datatype="http://www.w3.org/2001/XMLSchema#dateTime")))
         if licenseuri!=None:
