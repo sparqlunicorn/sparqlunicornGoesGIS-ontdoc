@@ -288,6 +288,7 @@ class OntDocGeneration:
         res=self.getPropertyRelations(self.graph, outpath)
         voidstats["http://rdfs.org/ns/void#properties"]=res["preds"]
         voidstats["http://rdfs.org/ns/void#distinctObjects"]=res["objs"]
+        predmap=res["predmap"]
         dsname=self.datasettitle
         if dsname==None or dsname=="":
             dsname="dataset"
@@ -353,7 +354,7 @@ class OntDocGeneration:
                 tree["core"]["data"].append(tr)
         voidstats["http://rdfs.org/ns/void#classes"]=len(classidset)
         voidstats["http://rdfs.org/ns/void#triples"] = len(self.graph)
-        voidgraph=VoidExporter.createVoidDataset(self.datasettitle,prefixnamespace,self.deploypath,self.outpath,self.licenseuri,self.modtime,self.labellang,voidstats,self.startconcept)
+        voidgraph=VoidExporter.createVoidDataset(self.datasettitle,prefixnamespace,self.deploypath,self.outpath,self.licenseuri,self.modtime,self.labellang,voidstats,tree,predmap,self.startconcept)
         self.voidstatshtml=VoidExporter.toHTML(voidstats,self.deploypath)
         self.graph+=voidgraph
         with open(outpath + "style.css", 'w', encoding='utf-8') as f:
@@ -526,13 +527,14 @@ class OntDocGeneration:
         predicatecounter=0
         objects=set()
         for pred in graph.predicates(None,None,True):
-            predicates[pred]={"from":set(),"to":set()}
+            predicates[pred]={"from":set(),"to":set(),"numtriples":0}
             for tup in graph.subject_objects(pred):
                 for item in graph.objects(tup[0],URIRef(self.typeproperty),True):
                     predicates[pred]["from"].add(item)
                 for item in graph.objects(tup[1], URIRef(self.typeproperty),True):
                     predicates[pred]["to"].add(item)
                 objects.add(str(tup[1]))
+                predicates[pred]["numtriples"]+=1
             predicates[pred]["from"]=list(predicates[pred]["from"])
             predicates[pred]["to"] = list(predicates[pred]["to"])
             predicatecounter+=1
@@ -541,7 +543,7 @@ class OntDocGeneration:
         with open(outpath+"proprelations.js", 'w', encoding='utf-8') as f:
             f.write("var proprelations="+json.dumps(predicates))
             f.close()
-        return {"preds":predicatecounter,"objs":len(objects)}
+        return {"preds":predicatecounter,"objs":len(objects),"predmap":predicates}
 
     def createCollections(self,graph,namespace):
         classToInstances={}
