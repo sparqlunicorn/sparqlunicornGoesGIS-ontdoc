@@ -527,14 +527,14 @@ class OntDocGeneration:
         predicatecounter=0
         objects=set()
         for pred in graph.predicates(None,None,True):
-            predicates[pred]={"from":set(),"to":set(),"numtriples":0}
+            predicates[pred]={"from":set(),"to":set(),"triples":0}
             for tup in graph.subject_objects(pred):
                 for item in graph.objects(tup[0],URIRef(self.typeproperty),True):
                     predicates[pred]["from"].add(item)
                 for item in graph.objects(tup[1], URIRef(self.typeproperty),True):
                     predicates[pred]["to"].add(item)
                 objects.add(str(tup[1]))
-                predicates[pred]["numtriples"]+=1
+                predicates[pred]["triples"]+=1
             predicates[pred]["from"]=list(predicates[pred]["from"])
             predicates[pred]["to"] = list(predicates[pred]["to"])
             predicatecounter+=1
