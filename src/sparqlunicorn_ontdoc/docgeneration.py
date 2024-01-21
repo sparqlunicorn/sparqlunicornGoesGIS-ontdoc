@@ -496,7 +496,7 @@ class OntDocGeneration:
                 "{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}","vowl_result.js") \
                 .replace("{{classtreefolderpath}}", corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace(
                 "{{nonnslink}}", "").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}",corpusid + '_search.js').replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "")
-            IIIFAPIExporter.generateImageGrid(self.outpath,self.deploypath, iiifmanifestpaths["default"], templates["imagegrid"],indexhtml,self.replaceStandardVariables(templates["footer"],"","0","true").replace("{{license}}", curlicense).replace("{{subject}}","").replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}",""), outpath+"imagegrid.html")
+            IIIFAPIExporter.generateImageGrid(self.outpath,self.deploypath, iiifmanifestpaths["default"], templates["imagegrid"],indexhtml,self.replaceStandardVariables(templates["footer"],"","0","true").replace("{{license}}", curlicense).replace("{{subject}}","").replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}","").replace("{{stats}}",self.voidstatshtml), outpath+"imagegrid.html")
         if len(featurecollectionspaths)>0 and self.ckan:
             CKANExporter.generateCKANCollection(outpath,self.deploypath,featurecollectionspaths,tree["core"]["data"],self.license)
         if self.solidexport:
@@ -1374,7 +1374,7 @@ class OntDocGeneration:
                 if metadatatablecontentcounter>=0:
                     f.write("<h5>Metadata</h5>")
                     f.write(templates["htmltabletemplate"].replace("{{tablecontent}}", metadatatablecontents))
-                f.write(self.replaceStandardVariables(templates["footer"],"",checkdepth,"false").replace("{{exports}}",myexports).replace("{{license}}",curlicense).replace("{{bibtex}}",""))
+                f.write(self.replaceStandardVariables(templates["footer"],"",checkdepth,"false").replace("{{exports}}",myexports).replace("{{license}}",curlicense).replace("{{bibtex}}","").replace("{{stats}}",self.voidstatshtml))
                 f.close()
         except Exception as inst:
             print("Could not write "+str(completesavepath))
