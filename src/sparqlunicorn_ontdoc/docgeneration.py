@@ -287,7 +287,7 @@ class OntDocGeneration:
         self.licensehtml=curlicense
         res=self.getPropertyRelations(self.graph, outpath)
         voidstats["http://rdfs.org/ns/void#properties"]=res["preds"]
-        voidstats["http://rdfs.org/ns/void#entities"]=res["objs"]
+        voidstats["http://rdfs.org/ns/void#distinctObjects"]=res["objs"]
         if self.createColl:
             self.graph=self.createCollections(self.graph,prefixnamespace)
         if self.logoname!=None and self.logoname!="" and not self.logoname.startswith("http"):
