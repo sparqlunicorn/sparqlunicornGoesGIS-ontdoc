@@ -175,6 +175,10 @@ class DocConfig:
                                                        "prop": "http://www.w3.org/2006/vcard/ns#hasMember"},
         "http://xmlns.com/foaf/0.1/Person": {"class": "http://www.w3.org/2006/vcard/ns#Group",
                                              "prop": "http://www.w3.org/2006/vcard/ns#hasMember"},
+        "http://xmlns.com/foaf/0.1/OnlineAccount": {"class": "http://rdfs.org/sioc/ns#Usergroup",
+                                             "prop": "http://rdfs.org/sioc/ns#has_member"},
+        "http://rdfs.org/sioc/ns#User": {"class": "http://rdfs.org/sioc/ns#Usergroup",
+                                                    "prop": "http://rdfs.org/sioc/ns#has_member"},
         "https://dblp.org/rdf/schema/Person": {"class": "http://www.w3.org/2006/vcard/ns#Group",
                                                "prop": "http://www.w3.org/2006/vcard/ns#hasMember"},
 
@@ -359,6 +363,7 @@ class DocConfig:
         "http://purl.org/dc/terms/spatial": ["http://www.wikidata.org/entity/Q121810372","http://dbpedia.org/resource/Location"],
         "http://www.w3.org/2006/vcard/ns#":["http://xmlns.com/foaf/0.1/Person"],
         "http://xmlns.com/foaf/0.1/": ["http://xmlns.com/foaf/0.1/Person"],
+        "http://rdfs.org/sioc/ns#": ["http://xmlns.com/foaf/0.1/OnlineAccount"],
     }
 
 
