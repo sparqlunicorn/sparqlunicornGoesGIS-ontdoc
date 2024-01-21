@@ -18,7 +18,7 @@ class VoidExporter:
         g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/title"),
               Literal(dsname,lang="en")))
         if language!=None and language!="":
-            g.add((URIRef(voidds), URIRef("http://purl.org/dc/elements/1.1/"),
+            g.add((URIRef(voidds), URIRef("http://purl.org/dc/elements/1.1/language"),
                   URIRef("http://www.lexvo.org/page/iso639-1/"+str(language))))
         g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/modified"),
               Literal(modtime,datatype="http://www.w3.org/2001/XMLSchema#dateTime")))
