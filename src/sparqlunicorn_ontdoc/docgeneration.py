@@ -301,7 +301,7 @@ class OntDocGeneration:
             self.logoname=outpath+"/logo/logo."+self.logoname[self.logoname.rfind("."):]
         self.updateProgressBar(0, 1, "Creating classtree and search index")
         subjectstorender = set()
-        subjectstorender(URIRef(voidds))
+        subjectstorender.add(URIRef(voidds))
         for sub in self.graph.subjects(None,None,True):
             if (prefixnamespace in sub and (isinstance(sub,URIRef)) or isinstance(sub,BNode)):
                 subjectstorender.add(sub)
