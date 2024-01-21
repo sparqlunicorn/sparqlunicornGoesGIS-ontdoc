@@ -346,7 +346,8 @@ class OntDocGeneration:
             if tr["id"] not in classidset:
                 tree["core"]["data"].append(tr)
         voidstats["http://rdfs.org/ns/void#classes"]=len(classidset)
-        voidgraph=VoidExporter.createVoidDataset(self.datasettitle,len(self.graph),voidstats,self.startconcept)
+        voidstats["http://rdfs.org/ns/void#triples"] = len(self.graph)
+        voidgraph=VoidExporter.createVoidDataset(self.datasettitle,prefixnamespace,self.deploypath,self.licenseuri,self.modtime,voidstats,self.startconcept)
         self.voidstatshtml=VoidExporter.toHTML(voidstats)
         with open(outpath + "style.css", 'w', encoding='utf-8') as f:
             f.write(templates["stylesheet"])
