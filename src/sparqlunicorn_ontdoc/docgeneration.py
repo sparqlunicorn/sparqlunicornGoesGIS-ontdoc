@@ -475,7 +475,7 @@ class OntDocGeneration:
                             else:
                                 indexhtml+="<tr><td><img src=\""+tree["types"][item["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+item["type"]+"\"/><a property=\"http://rdfs.org/ns/void#exampleResource\" href=\""+str(item["id"])+"\" target=\"_blank\">"+str(item["text"])+"</a></td>"
                             indexhtml+="<td property=\"http://rdfs.org/ns/void#classPartition\" typeof=\"http://rdfs.org/ns/void#Dataset\" resource=\""+str(voidds)+"_"+str(DocUtils.shortenURI(item["id"]))+"\"><span about=\""+str(voidds)+"_"+str(DocUtils.shortenURI(item["id"]))+"\" property=\"http://rdfs.org/ns/void#class\" resource=\""+str(item["id"])+"\"></span><span about=\""+str(voidds)+"_"+str(DocUtils.shortenURI(item["id"]))+"\" property=\"http://rdfs.org/ns/void#entities\" content=\""+str(item["instancecount"])+"\" datatype=\"http://www.w3.org/2001/XMLSchema#integer\">"+str(item["instancecount"])+"</td>"+exitem+"</tr>"
-                indexhtml += "</tbody></table><script>$('#indextable').DataTable();</script>"
+                indexhtml += "</tbody></table><script property=\"http://purl.org/dc/terms/modified\" content=\""+str(self.modtime)+"\" datatype=\"http://www.w3.org/2001/XMLSchema#dateTime\">$('#indextable').DataTable();</script>"
                 indexhtml+=self.replaceStandardVariables(templates["footer"],"",checkdepth,str(nslink==prefixnamespace).lower()).replace("{{license}}",curlicense).replace("{{exports}}",templates["nongeoexports"]).replace("{{bibtex}}","").replace("{{stats}}",self.voidstatshtml)
                 #print(path)
                 with open(path + "index.html", 'w', encoding='utf-8') as f:
