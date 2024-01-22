@@ -451,9 +451,9 @@ class OntDocGeneration:
                         else:
                             ExporterUtils.exportToFunction[ex](subgraph,path + "index."+str(ex),subjectstorender,classlist,ex)
                 relpath=DocUtils.generateRelativePathFromGivenDepth(checkdepth)
-                indexhtml=self.replaceStandardVariables(templates["htmltemplate"],"",checkdepth,str(nslink==prefixnamespace).lower())
+                indexhtml=self.replaceStandardVariables(templates["htmltemplate"],voidds,checkdepth,str(nslink==prefixnamespace).lower())
                 indexhtml = indexhtml.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}",str(checkdepth)).replace("{{relativepath}}",relpath).replace("{{toptitle}}","Index page for " + nslink).replace("{{title}}","Index page for " + nslink).replace("{{startscriptpath}}", scriptlink).replace("{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink)\
-                    .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", nslink).replace("{{proprelationpath}}",proprelations).replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",templates["nongeoexports"]).replace("{{bibtex}}","")
+                    .replace("{{classtreefolderpath}}",classtreelink).replace("{{baseurlhtml}}", nslink).replace("{{proprelationpath}}",proprelations).replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", sfilelink).replace("{{exports}}",templates["nongeoexports"]).replace("{{bibtex}}","").replace("{{subjectencoded}}",urllib.parse.quote(str(voidds)))
                 indexhtml+="<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"+templates["vowltemplate"].replace("{{vowlpath}}", "minivowl_result.js")
                 if self.startconcept!=None and path==outpath and self.startconcept in uritotreeitem:
                     if self.createColl:
@@ -471,10 +471,10 @@ class OntDocGeneration:
                                 break
                         if exitem!=None:
                             if self.createColl:
-                                indexhtml+="<tr><td><img src=\""+tree["types"][item["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+item["type"]+"\"/><a href=\""+DocUtils.shortenURI(str(item["id"]))+"_collection/index.html\" target=\"_blank\">"+str(item["text"])+"</a></td>"
+                                indexhtml+="<tr><td><img src=\""+tree["types"][item["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+item["type"]+"\"/><a property=\"http://rdfs.org/ns/void#exampleResource\" href=\""+DocUtils.shortenURI(str(item["id"]))+"_collection/index.html\" target=\"_blank\">"+str(item["text"])+"</a></td>"
                             else:
-                                indexhtml+="<tr><td><img src=\""+tree["types"][item["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+item["type"]+"\"/><a href=\""+str(item["id"])+"\" target=\"_blank\">"+str(item["text"])+"</a></td>"                       
-                            indexhtml+="<td>"+str(item["instancecount"])+"</td>"+exitem+"</tr>"
+                                indexhtml+="<tr><td><img src=\""+tree["types"][item["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+item["type"]+"\"/><a property=\"http://rdfs.org/ns/void#exampleResource\" href=\""+str(item["id"])+"\" target=\"_blank\">"+str(item["text"])+"</a></td>"
+                            indexhtml+="<td property=\"http://rdfs.org/ns/void#classPartition\" resource=\""+str(voidds)+"_"+str(DocUtils.shortenURI(item["type"]))+"\"><span property=\"http://rdfs.org/ns/void#class\" content=\<span property=\"http://rdfs.org/ns/void#entities\" content=\""+str(item["instancecount"])+"\" datatype=\"http://www.w3.org/2001/XMLSchema#integer\">"+str(item["instancecount"])+"</td>"+exitem+"</tr>"
                 indexhtml += "</tbody></table><script>$('#indextable').DataTable();</script>"
                 indexhtml+=self.replaceStandardVariables(templates["footer"],"",checkdepth,str(nslink==prefixnamespace).lower()).replace("{{license}}",curlicense).replace("{{exports}}",templates["nongeoexports"]).replace("{{bibtex}}","").replace("{{stats}}",self.voidstatshtml)
                 #print(path)
