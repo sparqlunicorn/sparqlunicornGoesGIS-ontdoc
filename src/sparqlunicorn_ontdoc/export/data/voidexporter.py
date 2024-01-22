@@ -58,7 +58,7 @@ class VoidExporter:
             if item["type"]=="class":
                 cururi = voidds +"_"+ DocUtils.shortenURI(item["id"])
                 g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#classPartition"), URIRef(cururi)))
-                g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#class"), URIRef(item["type"])))
+                g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#class"), URIRef(item["id"])))
                 g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#entities"),Literal(str(stats["http://rdfs.org/ns/void#entities"]), datatype="http://www.w3.org/2001/XMLSchema#integer")))
         objectmap={}
         for obj in objectmap:
