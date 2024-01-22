@@ -38,8 +38,8 @@ class VoidExporter:
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#feature"),
               URIRef("http://www.w3.org/ns/formats/RDFa")))
         if startconcept!=None:
-            g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#rootResource"), URIRef(startconcept)))
-            g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#exampleResource"), URIRef(startconcept)))
+            g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#rootResource"), URIRef(startconcept.replace("index.html",""))))
+            g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#exampleResource"), URIRef(startconcept.replace("index.html",""))))
         for stat in stats:
             g.add((URIRef(voidds),URIRef(stat),Literal(stats[stat],datatype="http://www.w3.org/2001/XMLSchema#integer")))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#uriSpace"),
@@ -52,12 +52,15 @@ class VoidExporter:
         for pred in propstats:
             cururi=voidds+"_"+DocUtils.shortenURI(pred)
             g.add((URIRef(voidds),URIRef("http://rdfs.org/ns/void#propertyPartition"),URIRef(cururi)))
+            g.add((URIRef(cururi), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                   URIRef("http://rdfs.org/ns/void#Dataset")))
             g.add((URIRef(cururi),URIRef("http://rdfs.org/ns/void#property"),URIRef(pred)))
             g.add((URIRef(cururi),URIRef("http://rdfs.org/ns/void#triples"),Literal(str(propstats[pred]["triples"]),datatype="http://www.w3.org/2001/XMLSchema#integer")))
         for item in classtree["core"]["data"]:
             if item["type"]=="class":
                 cururi = voidds +"_"+ DocUtils.shortenURI(item["id"])
                 g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#classPartition"), URIRef(cururi)))
+                g.add((URIRef(cururi), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://rdfs.org/ns/void#Dataset")))
                 g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#class"), URIRef(item["id"])))
                 g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#entities"),Literal(str(stats["http://rdfs.org/ns/void#entities"]), datatype="http://www.w3.org/2001/XMLSchema#integer")))
         objectmap={}
