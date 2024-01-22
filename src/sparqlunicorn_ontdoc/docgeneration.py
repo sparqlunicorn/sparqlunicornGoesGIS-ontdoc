@@ -467,7 +467,7 @@ class OntDocGeneration:
                         for item2 in tree["core"]["data"]:
                             if item2["parent"]==item["id"] and (item2["type"]=="instance" or item2["type"]=="geoinstance") and nslink in item2["id"]:
                                 checkdepth = DocUtils.checkDepthFromPath(path, prefixnamespace, item2["id"])-1
-                                exitem="<td><img src=\""+tree["types"][item2["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+item2["type"]+"\"/><a property=\"http://rdfs.org/ns/void#exampleResource\" resource=\""+str(DocUtils.shortenURI(str(item["id"]))+"_collection/")+"\" href=\""+DocUtils.generateRelativeLinkFromGivenDepth(prefixnamespace,checkdepth,str(re.sub("_suniv[0-9]+_","",item2["id"])),True)+"\">"+str(item2["text"])+"</a></td>"
+                                exitem="<td><img src=\""+tree["types"][item2["type"]]["icon"]+"\" height=\"25\" width=\"25\" alt=\""+item2["type"]+"\"/><a property=\"http://rdfs.org/ns/void#exampleResource\" resource=\""+str(DocUtils.shortenURI(str(item2["id"]))+"_collection/")+"\" href=\""+DocUtils.generateRelativeLinkFromGivenDepth(prefixnamespace,checkdepth,str(re.sub("_suniv[0-9]+_","",item2["id"])),True)+"\">"+str(item2["text"])+"</a></td>"
                                 break
                         if exitem!=None:
                             if self.createColl:
