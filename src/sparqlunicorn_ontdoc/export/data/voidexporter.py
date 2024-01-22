@@ -55,10 +55,11 @@ class VoidExporter:
             g.add((URIRef(cururi),URIRef("http://rdfs.org/ns/void#property"),URIRef(pred)))
             g.add((URIRef(cururi),URIRef("http://rdfs.org/ns/void#triples"),Literal(str(propstats[pred]["triples"]),datatype="http://www.w3.org/2001/XMLSchema#integer")))
         for item in classtree["core"]["data"]:
-            cururi = voidds +"_"+ DocUtils.shortenURI(item["id"])
-            g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#classPartition"), URIRef(cururi)))
-            g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#class"), URIRef(item["type"])))
-            g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#entities"),Literal(str(stats["http://rdfs.org/ns/void#entities"]), datatype="http://www.w3.org/2001/XMLSchema#integer")))
+            if item["type"]=="class":
+                cururi = voidds +"_"+ DocUtils.shortenURI(item["id"])
+                g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#classPartition"), URIRef(cururi)))
+                g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#class"), URIRef(item["type"])))
+                g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#entities"),Literal(str(stats["http://rdfs.org/ns/void#entities"]), datatype="http://www.w3.org/2001/XMLSchema#integer")))
         objectmap={}
         for obj in objectmap:
             cururi = voidds + "_" + DocUtils.shortenURI(item)
