@@ -321,7 +321,7 @@ class OntDocGeneration:
                     elif str(tup[0]) == "http://www.w3.org/2000/01/rdf-schema#subClassOf":
                          ressubcls=str(tup[1])
                     if isinstance(tup[1],URIRef) and prefixnamespace not in str(tup[1]):
-                        ns=DocUtils.shortenURI(str(tup[1],True))
+                        ns=DocUtils.shortenURI(str(tup[1]),True)
                         if str(tup[0]) not in nonnscount:
                             nonnscount[str(tup[0])]={}
                         if ns not in nonnscount[str(tup[0])]:
