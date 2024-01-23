@@ -1081,9 +1081,10 @@ class OntDocGeneration:
                             uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])][item]+=1
                     if baseurl not in str(tup[1]) and str(tup[0])!=self.typeproperty:	
                         hasnonns.add(str(tup[1]))
-                        if str(tup[1]) not in nonnsmap:
-                            nonnsmap[str(tup[1])]=set()
-                        nonnsmap[str(tup[1])].add(subject)
+                        if nonnsmap!=None:
+                            if str(tup[1]) not in nonnsmap:
+                                nonnsmap[str(tup[1])]=set()
+                            nonnsmap[str(tup[1])].add(subject)
             for tup in sorted(predobjmap):
                 if self.metadatatable and tup not in DocConfig.labelproperties and DocUtils.shortenURI(str(tup),True) in DocConfig.metadatanamespaces:
                     thetable=metadatatablecontents

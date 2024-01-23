@@ -73,7 +73,7 @@ class VoidExporter:
                 cururi=voidds+"_"+DocUtils.shortenURI(ns)
                 g.add((URIRef(cururi), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://rdfs.org/ns/void#Linkset")))
                 g.add((URIRef(cururi), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),Literal("Linkset: "+str(DocUtils.shortenURI(voidds))+" - "+str(DocUtils.shortenURI(ns)),lang="en")))
-                g.add((URIRef(cururi),URIRef("http://rdfs.org/ns/void#subjectsTarget"),URIRef(voidds)))
+                g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#subjectsTarget"),URIRef(voidds)))
                 g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#objectsTarget"),URIRef(ns)))
                 g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#linkPredicate"),URIRef(prop)))
                 g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#triples"),Literal(str(nonnscount[prop][ns]),datatype="http://www.w3.org/2001/XMLSchema#integer")))
