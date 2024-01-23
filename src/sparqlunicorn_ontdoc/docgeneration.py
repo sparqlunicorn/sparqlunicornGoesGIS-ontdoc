@@ -370,8 +370,8 @@ class OntDocGeneration:
         voidgraph=VoidExporter.createVoidDataset(self.datasettitle,prefixnamespace,self.deploypath,self.outpath,self.licenseuri,self.modtime,self.labellang,voidstats,tree,predmap,nonnscount,instancecount,self.startconcept)
         self.voidstatshtml=VoidExporter.toHTML(voidstats,self.deploypath)
         self.graph+=voidgraph["graph"]
-        for sub in voidgraph["subjects"]:
-            subjectstorender.add(sub)
+        #for sub in voidgraph["subjects"]:
+        #    subjectstorender.add(sub)
         with open(outpath + "style.css", 'w', encoding='utf-8') as f:
             f.write(templates["stylesheet"])
             f.close()
