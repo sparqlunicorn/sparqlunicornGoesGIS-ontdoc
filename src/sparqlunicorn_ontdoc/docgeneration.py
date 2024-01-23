@@ -304,6 +304,7 @@ class OntDocGeneration:
         subjectstorender = set()
         subjectstorender.add(URIRef(voidds))
         nonnscount={}
+        instancecount={}
         for sub in self.graph.subjects(None,None,True):
             if (prefixnamespace in sub and (isinstance(sub,URIRef)) or isinstance(sub,BNode)):
                 subjectstorender.add(sub)
@@ -316,6 +317,10 @@ class OntDocGeneration:
                         labeltouri[str(tup[1])] = str(sub)
                         uritolabel[str(sub)] = {"label":str(tup[1])}
                         label=str(tup[1])
+                    elif str(tup[0])==self.typeproperty:
+                        if str(tup[1]) not in instancecount:
+                            instancecount[str(tup[1])]=0
+                        instancecount[str(tup[1])]+=1
                     elif str(tup[1]) == "http://www.w3.org/2002/07/owl#Restriction":
                             restriction = True
                     elif str(tup[0]) == "http://www.w3.org/2000/01/rdf-schema#subClassOf":
@@ -362,7 +367,7 @@ class OntDocGeneration:
                 tree["core"]["data"].append(tr)
         voidstats["http://rdfs.org/ns/void#classes"]=len(classidset)
         voidstats["http://rdfs.org/ns/void#triples"] = len(self.graph)
-        voidgraph=VoidExporter.createVoidDataset(self.datasettitle,prefixnamespace,self.deploypath,self.outpath,self.licenseuri,self.modtime,self.labellang,voidstats,tree,predmap,nonnscount,self.startconcept)
+        voidgraph=VoidExporter.createVoidDataset(self.datasettitle,prefixnamespace,self.deploypath,self.outpath,self.licenseuri,self.modtime,self.labellang,voidstats,tree,predmap,nonnscount,instancecount,self.startconcept)
         self.voidstatshtml=VoidExporter.toHTML(voidstats,self.deploypath)
         self.graph+=voidgraph
         with open(outpath + "style.css", 'w', encoding='utf-8') as f:
