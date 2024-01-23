@@ -1553,7 +1553,7 @@ def main():
         print(subfolders)
         for path in subfolders:
             indexhtml+="<tr><td><a href=\""+path.replace(outpath[0]+"/","")+"/index.html\">"+path.replace(outpath[0]+"/","")+"</a></td></tr>"
-        indexhtml+="</tbody></table>"
+        indexhtml+="</tbody></table><script>$('#indextable').DataTable();</script>"
         indexhtml+=templates["footer"].replace("{{license}}",curlicense).replace("{{exports}}",templates["nongeoexports"]).replace("{{bibtex}}","").replace("{{stats}}","")
         #print(indexhtml)
         indexf.write(indexhtml)
