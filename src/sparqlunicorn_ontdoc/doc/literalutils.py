@@ -1,5 +1,4 @@
 from rdflib import URIRef, Literal
-import os
 import json
 import shapely
 import traceback
