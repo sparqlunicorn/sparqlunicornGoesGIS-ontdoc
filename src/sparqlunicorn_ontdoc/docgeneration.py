@@ -988,25 +988,26 @@ class OntDocGeneration:
         nonnsuris=len(uristorender)	
         counter=0	
         for uri in uristorender:	
-            label=""	
-            for tup in graph.predicate_objects(URIRef(uri)):
-                if str(tup[0]) in DocConfig.labelproperties:
-                    label = str(tup[1])	
-            if uri in uritotreeitem:
-                res = DocUtils.replaceNameSpacesInLabel(self.prefixes,str(uri))
-                label=DocUtils.getLabelForObject(URIRef(str(uri)), graph,self.labellang)
-                if res!=None and label!="":
-                    uritotreeitem[uri][-1]["text"]=label+" (" + res["uri"] + ")"
-                elif label!="":
-                    uritotreeitem[uri][-1]["text"]=label+" ("+DocUtils.shortenURI(uri)+")"
-                else:
-                    uritotreeitem[uri][-1]["text"]=DocUtils.shortenURI(uri)
-                uritotreeitem[uri][-1]["id"]=prefixnamespace+"nonns_"+DocUtils.shortenURI(uri)+".html"
-                labeltouri[label]=prefixnamespace+"nonns_"+DocUtils.shortenURI(uri)+".html"
-            if counter%10==0:
-                self.updateProgressBar(counter, nonnsuris, "NonNS URIs")
-            self.createHTML(outpath+"nonns_"+DocUtils.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri),True), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, None, Graph(),uristorender,True,label)	
-            counter+=1	
+            label=""
+            if prefixnamespace not in uri:
+                for tup in graph.predicate_objects(URIRef(uri)):
+                    if str(tup[0]) in DocConfig.labelproperties:
+                        label = str(tup[1])
+                if uri in uritotreeitem:
+                    res = DocUtils.replaceNameSpacesInLabel(self.prefixes,str(uri))
+                    label=DocUtils.getLabelForObject(URIRef(str(uri)), graph,self.labellang)
+                    if res!=None and label!="":
+                        uritotreeitem[uri][-1]["text"]=label+" (" + res["uri"] + ")"
+                    elif label!="":
+                        uritotreeitem[uri][-1]["text"]=label+" ("+DocUtils.shortenURI(uri)+")"
+                    else:
+                        uritotreeitem[uri][-1]["text"]=DocUtils.shortenURI(uri)
+                    uritotreeitem[uri][-1]["id"]=prefixnamespace+"nonns_"+DocUtils.shortenURI(uri)+".html"
+                    labeltouri[label]=prefixnamespace+"nonns_"+DocUtils.shortenURI(uri)+".html"
+                if counter%10==0:
+                    self.updateProgressBar(counter, nonnsuris, "NonNS URIs")
+                self.createHTML(outpath+"nonns_"+DocUtils.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri),True), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, None, Graph(),uristorender,True,label)
+                counter+=1	
         return labeltouri
     
     def polygonToPath(self,svg):
