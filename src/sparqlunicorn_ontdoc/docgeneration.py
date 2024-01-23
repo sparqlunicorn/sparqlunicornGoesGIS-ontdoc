@@ -303,6 +303,7 @@ class OntDocGeneration:
         self.updateProgressBar(0, 1, "Creating classtree and search index")
         subjectstorender = set()
         subjectstorender.add(URIRef(voidds))
+        nonnscount={}
         for sub in self.graph.subjects(None,None,True):
             if (prefixnamespace in sub and (isinstance(sub,URIRef)) or isinstance(sub,BNode)):
                 subjectstorender.add(sub)
@@ -319,6 +320,13 @@ class OntDocGeneration:
                             restriction = True
                     elif str(tup[0]) == "http://www.w3.org/2000/01/rdf-schema#subClassOf":
                          ressubcls=str(tup[1])
+                    if isinstance(tup[1],URIRef) and prefixnamespace not in str(tup[1]):
+                        ns=DocUtils.shortenURI(str(tup[1],True))
+                        if str(tup[0]) not in nonnscount:
+                            nonnscount[str(tup[0])]={}
+                        if ns not in nonnscount[str(tup[0])]:
+                            nonnscount[str(tup[0])][ns]=0
+                        nonnscount[str(tup[0])][ns]+=1
                 if isinstance(sub,BNode) and restriction:
                     self.graph.add((sub, URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
                                         Literal(label + " [Restriction]", lang="en")))
@@ -354,7 +362,7 @@ class OntDocGeneration:
                 tree["core"]["data"].append(tr)
         voidstats["http://rdfs.org/ns/void#classes"]=len(classidset)
         voidstats["http://rdfs.org/ns/void#triples"] = len(self.graph)
-        voidgraph=VoidExporter.createVoidDataset(self.datasettitle,prefixnamespace,self.deploypath,self.outpath,self.licenseuri,self.modtime,self.labellang,voidstats,tree,predmap,self.startconcept)
+        voidgraph=VoidExporter.createVoidDataset(self.datasettitle,prefixnamespace,self.deploypath,self.outpath,self.licenseuri,self.modtime,self.labellang,voidstats,tree,predmap,nonnscount,self.startconcept)
         self.voidstatshtml=VoidExporter.toHTML(voidstats,self.deploypath)
         self.graph+=voidgraph
         with open(outpath + "style.css", 'w', encoding='utf-8') as f:
@@ -1382,7 +1390,7 @@ class OntDocGeneration:
                 if metadatatablecontentcounter>=0:
                     f.write("<h5>Metadata</h5>")
                     f.write(templates["htmltabletemplate"].replace("{{tablecontent}}", metadatatablecontents))
-                f.write(self.replaceStandardVariables(templates["footer"],"",checkdepth,"false").replace("{{exports}}",myexports).replace("{{license}}",curlicense).replace("{{bibtex}}","").replace("{{stats}}",self.voidstatshtml))
+                f.write(self.replaceStandardVariables(templates["footer"],"",checkdepth,"false").replace("{{exports}}",myexports).replace("{{license}}",curlicense).replace("{{bibtex}}","").replace("{{stats}}",""))
                 f.close()
         except Exception as inst:
             print("Could not write "+str(completesavepath))
