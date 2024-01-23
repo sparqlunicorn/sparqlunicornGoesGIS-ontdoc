@@ -370,7 +370,8 @@ class OntDocGeneration:
         voidgraph=VoidExporter.createVoidDataset(self.datasettitle,prefixnamespace,self.deploypath,self.outpath,self.licenseuri,self.modtime,self.labellang,voidstats,tree,predmap,nonnscount,instancecount,self.startconcept)
         self.voidstatshtml=VoidExporter.toHTML(voidstats,self.deploypath)
         self.graph+=voidgraph["graph"]
-        subjectstorender.update(voidgraph["subjects"])
+        for sub in voidgraph["subjects"]:
+            subjectstorender.add(sub)
         with open(outpath + "style.css", 'w', encoding='utf-8') as f:
             f.write(templates["stylesheet"])
             f.close()
@@ -1077,11 +1078,10 @@ class OntDocGeneration:
                                 uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])][item] = 0
                             uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])][item]+=1
                     if baseurl not in str(tup[1]) and str(tup[0])!=self.typeproperty:	
-                        hasnonns.add(str(tup[1]))	
-                        if nonnsmap!=None:
-                            if str(tup[1]) not in nonnsmap:
-                                nonnsmap[str(tup[1])]=set()
-                            nonnsmap[str(tup[1])].add(subject)
+                        hasnonns.add(str(tup[1]))
+                        if str(tup[1]) not in nonnsmap:
+                            nonnsmap[str(tup[1])]=set()
+                        nonnsmap[str(tup[1])].add(subject)
             for tup in sorted(predobjmap):
                 if self.metadatatable and tup not in DocConfig.labelproperties and DocUtils.shortenURI(str(tup),True) in DocConfig.metadatanamespaces:
                     thetable=metadatatablecontents
