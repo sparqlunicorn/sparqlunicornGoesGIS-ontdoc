@@ -9,6 +9,7 @@ class VoidExporter:
     @staticmethod
     def createVoidDataset(dsname,prefixnamespace,deploypath,outpath,licenseuri,modtime,language,stats,classtree=None,propstats=None,nonnscount=None,objectmap=None,startconcept=None):
         g=Graph()
+        subjects=set()
         if dsname==None or dsname=="":
             dsname="dataset"
         voidds=prefixnamespace+dsname
@@ -56,6 +57,7 @@ class VoidExporter:
                    URIRef("http://rdfs.org/ns/void#Dataset")))
             g.add((URIRef(cururi),URIRef("http://rdfs.org/ns/void#property"),URIRef(pred)))
             g.add((URIRef(cururi),URIRef("http://rdfs.org/ns/void#triples"),Literal(str(propstats[pred]["triples"]),datatype="http://www.w3.org/2001/XMLSchema#integer")))
+            subjects.add(cururi)
         for item in classtree["core"]["data"]:
             if item["type"]=="class":
                 cururi = voidds +"_"+ DocUtils.shortenURI(item["id"])
@@ -64,15 +66,18 @@ class VoidExporter:
                 g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#class"), URIRef(item["id"])))
                 if item["id"] in objectmap:
                     g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#entities"),Literal(str(objectmap[item["id"]]), datatype="http://www.w3.org/2001/XMLSchema#integer")))
+                subjects.add(cururi)
         for prop in nonnscount:
             for ns in nonnscount[prop]:
-                g.add((URIRef(voidds+"_"+DocUtils.shortenURI(ns)), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://rdfs.org/ns/void#Linkset")))
-                g.add((URIRef(voidds + "_" + DocUtils.shortenURI(ns)),URIRef("http://rdfs.org/ns/void#subjectsTarget"),URIRef(voidds)))
-                g.add((URIRef(voidds + "_" + DocUtils.shortenURI(ns)), URIRef("http://rdfs.org/ns/void#objectsTarget"),URIRef(ns)))
-                g.add((URIRef(voidds + "_" + DocUtils.shortenURI(ns)), URIRef("http://rdfs.org/ns/void#linkPredicate"),URIRef(prop)))
-                g.add((URIRef(voidds + "_" + DocUtils.shortenURI(ns)), URIRef("http://rdfs.org/ns/void#triples"),Literal(str(nonnscount[prop][ns]),datatype="http://www.w3.org/2001/XMLSchema#integer")))
+                cururi=voidds+"_"+DocUtils.shortenURI(ns)
+                g.add((URIRef(cururi), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://rdfs.org/ns/void#Linkset")))
+                g.add((URIRef(cururi),URIRef("http://rdfs.org/ns/void#subjectsTarget"),URIRef(voidds)))
+                g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#objectsTarget"),URIRef(ns)))
+                g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#linkPredicate"),URIRef(prop)))
+                g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#triples"),Literal(str(nonnscount[prop][ns]),datatype="http://www.w3.org/2001/XMLSchema#integer")))
+                subjects.add(cururi)
         g.serialize(outpath+"/void.ttl", encoding="utf-8")
-        return g
+        return {"graph":g,"subjects":subjects}
 
     @staticmethod
     def toHTML(stats,deploypath):
