@@ -74,6 +74,7 @@ class VoidExporter:
                 g.add((URIRef(voidds+"_"+DocUtils.shortenURI(ns)), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://rdfs.org/ns/void#Linkset")))
                 g.add((URIRef(voidds + "_" + DocUtils.shortenURI(ns)),URIRef("http://rdfs.org/ns/void#subjectsTarget"),URIRef(voidds)))
                 g.add((URIRef(voidds + "_" + DocUtils.shortenURI(ns)), URIRef("http://rdfs.org/ns/void#objectsTarget"),URIRef(ns)))
+                g.add((URIRef(voidds + "_" + DocUtils.shortenURI(ns)), URIRef("http://rdfs.org/ns/void#linkPredicate"),URIRef(prop)))
                 g.add((URIRef(voidds + "_" + DocUtils.shortenURI(ns)), URIRef("http://rdfs.org/ns/void#triples"),Literal(str(nonnscount[prop][ns]),datatype="http://www.w3.org/2001/XMLSchema#integer")))
         g.serialize(outpath+"/void.ttl", encoding="utf-8")
         return g
