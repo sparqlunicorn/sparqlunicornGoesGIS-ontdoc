@@ -1136,7 +1136,7 @@ class OntDocGeneration:
                             if ext in DocConfig.fileextensionmap:
                                 foundmedia[DocConfig.fileextensionmap[ext]][str(item)]={}
                         elif tup in DocConfig.valueproperties:
-                            foundvals.add(str(item))
+                            foundvals.add((str(tup),str(item)))
                         res=self.createHTMLTableValueEntry(subject, tup, item, ttlf, graph,
                                               baseurl, checkdepth,geojsonrep,foundmedia,imageannos,textannos,image3dannos,annobodies,dateprops,inverse,nonns)
                         geojsonrep = res["geojson"]
@@ -1273,7 +1273,7 @@ class OntDocGeneration:
                 for comm in comment:
                     f.write(templates["htmlcommenttemplate"].replace("{{comment}}", DocUtils.shortenURI(comm) + ":" + comment[comm]))
                 for fval in foundvals:
-                    f.write(templates["htmlcommenttemplate"].replace("{{comment}}", "<b>Value:<mark>" + str(fval) + "</mark></b>"))
+                    f.write(templates["htmlcommenttemplate"].replace("{{comment}}", "<b>Value "+ DocUtils.shortenURI(str(fval[0]))+": <mark>" + str(fval[1]) + "</mark></b>"))
                 if len(foundmedia["mesh"])>0 and len(image3dannos)>0:
                     if self.iiif:
                         iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,self.outpath,self.deploypath,foundmedia["mesh"],image3dannos,annobodies,str(subject),self.prefixnamespace,imagetoURI, self.imagemetadata,DocConfig.metadatanamespaces,foundlabel,comment,thetypes,predobjmap,"Model"))
