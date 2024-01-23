@@ -284,6 +284,10 @@ class DocConfig:
         "http://www.w3.org/1999/02/22-rdf-syntax-ns#value":"DatatypeProperty",
         "http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue":"ObjectProperty",
         "http://www.opengis.net/ont/crs/usesValue":"ObjectProperty",
+        "http://rdfs.org/ns/void#triples": "DatatypeProperty",
+        "http://rdfs.org/ns/void#entities": "DatatypeProperty",
+        "http://rdfs.org/ns/void#propertyPartition": "ObjectProperty",
+        "http://rdfs.org/ns/void#classPartition": "ObjectProperty",
         "http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue":"DatatypeProperty",
         "http://www.w3.org/ns/sosa/hasResult": "ObjectProperty",
         "http://www.w3.org/ns/sosa/hasSimpleResult":"DatatypeProperty"
