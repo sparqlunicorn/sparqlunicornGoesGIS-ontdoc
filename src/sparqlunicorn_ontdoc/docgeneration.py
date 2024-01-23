@@ -986,8 +986,9 @@ class OntDocGeneration:
 
     def getSubjectPagesForNonGraphURIs(self,uristorender,graph,prefixnamespace,corpusid,outpath,nonnsmap,baseurl,uritotreeitem,labeltouri):
         nonnsuris=len(uristorender)	
-        counter=0	
-        for uri in uristorender:	
+        counter=0
+        print("NONS URIS TO RENDER: "+str(uristorender))
+        for uri in uristorender:
             label=""
             if prefixnamespace not in uri:
                 for tup in graph.predicate_objects(URIRef(uri)):
@@ -1007,7 +1008,7 @@ class OntDocGeneration:
                 if counter%10==0:
                     self.updateProgressBar(counter, nonnsuris, "NonNS URIs")
                 self.createHTML(outpath+"nonns_"+DocUtils.shortenURI(uri)+".html", None, URIRef(uri), baseurl, graph.subject_predicates(URIRef(uri),True), graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", None, self.license, None, Graph(),uristorender,True,label)
-                counter+=1	
+                counter+=1
         return labeltouri
     
     def polygonToPath(self,svg):
