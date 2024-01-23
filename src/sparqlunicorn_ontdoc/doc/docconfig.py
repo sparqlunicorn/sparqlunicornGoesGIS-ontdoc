@@ -295,7 +295,10 @@ class DocConfig:
 
     unitproperties={
         "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit":"ObjectProperty",
-        "https://www.w3.org/ns/activitystreams#units":"DatatypeProperty"
+        "https://www.w3.org/ns/activitystreams#units":"DatatypeProperty",
+        "http://rdfs.org/ns/void#property": "DatatypeProperty",
+        "http://rdfs.org/ns/void#class": "DatatypeProperty",
+        "http://rdfs.org/ns/void#objectsTarget": "DatatypeProperty",
     }
 
     labelproperties = {
