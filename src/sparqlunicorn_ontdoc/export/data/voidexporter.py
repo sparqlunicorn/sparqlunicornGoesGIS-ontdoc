@@ -78,6 +78,7 @@ class VoidExporter:
                 g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#linkPredicate"),URIRef(prop)))
                 g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#triples"),Literal(str(nonnscount[prop][ns]),datatype="http://www.w3.org/2001/XMLSchema#integer")))
                 subjects.add(URIRef(cururi))
+        print("VOID SUBJECTS: "+str(subjects))
         g.serialize(outpath+"/void.ttl", encoding="utf-8")
         return {"graph":g,"subjects":subjects}
 
