@@ -131,10 +131,10 @@ class DocUtils:
             checkdepthtarget = 4
         else:
             checkdepthtarget = targetpath.count("/") - 1
-        print("Checkdepthtarget: " + str(checkdepthtarget))
+        #print("Checkdepthtarget: " + str(checkdepthtarget))
         targetrellink = DocUtils.generateRelativeLinkFromGivenDepth(targetpath, checkdepthtarget, linkpath, False)
-        print("Target Rellink: " + str(targetrellink))
-        print("Linkpath: " + str(linkpath))
+        #print("Target Rellink: " + str(targetrellink))
+        #print("Linkpath: " + str(linkpath))
         targetrellink = targetrellink.replace(outpath, "")
         return targetrellink.replace("//", "/")
 

@@ -138,4 +138,3 @@ class GeometryViewPage:
 
     def generatePageView(self,headertemplate,footertemplate,g,f):
         f.write(str(headertemplate))
-        print("PageView")
