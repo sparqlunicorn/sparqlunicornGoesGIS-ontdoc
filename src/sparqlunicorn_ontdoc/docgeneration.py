@@ -986,10 +986,11 @@ class OntDocGeneration:
     def getSubjectPagesForNonGraphURIs(self,uristorender,graph,prefixnamespace,corpusid,outpath,nonnsmap,baseurl,uritotreeitem,labeltouri):
         nonnsuris=len(uristorender)	
         counter=0
-        print("NONS URIS TO RENDER: "+str(uristorender))
+        #print("NONS URIS TO RENDER: "+str(uristorender))
         for uri in uristorender:
             label=""
             if prefixnamespace not in uri:
+                print("URI: " + str(uri))
                 for tup in graph.predicate_objects(URIRef(uri)):
                     if str(tup[0]) in DocConfig.labelproperties:
                         label = str(tup[1])
