@@ -55,7 +55,7 @@ class VoidExporter:
             g.add((URIRef(cururi), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://rdfs.org/ns/void#Dataset")))
             g.add((URIRef(cururi), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),Literal("Property Partition: " + str(DocUtils.shortenURI(pred)), lang="en")))
             g.add((URIRef(cururi),URIRef("http://rdfs.org/ns/void#property"),URIRef(pred)))
-            g.add((URIRef(cururi),URIRef("http://rdfs.org/ns/void#triples"),Literal(str(propstats[pred]["http://rdfs.org/ns/void#triples"]),datatype="http://www.w3.org/2001/XMLSchema#integer")))
+            g.add((URIRef(cururi),URIRef("http://rdfs.org/ns/void#triples"),Literal(str(propstats[pred]["triples"]),datatype="http://www.w3.org/2001/XMLSchema#integer")))
             subjectstorender.add(URIRef(cururi))
         for item in classtree["core"]["data"]:
             if item["type"]=="class":
