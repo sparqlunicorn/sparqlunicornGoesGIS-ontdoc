@@ -837,7 +837,8 @@ class OntDocGeneration:
                 annobodies.append({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"})
         if foundunit == None and foundval != None:
             if "http" in foundval:
-                unitlabel = "<a href=\"" + str(foundval) + "\">" + str(DocUtils.shortenURI(foundval)) + "</a>"
+                untilabel=DocUtils.resolveLabelLink(self.prefixes, graph, foundval)
+                #unitlabel = "<a href=\"" + str(foundval) + "\">" + str(DocUtils.shortenURI(foundval)) + "</a>"
             else:
                 unitlabel = str(foundval)
             if pred=="http://www.w3.org/ns/oa#hasBody":

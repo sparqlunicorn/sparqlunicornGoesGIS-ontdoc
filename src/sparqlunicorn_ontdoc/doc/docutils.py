@@ -113,6 +113,13 @@ class DocUtils:
         return rellink
 
     @staticmethod
+    def resolveLabelLink(prefixes,graph,uri):
+        res=DocUtils.getLabelForObject(uri, graph)
+        if res=="":
+            return DocUtils.createURILink(prefixes,uri)
+        return res
+
+    @staticmethod
     def checkImgMetadataRDF(g,uri):
         res={}
         for obj in g.objects(URIRef(uri),URIRef("http://www.w3.org/2003/12/exif/ns#width")):
