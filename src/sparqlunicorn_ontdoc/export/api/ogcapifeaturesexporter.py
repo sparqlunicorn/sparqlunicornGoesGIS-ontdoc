@@ -253,7 +253,7 @@ class OGCAPIFeaturesExporter:
                             f.write(
                                 "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + targetpath + "\" /></head></html>")
                             f.close()
-                        print("symlinks created")
+                        #print("symlinks created")
                     except Exception as e:
                         print("symlink creation error")
                         print(e)
@@ -325,8 +325,8 @@ class OGCAPIFeaturesExporter:
                         featpath = feat["id"].replace(prefixnamespace, "").replace("//", "/")
                         try:
                             os.makedirs(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"]))))
-                            print("CHECKPATH: " + str(
-                                str(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.json").replace("//", "/")))
+                            #print("CHECKPATH: " + str(
+                            #    str(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.json").replace("//", "/")))
                             if os.path.exists(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.json"):
                                 targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.json", str(op + "/items/" + str(
                                     DocUtils.shortenURI(feat["id"])) + "/index.json").replace("//", "/"), outpath, True)
@@ -344,7 +344,7 @@ class OGCAPIFeaturesExporter:
                                 f.write(
                                     "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + targetpath + "\" /></head></html>")
                                 f.close()
-                            print("symlinks created")
+                            #print("symlinks created")
                         except Exception as e:
                             print("symlink creation error")
                             print(e)

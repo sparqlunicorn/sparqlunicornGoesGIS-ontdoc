@@ -991,7 +991,7 @@ class OntDocGeneration:
         for uri in uristorender:
             label=""
             if prefixnamespace not in uri:
-                print("URI: " + str(uri))
+                #print("URI: " + str(uri))
                 for tup in graph.predicate_objects(URIRef(uri)):
                     if str(tup[0]) in DocConfig.labelproperties:
                         label = str(tup[1])
