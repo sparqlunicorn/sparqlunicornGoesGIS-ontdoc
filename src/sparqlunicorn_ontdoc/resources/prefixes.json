@@ -25,6 +25,7 @@
   "http://purl.org/ontology/bibo/": "Bibliography Ontology",
   "http://www.opengis.net/ont/sf#": "Simple Features Vocabulary",
   "http://wikiba.se/ontology#": "Wikibase system ontology",
+  "http://www.cidoc-crm.org/cidoc-crm/": "CIDOC CRM Ontology"
 },
 "reversed":{
   "http://10.0.3.120/download/eproc_FORN_v02.owl#": "eproc",

@@ -370,7 +370,8 @@ class DocConfig:
         "http://purl.org/dc/terms/spatial": [{"uri":"http://www.wikidata.org/entity/Q121810372","label":"Location"},{"uri":"http://dbpedia.org/resource/Location","label":"Location"}],
         "http://www.w3.org/2006/vcard/ns#":[{"uri":"http://xmlns.com/foaf/0.1/Person","label":"Person"}],
         "http://xmlns.com/foaf/0.1/": [{"uri":"http://xmlns.com/foaf/0.1/Person","label":"Person"}],
-        "http://rdfs.org/sioc/ns#": [{"uri":"http://xmlns.com/foaf/0.1/OnlineAccount","label":"Online Account"}]
+        "http://rdfs.org/sioc/ns#": [{"uri":"http://xmlns.com/foaf/0.1/OnlineAccount","label":"Online Account"}],
+        "http://www.cidoc-crm.org/cidoc-crm/":[{"uri":"http://dbpedia.org/resource/Cultural_heritage","label":"Cultural Heritage"}]
     }
 
 
