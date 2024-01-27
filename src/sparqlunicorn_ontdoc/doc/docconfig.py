@@ -362,15 +362,15 @@ class DocConfig:
     }
 
     namespaceToTopic={
-        "http://www.opengis.net/ont/geosparql#":["http://www.wikidata.org/entity/Q121810372","http://dbpedia.org/resource/Location"],
-        "http://www.w3.org/2003/01/geo/wgs84_pos#": ["http://www.wikidata.org/entity/Q121810372","http://dbpedia.org/resource/Location"],
-        "http://www.georss.org/georss/": ["http://www.wikidata.org/entity/Q121810372","http://dbpedia.org/resource/Location"],
-        "http://www.w3.org/ns/locn#": ["http://www.wikidata.org/entity/Q121810372","http://dbpedia.org/resource/Location"],
-        "http://rdfs.co/juso/": ["http://www.wikidata.org/entity/Q121810372","http://dbpedia.org/resource/Location"],
-        "http://purl.org/dc/terms/spatial": ["http://www.wikidata.org/entity/Q121810372","http://dbpedia.org/resource/Location"],
-        "http://www.w3.org/2006/vcard/ns#":["http://xmlns.com/foaf/0.1/Person"],
-        "http://xmlns.com/foaf/0.1/": ["http://xmlns.com/foaf/0.1/Person"],
-        "http://rdfs.org/sioc/ns#": ["http://xmlns.com/foaf/0.1/OnlineAccount"],
+        "http://www.opengis.net/ont/geosparql#":[{"uri":"http://www.wikidata.org/entity/Q121810372","label":"Location"},{"uri":"http://dbpedia.org/resource/Location","label":"Location"}],
+        "http://www.w3.org/2003/01/geo/wgs84_pos#": [{"uri":"http://www.wikidata.org/entity/Q121810372","label":"Location"},{"uri":"http://dbpedia.org/resource/Location","label":"Location"}],
+        "http://www.georss.org/georss/": [{"uri":"http://www.wikidata.org/entity/Q121810372","label":"Location"},{"uri":"http://dbpedia.org/resource/Location","label":"Location"}],
+        "http://www.w3.org/ns/locn#": [{"uri":"http://www.wikidata.org/entity/Q121810372","label":"Location"},{"uri":"http://dbpedia.org/resource/Location","label":"Location"}],
+        "http://rdfs.co/juso/": [{"uri":"http://www.wikidata.org/entity/Q121810372","label":"Location"},{"uri":"http://dbpedia.org/resource/Location","label":"Location"}],
+        "http://purl.org/dc/terms/spatial": [{"uri":"http://www.wikidata.org/entity/Q121810372","label":"Location"},{"uri":"http://dbpedia.org/resource/Location","label":"Location"}],
+        "http://www.w3.org/2006/vcard/ns#":[{"uri":"http://xmlns.com/foaf/0.1/Person","label":"Person"}],
+        "http://xmlns.com/foaf/0.1/": [{"uri":"http://xmlns.com/foaf/0.1/Person","label":"Person"}],
+        "http://rdfs.org/sioc/ns#": [{"uri":"http://xmlns.com/foaf/0.1/OnlineAccount","label":"Online Account"}]
     }
 
 

@@ -7,7 +7,7 @@ from doc.docutils import DocUtils
 class VoidExporter:
 
     @staticmethod
-    def createVoidDataset(dsname,prefixnamespace,deploypath,outpath,licenseuri,modtime,language,stats,subjectstorender,classtree=None,propstats=None,nonnscount=None,objectmap=None,startconcept=None):
+    def createVoidDataset(dsname,prefixnamespace,deploypath,outpath,licenseuri,modtime,language,stats,subjectstorender,prefixes,classtree=None,propstats=None,nonnscount=None,objectmap=None,startconcept=None):
         g=Graph()
         if dsname==None or dsname=="":
             dsname="dataset"
@@ -48,7 +48,10 @@ class VoidExporter:
             g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#vocabulary"),URIRef(namespace)))
             if str(namespace) in DocConfig.namespaceToTopic:
                 for entry in DocConfig.namespaceToTopic[str(namespace)]:
-                    g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/subject"),URIRef(entry)))
+                    g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/subject"),URIRef(entry["uri"])))
+                    g.add((URIRef(entry),URIRef("http://www.w3.org/2000/01/rdf-schema#label"),Literal(entry["label"],lang="en")))
+            if str(namespace) in prefixes["nstolabel"]:
+                g.add((URIRef(namespace),URIRef("http://www.w3.org/2000/01/rdf-schema#label"),Literal(prefixes["nstolabel"][str(namespace)],lang="en")))
         for pred in propstats:
             cururi=voidds+"_"+DocUtils.shortenURI(pred)
             g.add((URIRef(voidds),URIRef("http://rdfs.org/ns/void#propertyPartition"),URIRef(cururi)))
