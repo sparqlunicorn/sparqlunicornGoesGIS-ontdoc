@@ -829,7 +829,7 @@ class OntDocGeneration:
                 foundunit=tup[1]
         if foundunit!=None and foundval!=None:
             if "http" in foundunit:
-                unitlabel=str(foundval)+" "+DocUtils.resolveLabelLink(self.prefixes, graph, str(foundunit))
+                unitlabel=str(foundval)+" "+DocUtils.getLabelForObject(str(foundunit),graph,self.prefixes)
             else:
                 unitlabel=str(foundval)+" "+str(foundunit)
             if pred=="http://www.w3.org/ns/oa#hasBody":
@@ -837,7 +837,7 @@ class OntDocGeneration:
                 annobodies.append({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"})
         if foundunit == None and foundval != None:
             if "http" in foundval:
-                unitlabel=DocUtils.resolveLabelLink(self.prefixes, graph, foundval)
+                unitlabel=DocUtils.getLabelForObject(str(foundval),graph,self.prefixes)
                 #unitlabel = "<a href=\"" + str(foundval) + "\">" + str(DocUtils.shortenURI(foundval)) + "</a>"
             else:
                 unitlabel = str(foundval)
@@ -962,7 +962,7 @@ class OntDocGeneration:
         return "<span property=\"" + str(pred) + "\" content=\"" + str(object).replace("<","&lt").replace(">","&gt;").replace("\"","'") + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">" + str(object).replace("<","&lt").replace(">","&gt;") + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
 
     def formatPredicate(self,tup,baseurl,checkdepth,tablecontents,graph,reverse):
-        label=DocUtils.getLabelForObject(URIRef(str(tup)), graph,self.labellang)
+        label=DocUtils.getLabelForObject(URIRef(str(tup)), graph,self.prefixes,self.labellang)
         tablecontents += "<td class=\"property\">"
         if reverse:
             tablecontents+="Is "
@@ -997,7 +997,7 @@ class OntDocGeneration:
                         label = str(tup[1])
                 if uri in uritotreeitem:
                     res = DocUtils.replaceNameSpacesInLabel(self.prefixes,str(uri))
-                    label=DocUtils.getLabelForObject(URIRef(str(uri)), graph,self.labellang)
+                    label=DocUtils.getLabelForObject(URIRef(str(uri)), graph,self.prefixes,self.labellang)
                     if res!=None and label!="":
                         uritotreeitem[uri][-1]["text"]=label+" (" + res["uri"] + ")"
                     elif label!="":

@@ -113,13 +113,6 @@ class DocUtils:
         return rellink
 
     @staticmethod
-    def resolveLabelLink(prefixes,graph,uri):
-        res=DocUtils.getLabelForObject(uri, graph)
-        if res=="":
-            return DocUtils.createURILink(prefixes,uri)
-        return res
-
-    @staticmethod
     def checkImgMetadataRDF(g,uri):
         res={}
         for obj in g.objects(URIRef(uri),URIRef("http://www.w3.org/2003/12/exif/ns#width")):
@@ -146,9 +139,9 @@ class DocUtils:
         return targetrellink.replace("//", "/")
 
     @staticmethod
-    def getLabelForObject(obj,graph,labellang=None):
+    def getLabelForObject(obj,graph,prefixes=None,labellang=None):
         label=""
-        onelabel=DocUtils.shortenURI(str(obj))
+        onelabel=None
         for tup in graph.predicate_objects(obj):
             if str(tup[0]) in DocConfig.labelproperties:
                 # Check for label property
@@ -156,7 +149,11 @@ class DocUtils:
                     label=str(tup[1])
                 onelabel=str(tup[1])
         if label=="" and onelabel!=None:
-            label=onelabel
+            label = onelabel
+        elif label=="" and onelabel==None and prefixes!=None:
+            res = DocUtils.replaceNameSpacesInLabel(prefixes, obj)
+            if res!=None:
+                label=res["uri"]
         return label
 
     @staticmethod
