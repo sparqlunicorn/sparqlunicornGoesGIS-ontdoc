@@ -49,7 +49,7 @@ class VoidExporter:
             if str(namespace) in DocConfig.namespaceToTopic:
                 for entry in DocConfig.namespaceToTopic[str(namespace)]:
                     g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/subject"),URIRef(entry["uri"])))
-                    g.add((URIRef(entry),URIRef("http://www.w3.org/2000/01/rdf-schema#label"),Literal(entry["label"],lang="en")))
+                    g.add((URIRef(entry["uri"]),URIRef("http://www.w3.org/2000/01/rdf-schema#label"),Literal(entry["label"],lang="en")))
             if str(namespace) in prefixes["nstolabel"]:
                 g.add((URIRef(namespace),URIRef("http://www.w3.org/2000/01/rdf-schema#label"),Literal(prefixes["nstolabel"][str(namespace)],lang="en")))
         for pred in propstats:
