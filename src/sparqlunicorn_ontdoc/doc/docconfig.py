@@ -373,7 +373,7 @@ class DocConfig:
         "http://xmlns.com/foaf/0.1/": [{"uri":"http://xmlns.com/foaf/0.1/Person","label":"Person"}],
         "http://rdfs.org/sioc/ns#": [{"uri":"http://xmlns.com/foaf/0.1/OnlineAccount","label":"Online Account"}],
         "http://www.cidoc-crm.org/cidoc-crm/":[{"uri":"http://dbpedia.org/resource/Cultural_heritage","label":"Cultural Heritage"}],
-        "http://www.w3.org/TR/owl-time#": [{"uri":"http://dbpedia.org/resource/Time","label":"Time Data"}],
+        "http://www.w3.org/2006/time#": [{"uri":"http://dbpedia.org/resource/Time","label":"Time Data"}],
         "http://www.w3.org/ns/lemon/ontolex#": [{"uri":"http://dbpedia.org/resource/Lexicography","label":"Lexicography data"}],
         "http://www.w3.org/ns/lemon/lime#": [{"uri":"http://dbpedia.org/resource/Lexicography","label":"Lexicography data"}],
         "http://www.w3.org/ns/oa#": [{"uri":"http://dbpedia.org/resource/Web_annotation","label":"Web Annotation  http://dbpedia.org/resource/Bibliography"}],
