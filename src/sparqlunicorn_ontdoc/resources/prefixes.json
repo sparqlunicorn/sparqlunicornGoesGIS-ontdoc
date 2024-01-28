@@ -13,6 +13,7 @@
   "http://www.w3.org/1999/02/22-rdf-syntax-ns#": "The RDF Concepts Vocabulary (RDF)",
   "http://www.w3.org/2000/01/rdf-schema#": "The RDF Schema vocabulary (RDFS)",
   "http://www.wikidata.org/entity/": "Wikidata Entities",
+  "http://www.ontology-of-units-of-measure.org/resource/om-2/": "Ontology of Units of Measurement",
   "http://pleiades.stoa.org/places/": "Pleiades Places",
   "https://pleiades.stoa.org/places/": "Pleiades Places",
   "http://www.w3.org/ns/sparql-service-description#": "SPARQL 1.1 Service Description Vocabulary",
@@ -27,7 +28,8 @@
   "http://purl.org/ontology/bibo/": "Bibliography Ontology",
   "http://www.opengis.net/ont/sf#": "Simple Features Vocabulary",
   "http://wikiba.se/ontology#": "Wikibase system ontology",
-  "http://www.cidoc-crm.org/cidoc-crm/": "CIDOC CRM Ontology"
+  "http://www.cidoc-crm.org/cidoc-crm/": "CIDOC CRM Ontology",
+  "http://www.w3.org/2001/XMLSchema#": "XML Schema"
 },
 "reversed":{
   "http://10.0.3.120/download/eproc_FORN_v02.owl#": "eproc",
