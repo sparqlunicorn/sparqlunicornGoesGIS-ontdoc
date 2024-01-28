@@ -963,7 +963,7 @@ class OntDocGeneration:
         return "<span property=\"" + str(pred) + "\" content=\"" + str(object).replace("<","&lt").replace(">","&gt;").replace("\"","'") + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">" + str(object).replace("<","&lt").replace(">","&gt;") + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
 
     def formatPredicate(self,tup,baseurl,checkdepth,tablecontents,graph,reverse):
-        label=DocUtils.getLabelForObject(URIRef(str(tup)), graph,self.prefixes,self.labellang)
+        label=DocUtils.getLabelForObject(URIRef(str(tup)), graph,None,self.labellang)
         tablecontents += "<td class=\"property\">"
         if reverse:
             tablecontents+="Is "
