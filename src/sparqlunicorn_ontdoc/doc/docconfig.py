@@ -362,7 +362,7 @@ class DocConfig:
     }
 
     namespaceToTopic={
-        "http://www.opengis.net/ont/geosparql#":[{"uri":"http://www.wikidata.org/entity/Q121810372","label":"geospatial data"},{"uri":"http://dbpedia.org/resource/Location","label":"Location"}],
+        "http://www.opengis.net/ont/geosparql#":[{"uri":"http://www.wikidata.org/entity/Q121810372","label":"geospatial data"},{"uri":"http://dbpedia.org/resource/Location","label":"Location"},{"uri":"http://dbpedia.org/resource/OGC_GeoSPARQL","label":"OGC GeoSPARQL"}],
         "http://www.w3.org/2003/01/geo/wgs84_pos#": [{"uri":"http://www.wikidata.org/entity/Q121810372","label":"geospatial data"},{"uri":"http://dbpedia.org/resource/Location","label":"Location"}],
         "http://www.georss.org/georss/": [{"uri":"http://www.wikidata.org/entity/Q121810372","label":"geospatial data"},{"uri":"http://dbpedia.org/resource/Location","label":"Location"}],
         "http://www.w3.org/ns/locn#": [{"uri":"http://www.wikidata.org/entity/Q121810372","label":"geospatial data"},{"uri":"http://dbpedia.org/resource/Location","label":"Location"}],
@@ -371,7 +371,11 @@ class DocConfig:
         "http://www.w3.org/2006/vcard/ns#":[{"uri":"http://xmlns.com/foaf/0.1/Person","label":"Person"}],
         "http://xmlns.com/foaf/0.1/": [{"uri":"http://xmlns.com/foaf/0.1/Person","label":"Person"}],
         "http://rdfs.org/sioc/ns#": [{"uri":"http://xmlns.com/foaf/0.1/OnlineAccount","label":"Online Account"}],
-        "http://www.cidoc-crm.org/cidoc-crm/":[{"uri":"http://dbpedia.org/resource/Cultural_heritage","label":"Cultural Heritage"}]
+        "http://www.cidoc-crm.org/cidoc-crm/":[{"uri":"http://dbpedia.org/resource/Cultural_heritage","label":"Cultural Heritage"}],
+        "http://www.w3.org/TR/owl-time#": [{"uri":"http://dbpedia.org/resource/Time","label":"Time Data"}],
+        "http://www.w3.org/ns/lemon/ontolex#": [{"uri":"http://dbpedia.org/resource/Lexicography","label":"Lexicography data"}],
+        "http://www.w3.org/ns/lemon/lime#": [{"uri":"http://dbpedia.org/resource/Lexicography","label":"Lexicography data"}],
+        "http://www.w3.org/ns/oa#": [{"uri":"http://dbpedia.org/resource/Web_annotation","label":"Web Annotation"}]
     }
 
 
