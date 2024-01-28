@@ -70,7 +70,7 @@ class VoidExporter:
                 #subjectstorender.add(URIRef(cururi))
         for prop in nonnscount:
             for ns in nonnscount[prop]:
-                cururi=voidds+"_"+ns.replace("http://","").replace("https://","").replace("/","_")
+                cururi=voidds+"_"+ns.replace("http://","").replace("https://","").replace("/","_").replace("#","_")
                 g.add((URIRef(cururi), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://rdfs.org/ns/void#Linkset")))
                 g.add((URIRef(cururi), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),Literal("Linkset: "+str(DocUtils.shortenURI(voidds))+" - "+str(DocUtils.getLabelForObject(ns,g,prefixes)),lang="en")))
                 g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#subjectsTarget"),URIRef(voidds)))
