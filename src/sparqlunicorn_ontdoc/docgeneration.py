@@ -41,6 +41,7 @@ import shutil
 import json
 
 listthreshold=5
+maxlistthreshold=1500
 
 templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
 resourcepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/"))
@@ -1128,41 +1129,44 @@ class OntDocGeneration:
                         thetable+="<details><summary>"+str(len(predobjmap[tup]))+" values</summary>"
                     if len(predobjmap[tup])>1:
                         thetable+="<ul>"
-                    labelmap={}
-                    for item in predobjmap[tup]:
-                        if ("POINT" in str(item).upper() or "POLYGON" in str(item).upper() or "LINESTRING" in str(item).upper()) and tup in DocConfig.valueproperties and self.typeproperty in predobjmap and URIRef("http://www.w3.org/ns/oa#WKTSelector") in predobjmap[self.typeproperty]:
-                            image3dannos.append({"value":str(item)})
-                        elif "<svg" in str(item):
-                            foundmedia["image"][str(item)]={}
-                        elif "http" in str(item):
-                            if isinstance(item,Literal):
-                                ext = "." + ''.join(filter(str.isalpha, str(item.value).split(".")[-1]))
+                    if len(predobjmap[tup]) < maxlistthreshold:
+                        labelmap={}
+                        for item in predobjmap[tup]:
+                            if ("POINT" in str(item).upper() or "POLYGON" in str(item).upper() or "LINESTRING" in str(item).upper()) and tup in DocConfig.valueproperties and self.typeproperty in predobjmap and URIRef("http://www.w3.org/ns/oa#WKTSelector") in predobjmap[self.typeproperty]:
+                                image3dannos.append({"value":str(item)})
+                            elif "<svg" in str(item):
+                                foundmedia["image"][str(item)]={}
+                            elif "http" in str(item):
+                                if isinstance(item,Literal):
+                                    ext = "." + ''.join(filter(str.isalpha, str(item.value).split(".")[-1]))
+                                else:
+                                    ext = "." + ''.join(filter(str.isalpha, str(item).split(".")[-1]))
+                                if ext in DocConfig.fileextensionmap:
+                                    foundmedia[DocConfig.fileextensionmap[ext]][str(item)]={}
+                            elif tup in DocConfig.valueproperties:
+                                foundvals.add((str(tup),str(item)))
+                            res=self.createHTMLTableValueEntry(subject, tup, item, ttlf, graph,
+                                                  baseurl, checkdepth,geojsonrep,foundmedia,imageannos,textannos,image3dannos,annobodies,dateprops,inverse,nonns)
+                            geojsonrep = res["geojson"]
+                            foundmedia = res["foundmedia"]
+                            imageannos=res["imageannos"]
+                            textannos=res["textannos"]
+                            image3dannos=res["image3dannos"]
+                            annobodies=res["annobodies"]
+                            #print("GOT ANNO BODIES "+str(annobodies))
+                            if res["timeobj"]!=None and res["timeobj"]!=[]:
+                                #print("RESTIMEOBJ: "+str(timeobj))
+                                timeobj=res["timeobj"]
+                            if res["label"] not in labelmap:
+                                labelmap[res["label"]]=""
+                            if len(predobjmap[tup]) > 1:
+                                labelmap[res["label"]]+="<li>"+str(res["html"])+"</li>"
                             else:
-                                ext = "." + ''.join(filter(str.isalpha, str(item).split(".")[-1]))
-                            if ext in DocConfig.fileextensionmap:
-                                foundmedia[DocConfig.fileextensionmap[ext]][str(item)]={}
-                        elif tup in DocConfig.valueproperties:
-                            foundvals.add((str(tup),str(item)))
-                        res=self.createHTMLTableValueEntry(subject, tup, item, ttlf, graph,
-                                              baseurl, checkdepth,geojsonrep,foundmedia,imageannos,textannos,image3dannos,annobodies,dateprops,inverse,nonns)
-                        geojsonrep = res["geojson"]
-                        foundmedia = res["foundmedia"]
-                        imageannos=res["imageannos"]
-                        textannos=res["textannos"]
-                        image3dannos=res["image3dannos"]
-                        annobodies=res["annobodies"]
-                        #print("GOT ANNO BODIES "+str(annobodies))
-                        if res["timeobj"]!=None and res["timeobj"]!=[]:
-                            #print("RESTIMEOBJ: "+str(timeobj))
-                            timeobj=res["timeobj"]
-                        if res["label"] not in labelmap:
-                            labelmap[res["label"]]=""
-                        if len(predobjmap[tup]) > 1:
-                            labelmap[res["label"]]+="<li>"+str(res["html"])+"</li>"
-                        else:
-                            labelmap[res["label"]] += str(res["html"])
-                    for lab in sorted(labelmap):
-                        thetable+=str(labelmap[lab])
+                                labelmap[res["label"]] += str(res["html"])
+                        for lab in sorted(labelmap):
+                            thetable+=str(labelmap[lab])
+                    else:
+                        tablecontents+="<li>too many elements to render...</li>"
                     if len(predobjmap[tup])>1:
                         thetable+="</ul>"
                     if len(predobjmap[tup]) > listthreshold:
@@ -1203,29 +1207,32 @@ class OntDocGeneration:
                         tablecontents+="<details><summary>"+str(len(subpredsmap[tup]))+" values</summary>"
                     if len(subpredsmap[tup]) > 1:
                         tablecontents += "<ul>"
-                    labelmap={}
-                    for item in subpredsmap[tup]:
-                        if subjectstorender!=None and item not in subjectstorender and baseurl in str(item):
-                            postprocessing.add((item,URIRef(tup),subject))
-                        res = self.createHTMLTableValueEntry(subject, tup, item, None, graph,
-                                                             baseurl, checkdepth, geojsonrep,foundmedia,imageannos,textannos,image3dannos,annobodies,None,True,nonns)
-                        foundmedia = res["foundmedia"]
-                        imageannos=res["imageannos"]
-                        image3dannos=res["image3dannos"]
-                        annobodies=res["annobodies"]
-                        #print("POSTPROC ANNO BODIES "+str(annobodies))
-                        if nonns and str(tup) != self.typeproperty:	
-                            hasnonns.add(str(item))
-                        if nonns:
-                            geojsonrep=res["geojson"]
-                        if res["label"] not in labelmap:
-                            labelmap[res["label"]]=""
-                        if len(subpredsmap[tup]) > 1:
-                            labelmap[res["label"]]+="<li>"+str(res["html"])+"</li>"
-                        else:
-                            labelmap[res["label"]] += str(res["html"])
-                    for lab in sorted(labelmap):
-                        tablecontents+=str(labelmap[lab])
+                    if len(predobjmap[tup]) < maxlistthreshold:
+                        labelmap={}
+                        for item in subpredsmap[tup]:
+                            if subjectstorender!=None and item not in subjectstorender and baseurl in str(item):
+                                postprocessing.add((item,URIRef(tup),subject))
+                            res = self.createHTMLTableValueEntry(subject, tup, item, None, graph,
+                                                                 baseurl, checkdepth, geojsonrep,foundmedia,imageannos,textannos,image3dannos,annobodies,None,True,nonns)
+                            foundmedia = res["foundmedia"]
+                            imageannos=res["imageannos"]
+                            image3dannos=res["image3dannos"]
+                            annobodies=res["annobodies"]
+                            #print("POSTPROC ANNO BODIES "+str(annobodies))
+                            if nonns and str(tup) != self.typeproperty:
+                                hasnonns.add(str(item))
+                            if nonns:
+                                geojsonrep=res["geojson"]
+                            if res["label"] not in labelmap:
+                                labelmap[res["label"]]=""
+                            if len(subpredsmap[tup]) > 1:
+                                labelmap[res["label"]]+="<li>"+str(res["html"])+"</li>"
+                            else:
+                                labelmap[res["label"]] += str(res["html"])
+                        for lab in sorted(labelmap):
+                            tablecontents+=str(labelmap[lab])
+                    else:
+                        tablecontents+="<li>too many elements to render...</li>"
                     if len(subpredsmap[tup])>1:
                         tablecontents+="</ul>"
                     if len(subpredsmap[tup]) > listthreshold:
