@@ -829,7 +829,8 @@ class OntDocGeneration:
                 foundunit=tup[1]
         if foundunit!=None and foundval!=None:
             if "http" in foundunit:
-                unitlabel=str(foundval)+" "+DocUtils.getLabelForObject(str(foundunit),graph,self.prefixes)
+                thelabel=DocUtils.getLabelForObject(str(foundunit),graph,self.prefixes)
+                unitlabel=str(foundval)+" <a href=\""+str(foundunit)+"\" target=\"_blank\">"+thelabel+"</a>"
             else:
                 unitlabel=str(foundval)+" "+str(foundunit)
             if pred=="http://www.w3.org/ns/oa#hasBody":
@@ -837,7 +838,8 @@ class OntDocGeneration:
                 annobodies.append({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"})
         if foundunit == None and foundval != None:
             if "http" in foundval:
-                unitlabel=DocUtils.getLabelForObject(str(foundval),graph,self.prefixes)
+                thelabel = DocUtils.getLabelForObject(str(foundunit), graph, self.prefixes)
+                unitlabel="<a href=\"" + str(foundval) + "\">" + thelabel + "</a>"
                 #unitlabel = "<a href=\"" + str(foundval) + "\">" + str(DocUtils.shortenURI(foundval)) + "</a>"
             else:
                 unitlabel = str(foundval)
