@@ -150,7 +150,7 @@ class DocUtils:
                 onelabel=str(tup[1])
         if label=="" and onelabel!=None and onelabel!="":
             label = onelabel
-        elif label=="" and onelabel==None and onelabel!="" and prefixes!=None:
+        elif label=="" and (onelabel==None or onelabel=="") and prefixes!=None:
             res = DocUtils.replaceNameSpacesInLabel(prefixes, obj)
             if res!=None:
                 label=res["uri"]
