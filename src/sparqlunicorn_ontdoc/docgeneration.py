@@ -1207,7 +1207,7 @@ class OntDocGeneration:
                         tablecontents+="<details><summary>"+str(len(subpredsmap[tup]))+" values</summary>"
                     if len(subpredsmap[tup]) > 1:
                         tablecontents += "<ul>"
-                    if len(predobjmap[tup]) < maxlistthreshold:
+                    if len(subpredsmap[tup]) < maxlistthreshold:
                         labelmap={}
                         for item in subpredsmap[tup]:
                             if subjectstorender!=None and item not in subjectstorender and baseurl in str(item):
