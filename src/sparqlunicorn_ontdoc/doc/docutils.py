@@ -188,14 +188,14 @@ class DocUtils:
 
     @staticmethod
     def replaceNameSpacesInLabel(prefixes,uri):
-        for ns in prefixes["reversed"]:
-            if ns in uri:
-                if ns==uri and ns in prefixes["nstolabel"]:
-                    return {"uri": prefixes["nstolabel"][ns]+"("+str(prefixes["reversed"][ns])+":)",
-                            "ns": prefixes["reversed"][ns]}
-                else:
-                    return {"uri": str(prefixes["reversed"][ns]) + ":" + str(uri.replace(ns, "")),
-                        "ns": prefixes["reversed"][ns]}
+        nsuri=DocUtils.shortenURI(uri,True)
+        if nsuri in prefixes["reversed"]:
+            if nsuri==uri and nsuri in prefixes["nstolabel"]:
+                return {"uri": prefixes["nstolabel"][nsuri]+"("+str(prefixes["reversed"][nsuri])+":)",
+                        "ns": prefixes["reversed"][nsuri]}
+            else:
+                return {"uri": str(prefixes["reversed"][nsuri]) + ":" + str(uri.replace(nsuri, "")),
+                    "ns": prefixes["reversed"][nsuri]}
         return None
 
     @staticmethod
