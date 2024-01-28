@@ -20,7 +20,7 @@
   "http://www.w3.org/2003/12/exif/ns#": "EXIF data description vocabulary",
   "http://rdfs.org/ns/void#": "Vocabulary of Interlinked Datasets (VoID)",
   "http://schema.org/": "Schema.org vocabulary",
-  "http://www.geonames.org/": "GeoNames Ontology",
+  "https://www.geonames.org/": "GeoNames Ontology",
   "http://www.geonames.org/ontology#": "GeoNames Ontology",
   "http://www.w3.org/ns/oa#": "Web Annotation Ontology",
   "http://www.w3.org/2006/vcard/ns#": "Vcard Vocabulary",
