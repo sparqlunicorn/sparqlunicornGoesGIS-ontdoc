@@ -191,7 +191,7 @@ class DocUtils:
         nsuri=DocUtils.shortenURI(uri,True)
         if nsuri in prefixes["reversed"]:
             if nsuri==uri and nsuri in prefixes["nstolabel"]:
-                return {"uri": prefixes["nstolabel"][nsuri]+"("+str(prefixes["reversed"][nsuri])+":)",
+                return {"uri": prefixes["nstolabel"][nsuri]+" ("+str(prefixes["reversed"][nsuri])+":)",
                         "ns": prefixes["reversed"][nsuri]}
             else:
                 return {"uri": str(prefixes["reversed"][nsuri]) + ":" + str(uri.replace(nsuri, "")),
