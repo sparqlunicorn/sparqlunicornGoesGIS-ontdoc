@@ -37,7 +37,7 @@ class VoidExporter:
               URIRef("http://www.w3.org/ns/formats/Turtle")))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#feature"),
               URIRef("http://www.w3.org/ns/formats/RDFa")))
-        if startconcept!=None:
+        if startconcept!=None and startconcept!="":
             g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#rootResource"), URIRef(startconcept.replace("index.html",""))))
             g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#exampleResource"), URIRef(startconcept.replace("index.html",""))))
         for stat in stats:
