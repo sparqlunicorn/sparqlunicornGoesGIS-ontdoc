@@ -963,7 +963,7 @@ class OntDocGeneration:
         return "<span property=\"" + str(pred) + "\" content=\"" + str(object).replace("<","&lt").replace(">","&gt;").replace("\"","'") + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">" + str(object).replace("<","&lt").replace(">","&gt;") + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
 
     def formatPredicate(self,tup,baseurl,checkdepth,tablecontents,graph,reverse):
-        label=DocUtils.getLabelForObject(URIRef(str(tup)), graph,self.prefixes,self.labellang)
+        label=DocUtils.getLabelForObject(URIRef(str(tup)), graph,None,self.labellang)
         tablecontents += "<td class=\"property\">"
         if reverse:
             tablecontents+="Is "
@@ -998,7 +998,7 @@ class OntDocGeneration:
                         label = str(tup[1])
                 if uri in uritotreeitem:
                     res = DocUtils.replaceNameSpacesInLabel(self.prefixes,str(uri))
-                    label=DocUtils.getLabelForObject(URIRef(str(uri)), graph,self.prefixes,self.labellang)
+                    label=DocUtils.getLabelForObject(URIRef(str(uri)), graph,None,self.labellang)
                     if res!=None and label!="":
                         uritotreeitem[uri][-1]["text"]=label+" (" + res["uri"] + ")"
                     elif label!="":
