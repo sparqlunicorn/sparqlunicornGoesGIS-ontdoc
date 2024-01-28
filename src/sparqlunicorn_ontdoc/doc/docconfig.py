@@ -363,6 +363,7 @@ class DocConfig:
 
     namespaceToTopic={
         "http://www.opengis.net/ont/geosparql#":[{"uri":"http://www.wikidata.org/entity/Q121810372","label":"geospatial data"},{"uri":"http://dbpedia.org/resource/Location","label":"Location"},{"uri":"http://dbpedia.org/resource/OGC_GeoSPARQL","label":"OGC GeoSPARQL"}],
+        "http://www.opengis.net/ont/sf#": [{"uri": "http://www.wikidata.org/entity/Q121810372", "label": "geospatial data"},{"uri": "http://dbpedia.org/resource/Location", "label": "Location"},{"uri": "http://dbpedia.org/resource/Simple_Features", "label": "Simple Features"}],
         "http://www.w3.org/2003/01/geo/wgs84_pos#": [{"uri":"http://www.wikidata.org/entity/Q121810372","label":"geospatial data"},{"uri":"http://dbpedia.org/resource/Location","label":"Location"}],
         "http://www.georss.org/georss/": [{"uri":"http://www.wikidata.org/entity/Q121810372","label":"geospatial data"},{"uri":"http://dbpedia.org/resource/Location","label":"Location"}],
         "http://www.w3.org/ns/locn#": [{"uri":"http://www.wikidata.org/entity/Q121810372","label":"geospatial data"},{"uri":"http://dbpedia.org/resource/Location","label":"Location"}],
@@ -375,7 +376,8 @@ class DocConfig:
         "http://www.w3.org/TR/owl-time#": [{"uri":"http://dbpedia.org/resource/Time","label":"Time Data"}],
         "http://www.w3.org/ns/lemon/ontolex#": [{"uri":"http://dbpedia.org/resource/Lexicography","label":"Lexicography data"}],
         "http://www.w3.org/ns/lemon/lime#": [{"uri":"http://dbpedia.org/resource/Lexicography","label":"Lexicography data"}],
-        "http://www.w3.org/ns/oa#": [{"uri":"http://dbpedia.org/resource/Web_annotation","label":"Web Annotation"}]
+        "http://www.w3.org/ns/oa#": [{"uri":"http://dbpedia.org/resource/Web_annotation","label":"Web Annotation  http://dbpedia.org/resource/Bibliography"}],
+        "http://purl.org/ontology/bibo/": [{"uri":"http://dbpedia.org/resource/Bibliography","label":"Bibliography Data"}]
     }
 
 
