@@ -141,16 +141,16 @@ class DocUtils:
     @staticmethod
     def getLabelForObject(obj,graph,prefixes=None,labellang=None):
         label=""
-        onelabel=None
+        onelabel=DocUtils.shortenURI(str(obj))
         for tup in graph.predicate_objects(obj):
             if str(tup[0]) in DocConfig.labelproperties:
                 # Check for label property
                 if tup[1].language==labellang:
                     label=str(tup[1])
                 onelabel=str(tup[1])
-        if label=="" and onelabel!=None:
+        if label=="" and onelabel!=None and onelabel!="":
             label = onelabel
-        elif label=="" and onelabel==None and prefixes!=None:
+        elif label=="" and onelabel==None and onelabel!="" and prefixes!=None:
             res = DocUtils.replaceNameSpacesInLabel(prefixes, obj)
             if res!=None:
                 label=res["uri"]
@@ -196,7 +196,7 @@ class DocUtils:
             else:
                 return {"uri": str(prefixes["reversed"][nsuri]) + ":" + str(uri.replace(nsuri, "")),
                     "ns": prefixes["reversed"][nsuri]}
-        return None
+        return {"uri": DocUtils.shortenURI(uri),"ns": ""}
 
     @staticmethod
     def generateRelativePathFromGivenDepth(checkdepth):
