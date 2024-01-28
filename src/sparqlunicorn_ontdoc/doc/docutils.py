@@ -148,7 +148,7 @@ class DocUtils:
                 if tup[1].language==labellang:
                     label=str(tup[1])
                 onelabel=str(tup[1])
-        if label=="" and onelabel!=None and onelabel!="":
+        if label=="" and onelabel!=None and onelabel!="" and prefixes==None:
             label = onelabel
         elif label=="" and (onelabel==None or onelabel=="") and prefixes!=None:
             res = DocUtils.replaceNameSpacesInLabel(prefixes, obj)
