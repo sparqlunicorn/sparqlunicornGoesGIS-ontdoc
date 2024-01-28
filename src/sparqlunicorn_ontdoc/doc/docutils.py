@@ -190,7 +190,11 @@ class DocUtils:
     def replaceNameSpacesInLabel(prefixes,uri):
         for ns in prefixes["reversed"]:
             if ns in uri:
-                return {"uri": str(prefixes["reversed"][ns]) + ":" + str(uri.replace(ns, "")),
+                if ns==uri and ns in prefixes["nstolabel"]:
+                    return {"uri": prefixes["nstolabel"][ns]+"("+str(prefixes["reversed"][ns])+":)",
+                            "ns": prefixes["reversed"][ns]}
+                else:
+                    return {"uri": str(prefixes["reversed"][ns]) + ":" + str(uri.replace(ns, "")),
                         "ns": prefixes["reversed"][ns]}
         return None
 
