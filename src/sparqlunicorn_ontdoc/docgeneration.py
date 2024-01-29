@@ -883,19 +883,21 @@ class OntDocGeneration:
             annobodies=mydata["annobodies"]
             if inverse:
                 rdfares = " about=\"" + str(object) + "\" resource=\"" + str(subject) + "\""
+                microdatares=" itemref=\""+str(object)+"\" "
             else:
                 rdfares = "resource=\"" + str(object) + "\""
+                microdatares=" "
             if baseurl in str(object) or isinstance(object,BNode):
                 rellink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl,checkdepth,str(object),True)
-                tablecontents += "<span><a property=\"" + str(pred) + "\" "+rdfares+" href=\"" + rellink + "\">"+ label + " <span style=\"color: #666;\">(" + self.namespaceshort + ":" + str(DocUtils.shortenURI(str(object))) + ")</span></a>"
+                tablecontents += "<span><a itemprop=\""+str(pred)+"\""+microdatares+"property=\"" + str(pred) + "\" "+rdfares+" href=\"" + rellink + "\">"+ label + " <span style=\"color: #666;\">(" + self.namespaceshort + ":" + str(DocUtils.shortenURI(str(object))) + ")</span></a>"
                 if bibtex!=None:
                     tablecontents+="<details><summary>[BIBTEX]</summary><pre>"+str(bibtex)+"</pre></details>"
             else:
                 res = DocUtils.replaceNameSpacesInLabel(self.prefixes,str(object))
                 if res != None:
-                    tablecontents += "<span><a property=\"" + str(pred) + "\" "+rdfares+" target=\"_blank\" href=\"" + str(object) + "\">" + label + " <span style=\"color: #666;\">(" + res["uri"] + ")</span></a>"                                     
+                    tablecontents += "<span><a itemprop=\""+str(pred)+"\""+microdatares+"property=\"" + str(pred) + "\" "+rdfares+" target=\"_blank\" href=\"" + str(object) + "\">" + label + " <span style=\"color: #666;\">(" + res["uri"] + ")</span></a>"
                 else:
-                    tablecontents += "<span><a property=\"" + str(pred) + "\" "+rdfares+" target=\"_blank\" href=\"" + str(object) + "\">" + label + "</a>"
+                    tablecontents += "<span><a itemprop=\""+str(pred)+"\""+microdatares+"property=\"" + str(pred) + "\" "+rdfares+" target=\"_blank\" href=\"" + str(object) + "\">" + label + "</a>"
                 if bibtex!=None:
                     tablecontents+="<details><summary>[BIBTEX]</summary><pre>"+str(bibtex)+"</pre></details>"
                 if self.generatePagesForNonNS:
@@ -923,19 +925,19 @@ class OntDocGeneration:
                 if str(object.datatype) in DocConfig.timeliteraltypes and dateprops!=None and DocUtils.shortenURI(str(pred),True) not in DocConfig.metadatanamespaces and str(pred) not in dateprops:
                     dateprops.append(str(pred))
                 if res != None:
-                    tablecontents += "<span property=\"" + str(pred) + "\" content=\"" + str(
+                    tablecontents += "<span itemprop=\""+str(pred)+"\" property=\"" + str(pred) + "\" content=\"" + str(
                         object).replace("<", "&lt").replace(">", "&gt;").replace("\"", "'") + "\" datatype=\"" + str(
                         object.datatype) + "\">" + self.truncateValue(objstring) + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"" + str(
                         object.datatype) + "\">" + res["uri"]+ "</a>)</small></span>"
                 else:
-                    tablecontents += "<span property=\"" + str(pred) + "\" content=\"" + str(
+                    tablecontents += "<span itemprop=\""+str(pred)+"\" property=\"" + str(pred) + "\" content=\"" + str(
                         object).replace("<", "&lt").replace(">", "&gt;").replace("\"", "'") + "\" datatype=\"" + str(
                         object.datatype) + "\">" + self.truncateValue(objstring) + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"" + str(
                         object.datatype) + "\">" + DocUtils.shortenURI(str(object.datatype)) + "</a>)</small></span>"
                 geojsonrep=LiteralUtils.resolveGeoLiterals(URIRef(pred), object, graph, geojsonrep,nonns,subject)
             else:
                 if object.language != None:
-                    tablecontents += "<span property=\"" + str(pred) + "\" content=\"" + str(object).replace("<", "&lt").replace(">", "&gt;").replace("\"","'") + "\" datatype=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\" xml:lang=\"" + str(object.language) + "\">" + self.truncateValue(str(object).replace("<", "&lt").replace(">", "&gt;")) + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\">rdf:langString</a>) (<a href=\"http://www.lexvo.org/page/iso639-1/"+str(object.language)+"\" target=\"_blank\">iso6391:" + str(object.language) + "</a>)</small></span>"
+                    tablecontents += "<span itemprop=\""+str(pred)+"\" property=\"" + str(pred) + "\" content=\"" + str(object).replace("<", "&lt").replace(">", "&gt;").replace("\"","'") + "\" datatype=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\" xml:lang=\"" + str(object.language) + "\">" + self.truncateValue(str(object).replace("<", "&lt").replace(">", "&gt;")) + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\">rdf:langString</a>) (<a href=\"http://www.lexvo.org/page/iso639-1/"+str(object.language)+"\" target=\"_blank\">iso6391:" + str(object.language) + "</a>)</small></span>"
                 else:
                     tablecontents += self.detectStringLiteralContent(pred,object)
         return {"html":tablecontents,"geojson":geojsonrep,"foundmedia":foundmedia,"imageannos":imageannos,"textannos":textannos,"image3dannos":image3dannos,"annobodies":annobodies,"label":label,"timeobj":dateprops}
@@ -947,18 +949,18 @@ class OntDocGeneration:
 
     def detectStringLiteralContent(self,pred,object):
         if object.startswith("http://") or object.startswith("https://"):
-            return "<span><a property=\"" + str(pred) + "\" target=\"_blank\" href=\"" + str(
+            return "<span><a itemprop=\""+str(pred)+"\" property=\"" + str(pred) + "\" target=\"_blank\" href=\"" + str(
                         object)+ "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">" + str(object)+ "</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
         elif object.startswith("www."):
-            return "<span><a property=\"" + str(pred) + "\" target=\"_blank\" href=\"http://" + str(
+            return "<span><a itemprop=\""+str(pred)+"\" property=\"" + str(pred) + "\" target=\"_blank\" href=\"http://" + str(
                 object) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">http://" + str(
                 object) + "</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
         elif re.search(r'(10[.][0-9]{2,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)',str(object)):
-            return "<span><a property=\"" + str(pred) + "\" href=\"https://www.doi.org/" + str(
+            return "<span><a itemprop=\""+str(pred)+"\" property=\"" + str(pred) + "\" href=\"https://www.doi.org/" + str(
                 object) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#anyURI\">" + str(
                 object) + "</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#anyURI\">xsd:anyURI</a>)</small></span>"        
         elif re.search(r'[\w.]+\@[\w.]+', object):
-            return "<span><a property=\"" + str(pred) + "\" href=\"mailto:" + str(
+            return "<span><a itemprop=\""+str(pred)+"\" property=\"" + str(pred) + "\" href=\"mailto:" + str(
                 object) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">mailto:" + str(
                 object) + "</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
         return "<span property=\"" + str(pred) + "\" content=\"" + str(object).replace("<","&lt").replace(">","&gt;").replace("\"","'") + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">" + str(object).replace("<","&lt").replace(">","&gt;") + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
