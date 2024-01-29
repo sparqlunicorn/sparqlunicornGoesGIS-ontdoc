@@ -360,8 +360,8 @@ class OntDocGeneration:
         voidstats["http://ldf.fi/void-ext#distinctBlankNodes"]=len(blanknodes)
         voidstats["http://ldf.fi/void-ext#datatypes"]=len(literaltypes)
         voidstats["http://ldf.fi/void-ext#distinctLiterals"]=len(literals)
-        voidstats["http://ldf.fi/void-ext#distinctLiterals"]=len(literals)
-        voidstats["http://ldf.fi/void-ext#distinctRDFNodes"] = len(blanknodes)+len(literals)+voidstats["http://rdfs.org/ns/void#distinctSubjects"]+res["preds"]+res["objs"]
+        voidstats["http://ldf.fi/void-ext#distinctIRIReferences"]=voidstats["http://rdfs.org/ns/void#distinctSubjects"]+res["preds"]+res["objs"]
+        voidstats["http://ldf.fi/void-ext#distinctRDFNodes"] = len(blanknodes)+len(literals)+voidstats["http://ldf.fi/void-ext#distinctIRIReferences"]
         if os.path.exists(outpath + corpusid + '_search.js'):
             try:
                 with open(outpath + corpusid + '_search.js', 'r', encoding='utf-8') as f:
