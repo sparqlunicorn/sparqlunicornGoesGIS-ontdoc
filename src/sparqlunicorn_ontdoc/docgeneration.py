@@ -306,6 +306,11 @@ class OntDocGeneration:
         subjectstorender.add(URIRef(voidds))
         nonnscount={}
         instancecount={}
+        literaltypes=set()
+        blanknodes=set()
+        literallangs=set()
+        literals=set()
+        irirefs=0
         for sub in self.graph.subjects(None,None,True):
             if (prefixnamespace in sub and (isinstance(sub,URIRef)) or isinstance(sub,BNode)):
                 subjectstorender.add(sub)
@@ -313,7 +318,20 @@ class OntDocGeneration:
                 restriction=False
                 self.graph.add((sub, URIRef("http://rdfs.org/ns/void#inDataset"),
                                 URIRef(voidds)))
+                if isinstance(sub, BNode):
+                    blanknodes.add(str(sub))
+                irirefs+=1
                 for tup in self.graph.predicate_objects(sub):
+                    if isinstance(tup[1],Literal):
+                        if tup[1].datatype!=None:
+                            literaltypes.add(str(tup[1].datatype))
+                        if tup[1].language != None:
+                            literallangs.add(str(tup[1].language))
+                        literals.add(str(tup[1]))
+                    elif isinstance(tup[1],BNode):
+                        blanknodes.add(str(tup[1]))
+                    else:
+                        irirefs+=1
                     if str(tup[0]) in DocConfig.labelproperties:
                         labeltouri[str(tup[1])] = str(sub)
                         uritolabel[str(sub)] = {"label":str(tup[1])}
@@ -338,6 +356,12 @@ class OntDocGeneration:
                                         Literal(label + " [Restriction]", lang="en")))
             voidstats["http://rdfs.org/ns/void#distinctSubjects"] +=1
         voidstats["http://rdfs.org/ns/void#entities"]=len(subjectstorender)
+        voidstats["http://ldf.fi/void-ext#languages"]=len(literallangs)
+        voidstats["http://ldf.fi/void-ext#distinctBlankNodes"]=len(blanknodes)
+        voidstats["http://ldf.fi/void-ext#datatypes"]=len(literaltypes)
+        voidstats["http://ldf.fi/void-ext#distinctLiterals"]=len(literals)
+        voidstats["http://ldf.fi/void-ext#distinctLiterals"]=len(literals)
+        voidstats["http://ldf.fi/void-ext#distinctRDFNodes"] = len(blanknodes)+len(literals)+voidstats["http://rdfs.org/ns/void#distinctSubjects"]+res["preds"]+res["objs"]
         if os.path.exists(outpath + corpusid + '_search.js'):
             try:
                 with open(outpath + corpusid + '_search.js', 'r', encoding='utf-8') as f:
