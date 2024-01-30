@@ -7,7 +7,7 @@ from doc.docutils import DocUtils
 class VoidExporter:
 
     @staticmethod
-    def createVoidDataset(dsname,prefixnamespace,deploypath,outpath,licenseuri,modtime,language,stats,subjectstorender,prefixes,classtree=None,propstats=None,nonnscount=None,objectmap=None,startconcept=None):
+    def createVoidDataset(dsname,prefixnamespace,deploypath,outpath,licenseuri,modtime,language,stats,subjectstorender,prefixes,graph,classtree=None,propstats=None,nonnscount=None,objectmap=None,startconcept=None):
         g=Graph()
         if dsname==None or dsname=="":
             dsname="dataset"
@@ -41,9 +41,9 @@ class VoidExporter:
             g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#rootResource"), URIRef(startconcept.replace("index.html",""))))
             g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#exampleResource"), URIRef(startconcept.replace("index.html",""))))
         for stat in stats:
-            if (URIRef(voidds),URIRef(stat),None) in g:
-                g.set((URIRef(voidds), URIRef(stat),
-                       Literal(int(g.value(URIRef(voidds),URIRef(stat)))+stats[stat], datatype="http://www.w3.org/2001/XMLSchema#integer")))
+            if (URIRef(voidds),URIRef(stat),None) in graph:
+                graph.set((URIRef(voidds), URIRef(stat),
+                       Literal(int(graph.value(URIRef(voidds),URIRef(stat)))+stats[stat], datatype="http://www.w3.org/2001/XMLSchema#integer")))
             else:
                 g.add((URIRef(voidds),URIRef(stat),Literal(stats[stat],datatype="http://www.w3.org/2001/XMLSchema#integer")))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#uriSpace"),
