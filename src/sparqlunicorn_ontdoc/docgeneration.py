@@ -458,10 +458,12 @@ class OntDocGeneration:
             f.write("var search=" + json.dumps(labeltouri, indent=2, sort_keys=True))
             f.close()
         if self.has3d:
-            with open(outpath + "js/corto.em.js", 'w', encoding='utf-8') as f:
+            if not os.path.exists(outpath+"/js"):
+                os.makedirs(outpath+"/js")
+            with open(outpath + "/js/corto.em.js", 'w', encoding='utf-8') as f:
                 f.write(templates["corto.em"])
                 f.close()
-            with open(outpath + "js/nexus.js", 'w', encoding='utf-8') as f:
+            with open(outpath + "/js/nexus.js", 'w', encoding='utf-8') as f:
                 f.write(templates["nexus"])
                 f.close()
         if self.iiif:
