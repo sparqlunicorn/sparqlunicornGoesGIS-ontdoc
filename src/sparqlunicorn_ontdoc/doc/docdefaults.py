@@ -1000,7 +1000,7 @@ class DocDefaults:
                 loader.load(meshurls[0],function ( object ) {objects.add(object);scene.add(objects);})
             }else if(meshurls[0].includes(".nxs") || meshurls[0].includes(".nxz")){
                 console.log(renderer)
-                var nexus_obj=new NexusObject(meshurls[0],renderNXS,renderNXS,renderer);
+                var nexus_obj=new NexusObject(meshurls[0],function(){},renderNXS,renderer);
                 objects.add(nexus_obj)
                 scene.add(objects);
             }else if(meshurls[0].includes(".gltf")){
