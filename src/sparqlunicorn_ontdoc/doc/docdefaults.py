@@ -1836,6 +1836,7 @@ var relativedepth={{relativedepth}}</script><body><div id="header">{{logo}}<h1 i
     <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/PLYLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/OBJLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/3DHOP@4.3/minimal/js/nexus.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/nexus@master/html/js/nexus_three.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/threex.domevents@1.0.1/threex.domevents.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
