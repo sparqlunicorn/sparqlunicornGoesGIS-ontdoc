@@ -964,6 +964,7 @@ function initThreeJS(domelement,verts,meshurls) {
     renderer = new THREE.WebGLRenderer( { antialias: false } );
 	renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( 480, 500 );
+    document.getElementById(domelement).appendChild( renderer.domElement );
     if(meshurls.length>0){
         if(meshurls[0].includes(".ply")){
             var loader = new THREE.PLYLoader();
@@ -1021,7 +1022,6 @@ function initThreeJS(domelement,verts,meshurls) {
     const mesh = new THREE.Mesh( extrudedGeometry, material );
     annotations.add(mesh)
     scene.add( annotations );
-    document.getElementById(domelement).appendChild( renderer.domElement );
 	controls = new THREE.OrbitControls( camera, renderer.domElement );
     controls.target.set( centervec.x,centervec.y,centervec.z );
     camera.position.x= centervec.x
