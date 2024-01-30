@@ -961,6 +961,9 @@ function initThreeJS(domelement,verts,meshurls) {
 	const lightingFolder = geometryFolder.addFolder("Lighting");
 	const geometryF = geometryFolder.addFolder("Geometry");
 	geometryF.open();
+    renderer = new THREE.WebGLRenderer( { antialias: false } );
+	renderer.setPixelRatio( window.devicePixelRatio );
+    renderer.setSize( 480, 500 );
     if(meshurls.length>0){
         if(meshurls[0].includes(".ply")){
             var loader = new THREE.PLYLoader();
@@ -978,6 +981,14 @@ function initThreeJS(domelement,verts,meshurls) {
         }else if(meshurls[0].includes(".obj")){
             var loader= new THREE.OBJLoader();
             loader.load(meshurls[0],function ( object ) {objects.add(object);scene.add(objects);})
+        }else if(meshurls[0].includes(".nxs") || meshurls[0].includes(".nxz")){
+            var nexus_obj=new NexusObject(meshurls[0],renderer,function () {
+                Nexus.beginFrame(renderer.context);
+                renderer.render( scene, camera );
+                Nexus.endFrame(renderer.context);
+            });
+            objects.add(nexus_obj)
+            scene.add(objects);
         }else if(meshurls[0].includes(".gltf")){
             var loader = new THREE.GLTFLoader();
             loader.load(meshurls[0], function ( gltf )
@@ -1010,9 +1021,6 @@ function initThreeJS(domelement,verts,meshurls) {
     const mesh = new THREE.Mesh( extrudedGeometry, material );
     annotations.add(mesh)
     scene.add( annotations );
-    renderer = new THREE.WebGLRenderer( { antialias: false } );
-	renderer.setPixelRatio( window.devicePixelRatio );
-    renderer.setSize( 480, 500 );
     document.getElementById(domelement).appendChild( renderer.domElement );
 	controls = new THREE.OrbitControls( camera, renderer.domElement );
     controls.target.set( centervec.x,centervec.y,centervec.z );

@@ -1334,8 +1334,9 @@ class OntDocGeneration:
                         if ".nxs" in curitem or ".nxz" in curitem:
                             format="nexus"
                         elif format=="gltf":
-                            f.write(templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}", "[]"))
-                        f.write(templates["3dtemplate"].replace("{{meshurl}}",curitem).replace("{{meshformat}}",format))
+                            f.write(templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}", str(list(foundmedia["mesh"]))))
+                        f.write(templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",str(list(foundmedia["mesh"]))))
+                        #f.write(templates["3dtemplate"].replace("{{meshurl}}",curitem).replace("{{meshformat}}",format))
                         break
                 elif len(foundmedia["mesh"])==0 and len(image3dannos)>0:
                     for anno in image3dannos:

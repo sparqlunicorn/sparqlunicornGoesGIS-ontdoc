@@ -1781,6 +1781,11 @@ var relativedepth={{relativedepth}}</script><body><div id="header">{{logo}}<h1 i
     <script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/TrackballControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/PLYLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three/examples/js/loaders/OBJLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/nexus@master/html/js/nexus_three.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/threex.domevents@1.0.1/threex.domevents.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
     <div id="threejs" class="threejscontainer" style="max-width:485px;max-height:500px">
     </div>
     <script>$(document).ready(function(){initThreeJS('threejs',parseWKTStringToJSON("{{wktstring}}"),{{meshurls}})})</script>
