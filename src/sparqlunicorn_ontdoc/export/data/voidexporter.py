@@ -7,7 +7,7 @@ from doc.docutils import DocUtils
 class VoidExporter:
 
     @staticmethod
-    def createVoidDataset(dsname,prefixnamespace,deploypath,outpath,licenseuri,modtime,language,subjectstorender,prefixes,classtree=None,propstats=None,nonnscount=None,objectmap=None,startconcept=None):
+    def createVoidDataset(dsname,prefixnamespace,deploypath,outpath,licenseuri,modtime,language,stats,subjectstorender,prefixes,classtree=None,propstats=None,nonnscount=None,objectmap=None,startconcept=None):
         g=Graph()
         if dsname==None or dsname=="":
             dsname="dataset"
@@ -40,6 +40,8 @@ class VoidExporter:
         if startconcept!=None and startconcept!="":
             g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#rootResource"), URIRef(startconcept.replace("index.html",""))))
             g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#exampleResource"), URIRef(startconcept.replace("index.html",""))))
+        for stat in stats:
+            g.add((URIRef(voidds), URIRef(stat),Literal(stats[stat], datatype="http://www.w3.org/2001/XMLSchema#integer")))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#uriSpace"),
               Literal(prefixnamespace,datatype="http://www.w3.org/2001/XMLSchema#string")))
         for ns_prefix, namespace in g.namespaces():
