@@ -104,6 +104,7 @@ class OntDocGeneration:
         self.logoname=logoname
         self.ckan=ckan
         self.solidexport=solidexport
+        self.has3d=False
         self.publisher=publisher
         self.publishingorg=publishingorg
         self.startconcept=startconcept
@@ -456,6 +457,13 @@ class OntDocGeneration:
         with open(outpath + corpusid + '_search.js', 'w', encoding='utf-8') as f:
             f.write("var search=" + json.dumps(labeltouri, indent=2, sort_keys=True))
             f.close()
+        if self.has3d:
+            with open(outpath + "js/corto.em.js", 'w', encoding='utf-8') as f:
+                f.write(templates["corto.em"])
+                f.close()
+            with open(outpath + "js/nexus.js", 'w', encoding='utf-8') as f:
+                f.write(templates["nexus"])
+                f.close()
         if self.iiif:
             IIIFAPIExporter.generateIIIFAnnotations(outpath,imagetoURI)
         if self.createIndexPages:
@@ -1324,7 +1332,7 @@ class OntDocGeneration:
                         iiifmanifestpaths["default"].append(IIIFAPIExporter.generateIIIFManifest(graph,self.outpath,self.deploypath,foundmedia["mesh"],image3dannos,annobodies,str(subject),self.prefixnamespace,imagetoURI, self.imagemetadata,DocConfig.metadatanamespaces,foundlabel,comment,thetypes,predobjmap,"Model"))
                     for anno in image3dannos:
                         if ("POINT" in anno["value"].upper() or "POLYGON" in anno["value"].upper() or "LINESTRING" in anno["value"].upper()):
-                            f.write(templates["threejstemplate"].replace("{{wktstring}}",anno["value"]).replace("{{meshurls}}",str(list(foundmedia["mesh"]))))
+                            f.write(templates["threejstemplate"].replace("{{wktstring}}",anno["value"]).replace("{{meshurls}}",str(list(foundmedia["mesh"]))).replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
                 elif len(foundmedia["mesh"])>0 and len(image3dannos)==0:
                     print("Found 3D Model: "+str(foundmedia["mesh"]))
                     if self.iiif:
@@ -1333,15 +1341,16 @@ class OntDocGeneration:
                         format="ply"
                         if ".nxs" in curitem or ".nxz" in curitem:
                             format="nexus"
+                            self.has3d = True
                         elif format=="gltf":
-                            f.write(templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}", str(list(foundmedia["mesh"]))))
-                        f.write(templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",str(list(foundmedia["mesh"]))))
+                            f.write(templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}", str(list(foundmedia["mesh"]))).replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
+                        f.write(templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",str(list(foundmedia["mesh"]))).replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
                         #f.write(templates["3dtemplate"].replace("{{meshurl}}",curitem).replace("{{meshformat}}",format))
                         break
                 elif len(foundmedia["mesh"])==0 and len(image3dannos)>0:
                     for anno in image3dannos:
                         if ("POINT" in anno["value"].upper() or "POLYGON" in anno["value"].upper() or "LINESTRING" in anno["value"].upper()):
-                            f.write(templates["threejstemplate"].replace("{{wktstring}}",anno["value"]).replace("{{meshurls}}","[]"))
+                            f.write(templates["threejstemplate"].replace("{{wktstring}}",anno["value"]).replace("{{meshurls}}","[]").replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
                 carousel="image"
                 if len(foundmedia["image"])>3:
                     carousel="carousel-item active"
