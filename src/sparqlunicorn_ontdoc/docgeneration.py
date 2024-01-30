@@ -398,7 +398,7 @@ class OntDocGeneration:
                        Literal(int(self.graph.value(URIRef(voidds),URIRef(stat)))+voidstats[stat], datatype="http://www.w3.org/2001/XMLSchema#integer")))
             else:
                 self.graph.add((URIRef(voidds),URIRef(stat),Literal(voidstats[stat],datatype="http://www.w3.org/2001/XMLSchema#integer")))
-        voidgraph=VoidExporter.createVoidDataset(self.datasettitle,prefixnamespace,self.deploypath,self.outpath,self.licenseuri,self.modtime,self.labellang,voidstats,subjectstorender,self.graph,self.prefixes,tree,predmap,nonnscount,instancecount,self.startconcept)
+        voidgraph=VoidExporter.createVoidDataset(self.datasettitle,prefixnamespace,self.deploypath,self.outpath,self.licenseuri,self.modtime,self.labellang,subjectstorender,self.prefixes,tree,predmap,nonnscount,instancecount,self.startconcept)
         self.voidstatshtml=VoidExporter.toHTML(voidstats,self.deploypath)
         self.graph+=voidgraph["graph"]
         subjectstorender=voidgraph["subjects"]
