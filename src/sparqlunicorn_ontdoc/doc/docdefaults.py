@@ -914,7 +914,7 @@ class DocDefaults:
     }
     
     
-    let camera, scene, renderer,controls;
+    let camera, scene, renderer, controls;
     
     function viewGeometry(geometry) {
       const material = new THREE.MeshPhongMaterial({
@@ -977,7 +977,7 @@ class DocDefaults:
         const lightingFolder = geometryFolder.addFolder("Lighting");
         const geometryF = geometryFolder.addFolder("Geometry");
         geometryF.open();
-        var renderer = new THREE.WebGLRenderer( { antialias: false } );
+        renderer = new THREE.WebGLRenderer( { antialias: false } );
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize( 480, 500 );
         document.getElementById(domelement).appendChild( renderer.domElement );

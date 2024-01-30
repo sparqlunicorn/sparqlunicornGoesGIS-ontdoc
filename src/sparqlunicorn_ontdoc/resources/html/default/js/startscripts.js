@@ -1039,9 +1039,10 @@ function initThreeJS(domelement,verts,meshurls) {
 }
 
 function renderNXS(){
-    Nexus.beginFrame(renderer.context);
+    console.log(renderer)
+    Nexus.beginFrame(renderer.getContext());
     renderer.render( scene, camera );
-    Nexus.endFrame(renderer.context);
+    Nexus.endFrame(renderer.getContext());
 }
 
 function animate() {
