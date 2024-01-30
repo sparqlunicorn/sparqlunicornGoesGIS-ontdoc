@@ -936,6 +936,8 @@ class DocDefaults:
         minx=Number.MAX_VALUE
         maxx=Number.MIN_VALUE
         vertarray=[]
+        const annotations=new THREE.Group();
+        const objects=new THREE.Group();
         console.log(verts)
         var svgShape = new THREE.Shape();
         first=true
@@ -968,15 +970,61 @@ class DocDefaults:
                 miny=vert["x"]
             }
         }
+        const gui = new dat.GUI({autoPlace: true})
+        gui.domElement.id="gui"
+        const geometryFolder = gui.addFolder("Mesh");
+        geometryFolder.open();
+        const lightingFolder = geometryFolder.addFolder("Lighting");
+        const geometryF = geometryFolder.addFolder("Geometry");
+        geometryF.open();
+        renderer = new THREE.WebGLRenderer( { antialias: false } );
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize( 480, 500 );
         if(meshurls.length>0){
-            var loader = new THREE.PLYLoader();
-            loader.load(meshurls[0], viewGeometry);
+            if(meshurls[0].includes(".ply")){
+                var loader = new THREE.PLYLoader();
+                loader.load(meshurls[0], function(object){
+                    const material = new THREE.MeshPhongMaterial({
+                        color: 0xffffff,
+                        flatShading: true,
+                        vertexColors: THREE.VertexColors,
+                        wireframe: false
+                    });
+                    const mesh = new THREE.Mesh(object, material);
+                    objects.add(mesh);
+                    scene.add(objects);
+                });
+            }else if(meshurls[0].includes(".obj")){
+                var loader= new THREE.OBJLoader();
+                loader.load(meshurls[0],function ( object ) {objects.add(object);scene.add(objects);})
+            }else if(meshurls[0].includes(".nxs") || meshurls[0].includes(".nxz")){
+                var nexus_obj=new NexusObject(meshurls[0],renderer,function () {
+                    Nexus.beginFrame(renderer.context);
+                    renderer.render( scene, camera );
+                    Nexus.endFrame(renderer.context);
+                });
+                objects.add(nexus_obj)
+                scene.add(objects);
+            }else if(meshurls[0].includes(".gltf")){
+                var loader = new THREE.GLTFLoader();
+                loader.load(meshurls[0], function ( gltf )
+                {
+                    object = gltf.scene;
+                    object.position.x = 0;
+                    object.position.y = 0;
+                    objects.add(object)
+                    scene.add(objects);
+                });
+            }
         }
         camera = new THREE.PerspectiveCamera(90,window.innerWidth / window.innerHeight, 0.1, 150 );
         scene.add(new THREE.AmbientLight(0x222222));
         var light = new THREE.DirectionalLight(0xffffff, 1);
         light.position.set(20, 20, 0);
         scene.add(light);
+        lightingFolder.add(light.position, "x").min(-5).max(5).step(0.01).name("X Position")
+        lightingFolder.add(light.position, "y").min(-5).max(5).step(0.01).name("Y Position")
+        lightingFolder.add(light.position, "z").min(-5).max(5).step(0.01).name("Z Position")
         var axesHelper = new THREE.AxesHelper( Math.max(maxx, maxy, maxz)*4 );
         scene.add( axesHelper );
         console.log("Depth: "+(maxz-minz))
@@ -987,10 +1035,8 @@ class DocDefaults:
         console.log(centervec)
         const material = new THREE.MeshBasicMaterial( { color: 0xFFFFFF, wireframe:true } );
         const mesh = new THREE.Mesh( extrudedGeometry, material );
-        scene.add( mesh );
-        renderer = new THREE.WebGLRenderer( { antialias: false } );
-        renderer.setPixelRatio( window.devicePixelRatio );
-        renderer.setSize( 480, 500 );
+        annotations.add(mesh)
+        scene.add( annotations );
         document.getElementById(domelement).appendChild( renderer.domElement );
         controls = new THREE.OrbitControls( camera, renderer.domElement );
         controls.target.set( centervec.x,centervec.y,centervec.z );
@@ -999,6 +1045,13 @@ class DocDefaults:
         camera.position.z = centervec.z+10;
         controls.maxDistance= Math.max(maxx, maxy, maxz)*5
         controls.update();
+        const updateCamera = () => {
+            camera.updateProjectionMatrix();
+        }
+        const cameraFolder = geometryFolder.addFolder("Camera");
+        cameraFolder.add (camera, 'fov', 1, 180).name('Zoom').onChange(updateCamera);
+        gui.add(objects, 'visible').name('Meshes')
+        gui.add(annotations, 'visible').name('Annotations')
         animate()
     }
     
