@@ -983,11 +983,7 @@ function initThreeJS(domelement,verts,meshurls) {
             var loader= new THREE.OBJLoader();
             loader.load(meshurls[0],function ( object ) {objects.add(object);scene.add(objects);})
         }else if(meshurls[0].includes(".nxs") || meshurls[0].includes(".nxz")){
-            var nexus_obj=new NexusObject(meshurls[0],renderer,function () {
-                Nexus.beginFrame(renderer.context);
-                renderer.render( scene, camera );
-                Nexus.endFrame(renderer.context);
-            });
+            var nexus_obj=new NexusObject(meshurls[0],renderer,renderNXS);
             objects.add(nexus_obj)
             scene.add(objects);
         }else if(meshurls[0].includes(".gltf")){
@@ -1036,7 +1032,16 @@ function initThreeJS(domelement,verts,meshurls) {
 	cameraFolder.add (camera, 'fov', 1, 180).name('Zoom').onChange(updateCamera);
     gui.add(objects, 'visible').name('Meshes')
     gui.add(annotations, 'visible').name('Annotations')
+    if(meshurls[0].includes(".nxs") || meshurls[0].includes(".nxz")){
+        renderNXS()
+    }
     animate()
+}
+
+function renderNXS(){
+    Nexus.beginFrame(renderer.context);
+    renderer.render( scene, camera );
+    Nexus.endFrame(renderer.context);
 }
 
 function animate() {
