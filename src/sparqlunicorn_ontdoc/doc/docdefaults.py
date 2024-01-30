@@ -977,7 +977,7 @@ class DocDefaults:
         const lightingFolder = geometryFolder.addFolder("Lighting");
         const geometryF = geometryFolder.addFolder("Geometry");
         geometryF.open();
-        const renderer = new THREE.WebGLRenderer( { antialias: false } );
+        var renderer = new THREE.WebGLRenderer( { antialias: false } );
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize( 480, 500 );
         document.getElementById(domelement).appendChild( renderer.domElement );
@@ -1056,6 +1056,7 @@ class DocDefaults:
     }
     
     function renderNXS(){
+        console.log(renderer)
         Nexus.beginFrame(renderer.getContext());
         renderer.render( scene, camera );
         Nexus.endFrame(renderer.getContext());
