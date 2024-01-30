@@ -1056,9 +1056,9 @@ class DocDefaults:
     }
     
     function renderNXS(){
-        Nexus.beginFrame(renderer.context);
+        Nexus.beginFrame(renderer.getContext());
         renderer.render( scene, camera );
-        Nexus.endFrame(renderer.context);
+        Nexus.endFrame(renderer.getContext());
     }
     
     function animate() {
