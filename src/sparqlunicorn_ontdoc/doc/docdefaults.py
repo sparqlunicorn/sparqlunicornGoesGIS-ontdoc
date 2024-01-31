@@ -1102,6 +1102,7 @@ class DocDefaults:
         scene.add( axesHelper );
         console.log("Depth: "+(maxz-minz))
         scene.add( annotations );
+        centervec=new THREE.Vector3()
         controls = new THREE.OrbitControls( camera, renderer.domElement );
         controls.target.set( centervec.x,centervec.y,centervec.z );
         controls.target.set( 0,0,0 );
