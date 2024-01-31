@@ -901,6 +901,62 @@ function setup3dhop(meshurl,meshformat) {
   });
 }
 
+function addRotationControls(box,geometryF){
+    geometryF.close();
+
+    const rotationFolder = geometryF.addFolder("Rotation");
+    rotationFolder.add(objects.rotation, 'x', 0, Math.PI).name("X").onChange(
+    function(){
+        yourVar = this.getValue();
+        scene.traverse(function(obj){
+            if(obj.type === 'Mesh'){
+                obj.rotation.x = yourVar;
+            }});
+    });
+    rotationFolder.add(objects.rotation, 'y', 0, Math.PI).name("Y").onChange(
+    function(){
+        yourVar = this.getValue();
+        scene.traverse(function(obj){
+            if(obj.type === 'Mesh'){
+                obj.rotation.y = yourVar;
+            }});
+    });
+    rotationFolder.add(objects.rotation, 'z', 0, Math.PI).name("Z").onChange(
+    function(){
+        yourVar = this.getValue();
+        scene.traverse(function(obj){
+            if(obj.type === 'Mesh'){
+                obj.rotation.z = yourVar;
+            }});
+    });
+
+    const scaleFolder = geometryF.addFolder("Scale");
+    scaleFolder.add(objects.scale, 'x', 0, 2).name("X").onChange(
+    function(){
+        yourVar = this.getValue();
+        scene.traverse(function(obj){
+            if(obj.type === 'Mesh'){
+                obj.scale.x = yourVar;
+            }});
+    });
+    scaleFolder.add(objects.scale, 'y', 0, 2).name("Y").onChange(
+    function(){
+        yourVar = this.getValue();
+        scene.traverse(function(obj){
+            if(obj.type === 'Mesh'){
+                obj.scale.y = yourVar;
+            }});
+    });
+    scaleFolder.add(objects.scale, 'z', 0, 2).name("Z").onChange(
+    function(){
+        yourVar = this.getValue();
+        scene.traverse(function(obj){
+            if(obj.type === 'Mesh'){
+                obj.scale.z = yourVar;
+            }});
+    });
+}
+
 function start3dhop(meshurl,meshformat){
     init3dhop();
 	setup3dhop(meshurl,meshformat);
@@ -978,23 +1034,26 @@ function initThreeJS(domelement,verts,meshurls) {
                 const mesh = new THREE.Mesh(object, material);
                 objects.add(mesh);
                 scene.add(objects);
+                addRotationControls(object,geometryF)
             });
         }else if(meshurls[0].includes(".obj")){
             var loader= new THREE.OBJLoader();
-            loader.load(meshurls[0],function ( object ) {objects.add(object);scene.add(objects);})
+            loader.load(meshurls[0],function ( object ) {objects.add(object);scene.add(objects); addRotationControls(object,geometryF)})
         }else if(meshurls[0].includes(".nxs") || meshurls[0].includes(".nxz")){
             var nexus_obj=new NexusObject(meshurls[0],function(){},renderNXS,renderer);
             objects.add(nexus_obj)
             scene.add(objects);
+            addRotationControls(nexus_obj,geometryF)
         }else if(meshurls[0].includes(".gltf")){
             var loader = new THREE.GLTFLoader();
             loader.load(meshurls[0], function ( gltf )
             {
-                object = gltf.scene;
-                object.position.x = 0;
-                object.position.y = 0;
-                objects.add(object)
+                box = gltf.scene;
+                box.position.x = 0;
+                box.position.y = 0;
+                objects.add(box)
                 scene.add(objects);
+                addRotationControls(box,geometryF)
             });
         }
     }
