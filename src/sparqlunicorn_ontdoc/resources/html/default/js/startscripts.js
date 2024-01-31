@@ -965,21 +965,8 @@ function start3dhop(meshurl,meshformat){
 }
 
 
-let camera, scene, renderer,controls;
-
-function initThreeJS(domelement,verts,meshurls) {
-    scene = new THREE.Scene();
-    minz=Number.MAX_VALUE
-    maxz=Number.MIN_VALUE
-    miny=Number.MAX_VALUE
-    maxy=Number.MIN_VALUE
-    minx=Number.MAX_VALUE
-    maxx=Number.MIN_VALUE
-	vertarray=[]
-    const annotations=new THREE.Group();
-	const objects=new THREE.Group();
-    console.log(verts)
-    var svgShape = new THREE.Shape();
+function prepareAnnotationFromJSON(verts,annotations){
+	var svgShape = new THREE.Shape();
     first=true
     for(vert of verts){
         if(first){
@@ -1010,6 +997,33 @@ function initThreeJS(domelement,verts,meshurls) {
             miny=vert["x"]
         }
     }
+	var extrudedGeometry = new THREE.ExtrudeGeometry(svgShape, {depth: maxz-minz, bevelEnabled: false});
+    extrudedGeometry.computeBoundingBox()
+    const material = new THREE.MeshBasicMaterial( { color: 0xFFFFFF, wireframe:true } );
+    const mesh = new THREE.Mesh( extrudedGeometry, material );
+	annotations.add(mesh)
+	return annotations
+}
+
+let camera, scene, renderer,controls;
+
+function initThreeJS(domelement,verts,meshurls) {
+    scene = new THREE.Scene();
+    minz=Number.MAX_VALUE
+    maxz=Number.MIN_VALUE
+    miny=Number.MAX_VALUE
+    maxy=Number.MIN_VALUE
+    minx=Number.MAX_VALUE
+    maxx=Number.MIN_VALUE
+	vertarray=[]
+    annotations=new THREE.Group();
+	const objects=new THREE.Group();
+    console.log(verts)
+    var svgShape = new THREE.Shape();
+    first=true
+    height=500
+    width=480
+    annotations=prepareAnnotationFromJSON(verts,annotations)
     const gui = new dat.GUI({autoPlace: false})
 	gui.domElement.id="gui"
     $("#threejsnav").append($(gui.domElement))
@@ -1020,7 +1034,7 @@ function initThreeJS(domelement,verts,meshurls) {
 	geometryF.open();
     renderer = new THREE.WebGLRenderer( { antialias: false } );
 	renderer.setPixelRatio( window.devicePixelRatio );
-    renderer.setSize( 480, 500 );
+    renderer.setSize( width, height);
     document.getElementById(domelement).appendChild( renderer.domElement );
     if(meshurls.length>0){
         if(meshurls[0].includes(".ply")){
@@ -1058,7 +1072,8 @@ function initThreeJS(domelement,verts,meshurls) {
             });
         }
     }
-    camera = new THREE.PerspectiveCamera(90,window.innerWidth / window.innerHeight, 0.1, 150 );
+    //camera = new THREE.PerspectiveCamera(90,window.innerWidth / window.innerHeight, 0.1, 150 );
+    camera = new THREE.PerspectiveCamera(90,width / height, 0.1, 150 )
     scene.add(new THREE.AmbientLight(0x222222));
     var light = new THREE.DirectionalLight(0xffffff, 1);
     light.position.set(20, 20, 0);
@@ -1069,14 +1084,6 @@ function initThreeJS(domelement,verts,meshurls) {
     var axesHelper = new THREE.AxesHelper( Math.max(maxx, maxy, maxz)*4 );
     scene.add( axesHelper );
     console.log("Depth: "+(maxz-minz))
-    var extrudedGeometry = new THREE.ExtrudeGeometry(svgShape, {depth: maxz-minz, bevelEnabled: false});
-    extrudedGeometry.computeBoundingBox()
-    centervec=new THREE.Vector3()
-    extrudedGeometry.boundingBox.getCenter(centervec)
-    console.log(centervec)
-    const material = new THREE.MeshBasicMaterial( { color: 0xFFFFFF, wireframe:true } );
-    const mesh = new THREE.Mesh( extrudedGeometry, material );
-    annotations.add(mesh)
     scene.add( annotations );
 	controls = new THREE.OrbitControls( camera, renderer.domElement );
     controls.target.set( centervec.x,centervec.y,centervec.z );
@@ -1090,7 +1097,7 @@ function initThreeJS(domelement,verts,meshurls) {
 		camera.updateProjectionMatrix();
 	}
 	const cameraFolder = geometryFolder.addFolder("Camera");
-	cameraFolder.add (camera, 'fov', 1, 180).name('Zoom').onChange(updateCamera);
+	cameraFolder.add (camera, 'fov', 1, 250).name('Zoom').onChange(updateCamera);
     gui.add(objects, 'visible').name('Meshes')
     gui.add(annotations, 'visible').name('Annotations')
     if(meshurls[0].includes(".nxs") || meshurls[0].includes(".nxz")){
