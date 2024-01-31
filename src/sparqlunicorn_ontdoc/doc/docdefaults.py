@@ -1907,7 +1907,7 @@ var relativedepth={{relativedepth}}</script><body><div id="header">{{logo}}<h1 i
     <script src="https://cdn.jsdelivr.net/gh/cnr-isti-vclab/nexus@master/html/js/nexus_three.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/threex.domevents@1.0.1/threex.domevents.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
-    <div id="threejs" class="threejscontainer" style="max-width:485px;max-height:500px"><div id="threejsnav" style="flex: 1;"></div></div>
+    <div id="threejs" class="threejscontainer" style="max-width:485px;max-height:500px"><div id="gui" style="flex: 1;"></div></div>
     <script>$(document).ready(function(){initThreeJS('threejs',parseWKTStringToJSON("{{wktstring}}"),{{meshurls}})})</script>
     """,
 
