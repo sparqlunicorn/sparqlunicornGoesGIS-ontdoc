@@ -289,6 +289,8 @@ class OntDocGeneration:
         self.licensehtml=curlicense
         res=self.getPropertyRelations(self.graph, outpath)
         voidstats["http://rdfs.org/ns/void#properties"]=res["preds"]
+        voidstats["http://ldf.fi/void-ext#propertyClasses"] = res["predclasses"]
+        voidstats["http://ldf.fi/void-ext#averagePropertyIRILength"] = res["avgpredlen"]
         voidstats["http://rdfs.org/ns/void#distinctObjects"]=res["objs"]
         predmap=res["predmap"]
         dsname=self.datasettitle
@@ -307,11 +309,13 @@ class OntDocGeneration:
         subjectstorender.add(URIRef(voidds))
         nonnscount={}
         instancecount={}
-        literaltypes=set()
+        literaltypes={}
         blanknodes=set()
         literallangs=set()
         literals=set()
         irirefs=0
+        literallength=0
+        literalcount=0
         for sub in self.graph.subjects(None,None,True):
             if (prefixnamespace in sub and (isinstance(sub,URIRef)) or isinstance(sub,BNode)):
                 subjectstorender.add(sub)
@@ -325,10 +329,14 @@ class OntDocGeneration:
                 for tup in self.graph.predicate_objects(sub):
                     if isinstance(tup[1],Literal):
                         if tup[1].datatype!=None:
-                            literaltypes.add(str(tup[1].datatype))
+                            if str(tup[1].datatype) not in literaltypes:
+                                literaltypes[str(tup[1].datatype)]=set()
+                            literaltypes[str(tup[1].datatype)].add(str(tup[0]))
                         if tup[1].language != None:
                             literallangs.add(str(tup[1].language))
+                        literallength+=len(str(tup[1]))
                         literals.add(str(tup[1]))
+                        literalcount+=1
                     elif isinstance(tup[1],BNode):
                         blanknodes.add(str(tup[1]))
                     else:
@@ -359,8 +367,9 @@ class OntDocGeneration:
         voidstats["http://rdfs.org/ns/void#entities"]=len(subjectstorender)
         voidstats["http://ldf.fi/void-ext#languages"]=len(literallangs)
         voidstats["http://ldf.fi/void-ext#distinctBlankNodes"]=len(blanknodes)
-        voidstats["http://ldf.fi/void-ext#datatypes"]=len(literaltypes)
+        voidstats["http://ldf.fi/void-ext#datatypes"]=len(literaltypes.keys())
         voidstats["http://ldf.fi/void-ext#distinctLiterals"]=len(literals)
+        voidstats["http://ldf.fi/void-ext#averageLiteralLength"]=literalcount/literallength
         voidstats["http://ldf.fi/void-ext#distinctIRIReferences"]=voidstats["http://rdfs.org/ns/void#distinctSubjects"]+res["preds"]+res["objs"]
         voidstats["http://ldf.fi/void-ext#distinctRDFNodes"] = len(blanknodes)+len(literals)+voidstats["http://ldf.fi/void-ext#distinctIRIReferences"]
         if os.path.exists(outpath + corpusid + '_search.js'):
@@ -574,10 +583,14 @@ class OntDocGeneration:
     def getPropertyRelations(self,graph,outpath):
         predicates= {}
         predicatecounter=0
+        predicatelength=0
+        predicateClasses=0
         objects=set()
         for pred in graph.predicates(None,None,True):
             predicates[pred]={"from":set(),"to":set(),"triples":0}
             for tup in graph.subject_objects(pred):
+                if str(tup[0])=="http://www.w3.org/1999/02/22-rdf-syntax-ns#type":
+                    predicateClasses+=1
                 for item in graph.objects(tup[0],URIRef(self.typeproperty),True):
                     predicates[pred]["from"].add(item)
                 for item in graph.objects(tup[1], URIRef(self.typeproperty),True):
@@ -587,12 +600,13 @@ class OntDocGeneration:
             predicates[pred]["from"]=list(predicates[pred]["from"])
             predicates[pred]["to"] = list(predicates[pred]["to"])
             predicatecounter+=1
+            predicatelength+=len(str(pred))
         if self.createVOWL:
             OWL2VOWL().convertOWL2MiniVOWL(graph,outpath,"minivowl_result.js",predicates)
         with open(outpath+"proprelations.js", 'w', encoding='utf-8') as f:
             f.write("var proprelations="+json.dumps(predicates))
             f.close()
-        return {"preds":predicatecounter,"objs":len(objects),"predmap":predicates}
+        return {"preds":predicatecounter,"avgpredlen":str(predicatecounter/predicatelength),"predclasses":predicateClasses,"objs":len(objects),"predmap":predicates}
 
     def createCollections(self,graph,namespace):
         classToInstances={}
