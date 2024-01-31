@@ -1033,7 +1033,7 @@ class DocDefaults:
         minx=Number.MAX_VALUE
         maxx=Number.MIN_VALUE
         vertarray=[]
-        const annotations=new THREE.Group();
+        annotations=new THREE.Group();
         const objects=new THREE.Group();
         console.log(verts)
         var svgShape = new THREE.Shape();
