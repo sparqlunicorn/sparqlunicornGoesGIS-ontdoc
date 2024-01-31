@@ -369,7 +369,7 @@ class OntDocGeneration:
         voidstats["http://ldf.fi/void-ext#distinctBlankNodes"]=len(blanknodes)
         voidstats["http://ldf.fi/void-ext#datatypes"]=len(literaltypes.keys())
         voidstats["http://ldf.fi/void-ext#distinctLiterals"]=len(literals)
-        voidstats["http://ldf.fi/void-ext#averageLiteralLength"]=literalcount/literallength
+        voidstats["http://ldf.fi/void-ext#averageLiteralLength"]=literallength/literalcount
         voidstats["http://ldf.fi/void-ext#distinctIRIReferences"]=voidstats["http://rdfs.org/ns/void#distinctSubjects"]+res["preds"]+res["objs"]
         voidstats["http://ldf.fi/void-ext#distinctRDFNodes"] = len(blanknodes)+len(literals)+voidstats["http://ldf.fi/void-ext#distinctIRIReferences"]
         if os.path.exists(outpath + corpusid + '_search.js'):
@@ -606,7 +606,7 @@ class OntDocGeneration:
         with open(outpath+"proprelations.js", 'w', encoding='utf-8') as f:
             f.write("var proprelations="+json.dumps(predicates))
             f.close()
-        return {"preds":predicatecounter,"avgpredlen":str(predicatecounter/predicatelength),"predclasses":predicateClasses,"objs":len(objects),"predmap":predicates}
+        return {"preds":predicatecounter,"avgpredlen":str(predicatelength/predicatecounter),"predclasses":predicateClasses,"objs":len(objects),"predmap":predicates}
 
     def createCollections(self,graph,namespace):
         classToInstances={}
