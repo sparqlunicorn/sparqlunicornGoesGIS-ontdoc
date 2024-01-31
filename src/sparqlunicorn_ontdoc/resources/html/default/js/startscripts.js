@@ -1010,8 +1010,9 @@ function initThreeJS(domelement,verts,meshurls) {
             miny=vert["x"]
         }
     }
-    const gui = new dat.GUI({autoPlace: true})
+    const gui = new dat.GUI({autoPlace: false})
 	gui.domElement.id="gui"
+    $("#threejsnav").append($(gui.domElement))
 	const geometryFolder = gui.addFolder("Mesh");
 	geometryFolder.open();
 	const lightingFolder = geometryFolder.addFolder("Lighting");
