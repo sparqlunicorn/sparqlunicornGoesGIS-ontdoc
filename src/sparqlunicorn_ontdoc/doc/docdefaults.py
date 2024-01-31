@@ -1098,9 +1098,10 @@ class DocDefaults:
         scene.add( annotations );
         controls = new THREE.OrbitControls( camera, renderer.domElement );
         controls.target.set( centervec.x,centervec.y,centervec.z );
+        controls.target.set( 0,0,0 );
         camera.position.x= centervec.x
         camera.position.y= centervec.y
-        camera.position.z = centervec.z+10;
+        camera.position.z = 40;
         controls.maxDistance= Math.max(maxx, maxy, maxz)*5
         controls.update();
         const updateCamera = () => {
