@@ -316,6 +316,10 @@ class OntDocGeneration:
         irirefs=0
         literallength=0
         literalcount=0
+        subjectlength=0
+        objectlength=0
+        subjectcounter=0
+        objectcounter=0
         for sub in self.graph.subjects(None,None,True):
             if (prefixnamespace in sub and (isinstance(sub,URIRef)) or isinstance(sub,BNode)):
                 subjectstorender.add(sub)
@@ -326,6 +330,8 @@ class OntDocGeneration:
                 if isinstance(sub, BNode):
                     blanknodes.add(str(sub))
                 irirefs+=1
+                subjectcounter+=1
+                subjectlength+=len(str(sub))
                 for tup in self.graph.predicate_objects(sub):
                     if isinstance(tup[1],Literal):
                         if tup[1].datatype!=None:
@@ -340,6 +346,8 @@ class OntDocGeneration:
                     elif isinstance(tup[1],BNode):
                         blanknodes.add(str(tup[1]))
                     else:
+                        objectlength += len(str(tup[1]))
+                        objectcounter+=1
                         irirefs+=1
                     if str(tup[0]) in DocConfig.labelproperties:
                         labeltouri[str(tup[1])] = str(sub)
@@ -369,6 +377,8 @@ class OntDocGeneration:
         voidstats["http://ldf.fi/void-ext#distinctBlankNodes"]=len(blanknodes)
         voidstats["http://ldf.fi/void-ext#datatypes"]=len(literaltypes.keys())
         voidstats["http://ldf.fi/void-ext#distinctLiterals"]=len(literals)
+        voidstats["http://ldf.fi/void-ext#averageSubjectIRILength"] = int(subjectlength/subjectcounter)
+        voidstats["http://ldf.fi/void-ext#averageObjectIRILength"] = int(objectlength/objectcounter)
         voidstats["http://ldf.fi/void-ext#averageLiteralLength"]=int(literallength/literalcount)
         voidstats["http://ldf.fi/void-ext#distinctIRIReferences"]=voidstats["http://rdfs.org/ns/void#distinctSubjects"]+res["preds"]+res["objs"]
         voidstats["http://ldf.fi/void-ext#distinctRDFNodes"] = len(blanknodes)+len(literals)+voidstats["http://ldf.fi/void-ext#distinctIRIReferences"]
