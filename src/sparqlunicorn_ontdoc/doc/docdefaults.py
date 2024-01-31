@@ -1115,7 +1115,7 @@ class DocDefaults:
             camera.updateProjectionMatrix();
         }
         const cameraFolder = geometryFolder.addFolder("Camera");
-        cameraFolder.add (camera, 'fov', 1, 180).name('Zoom').onChange(updateCamera);
+        cameraFolder.add (camera, 'fov', 1, 250).name('Zoom').onChange(updateCamera);
         gui.add(objects, 'visible').name('Meshes')
         gui.add(annotations, 'visible').name('Annotations')
         if(meshurls[0].includes(".nxs") || meshurls[0].includes(".nxz")){
