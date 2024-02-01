@@ -14,7 +14,6 @@ class GeometryViewPage:
         thepath="<svg>"
         geomcoll= shapely.geometry.GeometryCollection(
             [shapely.geometry.shape(feature["geometry"]) for feature in features["features"]])
-        bbox=geomcoll.bounds()
         svgpath=geomcoll.svg()
         print(svgpath)
         thepath+=svgpath
@@ -105,6 +104,7 @@ class GeometryViewPage:
             geomcoll=shapely.geometry.GeometryCollection(
                 [shapely.geometry.shape(feature["geometry"]) for feature in featcoll["features"]])
             featcoll["bbox"]=geomcoll.bounds
+            print("GEOMETRY COLLECTION HAS Z???? "+str(geomcoll.has_z))
             if geomcoll.has_z:
                 self.createSVGFromWKT(templates,featcoll,f)
             else:
