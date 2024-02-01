@@ -10,6 +10,19 @@ import json
 
 class GeometryViewPage:
 
+    def createSVGFromWKT(self,templates,features,f):
+        thepath="<svg>"
+        geomcoll= shapely.geometry.GeometryCollection(
+            [shapely.geometry.shape(feature["geometry"]) for feature in features["features"]])
+        bbox=geomcoll.bounds()
+        svgpath=geomcoll.svg()
+        print(svgpath)
+        thepath+=svgpath
+        thepath+="</svg>"
+        print(thepath)
+        f.write(templates["imagestemplatesvg"].replace("{{carousel}}","image").replace("{{image}}", str(thepath.replace("<svg>","<svg class=\"svgview\">"))))
+
+
     def generatePageWidget(self,graph,templates,subject,f,uritotreeitem,geojsonrep,predobjmap,geocache,parameters={},onlybody=False):
         if uritotreeitem != None and str(subject) in uritotreeitem:
             uritotreeitem[str(subject)][-1]["type"] = "geoinstance"
@@ -89,51 +102,55 @@ class GeometryViewPage:
         if len(featcoll["features"]) > 0:
             featcoll["numberMatched"] = len(featcoll["features"])
             featcoll["numberReturned"] = len(featcoll["features"])
-            featcoll["bbox"] = shapely.geometry.GeometryCollection(
-                [shapely.geometry.shape(feature["geometry"]) for feature in featcoll["features"]]).bounds
-            firstcrs = "4326"
-            if len(thecrs) > 0:
-                firstcrs = str(next(iter(thecrs)))
-                featcoll["crs"] = "http://www.opengis.net/def/crs/EPSG/0/" + firstcrs
+            geomcoll=shapely.geometry.GeometryCollection(
+                [shapely.geometry.shape(feature["geometry"]) for feature in featcoll["features"]])
+            featcoll["bbox"]=geomcoll.bounds
+            if geomcoll.has_z:
+                self.createSVGFromWKT(templates,featcoll,f)
             else:
-                featcoll["crs"] = "http://www.opengis.net/def/crs/EPSG/0/4326"
-            epsgcode = "EPSG:" + firstcrs
-            if dateatt != "":
-                for feat in featcoll["features"]:
-                    if dateatt not in feat["properties"]:
-                        feat["properties"][dateatt] = ""
-            if parameters.get("localOptimized", False):
-                f.write(templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace("{{myfeature}}",
-                                                                                                    "[" + json.dumps(
-                                                                                                        featcoll) + "]").replace(
-                    "{{relativepath}}",
-                    DocUtils.generateRelativePathFromGivenDepth(parameters.get("checkdepth", 0))).replace("{{epsg}}",
-                                                                                                          epsgcode).replace(
-                    "{{baselayers}}", json.dumps(DocConfig.baselayers)).replace("{{epsgdefspath}}",
-                                                                                parameters.get("epsgdefslink",
-                                                                                               "")).replace(
-                    "{{dateatt}}",
-                    dateatt))
-            else:
-                f.write(templates["maptemplate"].replace("{{myfeature}}", "[\"" + DocUtils.shortenURI(
-                    str(parameters.get("completesavepath", "").replace(".html", ".geojson"))) + "\"]").replace(
-                    "{{relativepath}}",
-                    DocUtils.generateRelativePathFromGivenDepth(
-                        parameters.get("checkdepth", 0))).replace(
-                    "{{baselayers}}", json.dumps(DocConfig.baselayers)).replace("{{epsg}}",
-                                                                                epsgcode).replace("{{epsgdefspath}}",
-                                                                                                  parameters.get(
-                                                                                                      "epsgdefslink",
-                                                                                                      "")).replace(
-                    "{{dateatt}}",
-                    dateatt))
-            with open(parameters.get("completesavepath", "").replace(".html", ".geojson"), 'w',
-                      encoding='utf-8') as fgeo:
-                featurecollectionspaths[parameters.get("completesavepath", "").replace(".html", ".geojson")] = {
-                    "name": featcoll["name"],
-                    "id": featcoll["id"]}
-                fgeo.write(json.dumps(featcoll))
-                fgeo.close()
+                firstcrs = "4326"
+                if len(thecrs) > 0:
+                    firstcrs = str(next(iter(thecrs)))
+                    featcoll["crs"] = "http://www.opengis.net/def/crs/EPSG/0/" + firstcrs
+                else:
+                    featcoll["crs"] = "http://www.opengis.net/def/crs/EPSG/0/4326"
+                epsgcode = "EPSG:" + firstcrs
+                if dateatt != "":
+                    for feat in featcoll["features"]:
+                        if dateatt not in feat["properties"]:
+                            feat["properties"][dateatt] = ""
+                if parameters.get("localOptimized", False):
+                    f.write(templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace("{{myfeature}}",
+                                                                                                        "[" + json.dumps(
+                                                                                                            featcoll) + "]").replace(
+                        "{{relativepath}}",
+                        DocUtils.generateRelativePathFromGivenDepth(parameters.get("checkdepth", 0))).replace("{{epsg}}",
+                                                                                                              epsgcode).replace(
+                        "{{baselayers}}", json.dumps(DocConfig.baselayers)).replace("{{epsgdefspath}}",
+                                                                                    parameters.get("epsgdefslink",
+                                                                                                   "")).replace(
+                        "{{dateatt}}",
+                        dateatt))
+                else:
+                    f.write(templates["maptemplate"].replace("{{myfeature}}", "[\"" + DocUtils.shortenURI(
+                        str(parameters.get("completesavepath", "").replace(".html", ".geojson"))) + "\"]").replace(
+                        "{{relativepath}}",
+                        DocUtils.generateRelativePathFromGivenDepth(
+                            parameters.get("checkdepth", 0))).replace(
+                        "{{baselayers}}", json.dumps(DocConfig.baselayers)).replace("{{epsg}}",
+                                                                                    epsgcode).replace("{{epsgdefspath}}",
+                                                                                                      parameters.get(
+                                                                                                          "epsgdefslink",
+                                                                                                          "")).replace(
+                        "{{dateatt}}",
+                        dateatt))
+                with open(parameters.get("completesavepath", "").replace(".html", ".geojson"), 'w',
+                          encoding='utf-8') as fgeo:
+                    featurecollectionspaths[parameters.get("completesavepath", "").replace(".html", ".geojson")] = {
+                        "name": featcoll["name"],
+                        "id": featcoll["id"]}
+                    fgeo.write(json.dumps(featcoll))
+                    fgeo.close()
         return geocache
 
     def generatePageView(self,headertemplate,footertemplate,g,f):

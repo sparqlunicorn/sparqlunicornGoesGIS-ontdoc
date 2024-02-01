@@ -376,7 +376,7 @@ class DocConfig:
         "http://www.w3.org/2006/time#": [{"uri":"http://dbpedia.org/resource/Time","label":"Time Data"}],
         "http://www.w3.org/ns/lemon/ontolex#": [{"uri":"http://dbpedia.org/resource/Lexicography","label":"Lexicography data"}],
         "http://www.w3.org/ns/lemon/lime#": [{"uri":"http://dbpedia.org/resource/Lexicography","label":"Lexicography data"}],
-        "http://www.w3.org/ns/oa#": [{"uri":"http://dbpedia.org/resource/Web_annotation","label":"Web Annotation  http://dbpedia.org/resource/Bibliography"}],
+        "http://www.w3.org/ns/oa#": [{"uri":"http://dbpedia.org/resource/Web_annotation","label":"Web Annotation"}],
         "http://purl.org/ontology/bibo/": [{"uri":"http://dbpedia.org/resource/Bibliography","label":"Bibliography Data"}]
     }
 
