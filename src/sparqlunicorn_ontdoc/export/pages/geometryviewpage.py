@@ -38,13 +38,17 @@ class GeometryViewPage:
             epsgcode = "EPSG:" + geojsonrep["crs"]
         if parameters.get("hasnonnslen",0) > 0:
             geocache[str(subject)] = jsonfeat
-        f.write(templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace("{{myfeature}}",
-                                                                                            "[" + json.dumps(
-                                                                                                jsonfeat) + "]").replace(
-            "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(parameters.get("checkdepth",0))).replace("{{epsg}}",
-                                                                                                 epsgcode).replace(
-            "{{baselayers}}", json.dumps(DocConfig.baselayers)).replace("{{epsgdefspath}}", parameters.get("epsgdefslink","")).replace(
-            "{{dateatt}}", ""))
+        geom=shapely.geometry.shape(jsonfeat["geometry"])
+        if geom.has_z:
+            self.createSVGFromWKT(templates, {"type":"FeatureCollection","features":[json.dumps(jsonfeat)]}, f)
+        else:
+            f.write(templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace("{{myfeature}}",
+                                                                                                "[" + json.dumps(
+                                                                                                    jsonfeat) + "]").replace(
+                "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(parameters.get("checkdepth",0))).replace("{{epsg}}",
+                                                                                                     epsgcode).replace(
+                "{{baselayers}}", json.dumps(DocConfig.baselayers)).replace("{{epsgdefspath}}", parameters.get("epsgdefslink","")).replace(
+                "{{dateatt}}", ""))
         return geocache
 
     def generateCollectionWidget(self,graph,templates,subject,f,uritotreeitem,featurecollectionspaths,parameters={"foundlabel":""}):
