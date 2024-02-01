@@ -40,7 +40,7 @@ class GeometryViewPage:
             geocache[str(subject)] = jsonfeat
         geom=shapely.geometry.shape(jsonfeat["geometry"])
         if geom.has_z:
-            self.createSVGFromWKT(templates, {"type":"FeatureCollection","features":[json.dumps(jsonfeat)]}, f)
+            self.createSVGFromWKT(templates, {"type":"FeatureCollection","features":[jsonfeat]}, f)
         else:
             f.write(templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace("{{myfeature}}",
                                                                                                 "[" + json.dumps(
