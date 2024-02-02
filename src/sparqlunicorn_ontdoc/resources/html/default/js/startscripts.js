@@ -1082,7 +1082,7 @@ function initThreeJS(domelement,verts,meshurls) {
     lightingFolder.add(light.position, "x").min(-5).max(5).step(0.01).name("X Position")
 	lightingFolder.add(light.position, "y").min(-5).max(5).step(0.01).name("Y Position")
 	lightingFolder.add(light.position, "z").min(-5).max(5).step(0.01).name("Z Position")
-    var axesHelper = new THREE.AxesHelper( Math.max(maxx, maxy, maxz)*4 );
+    var axesHelper = new THREE.AxesHelper( Math.max(maxx, maxy, maxz) );
     scene.add( axesHelper );
     console.log("Depth: "+(maxz-minz))
     scene.add( annotations );
@@ -1099,10 +1099,10 @@ function initThreeJS(domelement,verts,meshurls) {
 		camera.updateProjectionMatrix();
 	}
 	const cameraFolder = geometryFolder.addFolder("Camera");
-	cameraFolder.add (camera, 'fov', 1, 180).name('Zoom').onChange(updateCamera);
-    cameraFolder.add (camera.position, 'x').min(-500).max(500).step(5).name("X Position")
-    cameraFolder.add (camera.position, 'y').min(-500).max(500).step(5).name("Y Position")
-    cameraFolder.add (camera.position, 'z').min(-500).max(500).step(5).name("Z Position")
+	cameraFolder.add(camera, 'fov', 1, 180).name('Zoom').onChange(updateCamera);
+    cameraFolder.add(camera.position, 'x').min(-500).max(500).step(5).name("X Position").onChange(updateCamera);
+    cameraFolder.add(camera.position, 'y').min(-500).max(500).step(5).name("Y Position").onChange(updateCamera);
+    cameraFolder.add(camera.position, 'z').min(-500).max(500).step(5).name("Z Position").onChange(updateCamera);
     gui.add(objects, 'visible').name('Meshes')
     gui.add(annotations, 'visible').name('Annotations')
     if(meshurls[0].includes(".nxs") || meshurls[0].includes(".nxz")){
