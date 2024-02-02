@@ -1116,9 +1116,9 @@ class DocDefaults:
         }
         const cameraFolder = geometryFolder.addFolder("Camera");
         cameraFolder.add (camera, 'fov', 1, 250).name('Zoom').onChange(updateCamera);
-        cameraFolder.add (camera.position, 'x', -500, 500 ).step(5).name("X Position")
-        cameraFolder.add (camera.position, 'y', -500, 500 ).step(5).name("Y Position")
-        cameraFolder.add (camera.position, 'z', -500, 500 ).step(5).name("Z Position")
+        cameraFolder.add (camera.position, 'x').min(-500).max(500).step(5).name("X Position")
+        cameraFolder.add (camera.position, 'y').min(-500).max(500).step(5).name("Y Position")
+        cameraFolder.add (camera.position, 'z').min(-500).max(500).step(5).name("Z Position")
         gui.add(objects, 'visible').name('Meshes')
         gui.add(annotations, 'visible').name('Annotations')
         if(meshurls[0].includes(".nxs") || meshurls[0].includes(".nxz")){

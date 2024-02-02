@@ -1036,6 +1036,7 @@ function initThreeJS(domelement,verts,meshurls) {
 	renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( width, height);
     document.getElementById(domelement).appendChild( renderer.domElement );
+    bbox=null
     if(meshurls.length>0){
         if(meshurls[0].includes(".ply")){
             var loader = new THREE.PLYLoader();
@@ -1089,9 +1090,9 @@ function initThreeJS(domelement,verts,meshurls) {
     controls = new THREE.OrbitControls( camera, renderer.domElement );
     controls.target.set( centervec.x,centervec.y,centervec.z );
     controls.target.set( 0,0,0 );
-    camera.position.x= centervec.x
-    camera.position.y= centervec.y
-    camera.position.z = 40;
+    camera.position.x= 0
+    camera.position.y= 0
+    camera.position.z = 100;
     controls.maxDistance= Math.max(maxx, maxy, maxz)*5
     controls.update();
     const updateCamera = () => {
@@ -1099,9 +1100,9 @@ function initThreeJS(domelement,verts,meshurls) {
 	}
 	const cameraFolder = geometryFolder.addFolder("Camera");
 	cameraFolder.add (camera, 'fov', 1, 180).name('Zoom').onChange(updateCamera);
-    cameraFolder.add (camera.position, 'x', -500, 500 ).step(5).name("X Position")
-    cameraFolder.add (camera.position, 'y', -500, 500 ).step(5).name("Y Position")
-    cameraFolder.add (camera.position, 'z', -500, 500 ).step(5).name("Z Position")
+    cameraFolder.add (camera.position, 'x').min(-500).max(500).step(5).name("X Position")
+    cameraFolder.add (camera.position, 'y').min(-500).max(500).step(5).name("Y Position")
+    cameraFolder.add (camera.position, 'z').min(-500).max(500).step(5).name("Z Position")
     gui.add(objects, 'visible').name('Meshes')
     gui.add(annotations, 'visible').name('Annotations')
     if(meshurls[0].includes(".nxs") || meshurls[0].includes(".nxz")){
