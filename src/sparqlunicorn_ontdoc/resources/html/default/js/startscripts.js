@@ -1034,7 +1034,7 @@ function initThreeJS(domelement,verts,meshurls) {
 	geometryF.open();
     renderer = new THREE.WebGLRenderer( { antialias: false } );
 	renderer.setPixelRatio( window.devicePixelRatio );
-    renderer.setSize( width, height);
+    renderer.setSize( width*3, height*3 );
     document.getElementById(domelement).appendChild( renderer.domElement );
     bbox=null
     if(meshurls.length>0){

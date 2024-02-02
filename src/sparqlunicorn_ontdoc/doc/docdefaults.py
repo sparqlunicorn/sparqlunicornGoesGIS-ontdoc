@@ -1051,7 +1051,7 @@ class DocDefaults:
         geometryF.open();
         renderer = new THREE.WebGLRenderer( { antialias: false } );
         renderer.setPixelRatio( window.devicePixelRatio );
-        renderer.setSize( width, height );
+        renderer.setSize( width*3, height*3 );
         document.getElementById(domelement).appendChild( renderer.domElement );
         if(meshurls.length>0){
             if(meshurls[0].includes(".ply")){
