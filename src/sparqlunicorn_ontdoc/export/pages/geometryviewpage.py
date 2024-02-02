@@ -15,10 +15,10 @@ class GeometryViewPage:
         geomcoll= shapely.geometry.GeometryCollection(
             [shapely.geometry.shape(feature["geometry"]) for feature in features["features"]])
         svgpath=geomcoll.svg()
-        print(svgpath)
+        #print(svgpath)
         thepath+=svgpath
         thepath+="</svg>"
-        print(thepath)
+        #print(thepath)
         f.write(templates["imagestemplatesvg"].replace("{{carousel}}","image").replace("{{image}}", str(thepath.replace("<svg>","<svg class=\"svgview\">"))))
 
 

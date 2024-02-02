@@ -15,7 +15,7 @@ class IIIFAPIExporter:
     @staticmethod
     def generateIIIFAnnotations(outpath,imagetoURI):
         for imgpath in imagetoURI:
-            print("Generate IIIF Annotations for " + str(imgpath) + " with " + str(imagetoURI[imgpath]))
+            #print("Generate IIIF Annotations for " + str(imgpath) + " with " + str(imagetoURI[imgpath]))
             if "uri" in imagetoURI[imgpath]:
                 for ur in imagetoURI[imgpath]["uri"]:
                     # print(ur)
@@ -155,7 +155,7 @@ class IIIFAPIExporter:
         categories=set()
         imghtml=""
         for imgpath in imagespaths:
-            print("IMAGEPATH: "+str(imgpath))
+            #print("IMAGEPATH: "+str(imgpath))
             categories.add(DocUtils.shortenURI(imgpath["class"]))
             for imgp in imgpath["imgpath"]:
                 imghtml+="<li data-groups='[\"all\",\"red\",\""+str(imgpath["class"])+"\"]' style=\"width:25%;background-color:white;border-radius:25px;\"><figure class=\"col-3@sm picture-item\"><div class=\"aspect aspect--16x9\"><div class=\"aspect__inner\">"
