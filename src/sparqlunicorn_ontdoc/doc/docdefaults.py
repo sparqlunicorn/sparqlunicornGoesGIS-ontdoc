@@ -1098,7 +1098,7 @@ class DocDefaults:
         lightingFolder.add(light.position, "x").min(-5).max(5).step(0.01).name("X Position")
         lightingFolder.add(light.position, "y").min(-5).max(5).step(0.01).name("Y Position")
         lightingFolder.add(light.position, "z").min(-5).max(5).step(0.01).name("Z Position")
-        var axesHelper = new THREE.AxesHelper( Math.max(maxx, maxy, maxz)*4 );
+        var axesHelper = new THREE.AxesHelper( Math.max(maxx, maxy, maxz) );
         scene.add( axesHelper );
         console.log("Depth: "+(maxz-minz))
         scene.add( annotations );
@@ -1106,9 +1106,9 @@ class DocDefaults:
         controls = new THREE.OrbitControls( camera, renderer.domElement );
         controls.target.set( centervec.x,centervec.y,centervec.z );
         controls.target.set( 0,0,0 );
-        camera.position.x= centervec.x
-        camera.position.y= centervec.y
-        camera.position.z = 40;
+        camera.position.x= 0
+        camera.position.y= 0
+        camera.position.z = 100;
         controls.maxDistance= Math.max(maxx, maxy, maxz)*5
         controls.update();
         const updateCamera = () => {
@@ -1116,9 +1116,9 @@ class DocDefaults:
         }
         const cameraFolder = geometryFolder.addFolder("Camera");
         cameraFolder.add (camera, 'fov', 1, 250).name('Zoom').onChange(updateCamera);
-        cameraFolder.add (camera.position, 'x', 1, 500).name('Position X').onChange(updateCamera);
-        cameraFolder.add (camera.position, 'y', 1, 500).name('Position Y').onChange(updateCamera);
-        cameraFolder.add (camera.position, 'z', 1, 500).name('Position Z').onChange(updateCamera);
+        cameraFolder.add (camera.position, 'x', -500, 500 ).step(5).name("X Position")
+        cameraFolder.add (camera.position, 'y', -500, 500 ).step(5).name("Y Position")
+        cameraFolder.add (camera.position, 'z', -500, 500 ).step(5).name("Z Position")
         gui.add(objects, 'visible').name('Meshes')
         gui.add(annotations, 'visible').name('Annotations')
         if(meshurls[0].includes(".nxs") || meshurls[0].includes(".nxz")){

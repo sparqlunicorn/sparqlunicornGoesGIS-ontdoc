@@ -1099,9 +1099,9 @@ function initThreeJS(domelement,verts,meshurls) {
 	}
 	const cameraFolder = geometryFolder.addFolder("Camera");
 	cameraFolder.add (camera, 'fov', 1, 180).name('Zoom').onChange(updateCamera);
-    cameraFolder.add (camera.position, 'x', 1, 500).name('Position X').onChange(updateCamera);
-    cameraFolder.add (camera.position, 'y', 1, 500).name('Position Y').onChange(updateCamera);
-    cameraFolder.add (camera.position, 'z', 1, 500).name('Position Z').onChange(updateCamera);
+    cameraFolder.add (camera.position, 'x', -500, 500 ).step(5).name("X Position")
+    cameraFolder.add (camera.position, 'y', -500, 500 ).step(5).name("Y Position")
+    cameraFolder.add (camera.position, 'z', -500, 500 ).step(5).name("Z Position")
     gui.add(objects, 'visible').name('Meshes')
     gui.add(annotations, 'visible').name('Annotations')
     if(meshurls[0].includes(".nxs") || meshurls[0].includes(".nxz")){
