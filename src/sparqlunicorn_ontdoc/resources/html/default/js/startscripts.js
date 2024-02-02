@@ -1005,7 +1005,7 @@ function prepareAnnotationFromJSON(verts,annotations){
 	return annotations
 }
 
-let camera, scene, renderer,controls;
+let camera, scene, renderer,controls,axesHelper;
 
 function initThreeJS(domelement,verts,meshurls) {
     scene = new THREE.Scene();
@@ -1082,7 +1082,7 @@ function initThreeJS(domelement,verts,meshurls) {
     lightingFolder.add(light.position, "x").min(-5).max(5).step(0.01).name("X Position")
 	lightingFolder.add(light.position, "y").min(-5).max(5).step(0.01).name("Y Position")
 	lightingFolder.add(light.position, "z").min(-5).max(5).step(0.01).name("Z Position")
-    var axesHelper = new THREE.AxesHelper( Math.max(1000, 1000, 1000) );
+    axesHelper = new THREE.AxesHelper( Math.max(1000, 1000, 1000) );
     scene.add( axesHelper );
     console.log("Depth: "+(maxz-minz))
     scene.add( annotations );
@@ -1105,6 +1105,7 @@ function initThreeJS(domelement,verts,meshurls) {
     cameraFolder.add(camera.position, 'z').min(-500).max(500).step(5).name("Z Position").onChange(updateCamera);
     gui.add(objects, 'visible').name('Meshes')
     gui.add(annotations, 'visible').name('Annotations')
+    gui.add(axesHelper, 'visible').name('Axis Helper')
     if(meshurls[0].includes(".nxs") || meshurls[0].includes(".nxz")){
         renderNXS()
     }
