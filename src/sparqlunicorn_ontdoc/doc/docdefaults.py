@@ -1051,7 +1051,7 @@ class DocDefaults:
         geometryF.open();
         renderer = new THREE.WebGLRenderer( { antialias: false } );
         renderer.setPixelRatio( window.devicePixelRatio );
-        renderer.setSize( width*3, height*3 );
+        renderer.setSize( width, height );
         document.getElementById(domelement).appendChild( renderer.domElement );
         if(meshurls.length>0){
             if(meshurls[0].includes(".ply")){
@@ -1090,7 +1090,7 @@ class DocDefaults:
                 });
             }
         }
-        camera = new THREE.PerspectiveCamera(90,width / height, 0.1, 150 );
+        camera = new THREE.PerspectiveCamera(90,width / height, 0.1, 2000 );
         scene.add(new THREE.AmbientLight(0x222222));
         var light = new THREE.DirectionalLight(0xffffff, 1);
         light.position.set(20, 20, 0);
@@ -1098,7 +1098,7 @@ class DocDefaults:
         lightingFolder.add(light.position, "x").min(-5).max(5).step(0.01).name("X Position")
         lightingFolder.add(light.position, "y").min(-5).max(5).step(0.01).name("Y Position")
         lightingFolder.add(light.position, "z").min(-5).max(5).step(0.01).name("Z Position")
-        var axesHelper = new THREE.AxesHelper( Math.max(maxx, maxy, maxz) );
+        var axesHelper = new THREE.AxesHelper( Math.max(1000, 1000, 1000) );
         scene.add( axesHelper );
         console.log("Depth: "+(maxz-minz))
         scene.add( annotations );
@@ -1109,7 +1109,7 @@ class DocDefaults:
         camera.position.x= 0
         camera.position.y= 0
         camera.position.z = 150;
-        controls.maxDistance= Math.max(maxx, maxy, maxz)
+        controls.maxDistance= Math.max(1000, 1000, 1000)
         controls.update();
         const updateCamera = () => {
             camera.updateProjectionMatrix();
