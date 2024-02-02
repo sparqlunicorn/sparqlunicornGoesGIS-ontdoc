@@ -1088,12 +1088,12 @@ function initThreeJS(domelement,verts,meshurls) {
     scene.add( annotations );
 	centervec=new THREE.Vector3()
     controls = new THREE.OrbitControls( camera, renderer.domElement );
-    controls.target.set( centervec.x,centervec.y,centervec.z );
+    //controls.target.set( centervec.x,centervec.y,centervec.z );
     controls.target.set( 0,0,0 );
     camera.position.x= 0
     camera.position.y= 0
-    camera.position.z = 100;
-    controls.maxDistance= Math.max(maxx, maxy, maxz)*5
+    camera.position.z = 150;
+    controls.maxDistance= Math.max(maxx, maxy, maxz)
     controls.update();
     const updateCamera = () => {
 		camera.updateProjectionMatrix();
