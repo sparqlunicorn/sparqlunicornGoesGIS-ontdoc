@@ -1179,7 +1179,7 @@ function formatHTMLTableForPropertyRelations(propuri,result,propicon){
             if(result["from"][instance]=="instancecount"){
                 continue;
             }
-            dialogcontent+="<tr><td><img src=\""+iconprefix+"class.png\" height=\"25\" width=\"25\" alt=\"Class\"/><a href=\""+result["from"][instance]+"\" target=\"_blank\">"+shortenURI(result["from"][instance])+"</a></td>"
+            dialogcontent+="<tr><td><img onclick=\"getClassRelationDialog($('#jstree').jstree(true).get_node('"+result["from"][instance]+"'))\" src=\""+iconprefix+"class.png\" height=\"25\" width=\"25\" alt=\"Class\"/><a href=\""+result["from"][instance]+"\" target=\"_blank\">"+shortenURI(result["from"][instance])+"</a></td>"
             dialogcontent+="<td><img src=\""+propicon+"\" height=\"25\" width=\"25\" alt=\"Instance\"/><a href=\""+propuri+"\" target=\"_blank\">"+shortenURI(propuri)+"</a></td><td></td></tr>"
        // }
     }
@@ -1189,7 +1189,7 @@ function formatHTMLTableForPropertyRelations(propuri,result,propicon){
                 continue;
             }
             dialogcontent+="<tr><td></td><td><img src=\""+propicon+"\" height=\"25\" width=\"25\" alt=\"Class\"/><a href=\""+propuri+"\" target=\"_blank\">"+shortenURI(propuri)+"</a></td>"
-            dialogcontent+="<td><img src=\""+iconprefix+"class.png\" height=\"25\" width=\"25\" alt=\"Instance\"/><a href=\""+result["to"][instance]+"\" target=\"_blank\">"+shortenURI(result["to"][instance])+"</a></td></tr>"
+            dialogcontent+="<td><img onclick=\"getClassRelationDialog($('#jstree').jstree(true).get_node('"+result["to"][instance]+"'))\" src=\""+iconprefix+"class.png\" height=\"25\" width=\"25\" alt=\"Instance\"/><a href=\""+result["to"][instance]+"\" target=\"_blank\">"+shortenURI(result["to"][instance])+"</a></td></tr>"
        // }
     }
     dialogcontent+="</tbody></table>"

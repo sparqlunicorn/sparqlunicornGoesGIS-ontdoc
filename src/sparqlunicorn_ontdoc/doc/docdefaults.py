@@ -1195,7 +1195,7 @@ class DocDefaults:
                 if(result["from"][instance]=="instancecount"){
                     continue;
                 }
-                dialogcontent+="<tr><td><img src=\\""+iconprefix+"class.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Class\\"/><a href=\\""+result["from"][instance]+"\\" target=\\"_blank\\">"+shortenURI(result["from"][instance])+"</a></td>"
+                dialogcontent+="<tr><td><img onclick=\\"getClassRelationDialog($('#jstree').jstree(true).get_node('"+result["from"][instance]+"'))\\" src=\\""+iconprefix+"class.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Class\\"/><a href=\\""+result["from"][instance]+"\\" target=\\"_blank\\">"+shortenURI(result["from"][instance])+"</a></td>"
                 dialogcontent+="<td><img src=\\""+propicon+"\\" height=\\"25\\" width=\\"25\\" alt=\\"Instance\\"/><a href=\\""+propuri+"\\" target=\\"_blank\\">"+shortenURI(propuri)+"</a></td><td></td></tr>"
            // }
         }
@@ -1205,7 +1205,7 @@ class DocDefaults:
                     continue;
                 }
                 dialogcontent+="<tr><td></td><td><img src=\\""+propicon+"\\" height=\\"25\\" width=\\"25\\" alt=\\"Class\\"/><a href=\\""+propuri+"\\" target=\\"_blank\\">"+shortenURI(propuri)+"</a></td>"
-                dialogcontent+="<td><img src=\\""+iconprefix+"class.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Instance\\"/><a href=\\""+result["to"][instance]+"\\" target=\\"_blank\\">"+shortenURI(result["to"][instance])+"</a></td></tr>"
+                dialogcontent+="<td><img onclick=\\"getClassRelationDialog($('#jstree').jstree(true).get_node('"+result["to"][instance]+"'))\\" src=\\""+iconprefix+"class.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Instance\\"/><a href=\\""+result["to"][instance]+"\\" target=\\"_blank\\">"+shortenURI(result["to"][instance])+"</a></td></tr>"
            // }
         }
         dialogcontent+="</tbody></table>"
@@ -1256,9 +1256,9 @@ class DocDefaults:
                 if(instance=="instancecount"){
                     continue;
                 }
-                dialogcontent+="<tr><td><img onclick=\\"getClassRelationDialog($('#jstree').jstree(true).get_node('"+instance+", true'))\\" src=\\""+iconprefix+"class.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Class\\"/><a href=\\""+instance+"\\" target=\\"_blank\\">"+shortenURI(instance)+"</a></td>"
+                dialogcontent+="<tr><td><img onclick=\\"getClassRelationDialog($('#jstree').jstree(true).get_node('"+instance+"'))\\" src=\\""+iconprefix+"class.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Class\\"/><a href=\\""+instance+"\\" target=\\"_blank\\">"+shortenURI(instance)+"</a></td>"
                 dialogcontent+=determineTableCellLogo(res)[0]
-                dialogcontent+="<td><img onclick=\\"getClassRelationDialog($('#jstree').jstree(true).get_node('"+nodeid+", true'))\\" src=\\""+nodeicon+"\\" height=\\"25\\" width=\\"25\\" alt=\\"Instance\\"/><a href=\\""+nodeid+"\\" target=\\"_blank\\">"+nodelabel+"</a></td><td></td><td></td></tr>"
+                dialogcontent+="<td><img onclick=\\"getClassRelationDialog($('#jstree').jstree(true).get_node('"+nodeid+"'))\\" src=\\""+nodeicon+"\\" height=\\"25\\" width=\\"25\\" alt=\\"Instance\\"/><a href=\\""+nodeid+"\\" target=\\"_blank\\">"+nodelabel+"</a></td><td></td><td></td></tr>"
             }
         }
         for(res in result["to"]){
@@ -1266,9 +1266,9 @@ class DocDefaults:
                 if(instance=="instancecount"){
                     continue;
                 }
-                dialogcontent+="<tr><td></td><td></td><td><img onclick=\\"getClassRelationDialog($('#jstree').jstree(true).get_node('"+nodeid+", true'))\\" src=\\""+nodeicon+"\\" height=\\"25\\" width=\\"25\\" alt=\\"Instance\\"/><a href=\\""+nodeid+"\\" target=\\"_blank\\">"+nodelabel+"</a></td>"
+                dialogcontent+="<tr><td></td><td></td><td><img onclick=\\"getClassRelationDialog($('#jstree').jstree(true).get_node('"+nodeid+"'))\\" src=\\""+nodeicon+"\\" height=\\"25\\" width=\\"25\\" alt=\\"Instance\\"/><a href=\\""+nodeid+"\\" target=\\"_blank\\">"+nodelabel+"</a></td>"
                 dialogcontent+=determineTableCellLogo(res)[0]
-                dialogcontent+="<td><imgonclick=\\"getClassRelationDialog($('#jstree').jstree(true).get_node('"+instance+", true'))\\"  src=\\""+iconprefix+"class.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Class\\"/><a href=\\""+instance+"\\" target=\\"_blank\\">"+shortenURI(instance)+"</a></td></tr>"
+                dialogcontent+="<td><img onclick=\\"getClassRelationDialog($('#jstree').jstree(true).get_node('"+instance+"'))\\"  src=\\""+iconprefix+"class.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Class\\"/><a href=\\""+instance+"\\" target=\\"_blank\\">"+shortenURI(instance)+"</a></td></tr>"
             }
         }
         dialogcontent+="</tbody></table>"
