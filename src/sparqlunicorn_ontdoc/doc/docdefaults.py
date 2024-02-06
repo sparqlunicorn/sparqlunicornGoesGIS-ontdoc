@@ -1241,7 +1241,7 @@ class DocDefaults:
             result+="<img onclick=\\"getPropRelationDialog('"+uri+"','"+iconprefix+"objectproperty.png')\\" src=\\""+iconprefix+"objectproperty.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Object Property\\"/>"
             logourl=iconprefix+"objectproperty.png"
         }
-        result+="<a href=\\""+uri+"\\" target=\\"_blank\\">shortenURI(uri)+"</a></td>"
+        result+="<a href=\\""+uri+"\\" target=\\"_blank\\">"+shortenURI(uri)+"</a></td>"
         return [result,logourl]
     }
     
