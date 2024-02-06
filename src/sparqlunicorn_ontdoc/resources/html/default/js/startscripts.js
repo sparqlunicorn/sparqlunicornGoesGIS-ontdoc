@@ -1198,7 +1198,7 @@ function formatHTMLTableForPropertyRelations(propuri,result,propicon){
 }
 
 function determineTableCellLogo(uri){
-    result="<td><a href=\""+uri+"\" target=\"_blank\">"
+    result="<td>"
     logourl=""
     finished=false
     if(uri in labelproperties){
@@ -1225,7 +1225,7 @@ function determineTableCellLogo(uri){
         result+="<img onclick=\"getPropRelationDialog('"+uri+"','"+iconprefix+"objectproperty.png')\" src=\""+iconprefix+"objectproperty.png\" height=\"25\" width=\"25\" alt=\"Object Property\"/>"
         logourl=iconprefix+"objectproperty.png"
     }
-    result+=shortenURI(uri)+"</a></td>"
+    result+="<a href=\""+uri+"\" target=\"_blank\">"+shortenURI(uri)+"</a></td>"
     return [result,logourl]
 }
 
@@ -1252,7 +1252,7 @@ function formatHTMLTableForClassRelations(result,nodeicon,nodelabel,nodeid){
             }
             dialogcontent+="<tr><td></td><td></td><td><img onclick=\"getClassRelationDialog($('#jstree').jstree(true).get_node('"+nodeid+"'))\" src=\""+nodeicon+"\" height=\"25\" width=\"25\" alt=\"Instance\"/><a href=\""+nodeid+"\" target=\"_blank\">"+nodelabel+"</a></td>"
             dialogcontent+=determineTableCellLogo(res)[0]
-            dialogcontent+="<td><img onclick=\"getClassRelationDialog($('#jstree').jstree(true).get_node('"+instance+"'))\"  src=\""+iconprefix+"class.png\" height=\"25\" width=\"25\" alt=\"Class\"/><a href=\""+instance+"\" target=\"_blank\">"+shortenURI(instance)+"</a></td></tr>"
+            dialogcontent+="<td><img onclick=\"getClassRelationDialog($('#jstree').jstree(true).get_node('"+instance+"'))\" src=\""+iconprefix+"class.png\" height=\"25\" width=\"25\" alt=\"Class\"/><a href=\""+instance+"\" target=\"_blank\">"+shortenURI(instance)+"</a></td></tr>"
         }
     }
     dialogcontent+="</tbody></table>"

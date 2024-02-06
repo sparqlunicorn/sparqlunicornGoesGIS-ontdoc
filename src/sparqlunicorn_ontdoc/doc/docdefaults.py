@@ -1214,7 +1214,7 @@ class DocDefaults:
     }
     
     function determineTableCellLogo(uri){
-        result="<td><a href=\\""+uri+"\\" target=\\"_blank\\">"
+        result="<td>"
         logourl=""
         finished=false
         if(uri in labelproperties){
@@ -1241,7 +1241,7 @@ class DocDefaults:
             result+="<img onclick=\\"getPropRelationDialog('"+uri+"','"+iconprefix+"objectproperty.png')\\" src=\\""+iconprefix+"objectproperty.png\\" height=\\"25\\" width=\\"25\\" alt=\\"Object Property\\"/>"
             logourl=iconprefix+"objectproperty.png"
         }
-        result+=shortenURI(uri)+"</a></td>"
+        result+="<a href=\\""+uri+"\\" target=\\"_blank\\">shortenURI(uri)+"</a></td>"
         return [result,logourl]
     }
     
