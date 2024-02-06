@@ -1122,7 +1122,7 @@ class DocDefaults:
         gui.add(objects, 'visible').name('Meshes')
         gui.add(annotations, 'visible').name('Annotations')
         gui.add(axesHelper, 'visible').name('Axis Helper')
-        if(meshurls[0].includes(".nxs") || meshurls[0].includes(".nxz")){
+        if(meshurls.length>0 && (meshurls[0].includes(".nxs") || meshurls[0].includes(".nxz"))){
             renderNXS()
         }
         animate()
