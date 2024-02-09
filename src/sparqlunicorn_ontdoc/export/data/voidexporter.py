@@ -9,6 +9,9 @@ class VoidExporter:
     @staticmethod
     def createVoidDataset(dsname,prefixnamespace,deploypath,outpath,licenseuri,modtime,language,stats,subjectstorender,prefixes,classtree=None,propstats=None,nonnscount=None,objectmap=None,startconcept=None):
         g=Graph()
+        g.bind("voaf","http://purl.org/vocommons/voaf#")
+        g.bind("vext", "http://ldf.fi/void-ext#")
+        g.bind("vann", "http://purl.org/vocab/vann/")
         if dsname==None or dsname=="":
             dsname="dataset"
         voidds=prefixnamespace+dsname
@@ -50,7 +53,7 @@ class VoidExporter:
             g.add((URIRef(namespace), URIRef("http://purl.org/vocab/vann/preferredNamespaceUri"),
                    Literal(namespace,datatype="http://www.w3.org/2001/XMLSchema#anyURI")))
             g.add((URIRef(namespace), URIRef("http://purl.org/vocab/vann/preferredNamespacePrefix"),
-                   Literal(ns_prefix,datatype="http://www.w3.org/2001/XMLSchema#anyURI")))
+                   Literal(ns_prefix,datatype="http://www.w3.org/2001/XMLSchema#string")))
             g.add((URIRef(namespace+"_"+str(dsname)+"_occ"), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
                    URIRef("http://purl.org/vocommons/voaf#DatasetOccurrence")))
             g.add((URIRef(namespace+"_"+str(dsname)+"_occ"), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
