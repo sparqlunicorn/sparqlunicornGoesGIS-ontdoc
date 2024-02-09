@@ -46,6 +46,15 @@ class VoidExporter:
               Literal(prefixnamespace,datatype="http://www.w3.org/2001/XMLSchema#string")))
         for ns_prefix, namespace in g.namespaces():
             g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#vocabulary"),URIRef(namespace)))
+            g.add((URIRef(namespace), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://purl.org/vocommons/voaf#Vocabulary")))
+            g.add((URIRef(namespace+"_"+str(dsname)+"_occ"), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                   URIRef("http://purl.org/vocommons/voaf#DatasetOccurrence")))
+            g.add((URIRef(namespace+"_"+str(dsname)+"_occ"), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
+                   Literal("Occurrences of vocabulary "+str(namespace)+" in "+dsname)))
+            g.add((URIRef(namespace+"_"+str(dsname)+"_occ"), URIRef("http://purl.org/vocommons/voaf#occurrences"),
+                   Literal("0",datatype="http://www.w3.org/2001/XMLSchema#integer")))
+            g.add((URIRef(namespace), URIRef("http://purl.org/vocommons/voaf#usageInDataset"), URIRef(namespace+"_"+str(dsname)+"_occ")))
+            g.add((URIRef(namespace+"_"+str(dsname)+"_occ"), URIRef("http://purl.org/vocommons/voaf#inDataset"), URIRef(dsname)))
             if str(namespace) in DocConfig.namespaceToTopic:
                 for entry in DocConfig.namespaceToTopic[str(namespace)]:
                     g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/subject"),URIRef(entry["uri"])))
