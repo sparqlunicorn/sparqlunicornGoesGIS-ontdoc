@@ -16,6 +16,8 @@ class VoidExporter:
         g.bind("dcat", "http://www.w3.org/ns/dcat#")
         if dsname==None or dsname=="":
             dsname="dataset"
+        else:
+            dsname+=" dataset"
         voidds=prefixnamespace+dsname
         if repository!="" and repository.startswith("http"):
             g.add((URIRef(repository), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
