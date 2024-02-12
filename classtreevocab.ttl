@@ -1,0 +1,172 @@
+@prefix : <http://www.semanticweb.org/timo.homburg/ontologies/2024/1/untitled-ontology-29/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.semanticweb.org/timo.homburg/ontologies/2024/1/untitled-ontology-29/> .
+
+<http://www.semanticweb.org/timo.homburg/ontologies/2024/1/untitled-ontology-29> rdf:type owl:Ontology .
+
+#################################################################
+#    Annotation properties
+#################################################################
+
+###  http://purl.org/vocab/vann/preferredNamespacePrefix
+<http://purl.org/vocab/vann/preferredNamespacePrefix> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/vocab/vann/preferredNamespaceUri
+<http://purl.org/vocab/vann/preferredNamespaceUri> rdf:type owl:AnnotationProperty .
+
+
+###  http://www.w3.org/2004/02/skos/core#definition
+<http://www.w3.org/2004/02/skos/core#definition> rdf:type owl:AnnotationProperty .
+
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://purl.org/vocab/icontype
+<http://purl.org/vocab/icontype> rdf:type owl:ObjectProperty ;
+                                 rdfs:label "icon type"@en .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://purl.org/vocab/CollectionRelationProperty
+<http://purl.org/vocab/CollectionRelationProperty> rdf:type owl:Class ;
+                                                   rdfs:subClassOf <http://purl.org/vocab/classtree/PropertyItem> ;
+                                                   rdfs:label "collection relation property"@en ;
+                                                   <http://www.w3.org/2004/02/skos/core#definition> "A property which relates a collection to an instance and vice versa"@en .
+
+
+###  http://purl.org/vocab/GeoProperty
+<http://purl.org/vocab/GeoProperty> rdf:type owl:Class ;
+                                    rdfs:subClassOf <http://purl.org/vocab/classtree/PropertyItem> ;
+                                    rdfs:label "geo property"@en ;
+                                    <http://www.w3.org/2004/02/skos/core#definition> "A property used to point to or to express geospatial data"@en .
+
+
+###  http://purl.org/vocab/TimeProperty
+<http://purl.org/vocab/TimeProperty> rdf:type owl:Class ;
+                                     rdfs:subClassOf <http://purl.org/vocab/classtree/PropertyItem> ;
+                                     rdfs:label "time property"@en ;
+                                     <http://www.w3.org/2004/02/skos/core#definition> "A property which links an instance to a time value or object"@en .
+
+
+###  http://purl.org/vocab/UnitProperty
+<http://purl.org/vocab/UnitProperty> rdf:type owl:Class ;
+                                     rdfs:subClassOf <http://purl.org/vocab/classtree/PropertyItem> ;
+                                     rdfs:label "unit property"@en ;
+                                     <http://www.w3.org/2004/02/skos/core#definition> "A property used to link to a unit representation"@en .
+
+
+###  http://purl.org/vocab/classtree/ClassTree
+<http://purl.org/vocab/classtree/ClassTree> rdf:type owl:Class ;
+                                            rdfs:label "class tree"@en ;
+                                            <http://www.w3.org/2004/02/skos/core#definition> "A class tree structure that describes one of many possible tree visualizations of a vocabularie's class structure." .
+
+
+###  http://purl.org/vocab/classtree/ClassTreeItem
+<http://purl.org/vocab/classtree/ClassTreeItem> rdf:type owl:Class ;
+                                                rdfs:label "class tree item"@en ;
+                                                <http://www.w3.org/2004/02/skos/core#definition> "A node in a class tree representing a certain type of owl:Class"@en .
+
+
+###  http://purl.org/vocab/classtree/CollectionClass
+<http://purl.org/vocab/classtree/CollectionClass> rdf:type owl:Class ;
+                                                  rdfs:subClassOf <http://purl.org/vocab/classtree/ClassTreeItem> ;
+                                                  rdfs:label "collection class" .
+
+
+###  http://purl.org/vocab/classtree/CommentProperty
+<http://purl.org/vocab/classtree/CommentProperty> rdf:type owl:Class ;
+                                                  rdfs:subClassOf <http://purl.org/vocab/classtree/PropertyItem> ;
+                                                  rdfs:label "comment property"@en ;
+                                                  <http://www.w3.org/2004/02/skos/core#definition> "A property used to comment or define the meaning of a class"@en .
+
+
+###  http://purl.org/vocab/classtree/FeatureCollectionClass
+<http://purl.org/vocab/classtree/FeatureCollectionClass> rdf:type owl:Class ;
+                                                         rdfs:subClassOf <http://purl.org/vocab/classtree/ClassTreeItem> ;
+                                                         rdfs:label "featurecollection class"@en ;
+                                                         <http://www.w3.org/2004/02/skos/core#definition> "A node in a class tree which represents a collection of geospatial features"@en .
+
+
+###  http://purl.org/vocab/classtree/GeoClass
+<http://purl.org/vocab/classtree/GeoClass> rdf:type owl:Class ;
+                                           rdfs:subClassOf <http://purl.org/vocab/classtree/ClassTreeItem> ;
+                                           rdfs:label "geo class"@en ;
+                                           <http://www.w3.org/2004/02/skos/core#definition> "A node in a class tree representing a class which is associated with geospatial coordinates"@en .
+
+
+###  http://purl.org/vocab/classtree/GeoInstance
+<http://purl.org/vocab/classtree/GeoInstance> rdf:type owl:Class ;
+                                              rdfs:subClassOf <http://purl.org/vocab/classtree/ClassTreeItem> ;
+                                              rdfs:label "geo instance"@en ;
+                                              <http://www.w3.org/2004/02/skos/core#definition> "An instance in RDF represented in the class tree linked to a geospatial representation, e.g. a geometry literal"@en .
+
+
+###  http://purl.org/vocab/classtree/GeometryCollectionClass
+<http://purl.org/vocab/classtree/GeometryCollectionClass> rdf:type owl:Class ;
+                                                          rdfs:subClassOf <http://purl.org/vocab/classtree/ClassTreeItem> ;
+                                                          rdfs:label "geometrycollection class"@en ;
+                                                          <http://www.w3.org/2004/02/skos/core#definition> "A node in a class tree representing a class which represents geospatial geometry data"@en .
+
+
+###  http://purl.org/vocab/classtree/HalfGeoClass
+<http://purl.org/vocab/classtree/HalfGeoClass> rdf:type owl:Class ;
+                                               rdfs:subClassOf <http://purl.org/vocab/classtree/ClassTreeItem> ;
+                                               rdfs:label "half geo class"@en ;
+                                               <http://www.w3.org/2004/02/skos/core#definition> "A node in a class tree representing a class which represents geospatial feature or geometry data. At least one instance of this class in the target dataset does contain a geospatial reference."@en .
+
+
+###  http://purl.org/vocab/classtree/Instance
+<http://purl.org/vocab/classtree/Instance> rdf:type owl:Class ;
+                                           rdfs:subClassOf <http://purl.org/vocab/classtree/ClassTreeItem> ;
+                                           rdfs:label "instance"@en ;
+                                           <http://www.w3.org/2004/02/skos/core#definition> "An instance in RDF represented in the class tree"@en .
+
+
+###  http://purl.org/vocab/classtree/LabelProperty
+<http://purl.org/vocab/classtree/LabelProperty> rdf:type owl:Class ;
+                                                rdfs:subClassOf <http://purl.org/vocab/classtree/PropertyItem> ;
+                                                rdfs:label "label property"@en ;
+                                                <http://www.w3.org/2004/02/skos/core#definition> "A property used to label classes and instances"@en .
+
+
+###  http://purl.org/vocab/classtree/PropertyItem
+<http://purl.org/vocab/classtree/PropertyItem> rdf:type owl:Class ;
+                                               rdfs:label "property item"@en ;
+                                               <http://www.w3.org/2004/02/skos/core#definition> "A property class representing a certain type of owl:ObjectProperty or owl:DatatypeProperty"@en .
+
+
+###  http://purl.org/vocommons/voaf/Vocabulary
+<http://purl.org/vocommons/voaf/Vocabulary> rdf:type owl:Class ;
+                                            rdfs:label "class tree vocabulary"@en .
+
+
+###  http://www.semanticweb.org/timo.homburg/ontologies/2024/1/untitled-ontology-29/<http://purl.org/vocab/ValueProperty
+<http://www.semanticweb.org/timo.homburg/ontologies/2024/1/untitled-ontology-29/<http://purl.org/vocab/ValueProperty> rdf:type owl:Class ;
+                                                                                                                      rdfs:subClassOf <http://purl.org/vocab/classtree/PropertyItem> ;
+                                                                                                                      rdfs:label "value property"@en ;
+                                                                                                                      <http://www.w3.org/2004/02/skos/core#definition> "A property used to define a numeric or String value which may or may not be qualified by a unit"@en .
+
+
+#################################################################
+#    Individuals
+#################################################################
+
+###  http://purl.org/vocab/classtree/ClassTreeVocabulary
+<http://purl.org/vocab/classtree/ClassTreeVocabulary> rdf:type owl:NamedIndividual ,
+                                                               <http://purl.org/vocommons/voaf/Vocabulary> ;
+                                                      <http://purl.org/vocab/vann/preferredNamespacePrefix> "ct" ;
+                                                      <http://purl.org/vocab/vann/preferredNamespaceUri> "http://www.opengis.net/ont/geosparql"^^xsd:anyURI ;
+                                                      rdfs:label "class tree vocabulary"@en .
+
+
+###  Generated by the OWL API (version 4.5.26.2023-07-17T20:34:13Z) https://github.com/owlcs/owlapi
