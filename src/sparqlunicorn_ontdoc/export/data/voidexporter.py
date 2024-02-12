@@ -13,6 +13,7 @@ class VoidExporter:
         g.bind("vext", "http://ldf.fi/void-ext#")
         g.bind("vann", "http://purl.org/vocab/vann/")
         g.bind("adms", "http://www.w3.org/ns/adms#")
+        g.bind("dcat", "http://www.w3.org/ns/dcat#")
         if dsname==None or dsname=="":
             dsname="dataset"
         voidds=prefixnamespace+dsname
