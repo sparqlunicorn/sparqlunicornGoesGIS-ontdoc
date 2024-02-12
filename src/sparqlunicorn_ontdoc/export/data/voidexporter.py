@@ -12,10 +12,13 @@ class VoidExporter:
         g.bind("voaf","http://purl.org/vocommons/voaf#")
         g.bind("vext", "http://ldf.fi/void-ext#")
         g.bind("vann", "http://purl.org/vocab/vann/")
+        g.bind("adms", "http://www.w3.org/ns/adms#")
+
         if dsname==None or dsname=="":
             dsname="dataset"
         voidds=prefixnamespace+dsname
-        g.add((URIRef(voidds),URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://rdfs.org/ns/void#Dataset")))
+        g.add((URIRef(voidds),URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://rdfs.org/ns/void#Dataset" )))
+        g.add((URIRef(voidds), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://www.w3.org/ns/adms#Asset")))
         g.add((URIRef(voidds), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
               Literal(dsname,lang="en")))
         g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/title"),

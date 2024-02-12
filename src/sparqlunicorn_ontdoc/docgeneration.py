@@ -674,6 +674,27 @@ class OntDocGeneration:
 
     def getClassTree(self,graph, uritolabel,classidset,uritotreeitem):
         results = graph.query(self.preparedclassquery)
+        ldcontext={"@context":{
+                "@version":1.1,
+                "foaf":"http://xmlns.com/foaf/0.1/",
+                "ct":"http://www.github.com/sparqlsuni/",
+                "rdfs":"http://www.w3.org/2000/01/rdf-schema#",
+                "icon":"foaf:image",
+                "id":"@id",
+                "parent":"rdfs:subClassOf",
+                "halfgeoclass":"ct:HalfGeoClass",
+                "geoclass":{"@type":"ct:icontype","@id":"ct:GeoClass"},
+                "collectionclass":{"@type":"ct:icontype","@id":"ct:CollectionClass"},
+                "featurecollectionclass":{"@type":"ct:icontype","@id":"ct:FeatureCollectionClass"},
+                "class":"owl:Class",
+                "instance":"owl:NamedIndividual",
+                "geoinstance":	{"@type":"ct:Icontype","@id":"ct:GeoNamedIndividual"},
+                "text":"rdfs:label",
+                "type":"ct:icontype",
+                "types":"ct:icontypes",
+                "core": {"@type":"ct:TreeConfig","@id":"@nest"},
+                "data":{"@id":"ct:treeitem","@type":"ct:TreeItem"}
+        }}
         tree = {"plugins": ["defaults","search", "sort", "state", "types", "contextmenu"], "search": {"show_only_matches":True}, "types": {
             "class": {"icon": "https://cdn.jsdelivr.net/gh/i3mainz/geopubby@master/public/icons/class.png"},
             "geoclass": {"icon": "https://cdn.jsdelivr.net/gh/i3mainz/geopubby@master/public/icons/geoclass.png"},
@@ -685,6 +706,7 @@ class OntDocGeneration:
             "geoinstance": {"icon": "https://cdn.jsdelivr.net/gh/i3mainz/geopubby@master/public/icons/geoinstance.png"}
         },
         "core": {"themes":{"responsive":True},"check_callback": True, "data": []}}
+        tree["@context"]=ldcontext["@context"]
         result = []
         ress = {}
         for res in results:
