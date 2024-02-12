@@ -6,7 +6,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @base <http://purl.org/vocab/classtree/> .
 
-<http://purl.org/vocab/classtree/> rdf:type owl:Ontology .
+
 
 #################################################################
 #    Annotation properties
@@ -162,7 +162,7 @@
 #################################################################
 
 ###  http://purl.org/vocab/classtree/ClassTreeVocabulary
-<http://purl.org/vocab/classtree/ClassTreeVocabulary> rdf:type owl:NamedIndividual ,
+<http://purl.org/vocab/classtree/> rdf:type owl:Ontology,
                                                                <http://purl.org/vocommons/voaf/Vocabulary> ;
                                                       <http://purl.org/vocab/vann/preferredNamespacePrefix> "ct" ;
                                                       <http://purl.org/vocab/vann/preferredNamespaceUri> "http://www.opengis.net/ont/geosparql"^^xsd:anyURI ;
