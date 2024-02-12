@@ -18,7 +18,7 @@ jobs:
          sudo pip3 install pylode
          cd docs
          doxygen Doxyfile
-         python3 -m pylode -o classtreevocab.html ../classtreevocab.ttl
+         python3 -m pylode -o html/classtreevocab.html ../classtreevocab.ttl
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
