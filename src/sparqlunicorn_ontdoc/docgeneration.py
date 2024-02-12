@@ -93,7 +93,7 @@ def resolveTemplate(templatename):
 
 class OntDocGeneration:
 
-    def __init__(self, prefixes,modtime,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,iiif,ckan=True,solidexport=True,localOptimized=False,imagemetadata=None,startconcept=None,deploypath="",logoname="",templatename="default",offlinecompat=False,exports=["json","ttl"],datasettitle="",publisher="",publishingorg=""):
+    def __init__(self, prefixes,modtime,prefixnamespace,prefixnsshort,license,labellang,outpath,graph,createIndexPages,createColl,metadatatable,generatePagesForNonNS,createVOWL,ogcapifeatures,iiif,ckan=True,solidexport=True,localOptimized=False,imagemetadata=None,startconcept=None,repository="",deploypath="",logoname="",templatename="default",offlinecompat=False,exports=["json","ttl"],datasettitle="",publisher="",publishingorg=""):
         self.prefixes=prefixes
         self.prefixnamespace = prefixnamespace
         self.modtime=modtime
@@ -105,6 +105,7 @@ class OntDocGeneration:
         self.ckan=ckan
         self.solidexport=solidexport
         self.has3d=False
+        self.repository=repository
         self.publisher=publisher
         self.publishingorg=publishingorg
         self.startconcept=startconcept
@@ -279,6 +280,8 @@ class OntDocGeneration:
     def generateOntDocForNameSpace(self, prefixnamespace,dataformat="HTML"):
         outpath=self.outpath
         corpusid=self.namespaceshort.replace("#","")
+        if self.datasettitle=="":
+            self.datasettitle=corpusid
         if not os.path.isdir(outpath):
             os.mkdir(outpath)
         labeltouri = {}
@@ -412,7 +415,7 @@ class OntDocGeneration:
                 tree["core"]["data"].append(tr)
         voidstats["http://rdfs.org/ns/void#classes"]=len(classidset)
         voidstats["http://rdfs.org/ns/void#triples"] = len(self.graph)
-        voidgraph=VoidExporter.createVoidDataset(self.datasettitle,prefixnamespace,self.deploypath,self.outpath,self.licenseuri,self.modtime,self.labellang,voidstats,subjectstorender,self.prefixes,tree,predmap,nonnscount,instancecount,self.startconcept)
+        voidgraph=VoidExporter.createVoidDataset(self.datasettitle,prefixnamespace,self.repository,self.deploypath,self.outpath,self.licenseuri,self.modtime,self.labellang,voidstats,subjectstorender,self.prefixes,tree,predmap,nonnscount,instancecount,self.startconcept)
         self.voidstatshtml=VoidExporter.toHTML(voidstats,self.deploypath)
         self.graph+=voidgraph["graph"]
         subjectstorender=voidgraph["subjects"]
@@ -1553,6 +1556,7 @@ def main():
     parser.add_argument("-imgmd","--imagemetadata",help="resolve image metadata?",action="store",default=False,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
     parser.add_argument("-ckan","--ckanapi",help="create static ckan api docs?",action="store",default=True,type=lambda x: (str(x).lower() in ['true','1', 'yes']))
     parser.add_argument("-sc","--startconcept",help="the concept suggested for browsing the HTML documentation",action="store",default=None)
+    parser.add_argument("-rp", "--repository", help="the repository where the dataset is stored",action="store", default="")
     parser.add_argument("-dp","--deploypath",help="the deploypath where the documentation will be hosted",action="store",default="")
     parser.add_argument("-tp","--templatepath",help="the path of the HTML template",action="store",default="resources/html/")
     parser.add_argument("-tn","--templatename",help="the name of the HTML template",action="store",default="default")
@@ -1621,9 +1625,9 @@ def main():
                     args.prefixns=pres
                 print("Detected "+args.prefixns+" as data namespace")
             if fcounter<len(outpath):
-                docgen=OntDocGeneration(prefixes,modtime,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.solidexport,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
+                docgen=OntDocGeneration(prefixes,modtime,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[fcounter],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.solidexport,args.localOptimized,args.imagemetadata,args.startconcept,args.repository,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
             else:
-                docgen=OntDocGeneration(prefixes,modtime,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.solidexport,args.localOptimized,args.imagemetadata,args.startconcept,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
+                docgen=OntDocGeneration(prefixes,modtime,args.prefixns,args.prefixnsshort,args.license,args.labellang,outpath[-1],g,args.createIndexPages,args.createCollections,args.metadatatable,args.nonnspages,args.createvowl,args.ogcapifeatures,args.iiifmanifest,args.ckanapi,args.solidexport,args.localOptimized,args.imagemetadata,args.startconcept,args.repository,args.deploypath,args.logourl,args.templatename,args.offlinecompat,dataexports,args.datasettitle,args.publisher,args.publishingorg)
             subrend=docgen.generateOntDocForNameSpace(args.prefixns,dataformat="HTML")
         except Exception as inst:
             print("Could not parse "+str(fp))

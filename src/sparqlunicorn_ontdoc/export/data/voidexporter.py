@@ -7,17 +7,25 @@ from doc.docutils import DocUtils
 class VoidExporter:
 
     @staticmethod
-    def createVoidDataset(dsname,prefixnamespace,deploypath,outpath,licenseuri,modtime,language,stats,subjectstorender,prefixes,classtree=None,propstats=None,nonnscount=None,objectmap=None,startconcept=None):
+    def createVoidDataset(dsname,prefixnamespace,repository,deploypath,outpath,licenseuri,modtime,language,stats,subjectstorender,prefixes,classtree=None,propstats=None,nonnscount=None,objectmap=None,startconcept=None):
         g=Graph()
         g.bind("voaf","http://purl.org/vocommons/voaf#")
         g.bind("vext", "http://ldf.fi/void-ext#")
         g.bind("vann", "http://purl.org/vocab/vann/")
         g.bind("adms", "http://www.w3.org/ns/adms#")
-
         if dsname==None or dsname=="":
             dsname="dataset"
         voidds=prefixnamespace+dsname
-        g.add((URIRef(voidds),URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://rdfs.org/ns/void#Dataset" )))
+        if repository!="" and repository.startswith("http"):
+            g.add((URIRef(repository), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                   URIRef("http://www.w3.org/ns/adms#AssetRepository")))
+            g.add((URIRef(repository), URIRef("http://www.w3.org/ns/dcat#accessURL"),
+                   Literal(str(repository),datatype="http://www.w3.org/2001/XMLSchema#anyURI")))
+            g.add((URIRef(repository), URIRef("http://www.w3.org/ns/dcat#dataset"),
+                   URIRef(voidds)))
+            g.add((URIRef(repository), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
+                   Literal("Repository for "+str(dsname), lang="en")))
+        g.add((URIRef(voidds),URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://rdfs.org/ns/void#Dataset")))
         g.add((URIRef(voidds), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://www.w3.org/ns/adms#Asset")))
         g.add((URIRef(voidds), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
               Literal(dsname,lang="en")))
@@ -35,10 +43,21 @@ class VoidExporter:
               URIRef(deploypath+"/index.ttl")))
         g.add((URIRef(voidds), URIRef("http://xmlns.com/foaf/0.1/homepage"),
               URIRef(deploypath)))
+        g.add((URIRef(voidds), URIRef("http://www.w3.org/ns/dcat#landingPage"),
+              URIRef(deploypath)))
         g.add((URIRef(voidds), URIRef("http://xmlns.com/foaf/0.1/page"),
               URIRef(deploypath+"/index.html")))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#dataDump"),
               URIRef(deploypath+"/index.ttl")))
+        g.add((URIRef(voidds), URIRef("http://www.w3.org/ns/dcat#distribution"),
+               URIRef(voidds+"dist_ttl")))
+        g.add((URIRef(voidds + "dist_ttl"), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://www.w3.org/ns/adms#AssetDistribution")))
+        g.add((URIRef(voidds+"dist_ttl"), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
+               Literal(dsname+" TTL Distribution",lang="en")))
+        g.add((URIRef(voidds+"dist_ttl"), URIRef("http://www.w3.org/ns/dcat#downloadURL"),
+               Literal(deploypath+"/index.ttl",datatype="http://www.w3.org/2001/XMLSchema#anyURI")))
+        g.add((URIRef(voidds+"dist_ttl"), URIRef("http://www.w3.org/ns/dcat#mediaType"),
+               URIRef("http://www.w3.org/ns/formats/Turtle")))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#feature"),
               URIRef("http://www.w3.org/ns/formats/Turtle")))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#feature"),
@@ -67,6 +86,7 @@ class VoidExporter:
             g.add((URIRef(namespace+"_"+str(dsname)+"_occ"), URIRef("http://purl.org/vocommons/voaf#inDataset"), URIRef(voidds)))
             if str(namespace) in DocConfig.namespaceToTopic:
                 for entry in DocConfig.namespaceToTopic[str(namespace)]:
+                    g.add((URIRef(voidds), URIRef("http://www.w3.org/ns/dcat#keyword"), Literal(DocUtils.shortenURI(entry["uri"]),lang="en")))
                     g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/subject"),URIRef(entry["uri"])))
                     g.add((URIRef(entry["uri"]),URIRef("http://www.w3.org/2000/01/rdf-schema#label"),Literal(entry["label"],lang="en")))
         for pred in propstats:
