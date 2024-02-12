@@ -677,7 +677,7 @@ class OntDocGeneration:
         ldcontext={"@context":{
                 "@version":1.1,
                 "foaf":"http://xmlns.com/foaf/0.1/",
-                "ct":"http://www.github.com/sparqlsuni/",
+                "ct":"http://purl.org/vocab/classtree/",
                 "rdfs":"http://www.w3.org/2000/01/rdf-schema#",
                 "icon":"foaf:image",
                 "id":"@id",
