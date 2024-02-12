@@ -77,17 +77,17 @@ class VoidExporter:
                    Literal(namespace,datatype="http://www.w3.org/2001/XMLSchema#anyURI")))
             g.add((URIRef(namespace), URIRef("http://purl.org/vocab/vann/preferredNamespacePrefix"),
                    Literal(ns_prefix,datatype="http://www.w3.org/2001/XMLSchema#string")))
-            g.add((URIRef(namespace+"_"+str(dsname)+"_occ"), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            g.add((URIRef(str(namespace)+"_"+str(dsname)+"_occ"), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
                    URIRef("http://purl.org/vocommons/voaf#DatasetOccurrence")))
-            g.add((URIRef(namespace+"_"+str(dsname)+"_occ"), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
+            g.add((URIRef(str(namespace)+"_"+str(dsname)+"_occ"), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
                    Literal("Occurrences of vocabulary "+str(namespace)+" in "+dsname)))
-            g.add((URIRef(namespace+"_"+str(dsname)+"_occ"), URIRef("http://purl.org/vocommons/voaf#occurrences"),
+            g.add((URIRef(str(namespace)+"_"+str(dsname)+"_occ"), URIRef("http://purl.org/vocommons/voaf#occurrences"),
                    Literal("0",datatype="http://www.w3.org/2001/XMLSchema#integer")))
             g.add((URIRef(namespace), URIRef("http://purl.org/vocommons/voaf#usageInDataset"), URIRef(namespace+"_"+str(dsname)+"_occ")))
             g.add((URIRef(namespace+"_"+str(dsname)+"_occ"), URIRef("http://purl.org/vocommons/voaf#inDataset"), URIRef(voidds)))
             if str(namespace) in DocConfig.namespaceToTopic:
                 for entry in DocConfig.namespaceToTopic[str(namespace)]:
-                    g.add((URIRef(voidds), URIRef("http://www.w3.org/ns/dcat#keyword"), Literal(DocUtils.shortenURI(entry["uri"]),lang="en")))
+                    g.add((URIRef(voidds), URIRef("http://www.w3.org/ns/dcat#keyword"), Literal(DocUtils.shortenURI(entry["uri"]).replace("_"," "),lang="en")))
                     g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/subject"),URIRef(entry["uri"])))
                     g.add((URIRef(entry["uri"]),URIRef("http://www.w3.org/2000/01/rdf-schema#label"),Literal(entry["label"],lang="en")))
         for pred in propstats:
