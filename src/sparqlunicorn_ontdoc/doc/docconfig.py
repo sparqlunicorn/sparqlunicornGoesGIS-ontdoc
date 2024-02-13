@@ -285,6 +285,7 @@ class DocConfig:
         "http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue":"ObjectProperty",
         "http://www.opengis.net/ont/crs/usesValue":"ObjectProperty",
         "http://rdfs.org/ns/void#triples": "DatatypeProperty",
+        "http://purl.org/vocommons/voaf#occurrences":"DatatypeProperty",
         "http://rdfs.org/ns/void#entities": "DatatypeProperty",
         "http://rdfs.org/ns/void#propertyPartition": "ObjectProperty",
         "http://rdfs.org/ns/void#classPartition": "ObjectProperty",

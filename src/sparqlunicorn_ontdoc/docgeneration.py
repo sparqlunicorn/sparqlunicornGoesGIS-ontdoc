@@ -326,6 +326,10 @@ class OntDocGeneration:
                 subjectstorender.add(sub)
                 label=DocUtils.shortenURI(str(sub))
                 restriction=False
+                ns = DocUtils.shortenURI(str(sub), True)
+                if ns not in nscount:
+                    nscount[ns] = 0
+                nscount[ns] += 1
                 self.graph.add((sub, URIRef("http://rdfs.org/ns/void#inDataset"),
                                 URIRef(voidds)))
                 if isinstance(sub, BNode):
@@ -350,6 +354,10 @@ class OntDocGeneration:
                         objectlength += len(str(tup[1]))
                         objectcounter+=1
                         irirefs+=1
+                        ns = DocUtils.shortenURI(str(tup[1]), True)
+                        if ns not in nscount:
+                            nscount[ns] = 0
+                        nscount[ns] += 1
                     if str(tup[0]) in DocConfig.labelproperties:
                         labeltouri[str(tup[1])] = str(sub)
                         uritolabel[str(sub)] = {"label":str(tup[1])}
