@@ -87,15 +87,15 @@ class VoidExporter:
                    Literal(namespace,datatype="http://www.w3.org/2001/XMLSchema#anyURI")))
             g.add((URIRef(namespace), URIRef("http://purl.org/vocab/vann/preferredNamespacePrefix"),
                    Literal(ns_prefix,datatype="http://www.w3.org/2001/XMLSchema#string")))
-            g.add((URIRef(str(namespace)+"_"+str(dsname)+"_occ"), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            g.add((URIRef(prefixnamespace+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
                    URIRef("http://purl.org/vocommons/voaf#DatasetOccurrence")))
-            g.add((URIRef(str(namespace)+"_"+str(dsname)+"_occ"), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
+            g.add((URIRef(prefixnamespace+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
                    Literal("Occurrences of vocabulary "+str(namespace)+" in "+dsname)))
             if nscount!=None and str(namespace) in nscount:
-                g.add((URIRef(str(namespace)+"_"+str(dsname)+"_occ"), URIRef("http://purl.org/vocommons/voaf#occurrences"),
+                g.add((URIRef(prefixnamespace+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://purl.org/vocommons/voaf#occurrences"),
                        Literal(str(nscount[str(namespace)]),datatype="http://www.w3.org/2001/XMLSchema#integer")))
             g.add((URIRef(namespace), URIRef("http://purl.org/vocommons/voaf#usageInDataset"), URIRef(namespace+"_"+str(dsname)+"_occ")))
-            g.add((URIRef(namespace+"_"+str(dsname)+"_occ"), URIRef("http://purl.org/vocommons/voaf#inDataset"), URIRef(voidds)))
+            g.add((URIRef(prefixnamespace+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://purl.org/vocommons/voaf#inDataset"), URIRef(voidds)))
             if str(namespace) in DocConfig.namespaceToTopic:
                 for entry in DocConfig.namespaceToTopic[str(namespace)]:
                     g.add((URIRef(voidds), URIRef("http://www.w3.org/ns/dcat#keyword"), Literal(DocUtils.shortenURI(entry["uri"]).replace("_"," "),lang="en")))
