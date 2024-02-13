@@ -308,6 +308,7 @@ class OntDocGeneration:
         subjectstorender = set()
         subjectstorender.add(URIRef(voidds))
         nonnscount={}
+        nscount={}
         instancecount={}
         literaltypes={}
         blanknodes=set()
@@ -363,6 +364,9 @@ class OntDocGeneration:
                          ressubcls=str(tup[1])
                     if isinstance(tup[1],URIRef) and prefixnamespace not in str(tup[1]):
                         ns=DocUtils.shortenURI(str(tup[1]),True)
+                        if ns not in nscount:
+                            nscount[ns]=0
+                        nscount[ns]+=1
                         if str(tup[0]) not in nonnscount:
                             nonnscount[str(tup[0])]={}
                         if ns not in nonnscount[str(tup[0])]:
@@ -412,7 +416,7 @@ class OntDocGeneration:
                 tree["core"]["data"].append(tr)
         voidstats["http://rdfs.org/ns/void#classes"]=len(classidset)
         voidstats["http://rdfs.org/ns/void#triples"] = len(self.graph)
-        voidgraph=VoidExporter.createVoidDataset(self.datasettitle,prefixnamespace,self.namespaceshort,self.repository,self.deploypath,self.outpath,self.licenseuri,self.modtime,self.labellang,voidstats,subjectstorender,self.prefixes,tree,predmap,nonnscount,instancecount,self.startconcept)
+        voidgraph=VoidExporter.createVoidDataset(self.datasettitle,prefixnamespace,self.namespaceshort,self.repository,self.deploypath,self.outpath,self.licenseuri,self.modtime,self.labellang,voidstats,subjectstorender,self.prefixes,tree,predmap,nonnscount,nscount,instancecount,self.startconcept)
         self.voidstatshtml=VoidExporter.toHTML(voidstats,self.deploypath)
         self.graph+=voidgraph["graph"]
         subjectstorender=voidgraph["subjects"]
