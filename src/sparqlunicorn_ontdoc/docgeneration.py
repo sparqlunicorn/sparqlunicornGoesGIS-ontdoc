@@ -415,7 +415,7 @@ class OntDocGeneration:
                 tree["core"]["data"].append(tr)
         voidstats["http://rdfs.org/ns/void#classes"]=len(classidset)
         voidstats["http://rdfs.org/ns/void#triples"] = len(self.graph)
-        voidgraph=VoidExporter.createVoidDataset(self.datasettitle,prefixnamespace,self.repository,self.deploypath,self.outpath,self.licenseuri,self.modtime,self.labellang,voidstats,subjectstorender,self.prefixes,tree,predmap,nonnscount,instancecount,self.startconcept)
+        voidgraph=VoidExporter.createVoidDataset(self.datasettitle,prefixnamespace,self.namespaceshort,self.repository,self.deploypath,self.outpath,self.licenseuri,self.modtime,self.labellang,voidstats,subjectstorender,self.prefixes,tree,predmap,nonnscount,instancecount,self.startconcept)
         self.voidstatshtml=VoidExporter.toHTML(voidstats,self.deploypath)
         self.graph+=voidgraph["graph"]
         subjectstorender=voidgraph["subjects"]

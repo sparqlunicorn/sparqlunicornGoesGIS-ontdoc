@@ -7,7 +7,7 @@ from doc.docutils import DocUtils
 class VoidExporter:
 
     @staticmethod
-    def createVoidDataset(dsname,prefixnamespace,repository,deploypath,outpath,licenseuri,modtime,language,stats,subjectstorender,prefixes,classtree=None,propstats=None,nonnscount=None,objectmap=None,startconcept=None):
+    def createVoidDataset(dsname,prefixnamespace,prefixshort,repository,deploypath,outpath,licenseuri,modtime,language,stats,subjectstorender,prefixes,classtree=None,propstats=None,nonnscount=None,objectmap=None,startconcept=None):
         g=Graph()
         g.bind("voaf","http://purl.org/vocommons/voaf#")
         g.bind("vext", "http://ldf.fi/void-ext#")
@@ -72,9 +72,19 @@ class VoidExporter:
             g.add((URIRef(voidds), URIRef(stat),Literal(stats[stat], datatype="http://www.w3.org/2001/XMLSchema#integer")))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#uriSpace"),
               Literal(prefixnamespace,datatype="http://www.w3.org/2001/XMLSchema#string")))
+        g.add((URIRef(voidds), URIRef("http://purl.org/vocab/vann/preferredNamespaceUri"),
+               Literal(prefixnamespace, datatype="http://www.w3.org/2001/XMLSchema#anyURI")))
+        g.add((URIRef(voidds), URIRef("http://purl.org/vocab/vann/preferredNamespacePrefix"),
+               Literal(prefixshort, datatype="http://www.w3.org/2001/XMLSchema#string")))
         for ns_prefix, namespace in g.namespaces():
             g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#vocabulary"),URIRef(namespace)))
             g.add((URIRef(namespace), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://purl.org/vocommons/voaf#Vocabulary")))
+            if "nstolabel" in prefixes and str(namespace) in prefixes["nstolabel"]:
+                g.add((URIRef(namespace), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
+                       Literal(prefixes["nstolabel"][str(namespace)],lang="en")))
+            else:
+                g.add((URIRef(namespace), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
+                       Literal(str(ns_prefix)+" Vocabulary",lang="en")))
             g.add((URIRef(namespace), URIRef("http://purl.org/vocab/vann/preferredNamespaceUri"),
                    Literal(namespace,datatype="http://www.w3.org/2001/XMLSchema#anyURI")))
             g.add((URIRef(namespace), URIRef("http://purl.org/vocab/vann/preferredNamespacePrefix"),
