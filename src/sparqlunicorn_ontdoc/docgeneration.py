@@ -280,7 +280,7 @@ class OntDocGeneration:
     def generateOntDocForNameSpace(self, prefixnamespace,dataformat="HTML"):
         outpath=self.outpath
         corpusid=self.namespaceshort.replace("#","")
-        if self.datasettitle=="":
+        if self.datasettitle==None or self.datasettitle=="":
             self.datasettitle=corpusid+"_dataset"
         if not os.path.isdir(outpath):
             os.mkdir(outpath)
@@ -296,10 +296,7 @@ class OntDocGeneration:
         voidstats["http://ldf.fi/void-ext#averagePropertyIRILength"] = res["avgpredlen"]
         voidstats["http://rdfs.org/ns/void#distinctObjects"]=res["objs"]
         predmap=res["predmap"]
-        dsname=self.datasettitle
-        if dsname==None or dsname=="":
-            dsname="dataset"
-        voidds=prefixnamespace+dsname
+        voidds=prefixnamespace+self.datasettitle
         if self.createColl:
             self.graph=self.createCollections(self.graph,prefixnamespace)
         if self.logoname!=None and self.logoname!="" and not self.logoname.startswith("http"):
