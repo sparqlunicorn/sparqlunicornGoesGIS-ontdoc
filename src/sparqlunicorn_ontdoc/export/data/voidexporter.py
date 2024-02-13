@@ -16,8 +16,6 @@ class VoidExporter:
         g.bind("dcat", "http://www.w3.org/ns/dcat#")
         if dsname==None or dsname=="":
             dsname="dataset"
-        else:
-            dsname+="_dataset"
         voidds=prefixnamespace+dsname
         if repository!="" and repository.startswith("http"):
             g.add((URIRef(repository), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
@@ -53,13 +51,13 @@ class VoidExporter:
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#dataDump"),
               URIRef(deploypath+"/index.ttl")))
         g.add((URIRef(voidds), URIRef("http://www.w3.org/ns/dcat#distribution"),
-               URIRef(voidds+"dist_ttl")))
-        g.add((URIRef(voidds + "dist_ttl"), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://www.w3.org/ns/adms#AssetDistribution")))
-        g.add((URIRef(voidds+"dist_ttl"), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
+               URIRef(voidds+"_dist_ttl")))
+        g.add((URIRef(voidds + "_dist_ttl"), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://www.w3.org/ns/adms#AssetDistribution")))
+        g.add((URIRef(voidds+"_dist_ttl"), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
                Literal(dsname+" TTL Distribution",lang="en")))
-        g.add((URIRef(voidds+"dist_ttl"), URIRef("http://www.w3.org/ns/dcat#downloadURL"),
+        g.add((URIRef(voidds+"_dist_ttl"), URIRef("http://www.w3.org/ns/dcat#downloadURL"),
                Literal(deploypath+"/index.ttl",datatype="http://www.w3.org/2001/XMLSchema#anyURI")))
-        g.add((URIRef(voidds+"dist_ttl"), URIRef("http://www.w3.org/ns/dcat#mediaType"),
+        g.add((URIRef(voidds+"_dist_ttl"), URIRef("http://www.w3.org/ns/dcat#mediaType"),
                URIRef("http://www.w3.org/ns/formats/Turtle")))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#feature"),
               URIRef("http://www.w3.org/ns/formats/Turtle")))

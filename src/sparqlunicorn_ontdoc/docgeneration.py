@@ -281,7 +281,7 @@ class OntDocGeneration:
         outpath=self.outpath
         corpusid=self.namespaceshort.replace("#","")
         if self.datasettitle=="":
-            self.datasettitle=corpusid
+            self.datasettitle=corpusid+"_dataset"
         if not os.path.isdir(outpath):
             os.mkdir(outpath)
         labeltouri = {}
