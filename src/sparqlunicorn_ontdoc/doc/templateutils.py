@@ -15,8 +15,8 @@ class TemplateUtils:
         print(matches)
         if len(matches)>0:
             for mat in matches:
-                if mat.group(1).replace(".html","") in templates:
-                    template=template.replace("{% include "+mat.group(1)+" %}",templates[mat.group(1)])
+                if mat.replace(".html","") in templates:
+                    template=template.replace("{% include "+mat+" %}",templates[mat.replace(".html","")])
         return template
 
     @staticmethod
