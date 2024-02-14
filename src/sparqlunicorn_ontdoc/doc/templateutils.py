@@ -11,10 +11,11 @@ class TemplateUtils:
 
     @staticmethod
     def resolveIncludes(template,templates):
+        print(template)
         matches=re.findall(includepattern,template)
         if len(matches)>0:
             for mat in matches:
-                if mat.replace(".html","") in templates:
+                if mat.group(1).replace(".html","") in templates:
                     template=template.replace("{% include "+mat.group(1)+" %}",templates[mat.group(1)])
         return template
 
