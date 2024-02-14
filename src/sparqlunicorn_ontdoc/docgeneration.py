@@ -82,10 +82,10 @@ class OntDocGeneration:
         self.geocollectionspaths=[]
         self.metadatatable=metadatatable
         self.templatename=templatename
-        if os.path.exists("ontdocscript"):
-            templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "ontdocscript/resources/html/"))
-        else:
-            templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
+        #if os.path.exists("ontdocscript"):
+        #    templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "ontdocscript/resources/html/"))
+        #else:
+        #    templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
         templates=TemplateUtils.resolveTemplate(templatename,templatepath)
         self.offlinecompat=offlinecompat
         if offlinecompat:
