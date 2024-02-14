@@ -119,14 +119,6 @@ class OntDocGeneration:
         self.prefixnamespace=self.prefixnamespace.replace("//","/")
 	    #prefixes["reversed"]["http://purl.org/suni/"] = "suni"
 
-    includepattern=p = re.compile("{% include (.+) %}")
-
-    def getIncludesInTemplate(self,template):
-        includes=re.findall(OntDocGeneration.includepattern, template)
-        print("INCLUDE RESULT: "+str(includes))
-        for inc in includes:
-            print("INCLUDES: "+str(inc))
-
     def updateProgressBar(self,iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█', printEnd="\r"):
         """
         Call in a loop to create terminal progress bar
@@ -147,8 +139,6 @@ class OntDocGeneration:
         # Print New Line on Complete
         if iteration == total:
             print()
-
-
 
     def createOfflineCompatibleVersion(self,outpath,myhtmltemplate,templatepath,templatename):
         if not os.path.isdir(outpath):
