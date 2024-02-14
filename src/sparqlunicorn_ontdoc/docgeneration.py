@@ -69,12 +69,14 @@ def resolveTemplate(templatename):
             templates["includes"]={}
             templates["layouts"] = {}
             for filename in os.listdir(templatepath+"/"+templatename+"/templates/includes/"):
+                print("FOUND INCLUDE: "+str(filename))
                 if filename.endswith(".html") or filename.endswith(".css"):
                     with open(templatepath+"/"+templatename+"/templates/includes/"+filename, 'r') as f:
                         content=f.read()
                         templates["includes"][filename.replace(".html","")] = content
                         templates[filename.replace(".html", "")] = content
             for filename in os.listdir(templatepath + "/" + templatename + "/templates/layouts/"):
+                print("FOUND LAYOUT: " + str(filename))
                 if filename.endswith(".html") or filename.endswith(".css"):
                     with open(templatepath + "/" + templatename + "/templates/layouts/" + filename, 'r') as f:
                         content=f.read()
