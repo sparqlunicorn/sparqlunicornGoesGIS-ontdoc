@@ -5,7 +5,7 @@ from doc.docdefaults import DocDefaults
 
 
 
-includepattern=re.compile("{%\s*include\s*(.*)\s*%}")
+includepattern=r'{%\s*include\s*(.*)\s*%}'
 
 class TemplateUtils:
 
@@ -13,6 +13,7 @@ class TemplateUtils:
     def resolveIncludes(template,templates):
         print(template)
         matches=re.findall(includepattern,template)
+        print(matches)
         if len(matches)>0:
             for mat in matches:
                 if mat.group(1).replace(".html","") in templates:
