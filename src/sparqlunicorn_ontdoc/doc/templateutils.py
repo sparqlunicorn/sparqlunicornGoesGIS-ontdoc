@@ -11,7 +11,6 @@ class TemplateUtils:
 
     @staticmethod
     def resolveIncludes(template,templates):
-        print(template)
         matches=re.findall(includepattern,template)
         print(matches)
         if len(matches)>0:
@@ -62,6 +61,6 @@ class TemplateUtils:
                             templates[filename.replace(".html","")] = f.read()
         print("Found templates.... "+str(len(templates)))
         for temp in templates:
-            print(temp)
-            templates[temp]=TemplateUtils.resolveIncludes(templates[temp],templates)
+            if temp!="includes" and temp!="layouts":
+                templates[temp]=TemplateUtils.resolveIncludes(templates[temp],templates)
         return templates
