@@ -55,6 +55,7 @@ class TemplateUtils:
                     if filename.endswith(".html") or filename.endswith(".css"):
                         with open(templatepath+"/"+templatename+"/templates/"+filename, 'r') as f:
                             templates[filename.replace(".html","")] = f.read()
+        print("Found templates.... "+str(len(templates)))
         for temp in templates:
             templates[temp]=TemplateUtils.resolveIncludes(templates[temp],templates)
         return templates
