@@ -22,6 +22,9 @@ class TemplateUtils:
     def resolveTemplate(templatename,templatepath):
         templates=DocDefaults.templates
         print(templatepath+"/"+templatename+" "+str(os.path.exists(templatepath+"/"+templatename+"/templates/")))
+        print(templatepath + "/" + templatename + " " + str(
+            os.path.exists(templatepath + "/" + templatename)))
+        print(os.listdir(templatepath + "/" + templatename))
         if os.path.exists(templatepath+"/"+templatename+"/templateconf.json"):
             with open(templatepath+"/"+templatename+"/templateconf.json", 'r') as f:
                 templatefiles = json.load(f)
