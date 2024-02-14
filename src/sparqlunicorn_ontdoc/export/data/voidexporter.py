@@ -17,7 +17,7 @@ class VoidExporter:
         if dsname==None or dsname=="":
             dsname="dataset"
         voidds=prefixnamespace+dsname
-        if repository!="" and repository.startswith("http"):
+        if repository!=None and repository!="" and repository.startswith("http"):
             g.add((URIRef(repository), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
                    URIRef("http://www.w3.org/ns/adms#AssetRepository")))
             g.add((URIRef(repository), URIRef("http://www.w3.org/ns/dcat#accessURL"),
