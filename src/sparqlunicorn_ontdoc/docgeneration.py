@@ -288,6 +288,9 @@ class OntDocGeneration:
         uritolabel = {}
         uritotreeitem={}
         voidstats={"http://rdfs.org/ns/void#classes":0,"http://rdfs.org/ns/void#entities":0,"http://rdfs.org/ns/void#distinctObjects":0,"http://rdfs.org/ns/void#distinctSubjects":0,"http://rdfs.org/ns/void#properties":0,"http://rdfs.org/ns/void#triples":0}
+        if self.createVOWL:
+            vowlinstance=OWL2VOWL()
+            vowlinstance.convertOWL2VOWL(self.graph,outpath)
         curlicense=self.processLicense()
         self.licensehtml=curlicense
         res=self.getPropertyRelations(self.graph, outpath)
@@ -624,7 +627,7 @@ class OntDocGeneration:
             predicatecounter+=1
             predicatelength+=len(str(pred))
         if self.createVOWL:
-            OWL2VOWL().convertOWL2MiniVOWL(graph,outpath,"minivowl_result.js",predicates)
+            OWL2VOWL.convertOWL2MiniVOWL(graph,outpath,"minivowl_result.js",predicates)
         with open(outpath+"proprelations.js", 'w', encoding='utf-8') as f:
             f.write("var proprelations="+json.dumps(predicates))
             f.close()
