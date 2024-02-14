@@ -12,7 +12,6 @@ class TemplateUtils:
     @staticmethod
     def resolveIncludes(template,templates):
         matches=re.findall(includepattern,template)
-        print(matches)
         if len(matches)>0:
             for mat in matches:
                 if mat.replace(".html","") in templates:
