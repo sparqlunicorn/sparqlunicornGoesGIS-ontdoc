@@ -86,7 +86,7 @@ class OntDocGeneration:
             templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "ontdocscript/resources/html/"))
         else:
             templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
-        templates=TemplateUtils.resolveTemplate(templatename)
+        templates=TemplateUtils.resolveTemplate(templatename,templatepath)
         self.offlinecompat=offlinecompat
         if offlinecompat:
             templates["htmltemplate"]=self.createOfflineCompatibleVersion(outpath,templates["htmltemplate"],templatepath,templatename)
