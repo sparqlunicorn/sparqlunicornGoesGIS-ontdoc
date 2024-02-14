@@ -1,12 +1,12 @@
-@prefix : <http://www.semanticweb.org/timo.homburg/ontologies/2024/1/untitled-ontology-29/> .
+@prefix : <http://purl.org/vocab/classtree/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@base <http://www.semanticweb.org/timo.homburg/ontologies/2024/1/untitled-ontology-29/> .
+@base <http://purl.org/vocab/classtree/> .
 
-<http://www.semanticweb.org/timo.homburg/ontologies/2024/1/untitled-ontology-29> rdf:type owl:Ontology .
+
 
 #################################################################
 #    Annotation properties
@@ -29,7 +29,7 @@
 #################################################################
 
 ###  http://purl.org/vocab/icontype
-<http://purl.org/vocab/icontype> rdf:type owl:ObjectProperty ;
+<http://purl.org/vocab/classtree/icontype> rdf:type owl:ObjectProperty ;
                                  rdfs:label "icon type"@en .
 
 
@@ -38,28 +38,28 @@
 #################################################################
 
 ###  http://purl.org/vocab/CollectionRelationProperty
-<http://purl.org/vocab/CollectionRelationProperty> rdf:type owl:Class ;
+<http://purl.org/vocab/classtree/CollectionRelationProperty> rdf:type owl:Class ;
                                                    rdfs:subClassOf <http://purl.org/vocab/classtree/PropertyItem> ;
                                                    rdfs:label "collection relation property"@en ;
                                                    <http://www.w3.org/2004/02/skos/core#definition> "A property which relates a collection to an instance and vice versa"@en .
 
 
 ###  http://purl.org/vocab/GeoProperty
-<http://purl.org/vocab/GeoProperty> rdf:type owl:Class ;
+<http://purl.org/vocab/classtree/GeoProperty> rdf:type owl:Class ;
                                     rdfs:subClassOf <http://purl.org/vocab/classtree/PropertyItem> ;
                                     rdfs:label "geo property"@en ;
                                     <http://www.w3.org/2004/02/skos/core#definition> "A property used to point to or to express geospatial data"@en .
 
 
 ###  http://purl.org/vocab/TimeProperty
-<http://purl.org/vocab/TimeProperty> rdf:type owl:Class ;
+<http://purl.org/vocab/classtree/TimeProperty> rdf:type owl:Class ;
                                      rdfs:subClassOf <http://purl.org/vocab/classtree/PropertyItem> ;
                                      rdfs:label "time property"@en ;
                                      <http://www.w3.org/2004/02/skos/core#definition> "A property which links an instance to a time value or object"@en .
 
 
 ###  http://purl.org/vocab/UnitProperty
-<http://purl.org/vocab/UnitProperty> rdf:type owl:Class ;
+<http://purl.org/vocab/classtree/UnitProperty> rdf:type owl:Class ;
                                      rdfs:subClassOf <http://purl.org/vocab/classtree/PropertyItem> ;
                                      rdfs:label "unit property"@en ;
                                      <http://www.w3.org/2004/02/skos/core#definition> "A property used to link to a unit representation"@en .
@@ -151,7 +151,7 @@
 
 
 ###  http://www.semanticweb.org/timo.homburg/ontologies/2024/1/untitled-ontology-29/<http://purl.org/vocab/ValueProperty
-<http://www.semanticweb.org/timo.homburg/ontologies/2024/1/untitled-ontology-29/<http://purl.org/vocab/ValueProperty> rdf:type owl:Class ;
+<http://purl.org/vocab/classtree/ValueProperty> rdf:type owl:Class ;
                                                                                                                       rdfs:subClassOf <http://purl.org/vocab/classtree/PropertyItem> ;
                                                                                                                       rdfs:label "value property"@en ;
                                                                                                                       <http://www.w3.org/2004/02/skos/core#definition> "A property used to define a numeric or String value which may or may not be qualified by a unit"@en .
@@ -162,7 +162,7 @@
 #################################################################
 
 ###  http://purl.org/vocab/classtree/ClassTreeVocabulary
-<http://purl.org/vocab/classtree/ClassTreeVocabulary> rdf:type owl:NamedIndividual ,
+<http://purl.org/vocab/classtree/> rdf:type owl:Ontology,
                                                                <http://purl.org/vocommons/voaf/Vocabulary> ;
                                                       <http://purl.org/vocab/vann/preferredNamespacePrefix> "ct" ;
                                                       <http://purl.org/vocab/vann/preferredNamespaceUri> "http://www.opengis.net/ont/geosparql"^^xsd:anyURI ;
