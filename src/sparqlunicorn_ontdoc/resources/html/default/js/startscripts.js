@@ -1106,6 +1106,15 @@ function initThreeJS(domelement,verts,meshurls) {
     gui.add(objects, 'visible').name('Meshes')
     gui.add(annotations, 'visible').name('Annotations')
     gui.add(axesHelper, 'visible').name('Axis Helper')
+    gui.add(toggleFullScreen2, 'FullScreen')
+    document.addEventListener("fullscreenchange",function(){
+        if(document.fullscreenElement){
+            var elem = document.getElementById(domelement);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize( width, height );
+        }
+    })
     if(meshurls.length>0 && (meshurls[0].includes(".nxs") || meshurls[0].includes(".nxz"))){
         renderNXS()
     }
@@ -1482,6 +1491,26 @@ function setupJSTree(){
             $('#jstree').jstree(true).search(v,false,true);
         });
     });
+}
+
+function toggleFullScreen2(){
+    toggleFullScreen("threejs",true)
+}
+
+function toggleFullScreen(elementid,threejs=false) {
+  if (!document.fullscreenElement) {
+    document.getElementById(elementid).requestFullscreen();
+    if(threejs){
+        var elem = document.getElementById(elementid);
+        var sceneWidth = window.innerWidth;
+        var sceneHeight = elem.offsetHeight;
+        camera.aspect = sceneWidth / sceneHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize( sceneWidth, sceneHeight );
+    }
+  } else if (document.exitFullscreen) {
+    document.exitFullscreen();
+  }
 }
 
 function restyleLayer(propertyName,geojsonLayer) {
