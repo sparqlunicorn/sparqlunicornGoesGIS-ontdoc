@@ -38,6 +38,7 @@ class TemplateUtils:
         elif os.path.exists(templatepath+"/"+templatename+"/templates/"):
             if os.path.exists(templatepath+"/"+templatename+"/templates/layouts/") and os.path.exists(templatepath+"/"+templatename+"/templates/includes/"):
                 templates["includes"]={}
+                templates["js"] = {}
                 templates["layouts"] = {}
                 for filename in os.listdir(templatepath+"/"+templatename+"/templates/includes/"):
                     print("FOUND INCLUDE: "+str(filename))
