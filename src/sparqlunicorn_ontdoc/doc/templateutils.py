@@ -68,6 +68,6 @@ class TemplateUtils:
                             templates[filename.replace(".html","")] = f.read()
         print("Found templates.... "+str(len(templates)))
         for temp in templates:
-            if temp!="includes" and temp!="layouts":
+            if temp!="includes" and temp!="layouts" and temp!="js":
                 templates[temp]=TemplateUtils.resolveIncludes(templates[temp],templates)
         return templates
