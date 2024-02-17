@@ -1109,7 +1109,6 @@ function initThreeJS(domelement,verts,meshurls) {
     gui.add(toggleFullScreen2, 'FullScreen')
     document.addEventListener("fullscreenchange",function(){
         if(document.fullscreenElement){
-            var elem = document.getElementById(domelement);
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
             renderer.setSize( width, height );
