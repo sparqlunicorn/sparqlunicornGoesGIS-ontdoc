@@ -901,7 +901,7 @@ function setup3dhop(meshurl,meshformat) {
   });
 }
 
-function addRotationControls(box,geometryF){
+function addRotationControls(box,geometryF,objects){
     geometryF.close();
 
     const rotationFolder = geometryF.addFolder("Rotation");
