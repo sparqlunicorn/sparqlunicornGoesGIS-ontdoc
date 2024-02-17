@@ -1122,7 +1122,7 @@ class DocDefaults:
         gui.add(objects, 'visible').name('Meshes')
         gui.add(annotations, 'visible').name('Annotations')
         gui.add(axesHelper, 'visible').name('Axis Helper')
-        gui.add(toggleFullScreen2, 'FullScreen')
+        gui.add({"FullScreen":toggleFullScreen2}, 'FullScreen')
         document.addEventListener("fullscreenchange",function(){
             if(document.fullscreenElement){
                 camera.aspect = width / height;
