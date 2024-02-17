@@ -46,10 +46,10 @@ class TemplateUtils:
                             content=f.read()
                             templates["includes"][filename.replace(".html","")] = content
                             templates[filename.replace(".html", "")] = content
-                for filename in os.listdir(templatepath+"/"+templatename+"/templates/js/"):
+                for filename in os.listdir(templatepath+"/"+templatename+"/js/"):
                     print("FOUND INCLUDE: "+str(filename))
                     if filename.endswith(".js"):
-                        with open(templatepath+"/"+templatename+"/templates/js/"+filename, 'r') as f:
+                        with open(templatepath+"/"+templatename+"/js/"+filename, 'r') as f:
                             content=f.read()
                             templates["js"][filename.replace(".js","")] = content
                             templates[filename.replace(".js", "")] = content
