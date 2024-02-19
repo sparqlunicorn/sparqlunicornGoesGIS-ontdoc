@@ -1333,7 +1333,11 @@ function formatHTMLTableForResult(result,nodeicon,nodetype){
                 dialogcontent+="<td><a href=\""+rewriteLink(result[res][Object.keys(result[res])[0]]+"")+"\" target=\"_blank\">"+shortenURI(result[res][Object.keys(result[res])[0]]+"")+"</a></td>"
             }
         }else if(Object.keys(result[res])[0]!="instancecount"){
-            dialogcontent+="<td>"+Object.keys(result[res])[0]+"</td>"
+            if(!(nodetype.includes("class"))) {
+                dialogcontent += "<td>" + Object.keys(result[res])[0] + "</td>"
+            }else{
+                dialogcontent += "<td>" + result[res][Object.keys(result[res])[0]] + "</td>"
+            }
         }else{
             dialogcontent+="<td></td>"
         }
