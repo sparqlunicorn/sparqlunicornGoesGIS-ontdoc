@@ -1871,7 +1871,7 @@ var relativedepth={{relativedepth}}</script><body><div id="header">{{logo}}<h1 i
     """,
 
 
-    "imagecarouselheader":"""<div id="imagecarousel" class="carousel slide" data-ride="carousel"><div class="carousel-inner">""",
+    "imagecarouselheader":"""<div id="imagecarousel" class="carousel slide lazy" data-ride="carousel"><div class="carousel-inner">""",
 
     "imagecarouselfooter":"""</div> <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
