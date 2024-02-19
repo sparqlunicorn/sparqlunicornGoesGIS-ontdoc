@@ -1276,6 +1276,8 @@ function formatHTMLTableForClassRelations(result,nodeicon,nodelabel,nodeid){
     return dialogcontent
 }
 
+listthreshold=5
+
 function formatHTMLTableForResult(result,nodeicon){
     dialogcontent=""
     dialogcontent="<h3><img src=\""+nodeicon+"\" height=\"25\" width=\"25\" alt=\"Instance\"/><a href=\""+nodeid.replace('/index.json','/index.html')+"\" target=\"_blank\"> "+nodelabel+"</a></h3><table border=1 id=dataschematable><thead><tr><th>Type</th><th>Relation</th><th>Value</th></tr></thead><tbody>"
@@ -1299,15 +1301,23 @@ function formatHTMLTableForResult(result,nodeicon){
         }
         dialogcontent+="<td><a href=\""+res+"\" target=\"_blank\">"+shortenURI(res)+"</a> <a href=\"#\" onclick=\"getPropRelationDialog('"+res+"','"+detpropicon+"')\">[x]</a></td>"
         if(Object.keys(result[res]).length>1){
-            dialogcontent+="<td><ul>"
+            dialogcontent+="<td>"
+            if(result[res].length>listthreshold){
+                dialogcontent+="<details><summary>"+result[res].length+" values</summary>"
+            }
+            dialogcontent+="<ul>"
             for(resitem in result[res]){
-                if((resitem+"").startsWith("http")){
-                    dialogcontent+="<li><a href=\""+rewriteLink(resitem)+"\" target=\"_blank\">"+shortenURI(resitem)+"</a> ["+result[res][resitem]+"]</li>"
+                if((result[res][resitem]+"").trim().startsWith("http")){
+                    dialogcontent+="<li><a href=\""+rewriteLink(result[res][resitem])+"\" target=\"_blank\">"+shortenURI(result[res][resitem])+"</a> ["+result[res][resitem]+"]</li>"
                 }else if(resitem!="instancecount"){
                     dialogcontent+="<li>"+result[res][resitem]+"</li>"
                 }
             }
-            dialogcontent+="</ul></td>"
+            dialogcontent+="</ul>"
+            if(result[res].length>listthreshold){
+                dialogcontent+="</details>"
+            }
+            dialogcontent+="</td>"
         }else if((Object.keys(result[res])[0]+"").startsWith("http")){
             dialogcontent+="<td><a href=\""+rewriteLink(Object.keys(result[res])[0]+"")+"\" target=\"_blank\">"+shortenURI(Object.keys(result[res])[0]+"")+"</a></td>"
         }else if(Object.keys(result[res])[0]!="instancecount"){
