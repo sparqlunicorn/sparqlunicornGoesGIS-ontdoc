@@ -1278,7 +1278,7 @@ function formatHTMLTableForClassRelations(result,nodeicon,nodelabel,nodeid){
 
 listthreshold=5
 
-function formatHTMLTableForResult(result,nodeicon){
+function formatHTMLTableForResult(result,nodeicon,nodetype){
     dialogcontent=""
     dialogcontent="<h3><img src=\""+nodeicon+"\" height=\"25\" width=\"25\" alt=\"Instance\"/><a href=\""+nodeid.replace('/index.json','/index.html')+"\" target=\"_blank\"> "+nodelabel+"</a></h3><table border=1 id=dataschematable><thead><tr><th>Type</th><th>Relation</th><th>Value</th></tr></thead><tbody>"
     for(res in result){
@@ -1307,10 +1307,18 @@ function formatHTMLTableForResult(result,nodeicon){
             }
             dialogcontent+="<ul>"
             for(resitem in result[res]){
-                if((result[res][resitem]+"").trim().startsWith("http")){
-                    dialogcontent+="<li><a href=\""+rewriteLink(result[res][resitem])+"\" target=\"_blank\">"+shortenURI(result[res][resitem])+"</a> ["+result[res][resitem]+"]</li>"
-                }else if(resitem!="instancecount"){
-                    dialogcontent+="<li>"+result[res][resitem]+"</li>"
+                if(!(nodetype.includes("class"))) {
+                    if ((result[res][resitem] + "").trim().startsWith("http")) {
+                        dialogcontent += "<li><a href=\"" + rewriteLink(result[res][resitem]) + "\" target=\"_blank\">" + shortenURI(result[res][resitem]) + "</a> [" + result[res][resitem] + "]</li>"
+                    } else if (resitem != "instancecount") {
+                        dialogcontent += "<li>" + result[res][resitem] + "</li>"
+                    }
+                }else{
+                    if ((resitem+ "").trim().startsWith("http")) {
+                        dialogcontent += "<li><a href=\"" + rewriteLink(resitem) + "\" target=\"_blank\">" + shortenURI(resitem) + "</a></li>"
+                    } else if (resitem != "instancecount") {
+                        dialogcontent += "<li>" + result[res][resitem] + "</li>"
+                    }
                 }
             }
             dialogcontent+="</ul>"
@@ -1378,13 +1386,13 @@ function getDataSchemaDialog(node){
      console.log(nodetype)
      if(nodetype=="class" || nodetype=="halfgeoclass" || nodetype=="geoclass" || node.type=="collectionclass"){
         console.log(props)
-        dialogcontent=formatHTMLTableForResult(props["to"],nodeicon)
+        dialogcontent=formatHTMLTableForResult(props["to"],nodeicon,nodetype)
         document.getElementById("dataschemadialog").innerHTML=dialogcontent
         $('#dataschematable').DataTable();
         document.getElementById("dataschemadialog").showModal();
      }else{
          $.getJSON(nodeid, function(result){
-            dialogcontent=formatHTMLTableForResult(result,nodeicon)
+            dialogcontent=formatHTMLTableForResult(result,nodeicon,nodetype)
             document.getElementById("dataschemadialog").innerHTML=dialogcontent
             $('#dataschematable').DataTable();
             document.getElementById("dataschemadialog").showModal();
