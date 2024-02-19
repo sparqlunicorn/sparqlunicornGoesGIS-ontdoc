@@ -1327,7 +1327,11 @@ function formatHTMLTableForResult(result,nodeicon,nodetype){
             }
             dialogcontent+="</td>"
         }else if((Object.keys(result[res])[0]+"").startsWith("http")){
-            dialogcontent+="<td><a href=\""+rewriteLink(Object.keys(result[res])[0]+"")+"\" target=\"_blank\">"+shortenURI(Object.keys(result[res])[0]+"")+"</a></td>"
+            if(!(nodetype.includes("class"))) {
+                dialogcontent+="<td><a href=\""+rewriteLink(Object.keys(result[res])[0]+"")+"\" target=\"_blank\">"+shortenURI(Object.keys(result[res])[0]+"")+"</a></td>"
+            }else{
+                dialogcontent+="<td><a href=\""+rewriteLink(result[res][Object.keys(result[res])[0]]+"")+"\" target=\"_blank\">"+shortenURI(result[res][Object.keys(result[res])[0]]+"")+"</a></td>"
+            }
         }else if(Object.keys(result[res])[0]!="instancecount"){
             dialogcontent+="<td>"+Object.keys(result[res])[0]+"</td>"
         }else{
