@@ -1502,7 +1502,7 @@ function toggleFullScreen(elementid,threejs=false) {
     if(threejs){
         var elem = document.getElementById(elementid);
         var sceneWidth = window.innerWidth;
-        var sceneHeight = window.innerHeight;
+        var sceneHeight = elem.offsetHeight;
         camera.aspect = sceneWidth / sceneHeight;
         camera.updateProjectionMatrix();
         renderer.setSize( sceneWidth, sceneHeight );
