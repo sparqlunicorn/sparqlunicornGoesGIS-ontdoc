@@ -1326,7 +1326,7 @@ function formatHTMLTableForResult(result,nodeicon,nodetype){
                 dialogcontent+="</details>"
             }
             dialogcontent+="</td>"
-        }else if((Object.keys(result[res])[0]+"").startsWith("http")){
+        }else if((Object.keys(result[res])[0]+"").startsWith("http") || (result[res][Object.keys(result[res])[0]]+"").startsWith("http")){
             if(!(nodetype.includes("class"))) {
                 dialogcontent+="<td><a href=\""+rewriteLink(result[res][Object.keys(result[res])[0]]+"")+"\" target=\"_blank\">"+shortenURI(result[res][Object.keys(result[res])[0]]+"")+"</a></td>"
             }else{
