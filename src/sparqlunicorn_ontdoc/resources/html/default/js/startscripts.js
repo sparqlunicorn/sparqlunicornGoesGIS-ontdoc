@@ -1309,13 +1309,13 @@ function formatHTMLTableForResult(result,nodeicon,nodetype){
             for(resitem in result[res]){
                 if(!(nodetype.includes("class"))) {
                     if ((result[res][resitem] + "").trim().startsWith("http")) {
-                        dialogcontent += "<li><a href=\"" + rewriteLink(result[res][resitem]) + "\" target=\"_blank\">" + shortenURI(result[res][resitem]) + "</a> [" + result[res][resitem] + "]</li>"
+                        dialogcontent += "<li><a href=\"" + rewriteLink(result[res][resitem]) + "\" target=\"_blank\">" + shortenURI(result[res][resitem]) + "</a></li>"
                     } else if (resitem != "instancecount") {
                         dialogcontent += "<li>" + result[res][resitem] + "</li>"
                     }
                 }else{
                     if ((resitem+ "").trim().startsWith("http")) {
-                        dialogcontent += "<li><a href=\"" + rewriteLink(resitem) + "\" target=\"_blank\">" + shortenURI(resitem) + "</a></li>"
+                        dialogcontent += "<li><a href=\"" + rewriteLink(resitem) + "\" target=\"_blank\">" + shortenURI(resitem) + "</a> [" + result[res][resitem] + "]</li>"
                     } else if (resitem != "instancecount") {
                         dialogcontent += "<li>" + result[res][resitem] + "</li>"
                     }
