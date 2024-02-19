@@ -1323,8 +1323,7 @@ class DocDefaults:
                 }
                 dialogcontent+="<ul>"
                 for(resitem in result[res]){
-                    console.log("RESITEM: "+resitem)
-                    if((resitem+"").trim().startsWith("http")){
+                    if((result[res][resitem]+"").trim().startsWith("http")){
                         dialogcontent+="<li><a href=\\""+rewriteLink(resitem)+"\\" target=\\"_blank\\">"+shortenURI(resitem)+"</a> ["+result[res][resitem]+"]</li>"
                     }else if(resitem!="instancecount"){
                         dialogcontent+="<li>"+result[res][resitem]+"</li>"
