@@ -1027,11 +1027,10 @@ class DocDefaults:
         return annotations
     }
     
-    const size = new THREE.Vector3();
-    const center = new THREE.Vector3();
-    const box = new THREE.Box3();
-    
     function fitCameraToSelection(camera, controls, selection, fitOffset = 1.2) {
+      size = new THREE.Vector3();
+      center = new THREE.Vector3();
+      box = new THREE.Box3();
       box.makeEmpty();
       for(const object of selection) {
         box.expandByObject(object);

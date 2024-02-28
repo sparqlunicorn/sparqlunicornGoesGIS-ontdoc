@@ -1008,13 +1008,12 @@ function prepareAnnotationFromJSON(verts,annotations){
 	return annotations
 }
 
-let camera, scene, renderer,controls,axesHelper;
-
-const size = new THREE.Vector3();
-const center = new THREE.Vector3();
-const box = new THREE.Box3();
+let camera, scene, renderer,controls,axesHelper,box,center,size;
 
 function fitCameraToSelection(camera, controls, selection, fitOffset = 1.2) {
+  size = new THREE.Vector3();
+  center = new THREE.Vector3();
+  box = new THREE.Box3();
   box.makeEmpty();
   for(const object of selection) {
     box.expandByObject(object);
