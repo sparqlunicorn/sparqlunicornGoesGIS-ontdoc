@@ -1020,6 +1020,9 @@ class DocDefaults:
         extrudedGeometry.computeBoundingBox()
         const material = new THREE.MeshBasicMaterial( { color: 0xFFFFFF, wireframe:true } );
         const mesh = new THREE.Mesh( extrudedGeometry, material );
+        if(minz<0){
+            object.position.z = minz;
+        }
         annotations.add(mesh)
         return annotations
     }
