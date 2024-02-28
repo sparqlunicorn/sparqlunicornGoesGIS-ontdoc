@@ -1133,9 +1133,13 @@ class DocDefaults:
                 renderer.setSize( width, height );
             }
         })
+        if(objects.length>0){
+            camera.lookAt( objects[0].position );
+        }
         if(meshurls.length>0 && (meshurls[0].includes(".nxs") || meshurls[0].includes(".nxz"))){
             renderNXS()
         }
+
         animate()
     }
     
