@@ -1027,6 +1027,41 @@ class DocDefaults:
         return annotations
     }
     
+    const size = new THREE.Vector3();
+    const center = new THREE.Vector3();
+    const box = new THREE.Box3();
+    
+    function fitCameraToSelection(camera, controls, selection, fitOffset = 1.2) {
+      box.makeEmpty();
+      for(const object of selection) {
+        box.expandByObject(object);
+      }
+      
+      box.getSize(size);
+      box.getCenter(center );
+      
+      const maxSize = Math.max(size.x, size.y, size.z);
+      const fitHeightDistance = maxSize / (2 * Math.atan(Math.PI * camera.fov / 360));
+      const fitWidthDistance = fitHeightDistance / camera.aspect;
+      const distance = fitOffset * Math.max(fitHeightDistance, fitWidthDistance);
+      
+      const direction = controls.target.clone()
+        .sub(camera.position)
+        .normalize()
+        .multiplyScalar(distance);
+    
+      controls.maxDistance = distance * 10;
+      controls.target.copy(center);
+      
+      camera.near = distance / 100;
+      camera.far = distance * 100;
+      camera.updateProjectionMatrix();
+    
+      camera.position.copy(controls.target).sub(direction);
+      
+      controls.update();
+    }
+    
     function initThreeJS(domelement,verts,meshurls) {
         scene = new THREE.Scene();
         minz=Number.MAX_VALUE
@@ -1136,10 +1171,10 @@ class DocDefaults:
         if(objects.length>0){
             camera.lookAt( objects[0].position );
         }
+        fitCameraToSelection(camera, controls, objects)
         if(meshurls.length>0 && (meshurls[0].includes(".nxs") || meshurls[0].includes(".nxz"))){
             renderNXS()
         }
-
         animate()
     }
     
