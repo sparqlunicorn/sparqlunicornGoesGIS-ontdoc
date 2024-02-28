@@ -1104,16 +1104,24 @@ class DocDefaults:
                     objects.add(mesh);
                     scene.add(objects);
                     addRotationControls(object,geometryF,objects)
+                    if(objects.children.length>0){
+                        camera.lookAt( objects.children[0].position );
+                    }
+                    fitCameraToSelection(camera, controls, objects.children)
                 });
             }else if(meshurls[0].includes(".obj")){
                 var loader= new THREE.OBJLoader();
-                loader.load(meshurls[0],function ( object ) {objects.add(object);scene.add(objects);addRotationControls(object,geometryF,objects)})
+                loader.load(meshurls[0],function ( object ) {objects.add(object);scene.add(objects);addRotationControls(object,geometryF,objects);if(objects.children.length>0){camera.lookAt( objects.children[0].position );}fitCameraToSelection(camera, controls, objects.children)})
             }else if(meshurls[0].includes(".nxs") || meshurls[0].includes(".nxz")){
                 console.log(renderer)
                 var nexus_obj=new NexusObject(meshurls[0],function(){},renderNXS,renderer);
                 objects.add(nexus_obj)
                 scene.add(objects);
                 addRotationControls(nexus_obj,geometryF,objects)
+                if(objects.children.length>0){
+                        camera.lookAt( objects.children[0].position );
+                }
+                fitCameraToSelection(camera, controls, objects.children)
             }else if(meshurls[0].includes(".gltf")){
                 var loader = new THREE.GLTFLoader();
                 loader.load(meshurls[0], function ( gltf )
@@ -1124,6 +1132,10 @@ class DocDefaults:
                     objects.add(object)
                     scene.add(objects);
                     addRotationControls(object,geometryF,objects)
+                    if(objects.children.length>0){
+                        camera.lookAt( objects.children[0].position );
+                    }
+                    fitCameraToSelection(camera, controls, objects.children)
                 });
             }
         }
