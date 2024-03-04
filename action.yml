@@ -1,5 +1,8 @@
 name: 'sparqlunicorn-ontdoc'
 description: 'Generates HTML documentation from RDF files'
+branding:
+  icon: 'file-text'
+  color: 'blue'
 inputs:
    inputs:
       version:
