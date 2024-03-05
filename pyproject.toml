@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sparqlunicorn_ontdoc"
-version = "0.17.0"
+version = "0.18.0"
 description = "Generates HTML documentation from RDF files"
 readme = "README.md"
 authors = [{ name = "Timo Homburg", email = "qgisplugin@sparqlunicorn.link" }, { name = "Florian Thiery", email = "qgisplugin@sparqlunicorn.link" }]
