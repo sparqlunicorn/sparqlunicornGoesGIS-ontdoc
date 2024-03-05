@@ -526,7 +526,7 @@ class OntDocGeneration:
                         .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{baseurlhtml}}", "").replace("{{nonnslink}}","").replace("{{scriptfolderpath}}", corpusid + "_search.js").replace("{{exports}}",templates["nongeoexports"]).replace("{{versionurl}}",DocConfig.versionurl).replace("{{version}}",DocConfig.version).replace("{{bibtex}}","").replace("{{proprelationpath}}","proprelations.js")
             sparqlhtml+=templates["sparqltemplate"]
             sparqlhtml+=self.replaceStandardVariables(templates["footer"],"","0","false").replace("{{license}}",curlicense).replace("{{exports}}",templates["nongeoexports"]).replace("{{bibtex}}","").replace("{{stats}}",self.voidstatshtml)
-            with open( outpath+"sparql.html", 'w', encoding='utf-8') as f:
+            with open( outpath+"sparqltemplate.html", 'w', encoding='utf-8') as f:
                 f.write(sparqlhtml)
                 f.close()
         relpath = DocUtils.generateRelativePathFromGivenDepth(0)
