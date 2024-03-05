@@ -9,7 +9,7 @@ authors:
   - name: "SPARQL Unicorn Ontology Documentation"
 title: "SPARQL Unicorn Ontology Documentation"
 abstract: This is a standalone version of the HTML documentation feature included in the SPARQLing Unicorn QGIS Plugin.
-version: 0.17
+version: 0.18
 type: software
 doi: 10.5281/zenodo.8190763
 date-released: 2023-07-27
