@@ -22,6 +22,16 @@ https://github.com/sparqlunicorn/sparqlunicornGoesGIS_testdata
 For a usage example please refer to this repository:
 [https://gitlab.com/sparqlunicorn/sparqlunicornGoesGIS_testdata](https://gitlab.com/sparqlunicorn/sparqlunicornGoesGIS_testdata)
 
+### Installation as PIP package
+
+You can install the ontology documentation script as a pip package using the following command:
+
+`
+pip install -U git+https://github.com/sparqlunicorn/sparqlunicornGoesGIS-ontdoc@v017dev
+`
+
+The execution parameters are the ones described in the next section.
+
 ### Usage as standalone script
 
 You can use the standalone script by downloading a release or cloning this repository.
