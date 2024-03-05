@@ -519,7 +519,7 @@ class OntDocGeneration:
         if "layouts" in templates:
             for template in templates["layouts"]:
                 if template!="main":
-                    template=TemplateUtils.resolveIncludes(template,templates)
+                    templates["layouts"][template]=TemplateUtils.resolveIncludes(template,templates)
         if "sparqltemplate" in templates:
             sparqlhtml = self.replaceStandardVariables(templates["htmltemplate"], "", "0", "false")
             sparqlhtml = sparqlhtml.replace("{{iconprefixx}}",("icons/" if self.offlinecompat else "")).replace("{{baseurl}}", prefixnamespace).replace("{{relativedepth}}","0").replace("{{relativepath}}",".").replace("{{toptitle}}","SPARQL Query Editor").replace("{{title}}","SPARQL Query Editor").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css")\
