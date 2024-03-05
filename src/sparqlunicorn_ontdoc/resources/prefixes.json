@@ -1,7 +1,4 @@
 { 
-<<<<<<<< HEAD:src/sparqlunicorn_ontdoc/prefixes.json
-
-========
 "nstolabel": {
   "http://babelnet.org/2.0/": "Babelnet 2.0",
   "http://babelnet.org/rdf/": "Babelnet RDF",
@@ -54,7 +51,6 @@
   "http://www.cidoc-crm.org/cidoc-crm/": "CIDOC CRM Ontology",
   "http://www.w3.org/2001/XMLSchema#": "XML Schema"
 },
->>>>>>>> origin/v017:src/sparqlunicorn_ontdoc/resources/prefixes.json
 "reversed":{
   "http://10.0.3.120/download/eproc_FORN_v02.owl#": "eproc",
   "http://10.0.3.120/download/eproc_FORN_v04.owl#": "eproc2",
