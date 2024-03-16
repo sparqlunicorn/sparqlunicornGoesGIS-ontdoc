@@ -1918,6 +1918,7 @@ def main():
         try:
             g = Graph()
             g.parse(fp)
+            g=DocUtils.resolveOWLImports(g)
             modtime = datetime.fromtimestamp(os.path.getmtime(fp)).strftime("%Y-%m-%dT%H:%M:%S")
             if args.prefixns == None or args.prefixns == "None":
                 print("No Datanamespace defined. Trying to detect it...")
