@@ -208,3 +208,12 @@ class DocUtils:
         for i in range(0, checkdepth):
             rellink = "../" + rellink
         return rellink
+
+    @staticmethod
+    def resolveOWLImports(graph):
+        for obj in graph.objects(None,"http://www.w3.org/2002/07/owl#imports"):
+            try:
+                graph.parse(str(obj))
+            except Exception as e:
+                print(e)
+        return graph
