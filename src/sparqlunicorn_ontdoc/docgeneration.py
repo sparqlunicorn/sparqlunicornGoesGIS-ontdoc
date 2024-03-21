@@ -1561,11 +1561,11 @@ def main():
             with urlopen(templatepath) as zipresp:
                 with ZipFile(BytesIO(zipresp.read())) as zfile:
                     subfoldername = zfile.namelist()[0][0:zfile.namelist()[0].rfind('/')]
-                    zfile.extractall('src/sparqlunicorn_ontdoc/resources/html/')
-                    templatepath = "src/sparqlunicorn_ontdoc/resources/html/" + subfoldername
+                    zfile.extractall('ontdocscript/src/sparqlunicorn_ontdoc/resources/html/')
+                    templatepath = "ontdocscript/src/sparqlunicorn_ontdoc/resources/html/" + subfoldername
                     if subfoldername.endswith("/"):
                         subfoldername = subfoldername[0:-1]
-                    templatepath = "src/sparqlunicorn_ontdoc/resources/html/" + subfoldername[0:subfoldername.rfind('/') + 1]
+                    templatepath = "ontdocscript/src/sparqlunicorn_ontdoc/resources/html/" + subfoldername[0:subfoldername.rfind('/') + 1]
                     args.templatename = subfoldername
                     if templatepath.endswith("/"):
                         templatepath = templatepath[0:-1]
