@@ -1554,6 +1554,7 @@ def main():
         elif expo not in dataexports:
             dataexports.append(expo)
     print("EXPORTS: "+str(dataexports))
+    print(os.listdir(os.getcwd()))
     if args.templatepath!=None:
         templatepath=args.templatepath
         if templatepath.startswith("http") and templatepath.endswith(".zip"):
