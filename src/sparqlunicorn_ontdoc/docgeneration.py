@@ -62,7 +62,7 @@ class OntDocGeneration:
         self.namespaceshort = prefixnsshort.replace("/","")
         self.outpath=outpath
         self.exports=exports
-        self.datasettitle=datasettitle
+        self.datasettitle=str(datasettitle).replace(" ","_")
         self.logoname=logoname
         self.ckan=ckan
         self.solidexport=solidexport
@@ -233,7 +233,7 @@ class OntDocGeneration:
         outpath=self.outpath
         corpusid=self.namespaceshort.replace("#","")
         if self.datasettitle==None or self.datasettitle=="":
-            self.datasettitle=corpusid+"_dataset"
+            self.datasettitle=corpusid.replace(" ","_")+"_dataset"
         if not os.path.isdir(outpath):
             os.mkdir(outpath)
         labeltouri = {}
