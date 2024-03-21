@@ -74,6 +74,14 @@ class TemplateUtils:
                                 content=f.read()
                                 templates["js"][filename.replace(".js","")] = content
                                 templates[filename.replace(".js", "")] = content
+                if os.path.exists(templatepath+"/"+templatename+"/templates/css/"):
+                    for filename in os.listdir(templatepath + "/" + templatename + "/templates/css/"):
+                        print("FOUND LAYOUT: " + str(filename))
+                        if filename.endswith(".css"):
+                            with open(templatepath + "/" + templatename + "/templates/layouts/" + filename, 'r') as f:
+                                content=f.read()
+                                templates["layouts"][filename.replace(".css", "")] = content
+                                templates[filename.replace(".css", "")] = content
         print("Found templates.... "+str(len(templates)))
         for temp in templates:
             if temp!="includes" and temp!="layouts" and temp!="js":
