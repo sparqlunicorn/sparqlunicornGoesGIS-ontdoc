@@ -1,8 +1,11 @@
 # SPARQL Unicorn Ontology Documentation
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8190763.svg)](https://doi.org/10.5281/zenodo.8190763)
+
 This repository hosts a standalone version of the HTML documentation feature included in the SPARQLing Unicorn QGIS Plugin.
 
 Rather than initiating the documentation generation within the SPARQLing Unicorn QGIS Plugin, this python script allows the generation of the documentation standalone or as a Github Action.
-
+ 
 The standalone script does not rely on QGIS classes and does not provide the full functionality available in the SPARQLUnicorn QGIS Plugin.
 
 Deviations from the SPARQLing Unicorn Plugin are listed as follows:
@@ -102,12 +105,12 @@ optional arguments:
 
 The following vocabularies are supported by the ontology documentation tool and may be rendered in a specific way in HTML:
  
-* [BIBO Vocabulary](http://purl.org/ontology/bibo/)
+* [BIBO Vocabulary](http://purl.org/ontology/bibo/) [[Example Dataset (Ancient Ports)](https://github.com/archaeolink/AncientPorts_RDF)]
 * [Dublin Core DCTerms](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/)
-* [FOAF Vocabulary](http://xmlns.com/foaf/0.1/)
-* [GeoSPARQL 1.0 and 1.1 vocabulary](https://github.com/opengeospatial/ogc-geosparql)
+* [FOAF Vocabulary](http://xmlns.com/foaf/0.1/) [[Example Dataset (Ancient Ports)](https://github.com/archaeolink/AncientPorts_RDF)]
+* [GeoSPARQL 1.0 and 1.1 vocabulary](https://github.com/opengeospatial/ogc-geosparql) [[Example Dataset (CIGS)](https://github.com/archaeolink/CIGS_RDF)]
 * [SKOS Vocabulary](https://www.w3.org/TR/swbp-skos-core-spec/)
-* [SOSA Ontology](https://www.w3.org/TR/vocab-ssn/)
+* [SOSA Ontology](https://www.w3.org/TR/vocab-ssn/) [[Example Dataset (hgis_stats)](https://github.com/Research-Squirrel-Engineers/hgis_stats)]
 * [Unit of Measurements Ontology](https://github.com/HajoRijgersberg/OM)
 * [W3C Web Annotation Data Model](https://www.w3.org/TR/annotation-model/)
 * [W3C Geo Vocabulary](https://www.w3.org/2003/01/geo/)
