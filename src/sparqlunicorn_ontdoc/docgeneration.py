@@ -384,7 +384,7 @@ class OntDocGeneration:
         self.graph+=voidgraph["graph"]
         subjectstorender=voidgraph["subjects"]
         with open(outpath + "style.css", 'w', encoding='utf-8') as f:
-            f.write(templates["stylesheet"])
+            f.write(templates["style"])
             f.close()
         with open(outpath + "startscripts.js", 'w', encoding='utf-8') as f:
             f.write(templates["startscripts"].replace("{{baseurl}}",prefixnamespace))

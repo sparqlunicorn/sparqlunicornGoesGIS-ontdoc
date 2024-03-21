@@ -1817,7 +1817,7 @@ class DocDefaults:
         markercluster.addTo(map)
     }
     """,
-    "stylesheet" : """
+    "style" : """
     html { margin: 0; padding: 0; }
     body { font-family: sans-serif; font-size: 80%; margin: 0; padding: 1.2em 2em; }
     #rdficon { float: right; position: relative; top: -28px; }
