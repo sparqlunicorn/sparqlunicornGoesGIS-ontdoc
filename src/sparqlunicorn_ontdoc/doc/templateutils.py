@@ -21,6 +21,9 @@ class TemplateUtils:
     @staticmethod
     def resolveTemplate(templatename,templatepath):
         templates=DocDefaults.templates
+        templates["includes"] = {}
+        templates["js"] = {}
+        templates["layouts"] = {}
         print(templatepath+"/"+templatename+" "+str(os.path.exists(templatepath+"/"+templatename+"/templates/")))
         print(templatepath + "/" + templatename + " " + str(
             os.path.exists(templatepath + "/" + templatename)))
@@ -37,9 +40,6 @@ class TemplateUtils:
                                 templates[file] = f.read()
         elif os.path.exists(templatepath+"/"+templatename+"/templates/"):
             if os.path.exists(templatepath+"/"+templatename+"/templates/layouts/") and os.path.exists(templatepath+"/"+templatename+"/templates/includes/"):
-                templates["includes"]={}
-                templates["js"] = {}
-                templates["layouts"] = {}
                 for filename in os.listdir(templatepath+"/"+templatename+"/templates/includes/"):
                     print("FOUND INCLUDE: "+str(filename))
                     if filename.endswith(".html") or filename.endswith(".css"):
@@ -80,7 +80,7 @@ class TemplateUtils:
                         if filename.endswith(".css"):
                             with open(templatepath + "/" + templatename + "/css/" + filename, 'r') as f:
                                 content=f.read()
-                                templates["layouts"][filename.replace(".css", "")] = content
+                                templates[filename.replace(".css", "")] = content
                                 templates[filename.replace(".css", "")] = content
         print("Found templates.... "+str(len(templates)))
         for temp in templates:
