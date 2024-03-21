@@ -1559,15 +1559,15 @@ def main():
         if templatepath.startswith("http") and templatepath.endswith(".zip"):
             with urlopen(templatepath) as zipresp:
                 with ZipFile(BytesIO(zipresp.read())) as zfile:
-                    subfoldername=zfile.namelist()[0][0:zfile.namelist()[0].rfind('/')]
+                    subfoldername = zfile.namelist()[0][0:zfile.namelist()[0].rfind('/')]
                     zfile.extractall('mydownloadedtemplate/')
-                    templatepath="mydownloadedtemplate/"+subfoldername
+                    templatepath = "resources/html/" + subfoldername
                     if subfoldername.endswith("/"):
-                        subfoldername=subfoldername[0:-1]
-                    templatepath="mydownloadedtemplate/"+subfoldername[0:subfoldername.rfind('/')+1]
-                    args.templatename=subfoldername
+                        subfoldername = subfoldername[0:-1]
+                    templatepath = "resources/html/" + subfoldername[0:subfoldername.rfind('/') + 1]
+                    args.templatename = subfoldername
                     if templatepath.endswith("/"):
-                        templatepath=templatepath[0:-1]
+                        templatepath = templatepath[0:-1]
                     print(templatepath)
                     print(subfoldername)
                     print(args.templatename)
