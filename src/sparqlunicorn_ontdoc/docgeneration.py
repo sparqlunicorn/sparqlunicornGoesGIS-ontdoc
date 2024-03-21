@@ -545,7 +545,7 @@ class OntDocGeneration:
             SolidExporter.createSolidSettings(self.graph,outpath,self.deploypath,self.publisher,self.datasettitle,tree["core"]["data"])
         if len(featurecollectionspaths)>0:
             indexhtml = self.replaceStandardVariables(templates["htmltemplate"], "", "0", "true")
-            indexhtml = indexhtml.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{baseurl}}", prefixnamespace).replace("{{relativepath}}",relpath).replace("{{toptitle}}","Feature Collection Overview").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}", "vowl_result.js")\
+            indexhtml = indexhtml.replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{baseurl}}", prefixnamespace).replace("{{relativepath}}",relpath).replace("{{toptitle}}","Feature Collection Overview").replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{title}}","Feature Collection Overview").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}", "vowl_result.js")\
                     .replace("{{classtreefolderpath}}",corpusid + "_classtree.js").replace("{{proprelationpath}}","proprelations.js").replace("{{nonnslink}}","").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}", corpusid + '_search.js').replace("{{exports}}",templates["nongeoexports"]).replace("{{bibtex}}","")
             OGCAPIFeaturesExporter.generateOGCAPIFeaturesPages(outpath,self.deploypath,featurecollectionspaths,prefixnamespace,self.ogcapifeatures,True)
             indexhtml+= "<p>This page shows feature collections present in the linked open data export</p>"
@@ -1334,7 +1334,7 @@ class OntDocGeneration:
                 if foundlabel==None or foundlabel=="":
                     foundlabel=DocUtils.shortenURI(str(subject))
                 f.write(self.replaceStandardVariables(templates["htmltemplate"],subject,checkdepth,"false").replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{baseurl}}",baseurl).replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{toptitle}}", foundlabel).replace(
-                    "{{startscriptpath}}", startscriptlink).replace("{{bibtex}}",itembibtex).replace("{{vowlpath}}", vowlresultlink).replace("{{proprelationpath}}", proprelationslink).replace("{{stylepath}}", csslink).replace("{{title}}",
+                    "{{startscriptpath}}", startscriptlink).replace("{{epsgdefspath}}",epsgdefslink).replace("{{bibtex}}",itembibtex).replace("{{vowlpath}}", vowlresultlink).replace("{{proprelationpath}}", proprelationslink).replace("{{stylepath}}", csslink).replace("{{title}}",
                                                                                                 "<a href=\"" + str(subject) + "\">" + str(foundlabel) + "</a>").replace(
                     "{{baseurl}}", baseurl).replace("{{tablecontent}}", tablecontents).replace("{{description}}","").replace(
                     "{{scriptfolderpath}}", searchfilelink).replace("{{classtreefolderpath}}", classtreelink).replace("{{exports}}",myexports).replace("{{nonnslink}}",str(nonnslink)).replace("{{subjectencoded}}",urllib.parse.quote(str(subject))))
