@@ -2166,7 +2166,7 @@ var relativedepth={{relativedepth}}</script><body><div id="header">{{logo}}<h1 i
 
     "htmltabletemplate":"""<div style="overflow-x:auto;"><table border=1 width=100% class=description><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>{{tablecontent}}</tbody></table></div>""",
 
-    "footer":"""<div id="footer"><div class="container-fluid">{{license}}{{bibtex}}{{stats}}</div></div></body><script>$(document).ready(function(){setSVGDimensions()})</script></html>""",
+    "footer":"""<div id="footer"><div class="container-fluid">{{apis}}{{license}}{{bibtex}}{{stats}}</div></div></body><script>$(document).ready(function(){setSVGDimensions()})</script></html>""",
 
     "licensetemplate":"""""",
     "chartviewtemplate":"""<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
