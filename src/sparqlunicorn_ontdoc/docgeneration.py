@@ -1800,10 +1800,22 @@ class OntDocGeneration:
                 if metadatatablecontentcounter >= 0:
                     f.write("<h5>Metadata</h5>")
                     f.write(templates["htmltabletemplate"].replace("{{tablecontent}}", metadatatablecontents))
-                f.write(
-                    self.replaceStandardVariables(templates["footer"], "", checkdepth, "false").replace("{{exports}}",
-                                                                                                        myexports).replace(
-                        "{{license}}", curlicense).replace("{{bibtex}}", "").replace("{{stats}}", ""))
+                tempfoot=self.replaceStandardVariables(templates["footer"], "", checkdepth, "false").replace("{{exports}}",
+                                                                                                    myexports).replace(
+                    "{{license}}", curlicense).replace("{{bibtex}}", "").replace("{{stats}}", "")
+                tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.ogcapifeatures, self.iiif, self.ckan],
+                                                            [
+                                                                "<a href=\"" + str(
+                                                                    self.deploypath) + "/sparql.html?endpoint=" + str(
+                                                                    self.deploypath) + "\">SPARQL</a>",
+                                                                "<a href=\"" + str(
+                                                                    self.deploypath) + "/api/api.html\">OGC API Features</a>",
+                                                                "<a href=\"" + str(
+                                                                    self.deploypath) + "/iiif/\">IIIF</a>",
+                                                                "<a href=\"" + str(
+                                                                    self.deploypath) + "/api/v3/\">CKAN</a>"
+                                                            ], "{{apis}}")
+                f.write(tempfoot)
                 f.close()
         except Exception as inst:
             print("Could not write " + str(completesavepath))
