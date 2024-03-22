@@ -63,31 +63,31 @@ class OntDocGeneration:
                  exports=["json", "ttl"], datasettitle="", publisher="", publishingorg=""):
         self.prefixes = prefixes
         self.prefixnamespace = prefixnamespace
-        self.modtime = modtime
-        self.namespaceshort = prefixnsshort.replace("/", "")
-        self.outpath = outpath
-        self.exports = exports
-        self.datasettitle = datasettitle
-        self.logoname = logoname
-        self.ckan = ckan
-        self.solidexport = solidexport
-        self.has3d = False
-        self.repository = repository
-        self.publisher = publisher
-        self.publishingorg = publishingorg
-        self.startconcept = startconcept
-        self.createVOWL = createVOWL
-        self.ogcapifeatures = ogcapifeatures
-        self.iiif = iiif
-        self.imagemetadata = imagemetadata
-        self.localOptimized = localOptimized
-        self.geocache = {}
-        self.deploypath = deploypath
-        self.generatePagesForNonNS = generatePagesForNonNS
-        self.geocollectionspaths = []
-        self.metadatatable = metadatatable
-        self.templatename = templatename
-        # if os.path.exists("ontdocscript"):
+        self.modtime=modtime
+        self.namespaceshort = prefixnsshort.replace("/","")
+        self.outpath=outpath
+        self.exports=exports
+        self.datasettitle=str(datasettitle).replace(" ","_")
+        self.logoname=logoname
+        self.ckan=ckan
+        self.solidexport=solidexport
+        self.has3d=False
+        self.repository=repository
+        self.publisher=publisher
+        self.publishingorg=publishingorg
+        self.startconcept=startconcept
+        self.createVOWL=createVOWL
+        self.ogcapifeatures=ogcapifeatures
+        self.iiif=iiif
+        self.imagemetadata=imagemetadata
+        self.localOptimized=localOptimized
+        self.geocache={}
+        self.deploypath=deploypath
+        self.generatePagesForNonNS=generatePagesForNonNS
+        self.geocollectionspaths=[]
+        self.metadatatable=metadatatable
+        self.templatename=templatename
+        #if os.path.exists("ontdocscript"):
         #    templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "ontdocscript/resources/html/"))
         # else:
         #    templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
@@ -245,11 +245,11 @@ class OntDocGeneration:
             .replace("{{logo}}", self.logoname)
         return template
 
-    def generateOntDocForNameSpace(self, prefixnamespace, dataformat="HTML"):
-        outpath = self.outpath
-        corpusid = self.namespaceshort.replace("#", "")
-        if self.datasettitle == None or self.datasettitle == "":
-            self.datasettitle = corpusid + "_dataset"
+    def generateOntDocForNameSpace(self, prefixnamespace,dataformat="HTML"):
+        outpath=self.outpath
+        corpusid=self.namespaceshort.replace("#","")
+        if self.datasettitle==None or self.datasettitle=="":
+            self.datasettitle=corpusid.replace(" ","_")+"_dataset"
         if not os.path.isdir(outpath):
             os.mkdir(outpath)
         labeltouri = {}
@@ -409,7 +409,7 @@ class OntDocGeneration:
         self.graph += voidgraph["graph"]
         subjectstorender = voidgraph["subjects"]
         with open(outpath + "style.css", 'w', encoding='utf-8') as f:
-            f.write(templates["stylesheet"])
+            f.write(templates["style"])
             f.close()
         with open(outpath + "startscripts.js", 'w', encoding='utf-8') as f:
             f.write(templates["startscripts"].replace("{{baseurl}}", prefixnamespace))
@@ -634,8 +634,8 @@ class OntDocGeneration:
                     f.close()
         if "layouts" in templates:
             for template in templates["layouts"]:
-                if template != "main":
-                    templates["layouts"][template] = TemplateUtils.resolveIncludes(template, templates)
+                if template!="main":
+                    templates["layouts"][template]=TemplateUtils.resolveIncludes(template,templates)
         if "sparqltemplate" in templates:
             sparqlhtml = self.replaceStandardVariables(templates["htmltemplate"], "", "0", "false")
             sparqlhtml = sparqlhtml.replace("{{iconprefixx}}", ("icons/" if self.offlinecompat else "")).replace(
@@ -1609,28 +1609,15 @@ class OntDocGeneration:
                 if geojsonrep != None:
                     myexports = templates["geoexports"]
                 else:
-                    myexports = templates["nongeoexports"]
-                relpath = DocUtils.generateRelativePathFromGivenDepth(checkdepth)
-                if foundlabel == None or foundlabel == "":
-                    foundlabel = DocUtils.shortenURI(str(subject))
-                f.write(self.replaceStandardVariables(templates["htmltemplate"], subject, checkdepth, "false").replace(
-                    "{{iconprefixx}}", (relpath + "icons/" if self.offlinecompat else "")).replace("{{baseurl}}",
-                                                                                                   baseurl).replace(
-                    "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace(
-                    "{{relativedepth}}", str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace(
-                    "{{toptitle}}", foundlabel).replace(
-                    "{{startscriptpath}}", startscriptlink).replace("{{bibtex}}", itembibtex).replace("{{vowlpath}}",
-                                                                                                      vowlresultlink).replace(
-                    "{{proprelationpath}}", proprelationslink).replace("{{stylepath}}", csslink).replace("{{title}}",
-                                                                                                         "<a href=\"" + str(
-                                                                                                             subject) + "\">" + str(
-                                                                                                             foundlabel) + "</a>").replace(
-                    "{{baseurl}}", baseurl).replace("{{tablecontent}}", tablecontents).replace("{{description}}",
-                                                                                               "").replace(
-                    "{{scriptfolderpath}}", searchfilelink).replace("{{classtreefolderpath}}", classtreelink).replace(
-                    "{{exports}}", myexports).replace("{{nonnslink}}", str(nonnslink)).replace("{{subjectencoded}}",
-                                                                                               urllib.parse.quote(
-                                                                                                   str(subject))))
+                    myexports=templates["nongeoexports"]
+                relpath=DocUtils.generateRelativePathFromGivenDepth(checkdepth)
+                if foundlabel==None or foundlabel=="":
+                    foundlabel=DocUtils.shortenURI(str(subject))
+                f.write(self.replaceStandardVariables(templates["htmltemplate"],subject,checkdepth,"false").replace("{{iconprefixx}}",(relpath+"icons/" if self.offlinecompat else "")).replace("{{baseurl}}",baseurl).replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace("{{relativedepth}}",str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace("{{toptitle}}", foundlabel).replace(
+                    "{{startscriptpath}}", startscriptlink).replace("{{epsgdefspath}}",epsgdefslink).replace("{{bibtex}}",itembibtex).replace("{{vowlpath}}", vowlresultlink).replace("{{proprelationpath}}", proprelationslink).replace("{{stylepath}}", csslink).replace("{{title}}",
+                                                                                                "<a href=\"" + str(subject) + "\">" + str(foundlabel) + "</a>").replace(
+                    "{{baseurl}}", baseurl).replace("{{tablecontent}}", tablecontents).replace("{{description}}","").replace(
+                    "{{scriptfolderpath}}", searchfilelink).replace("{{classtreefolderpath}}", classtreelink).replace("{{exports}}",myexports).replace("{{nonnslink}}",str(nonnslink)).replace("{{subjectencoded}}",urllib.parse.quote(str(subject))))
                 for comm in comment:
                     f.write(templates["htmlcommenttemplate"].replace("{{comment}}",
                                                                      DocUtils.shortenURI(comm) + ":" + comment[comm]))
@@ -1927,18 +1914,19 @@ def main():
                     dataexports.append(ex)
         elif expo not in dataexports:
             dataexports.append(expo)
-    print("EXPORTS: " + str(dataexports))
-    if args.templatepath != None:
-        templatepath = args.templatepath
+    print("EXPORTS: "+str(dataexports))
+    print(os.listdir(os.getcwd()))
+    if args.templatepath!=None:
+        templatepath=args.templatepath
         if templatepath.startswith("http") and templatepath.endswith(".zip"):
             with urlopen(templatepath) as zipresp:
                 with ZipFile(BytesIO(zipresp.read())) as zfile:
                     subfoldername = zfile.namelist()[0][0:zfile.namelist()[0].rfind('/')]
-                    zfile.extractall('mydownloadedtemplate/')
-                    templatepath = "resources/html/" + subfoldername
+                    zfile.extractall('ontdocscript/src/sparqlunicorn_ontdoc/resources/html/')
+                    templatepath = "ontdocscript/src/sparqlunicorn_ontdoc/resources/html/" + subfoldername
                     if subfoldername.endswith("/"):
                         subfoldername = subfoldername[0:-1]
-                    templatepath = "resources/html/" + subfoldername[0:subfoldername.rfind('/') + 1]
+                    templatepath = "ontdocscript/src/sparqlunicorn_ontdoc/resources/html/" + subfoldername[0:subfoldername.rfind('/') + 1]
                     args.templatename = subfoldername
                     if templatepath.endswith("/"):
                         templatepath = templatepath[0:-1]
