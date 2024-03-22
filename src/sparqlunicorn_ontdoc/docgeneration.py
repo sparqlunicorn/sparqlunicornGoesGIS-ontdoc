@@ -625,7 +625,7 @@ class OntDocGeneration:
                                                                 "<a href=\"" + str(
                                                                     self.deploypath) + "/iiif/\">IIIF</a>",
                                                                 "<a href=\"" + str(
-                                                                    self.deploypath) + "/api/v3/\">CKAN</a>"
+                                                                    self.deploypath) + "/api/3/\">CKAN</a>"
                                                             ], "{{apis}}")
                 indexhtml+=tempfoot
                 # print(path)
@@ -664,7 +664,7 @@ class OntDocGeneration:
                                                             "<a href=\"" + str(
                                                                 self.deploypath) + "/api/api.html\">[OGC API Features]</a>&nbsp;",
                                                             "<a href=\"" + str(self.deploypath) + "/iiif/\">[IIIF]</a>&nbsp;",
-                                                            "<a href=\"" + str(self.deploypath) + "/api/v3/\">CKAN</a>"
+                                                            "<a href=\"" + str(self.deploypath) + "/api/3/\">CKAN</a>"
                                                         ], "{{apis}}")
             sparqlhtml += tempfoot
             with open(outpath + "sparql.html", 'w', encoding='utf-8') as f:
@@ -737,7 +737,7 @@ class OntDocGeneration:
                                                             "<a href=\"" + str(
                                                                 self.deploypath) + "/api/api.html\">OGC API Features</a>",
                                                             "<a href=\"" + str(self.deploypath) + "/iiif/\">IIIF</a>",
-                                                            "<a href=\"" + str(self.deploypath) + "/api/v3/\">CKAN</a>"
+                                                            "<a href=\"" + str(self.deploypath) + "/api/3/\">CKAN</a>"
                                                         ], "{{apis}}")
             indexhtml+=tempfoot
             with open(outpath + "featurecollections.html", 'w', encoding='utf-8') as f:
@@ -1813,7 +1813,7 @@ class OntDocGeneration:
                                                                 "<a href=\"" + str(
                                                                     self.deploypath) + "/iiif/\">IIIF</a>",
                                                                 "<a href=\"" + str(
-                                                                    self.deploypath) + "/api/v3/\">CKAN</a>"
+                                                                    self.deploypath) + "/api/3/\">CKAN</a>"
                                                             ], "{{apis}}")
                 f.write(tempfoot)
                 f.close()
