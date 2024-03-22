@@ -658,12 +658,12 @@ class OntDocGeneration:
                                                                                              self.voidstatshtml)
             tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.ogcapifeatures, self.iiif, self.ckan],
                                                         [
-                                                            "<a href=\"" + str(
+                                                            "APIs: <a href=\"" + str(
                                                                 self.deploypath) + "/sparql.html?endpoint=" + str(
-                                                                self.deploypath) + "\">SPARQL</a>",
+                                                                self.deploypath) + "\">[SPARQL]</a>&nbsp;",
                                                             "<a href=\"" + str(
-                                                                self.deploypath) + "/api/api.html\">OGC API Features</a>",
-                                                            "<a href=\"" + str(self.deploypath) + "/iiif/\">IIIF</a>",
+                                                                self.deploypath) + "/api/api.html\">[OGC API Features]</a>&nbsp;",
+                                                            "<a href=\"" + str(self.deploypath) + "/iiif/\">[IIIF]</a>&nbsp;",
                                                             "<a href=\"" + str(self.deploypath) + "/api/v3/\">CKAN</a>"
                                                         ], "{{apis}}")
             sparqlhtml += tempfoot
