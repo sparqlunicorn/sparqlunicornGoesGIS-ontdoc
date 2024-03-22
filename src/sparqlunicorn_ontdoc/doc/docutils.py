@@ -210,6 +210,22 @@ class DocUtils:
         return rellink
 
     @staticmethod
+    def conditionalArrayReplace(string,conds,replace,what):
+        counter=0
+        result=""
+        for cond in conds:
+            if cond:
+                result+=replace[counter]
+            counter+=1
+        return string.replace(what,result)
+
+    @staticmethod
+    def conditionalReplace(string,cond,what,replace):
+        if cond:
+            return string.replace(what,replace)
+        return string
+
+    @staticmethod
     def resolveOWLImports(graph):
         for obj in graph.objects(None,"http://www.w3.org/2002/07/owl#imports"):
             try:

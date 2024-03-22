@@ -610,11 +610,24 @@ class OntDocGeneration:
                                 item["instancecount"]) + "</td>" + exitem + "</tr>"
                 indexhtml += "</tbody></table><script property=\"http://purl.org/dc/terms/modified\" content=\"" + str(
                     self.modtime) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#dateTime\">$('#indextable').DataTable();</script>"
-                indexhtml += self.replaceStandardVariables(templates["footer"], "", checkdepth,
+                tempfoot = self.replaceStandardVariables(templates["footer"], "", checkdepth,
                                                            str(nslink == prefixnamespace).lower()).replace(
                     "{{license}}", curlicense).replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}",
                                                                                                           "").replace(
                     "{{stats}}", self.voidstatshtml)
+                tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.ogcapifeatures, self.iiif, self.ckan],
+                                                            [
+                                                                "<a href=\"" + str(
+                                                                    self.deploypath) + "/sparql.html?endpoint=" + str(
+                                                                    self.deploypath) + "\">SPARQL</a>",
+                                                                "<a href=\"" + str(
+                                                                    self.deploypath) + "/api/api.html\">OGC API Features</a>",
+                                                                "<a href=\"" + str(
+                                                                    self.deploypath) + "/iiif/\">IIIF</a>",
+                                                                "<a href=\"" + str(
+                                                                    self.deploypath) + "/api/v3/\">CKAN</a>"
+                                                            ], "{{apis}}")
+                indexhtml+=tempfoot
                 # print(path)
                 with open(path + "index.html", 'w', encoding='utf-8') as f:
                     f.write(indexhtml)
@@ -639,10 +652,21 @@ class OntDocGeneration:
                                                                                                           "").replace(
                 "{{proprelationpath}}", "proprelations.js")
             sparqlhtml += templates["sparqltemplate"]
-            sparqlhtml += self.replaceStandardVariables(templates["footer"], "", "0", "false").replace("{{license}}",
+            tempfoot = self.replaceStandardVariables(templates["footer"], "", "0", "false").replace("{{license}}",
                                                                                                        curlicense).replace(
                 "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "").replace("{{stats}}",
                                                                                              self.voidstatshtml)
+            tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.ogcapifeatures, self.iiif, self.ckan],
+                                                        [
+                                                            "<a href=\"" + str(
+                                                                self.deploypath) + "/sparql.html?endpoint=" + str(
+                                                                self.deploypath) + "\">SPARQL</a>",
+                                                            "<a href=\"" + str(
+                                                                self.deploypath) + "/api/api.html\">OGC API Features</a>",
+                                                            "<a href=\"" + str(self.deploypath) + "/iiif/\">IIIF</a>",
+                                                            "<a href=\"" + str(self.deploypath) + "/api/v3/\">CKAN</a>"
+                                                        ], "{{apis}}")
+            sparqlhtml += tempfoot
             with open(outpath + "sparqltemplate.html", 'w', encoding='utf-8') as f:
                 f.write(sparqlhtml)
                 f.close()
@@ -701,10 +725,21 @@ class OntDocGeneration:
                                                                 DocUtils.generateRelativePathFromGivenDepth(0)).replace(
                 "{{baselayers}}",
                 json.dumps(DocConfig.baselayers).replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{dateatt}}", ""))
-            indexhtml += self.replaceStandardVariables(templates["footer"], "", "0", "true").replace("{{license}}",
+            tempfoot = self.replaceStandardVariables(templates["footer"], "", "0", "true").replace("{{license}}",
                                                                                                      curlicense).replace(
                 "{{subject}}", "").replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "").replace(
                 "{{stats}}", self.voidstatshtml)
+            tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.ogcapifeatures, self.iiif, self.ckan],
+                                                        [
+                                                            "<a href=\"" + str(
+                                                                self.deploypath) + "/sparql.html?endpoint=" + str(
+                                                                self.deploypath) + "\">SPARQL</a>",
+                                                            "<a href=\"" + str(
+                                                                self.deploypath) + "/api/api.html\">OGC API Features</a>",
+                                                            "<a href=\"" + str(self.deploypath) + "/iiif/\">IIIF</a>",
+                                                            "<a href=\"" + str(self.deploypath) + "/api/v3/\">CKAN</a>"
+                                                        ], "{{apis}}")
+            indexhtml+=tempfoot
             with open(outpath + "featurecollections.html", 'w', encoding='utf-8') as f:
                 f.write(indexhtml)
                 f.close()
