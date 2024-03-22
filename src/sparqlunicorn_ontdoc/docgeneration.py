@@ -667,7 +667,7 @@ class OntDocGeneration:
                                                             "<a href=\"" + str(self.deploypath) + "/api/v3/\">CKAN</a>"
                                                         ], "{{apis}}")
             sparqlhtml += tempfoot
-            with open(outpath + "sparqltemplate.html", 'w', encoding='utf-8') as f:
+            with open(outpath + "sparql.html", 'w', encoding='utf-8') as f:
                 f.write(sparqlhtml)
                 f.close()
         relpath = DocUtils.generateRelativePathFromGivenDepth(0)
