@@ -57,8 +57,7 @@ templates = DocDefaults.templates
 class OntDocGeneration:
 
     def __init__(self, prefixes, modtime, prefixnamespace, prefixnsshort, license, labellang, outpath, graph,
-                 createIndexPages, createColl, metadatatable, generatePagesForNonNS, createVOWL, ogcapifeatures, iiif,
-                 ckan=True, solidexport=True, localOptimized=False, imagemetadata=None, startconcept=None,
+                 createIndexPages, createColl, metadatatable, generatePagesForNonNS, createVOWL, apis, localOptimized=False, imagemetadata=None, startconcept=None,
                  repository="", deploypath="", logoname="", templatename="default", offlinecompat=False,
                  exports=["json", "ttl"], datasettitle="", publisher="", publishingorg=""):
         self.prefixes = prefixes
@@ -69,16 +68,13 @@ class OntDocGeneration:
         self.exports=exports
         self.datasettitle=str(datasettitle).replace(" ","_")
         self.logoname=logoname
-        self.ckan=ckan
-        self.solidexport=solidexport
+        self.apis=apis
         self.has3d=False
         self.repository=repository
         self.publisher=publisher
         self.publishingorg=publishingorg
         self.startconcept=startconcept
         self.createVOWL=createVOWL
-        self.ogcapifeatures=ogcapifeatures
-        self.iiif=iiif
         self.imagemetadata=imagemetadata
         self.localOptimized=localOptimized
         self.geocache={}
@@ -482,7 +478,7 @@ class OntDocGeneration:
             with open(outpath + "/js/nexus.js", 'w', encoding='utf-8') as f:
                 f.write(templates["nexus"])
                 f.close()
-        if self.iiif:
+        if self.apis["iiif"]:
             IIIFAPIExporter.generateIIIFAnnotations(outpath, imagetoURI)
         if self.createIndexPages:
             indpcounter = 0
@@ -509,7 +505,7 @@ class OntDocGeneration:
                     if nslink in sub:
                         for tup in self.graph.predicate_objects(sub):
                             subgraph.add((sub, tup[0], tup[1]))
-                            if self.solidexport:
+                            if self.apis["solidexport"]:
                                 subgraph.add((URIRef(sub.replace("nslink", "")),
                                               URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
                                               URIRef("http://www.w3.org/ns/ldp#Container")))
@@ -615,7 +611,7 @@ class OntDocGeneration:
                     "{{license}}", curlicense).replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}",
                                                                                                           "").replace(
                     "{{stats}}", self.voidstatshtml)
-                tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.ogcapifeatures, self.iiif, self.ckan],
+                tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.apis["ogcapifeatures"], self.apis["iiif"], self.apis["ckan"]],
                                                             [
                                                                 "<a href=\"" + str(
                                                                     self.deploypath) + "/sparql.html?endpoint=" + str(
@@ -656,7 +652,7 @@ class OntDocGeneration:
                                                                                                        curlicense).replace(
                 "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "").replace("{{stats}}",
                                                                                              self.voidstatshtml)
-            tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.ogcapifeatures, self.iiif, self.ckan],
+            tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.apis["ogcapifeatures"], self.apis["iiif"], self.apis["ckan"]],
                                                         [
                                                             "APIs: <a href=\"" + str(
                                                                 self.deploypath) + "/sparql.html?endpoint=" + str(
@@ -696,10 +692,10 @@ class OntDocGeneration:
                                                                              templates["nongeoexports"]).replace(
                                                   "{{bibtex}}", "").replace("{{stats}}", self.voidstatshtml),
                                               outpath + "imagegrid.html")
-        if len(featurecollectionspaths) > 0 and self.ckan:
+        if len(featurecollectionspaths) > 0 and self.apis["ckan"]:
             CKANExporter.generateCKANCollection(outpath, self.deploypath, featurecollectionspaths, tree["core"]["data"],
                                                 self.license)
-        if self.solidexport:
+        if self.apis["solidexport"]:
             SolidExporter.createSolidSettings(self.graph, outpath, self.deploypath, self.publisher, self.datasettitle,
                                               tree["core"]["data"])
         if len(featurecollectionspaths) > 0:
@@ -717,7 +713,7 @@ class OntDocGeneration:
                                                                             corpusid + '_search.js').replace(
                 "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "")
             OGCAPIFeaturesExporter.generateOGCAPIFeaturesPages(outpath, self.deploypath, featurecollectionspaths,
-                                                               prefixnamespace, self.ogcapifeatures, True)
+                                                               prefixnamespace, self.apis["ogcapifeatures"], True)
             indexhtml += "<p>This page shows feature collections present in the linked open data export</p>"
             indexhtml += "<script src=\"features.js\"></script>"
             indexhtml += templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace(
@@ -729,7 +725,7 @@ class OntDocGeneration:
                                                                                                      curlicense).replace(
                 "{{subject}}", "").replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "").replace(
                 "{{stats}}", self.voidstatshtml)
-            tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.ogcapifeatures, self.iiif, self.ckan],
+            tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.apis["ogcapifeatures"], self.apis["iiif"], self.apis["ckan"]],
                                                         [
                                                             "<a href=\"" + str(
                                                                 self.deploypath) + "/sparql.html?endpoint=" + str(
@@ -1570,7 +1566,7 @@ class OntDocGeneration:
                 tablecontents += "</tr>"
         if self.licenseuri != None:
             ttlf.add((subject, URIRef("http://purl.org/dc/elements/1.1/license"), URIRef(self.licenseuri)))
-        if self.solidexport != None:
+        if self.apis["solidexport"] != None:
             ttlf.add((subject, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
                       URIRef("http://www.w3.org/ns/ldp#Resource")))
             ttlf.add((subject, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
@@ -1624,7 +1620,7 @@ class OntDocGeneration:
                 # for fval in foundvals:
                 #    f.write(templates["htmlcommenttemplate"].replace("{{comment}}", "<b>Value "+ DocUtils.shortenURI(str(fval[0]))+": <mark>" + str(fval[1]) + "</mark></b>"))
                 if len(foundmedia["mesh"]) > 0 and len(image3dannos) > 0:
-                    if self.iiif:
+                    if self.apis["iiif"]:
                         iiifmanifestpaths["default"].append(
                             IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
                                                                  foundmedia["mesh"], image3dannos, annobodies,
@@ -1640,7 +1636,7 @@ class OntDocGeneration:
                                                                                            checkdepth)))
                 elif len(foundmedia["mesh"]) > 0 and len(image3dannos) == 0:
                     print("Found 3D Model: " + str(foundmedia["mesh"]))
-                    if self.iiif:
+                    if self.apis["iiif"]:
                         iiifmanifestpaths["default"].append(
                             IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
                                                                  foundmedia["mesh"], image3dannos, annobodies,
@@ -1675,7 +1671,7 @@ class OntDocGeneration:
                 if len(foundmedia["image"]) > 3:
                     carousel = "carousel-item active"
                     f.write(templates["imagecarouselheader"])
-                # if self.iiif and len(annobodies)>0:
+                # if self.apis["iiif"] and len(annobodies)>0:
                 #    if target not in imagetoURI:
                 #        imagetoURI[target]={"uri":{str(subject):{"bodies":[]}}}
                 #    if str(subject) not in imagetoURI[target]:
@@ -1683,7 +1679,7 @@ class OntDocGeneration:
                 #    if str(subject) not in imagetoURI[target]:
                 #        imagetoURI[target]["uri"][str(subject)]["bodies"]+=annobodies
                 if len(imageannos) > 0 and len(foundmedia["image"]) > 0:
-                    if self.iiif:
+                    if self.apis["iiif"]:
                         iiifmanifestpaths["default"].append(
                             IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
                                                                  foundmedia["image"], imageannos, annobodies,
@@ -1708,7 +1704,7 @@ class OntDocGeneration:
                         if len(foundmedia["image"]) > 3:
                             carousel = "carousel-item"
                 elif len(foundmedia["image"]) > 0:
-                    if self.iiif:
+                    if self.apis["iiif"]:
                         iiifmanifestpaths["default"].append(
                             IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
                                                                  foundmedia["image"], imageannos, annobodies,
@@ -1749,7 +1745,7 @@ class OntDocGeneration:
                                 f.write("<span style=\"font-weight:bold\" class=\"textanno\" start=\"" + str(
                                     textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
                                     textanno["exact"]) + "\"><mark>" + str(textanno["exact"]) + "</mark></span>")
-                if len(foundmedia["audio"]) > 0 and self.iiif:
+                if len(foundmedia["audio"]) > 0 and self.apis["iiif"]:
                     iiifmanifestpaths["default"].append(
                         IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath, foundmedia["audio"],
                                                              None, None, str(subject), self.prefixnamespace, imagetoURI,
@@ -1758,7 +1754,7 @@ class OntDocGeneration:
                 for audio in foundmedia["audio"]:
                     imagetoURI[audio] = {"uri": str(subject)}
                     f.write(templates["audiotemplate"].replace("{{audio}}", str(audio)))
-                if len(foundmedia["video"]) > 0 and self.iiif:
+                if len(foundmedia["video"]) > 0 and self.apis["iiif"]:
                     iiifmanifestpaths["default"].append(
                         IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath, foundmedia["video"],
                                                              None, None, str(subject), self.prefixnamespace, imagetoURI,
@@ -1803,7 +1799,7 @@ class OntDocGeneration:
                 tempfoot=self.replaceStandardVariables(templates["footer"], "", checkdepth, "false").replace("{{exports}}",
                                                                                                     myexports).replace(
                     "{{license}}", curlicense).replace("{{bibtex}}", "").replace("{{stats}}", "")
-                tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.ogcapifeatures, self.iiif, self.ckan],
+                tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.apis["ogcapifeatures"], self.apis["iiif"], self.apis["ckan"]],
                                                             [
                                                                 "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(checkdepth) + "/sparql.html?endpoint=" + str(
                                                                     self.deploypath) + "\">[SPARQL]</a>&nbsp;",
@@ -1875,6 +1871,8 @@ def main():
                         type=lambda x: (str(x).lower() in ['true', '1', 'yes']))
     parser.add_argument("-ogc", "--ogcapifeatures", help="create ogc api features collections?", action="store",
                         default=False, type=lambda x: (str(x).lower() in ['true', '1', 'yes']))
+    parser.add_argument("-stac", "--stacapi", help="create stac api collections?", action="store", default=False,
+                        type=lambda x: (str(x).lower() in ['true', '1', 'yes']))
     parser.add_argument("-iiif", "--iiifmanifest", help="create iiif manifests?", action="store", default=True,
                         type=lambda x: (str(x).lower() in ['true', '1', 'yes']))
     parser.add_argument("-solid", "--solidexport", help="create solid pod deployment?", action="store", default=True,
@@ -1959,19 +1957,19 @@ def main():
                 else:
                     args.prefixns = pres
                 print("Detected " + args.prefixns + " as data namespace")
+            apis={"iiif":args.iiifmanifest,"ogcapifeatures":args.ogcapifeatures,"ckan":args.ckanapi,"solidexport":args.solidexport,"stac":args.stacapi}
             if fcounter < len(outpath):
                 docgen = OntDocGeneration(prefixes, modtime, args.prefixns, args.prefixnsshort, args.license,
                                           args.labellang, outpath[fcounter], g, args.createIndexPages,
                                           args.createCollections, args.metadatatable, args.nonnspages, args.createvowl,
-                                          args.ogcapifeatures, args.iiifmanifest, args.ckanapi, args.solidexport,
+                                          apis,
                                           args.localOptimized, args.imagemetadata, args.startconcept, args.repository,
                                           args.deploypath, args.logourl, args.templatename, args.offlinecompat,
                                           dataexports, args.datasettitle, args.publisher, args.publishingorg)
             else:
                 docgen = OntDocGeneration(prefixes, modtime, args.prefixns, args.prefixnsshort, args.license,
                                           args.labellang, outpath[-1], g, args.createIndexPages, args.createCollections,
-                                          args.metadatatable, args.nonnspages, args.createvowl, args.ogcapifeatures,
-                                          args.iiifmanifest, args.ckanapi, args.solidexport, args.localOptimized,
+                                          args.metadatatable, args.nonnspages, args.createvowl, apis, args.localOptimized,
                                           args.imagemetadata, args.startconcept, args.repository, args.deploypath,
                                           args.logourl, args.templatename, args.offlinecompat, dataexports,
                                           args.datasettitle, args.publisher, args.publishingorg)
