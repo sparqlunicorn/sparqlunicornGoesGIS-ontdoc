@@ -18,6 +18,7 @@ class OGCAPIFeaturesExporter:
                    "servers": [{"url": str(deploypath)}], "paths": {}}
         conformancejson = {"conformsTo": ["http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core",
                                           "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html",
+                                          "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30",
                                           "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson"]}
         if ogcapi:
             apijson["paths"]["/api"] = {

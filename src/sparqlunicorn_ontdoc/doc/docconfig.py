@@ -3,7 +3,7 @@ class DocConfig:
 
     rdfformats = ["ttl", "trix", "trig", "n3", "nquads", "nt", "xml"]
 
-    version="SPARQLing Unicorn QGIS Plugin OntDoc Script 0.17"
+    version="SPARQLing Unicorn QGIS Plugin OntDoc Script 0.18"
 
     versionurl="https://github.com/sparqlunicorn/sparqlunicornGoesGIS-ontdoc"
 
