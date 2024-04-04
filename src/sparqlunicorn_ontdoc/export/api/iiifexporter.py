@@ -254,5 +254,5 @@ class IIIFAPIExporter:
         f.write(apihtml)
         f.close()
         f = open(outpath + "/iiif/api.json", "w", encoding="utf-8")
-        f.write(apihtml)
+        f.write(apijson)
         f.close()
