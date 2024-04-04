@@ -79,9 +79,7 @@ class CKANExporter:
 
     @staticmethod
     def generateCKANCollection(outpath, deploypath, featurecollectionspaths,classtree,license="",version="3"):
-        ckanapihtml = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><metaname=\"description\" content=\"SwaggerUI\"/><title>SwaggerUI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css\" /></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js\" crossorigin></script><script>const swaggerUrl = \"" + str(
-            deploypath) + "/api/index.json\"; const apiUrl = \"" + str(
-            deploypath) + "/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
+        ckanapihtml = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><metaname=\"description\" content=\"SwaggerUI\"/><title>SwaggerUI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css\" /></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js\" crossorigin></script><script>const swaggerUrl = \"" + str(deploypath) + "/api/index.json\"; const apiUrl = \"" + str(deploypath) + "/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
         ckanopenapi = {"openapi": "3.0.1", "info": {"title": str(deploypath)+" CKAN API", "version": str(version)}, "paths": {}}
         if not os.path.exists(outpath + "/dataset/"):
             os.makedirs(outpath + "/dataset/")
@@ -151,7 +149,7 @@ class CKANExporter:
         f.write(json.dumps(ckanopenapi))
         f.close()
         f = open(outpath + "/api/"+str(version)+"/index.html", "w")
-        f.write(json.dumps(ckanapihtml))
+        f.write(ckanapihtml)
         f.close()
         f = open(outpath + "/api/"+str(version)+"/action/group_list/index.json", "w")
         if classtree!=None and len(classtree)>0:
