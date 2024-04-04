@@ -6,8 +6,8 @@ class ClassTreeUtils:
 
 
     @staticmethod
-    def getClassTree(graph, uritolabel, classidset, uritotreeitem,typeproperty,prefixes):
-        results = graph.query(self.preparedclassquery)
+    def getClassTree(graph, uritolabel, classidset, uritotreeitem,typeproperty,prefixes,preparedclassquery):
+        results = graph.query(preparedclassquery)
         ldcontext = {"@context": {
             "@version": 1.1,
             "foaf": "http://xmlns.com/foaf/0.1/",
@@ -58,8 +58,8 @@ class ClassTreeUtils:
                     ress[str(res["subject"])] = {"super": None, "label": res["label"]}
         # print(ress)
         for cls in ress:
-            for obj in graph.subjects(URIRef(self.typeproperty), URIRef(cls), True):
-                res = DocUtils.replaceNameSpacesInLabel(self.prefixes, str(obj))
+            for obj in graph.subjects(URIRef(typeproperty), URIRef(cls), True):
+                res = DocUtils.replaceNameSpacesInLabel(prefixes, str(obj))
                 if str(obj) in uritolabel:
                     restext = uritolabel[str(obj)]["label"] + " (" + DocUtils.shortenURI(str(obj)) + ")"
                     if res != None:
@@ -76,7 +76,7 @@ class ClassTreeUtils:
                     uritotreeitem[str(obj)] = []
                 uritotreeitem[str(obj)].append(result[-1])
                 # classidset.add(str(obj))
-            res = DocUtils.replaceNameSpacesInLabel(self.prefixes, str(cls))
+            res = DocUtils.replaceNameSpacesInLabel(prefixes, str(cls))
             if ress[cls]["super"] == None:
                 restext = DocUtils.shortenURI(str(cls))
                 if res != None:
@@ -103,7 +103,7 @@ class ClassTreeUtils:
                     uritotreeitem[cls][-1]["parent"] = ress[cls]["super"]
                 if str(ress[cls]["super"]) not in uritotreeitem:
                     uritotreeitem[str(ress[cls]["super"])] = []
-                    clsres = DocUtils.replaceNameSpacesInLabel(self.prefixes, str(ress[cls]["super"]))
+                    clsres = DocUtils.replaceNameSpacesInLabel(prefixes, str(ress[cls]["super"]))
                     if clsres != None:
                         theitem = {"id": str(ress[cls]["super"]), "parent": "#", "type": "class",
                                    "text": DocUtils.shortenURI(str(ress[cls]["super"])) + " (" + clsres["uri"] + ")",
