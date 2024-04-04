@@ -1035,7 +1035,7 @@ class OntDocGeneration:
                             break
                         if subjectstorender != None and item not in subjectstorender and baseurl in str(item):
                             postprocessing.add((item, URIRef(tup), subject))
-                        res = self.createHTMLTableValueEntry(subject, tup, item, None, graph,
+                        res = HTMLExporter.createHTMLTableValueEntry(subject, tup, item, None, graph,
                                                              baseurl, checkdepth, geojsonrep, foundmedia, imageannos,
                                                              textannos, image3dannos, annobodies, None, True, nonns,self.labellang,self.typeproperty,self.namespaceshort,self.generatePagesForNonNS,self.prefixes)
                         foundmedia = res["foundmedia"]
