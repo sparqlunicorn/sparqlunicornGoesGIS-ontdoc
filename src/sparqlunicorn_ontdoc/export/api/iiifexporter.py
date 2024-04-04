@@ -201,22 +201,24 @@ class IIIFAPIExporter:
                                                                                                 "example": None},
                                                                                             "example": None}}}}}
         apijson["paths"]["/iiif/{id}/manifest"] = {"get": {"tags": ["IIIF"],
-                                                        "summary": "Retrieves an IIIF manifest for a specific item",
-                                                        "description": "Retrieves an IIIF manifest for a specific item",
-                                                        "operationId": "iiif-manifestitem",
-                                                        "parameters": [{"in":"path","name":"id","description":"Item ID","required":True,"schema":{"type:string"}}],
-                                                        "responses": {
-                                                            "200": {
-                                                                "description": "Success",
-                                                                "content": {
-                                                                "application/json": {
-                                                                    "schema": {
-                                                                        "example": None},
-                                                                    "example": None},
-                                                                "text/json": {
-                                                                    "schema": {
-                                                                        "example": None},
-                                                                    "example": None}}}}}}
+                                                                                "summary": "Retrieves a IIIF manifest with a given ID",
+                                                                                "description": "Retrieves a IIIF manifest with a given ID",
+                                                                                "operationId": "iiif-manifest",
+                                                                                "parameters": [],
+                                                                                "responses": {
+                                                                                    "200": {
+                                                                                        "description": "Success",
+                                                                                        "content": {
+                                                                                            "text/plain": {
+                                                                                                "example": None}},
+                                                                                        "application/json": {
+                                                                                            "schema": {
+                                                                                                "example": None},
+                                                                                            "example": None},
+                                                                                        "text/json": {
+                                                                                            "schema": {
+                                                                                                "example": None},
+                                                                                            "example": None}}}}}
         if not os.path.exists(outpath + "/iiif/collection/"):
             os.makedirs(outpath + "/iiif/collection/")
         if os.path.exists(outpath + "/iiif/collection/iiifcoll.json"):
