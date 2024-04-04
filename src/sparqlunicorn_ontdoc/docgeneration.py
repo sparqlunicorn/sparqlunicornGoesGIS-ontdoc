@@ -24,6 +24,7 @@ print(os.path.dirname(os.path.realpath(__file__)))
 print(os.listdir(os.getcwd()))
 from datetime import datetime
 from doc.docutils import DocUtils
+from doc.classtreeutils import ClassTreeUtils
 from doc.docdefaults import DocDefaults
 from doc.docconfig import DocConfig
 from doc.templateutils import TemplateUtils
@@ -89,11 +90,11 @@ class OntDocGeneration:
         templates = TemplateUtils.resolveTemplate(templatename, templatepath)
         self.offlinecompat = offlinecompat
         if offlinecompat:
-            templates["htmltemplate"] = self.createOfflineCompatibleVersion(outpath, templates["htmltemplate"],
+            templates["htmltemplate"] = DocUtils.createOfflineCompatibleVersion(outpath, templates["htmltemplate"],
                                                                             templatepath, templatename)
-            templates["maptemplate"] = self.createOfflineCompatibleVersion(outpath, templates["maptemplate"],
+            templates["maptemplate"] = DocUtils.createOfflineCompatibleVersion(outpath, templates["maptemplate"],
                                                                            templatepath, templatename)
-            templates["sparqltemplate"] = self.createOfflineCompatibleVersion(outpath, templates["sparqltemplate"],
+            templates["sparqltemplate"] = DocUtils.createOfflineCompatibleVersion(outpath, templates["sparqltemplate"],
                                                                               templatepath, templatename)
         self.license = license
         self.licenseuri = None
@@ -143,61 +144,6 @@ class OntDocGeneration:
         # Print New Line on Complete
         if iteration == total:
             print()
-
-    def createOfflineCompatibleVersion(self, outpath, myhtmltemplate, templatepath, templatename):
-        if not os.path.isdir(outpath):
-            os.mkdir(outpath)
-        if not os.path.isdir(outpath + "/js"):
-            os.mkdir(outpath + "/js")
-        if not os.path.isdir(outpath + "/css"):
-            os.mkdir(outpath + "/css")
-        matched = re.findall(r'src="(http.*)"', myhtmltemplate)
-        for match in matched:
-            # download the library
-            if "</script>" in match:
-                for m in match.split("></script><script src="):
-                    m = m.replace("\"", "").replace("/>", "")
-                    m = m.replace(">", "")
-                    try:
-                        g = urllib.request.urlopen(m.replace("\"", ""))
-                        with open(outpath + str(os.sep) + "js" + str(os.sep) + m[m.rfind("/") + 1:], 'b+w') as f:
-                            f.write(g.read())
-                    except Exception as e:
-                        print(e)
-                        if os.path.exists(templatepath + "/" + templatename + "/js/lib/" + str(m[m.rfind("/") + 1:])):
-                            shutil.copy(templatepath + "/" + templatename + "/js/lib/" + str(m[m.rfind("/") + 1:]),
-                                        outpath + str(os.sep) + "js" + str(os.sep) + m[m.rfind("/") + 1:])
-                    myhtmltemplate = myhtmltemplate.replace(m, "{{relativepath}}js/" + m[m.rfind("/") + 1:])
-            else:
-                match = match.replace("\"", "")
-                try:
-                    g = urllib.request.urlopen(match.replace("\"", ""))
-                    with open(outpath + str(os.sep) + "js" + str(os.sep) + match[match.rfind("/") + 1:], 'b+w') as f:
-                        f.write(g.read())
-                except Exception as e:
-                    print(e)
-                    if os.path.exists(
-                            templatepath + "/" + templatename + "/js/lib/" + str(match[match.rfind("/") + 1:])):
-                        shutil.copy(templatepath + "/" + templatename + "/js/lib/" + str(match[match.rfind("/") + 1:]),
-                                    outpath + str(os.sep) + "js" + str(os.sep) + match[match.rfind("/") + 1:])
-                myhtmltemplate = myhtmltemplate.replace(match, "{{relativepath}}js/" + match[match.rfind("/") + 1:])
-        matched = re.findall(r'href="(http.*.css)"', myhtmltemplate)
-        for match in matched:
-            print(match.replace("\"", ""))
-            match = match.replace("\"", "").replace("/>", "")
-            match = match.replace(">", "")
-            try:
-                g = urllib.request.urlopen(match.replace("\"", ""))
-                with open(outpath + str(os.sep) + "css" + str(os.sep) + match[match.rfind("/") + 1:], 'b+w') as f:
-                    f.write(g.read())
-            except Exception as e:
-                if os.path.exists(templatepath + "/" + templatename + "/css/lib/" + str(match[match.rfind("/") + 1:])):
-                    shutil.copy(templatepath + "/" + templatename + "/css/lib/" + str(match[match.rfind("/") + 1:]),
-                                outpath + str(os.sep) + "css" + str(os.sep) + match[match.rfind("/") + 1:])
-            myhtmltemplate = myhtmltemplate.replace(match, "{{relativepath}}css/" + match[match.rfind("/") + 1:])
-        return myhtmltemplate
-
-
 
     def addAdditionalTriplesForInd(self, graph, ind, tobeaddedPerInd):
         for prop in tobeaddedPerInd:
@@ -448,7 +394,7 @@ class OntDocGeneration:
                 subtorenderlen = len(subjectstorender) + len(postprocessing)
                 self.updateProgressBar(subtorencounter, subtorenderlen, "Processing Subject URIs")
         self.checkGeoInstanceAssignment(uritotreeitem)
-        classlist = self.assignGeoClassesToTree(tree)
+        classlist = ClassTreeUtils.assignGeoClassesToTree(tree)
         if self.generatePagesForNonNS:
             labeltouri = self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, corpusid, outpath,
                                                              self.license, prefixnamespace, uritotreeitem, labeltouri)
@@ -936,38 +882,6 @@ class OntDocGeneration:
             classidset.add(str(cls))
         tree["core"]["data"] = result
         return tree
-
-    def assignGeoClassesToTree(self, tree):
-        classlist = {}
-        for item in tree["core"]["data"]:
-            if item["type"] == "class":
-                classlist[item["id"]] = {"items": 0, "geoitems": 0, "item": item}
-        for item in tree["core"]["data"]:
-            if item["type"] == "instance" and item["parent"] in classlist:
-                classlist[item["parent"]]["items"] += 1
-            elif (item["type"] == "geoinstance" or item["type"] == "featurecollection" or item[
-                "type"] == "geocollection") and item["parent"] in classlist:
-                classlist[item["parent"]]["items"] += 1
-                classlist[item["parent"]]["geoitems"] += 1
-        for item in classlist:
-            if classlist[item]["items"] > 0:
-                if classlist[item]["item"]["text"].endswith("]"):
-                    classlist[item]["item"]["text"] = classlist[item]["item"]["text"][
-                                                      0:classlist[item]["item"]["text"].rfind("[") - 1] + " [" + str(
-                        classlist[item]["items"]) + "]"
-                else:
-                    classlist[item]["item"]["text"] = classlist[item]["item"]["text"] + " [" + str(
-                        classlist[item]["items"]) + "]"
-            if item in DocConfig.collectionclasses:
-                classlist[item]["item"]["type"] = "collectionclass"
-            elif classlist[item]["items"] == classlist[item]["geoitems"] and classlist[item]["items"] > 0 and \
-                    classlist[item]["geoitems"] > 0:
-                classlist[item]["item"]["type"] = "geoclass"
-            elif classlist[item]["items"] > classlist[item]["geoitems"] and classlist[item]["geoitems"] > 0:
-                classlist[item]["item"]["type"] = "halfgeoclass"
-            else:
-                classlist[item]["item"]["type"] = "class"
-        return classlist
 
     def checkGeoInstanceAssignment(self, uritotreeitem):
         for uri in uritotreeitem:

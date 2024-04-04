@@ -1,5 +1,5 @@
 from doc.docutils import DocUtils
-from doc.docutils import LiteralUtils
+from doc.literalutils import LiteralUtils
 from doc.docutils import DocConfig
 from export.pages.bibpage import BibPage
 from export.pages.owltimepage import OWLTimePage

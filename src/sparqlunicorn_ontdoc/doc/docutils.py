@@ -1,8 +1,8 @@
 from rdflib import URIRef, Literal
 import os
-import json
-import shapely
-import traceback
+import re
+import shutil
+import urllib.request
 
 from doc.docconfig import DocConfig
 
@@ -208,6 +208,60 @@ class DocUtils:
         for i in range(0, checkdepth):
             rellink = "../" + rellink
         return rellink
+
+    @staticmethod
+    def createOfflineCompatibleVersion(outpath, myhtmltemplate, templatepath, templatename):
+        if not os.path.isdir(outpath):
+            os.mkdir(outpath)
+        if not os.path.isdir(outpath + "/js"):
+            os.mkdir(outpath + "/js")
+        if not os.path.isdir(outpath + "/css"):
+            os.mkdir(outpath + "/css")
+        matched = re.findall(r'src="(http.*)"', myhtmltemplate)
+        for match in matched:
+            # download the library
+            if "</script>" in match:
+                for m in match.split("></script><script src="):
+                    m = m.replace("\"", "").replace("/>", "")
+                    m = m.replace(">", "")
+                    try:
+                        g = urllib.request.urlopen(m.replace("\"", ""))
+                        with open(outpath + str(os.sep) + "js" + str(os.sep) + m[m.rfind("/") + 1:], 'b+w') as f:
+                            f.write(g.read())
+                    except Exception as e:
+                        print(e)
+                        if os.path.exists(templatepath + "/" + templatename + "/js/lib/" + str(m[m.rfind("/") + 1:])):
+                            shutil.copy(templatepath + "/" + templatename + "/js/lib/" + str(m[m.rfind("/") + 1:]),
+                                        outpath + str(os.sep) + "js" + str(os.sep) + m[m.rfind("/") + 1:])
+                    myhtmltemplate = myhtmltemplate.replace(m, "{{relativepath}}js/" + m[m.rfind("/") + 1:])
+            else:
+                match = match.replace("\"", "")
+                try:
+                    g = urllib.request.urlopen(match.replace("\"", ""))
+                    with open(outpath + str(os.sep) + "js" + str(os.sep) + match[match.rfind("/") + 1:], 'b+w') as f:
+                        f.write(g.read())
+                except Exception as e:
+                    print(e)
+                    if os.path.exists(
+                            templatepath + "/" + templatename + "/js/lib/" + str(match[match.rfind("/") + 1:])):
+                        shutil.copy(templatepath + "/" + templatename + "/js/lib/" + str(match[match.rfind("/") + 1:]),
+                                    outpath + str(os.sep) + "js" + str(os.sep) + match[match.rfind("/") + 1:])
+                myhtmltemplate = myhtmltemplate.replace(match, "{{relativepath}}js/" + match[match.rfind("/") + 1:])
+        matched = re.findall(r'href="(http.*.css)"', myhtmltemplate)
+        for match in matched:
+            print(match.replace("\"", ""))
+            match = match.replace("\"", "").replace("/>", "")
+            match = match.replace(">", "")
+            try:
+                g = urllib.request.urlopen(match.replace("\"", ""))
+                with open(outpath + str(os.sep) + "css" + str(os.sep) + match[match.rfind("/") + 1:], 'b+w') as f:
+                    f.write(g.read())
+            except Exception as e:
+                if os.path.exists(templatepath + "/" + templatename + "/css/lib/" + str(match[match.rfind("/") + 1:])):
+                    shutil.copy(templatepath + "/" + templatename + "/css/lib/" + str(match[match.rfind("/") + 1:]),
+                                outpath + str(os.sep) + "css" + str(os.sep) + match[match.rfind("/") + 1:])
+            myhtmltemplate = myhtmltemplate.replace(match, "{{relativepath}}css/" + match[match.rfind("/") + 1:])
+        return myhtmltemplate
 
     @staticmethod
     def conditionalArrayReplace(string,conds,replace,what):
