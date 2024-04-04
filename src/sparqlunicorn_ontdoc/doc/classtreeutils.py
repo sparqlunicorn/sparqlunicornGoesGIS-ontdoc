@@ -149,3 +149,20 @@ class ClassTreeUtils:
             else:
                 classlist[item]["item"]["type"] = "class"
         return classlist
+
+    @staticmethod
+    def checkGeoInstanceAssignment(uritotreeitem):
+        for uri in uritotreeitem:
+            if len(uritotreeitem[uri]) > 1:
+                thetype = "instance"
+                counter = 0
+                if uritotreeitem[uri] != None:
+                    for item in uritotreeitem[uri]:
+                        if item["type"] != "instance" or item["type"] != "class":
+                            thetype = item["type"]
+                        if item["type"] != "class":
+                            item["id"] = item["id"] + "_suniv" + str(counter) + "_"
+                        counter += 1
+                    if thetype != "instance" or thetype != "class":
+                        for item in uritotreeitem[uri]:
+                            item["type"] = thetype

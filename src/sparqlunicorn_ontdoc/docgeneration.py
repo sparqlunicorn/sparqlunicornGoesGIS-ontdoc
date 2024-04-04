@@ -393,7 +393,7 @@ class OntDocGeneration:
             if subtorencounter % 250 == 0:
                 subtorenderlen = len(subjectstorender) + len(postprocessing)
                 self.updateProgressBar(subtorencounter, subtorenderlen, "Processing Subject URIs")
-        self.checkGeoInstanceAssignment(uritotreeitem)
+        ClassTreeUtils.checkGeoInstanceAssignment(uritotreeitem)
         classlist = ClassTreeUtils.assignGeoClassesToTree(tree)
         if self.generatePagesForNonNS:
             labeltouri = self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, corpusid, outpath,
@@ -771,22 +771,6 @@ class OntDocGeneration:
             for instance in classToInstances[cls]:
                 graph.add((URIRef(colluri), URIRef(collrelprop), URIRef(instance)))
         return graph
-
-    def checkGeoInstanceAssignment(self, uritotreeitem):
-        for uri in uritotreeitem:
-            if len(uritotreeitem[uri]) > 1:
-                thetype = "instance"
-                counter = 0
-                if uritotreeitem[uri] != None:
-                    for item in uritotreeitem[uri]:
-                        if item["type"] != "instance" or item["type"] != "class":
-                            thetype = item["type"]
-                        if item["type"] != "class":
-                            item["id"] = item["id"] + "_suniv" + str(counter) + "_"
-                        counter += 1
-                    if thetype != "instance" or thetype != "class":
-                        for item in uritotreeitem[uri]:
-                            item["type"] = thetype
 
 
     def getSubjectPagesForNonGraphURIs(self, uristorender, graph, prefixnamespace, corpusid, outpath, nonnsmap, baseurl,
