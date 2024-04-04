@@ -204,7 +204,7 @@ class IIIFAPIExporter:
                                                         "summary": "Retrieves an IIIF manifest for a specific item",
                                                         "description": "Retrieves an IIIF manifest for a specific item",
                                                         "operationId": "iiif-manifestitem",
-                                                        "parameters": [{"in":"path","name":"id","description":"Item ID","required":true,"schema":{"type:string"}}],
+                                                        "parameters": [{"in":"path","name":"id","description":"Item ID","required":True,"schema":{"type:string"}}],
                                                         "responses": {
                                                             "200": {
                                                                 "description": "Success",
