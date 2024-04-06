@@ -10,11 +10,11 @@ import json
 import urllib
 import traceback
 
-from src.sparqlunicorn_ontdoc.export.api.iiifexporter import IIIFAPIExporter
-from src.sparqlunicorn_ontdoc.export.pages.geometryviewpage import GeometryViewPage
-from src.sparqlunicorn_ontdoc.export.pages.lexiconpage import LexiconPage
-from src.sparqlunicorn_ontdoc.export.pages.observationpage import ObservationPage
-from src.sparqlunicorn_ontdoc.export.pages.personpage import PersonPage
+from export.api.iiifexporter import IIIFAPIExporter
+from export.pages.geometryviewpage import GeometryViewPage
+from export.pages.lexiconpage import LexiconPage
+from export.pages.observationpage import ObservationPage
+from export.pages.personpage import PersonPage
 
 
 class HTMLExporter():
