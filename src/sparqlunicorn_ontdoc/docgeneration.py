@@ -24,6 +24,7 @@ print(os.path.dirname(os.path.realpath(__file__)))
 print(os.listdir(os.getcwd()))
 from datetime import datetime
 from doc.docutils import DocUtils
+from doc.graphutils import GraphUtils
 from doc.classtreeutils import ClassTreeUtils
 from doc.docdefaults import DocDefaults
 from doc.docconfig import DocConfig
@@ -145,24 +146,6 @@ class OntDocGeneration:
         if iteration == total:
             print()
 
-    def addAdditionalTriplesForInd(self, graph, ind, tobeaddedPerInd):
-        for prop in tobeaddedPerInd:
-            if "value" in tobeaddedPerInd[prop] and "uri" in tobeaddedPerInd[prop]:
-                graph.add((ind, URIRef(prop), URIRef(str(tobeaddedPerInd[prop]["value"]))))
-                graph.add((URIRef(str(tobeaddedPerInd[prop]["value"])),
-                           URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                           URIRef(str(tobeaddedPerInd[prop]["uri"]))))
-                graph.add((URIRef(str(tobeaddedPerInd[prop]["value"]).replace(" ", "_")),
-                           URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
-                           URIRef(str(tobeaddedPerInd[prop]["value"]))))
-            elif "value" in tobeaddedPerInd[prop] and not tobeaddedPerInd[prop]["value"].startswith("http"):
-                if "type" in tobeaddedPerInd[prop]:
-                    graph.add((ind, URIRef(prop),
-                               Literal(tobeaddedPerInd[prop]["value"], datatype=tobeaddedPerInd[prop]["type"])))
-                elif "value" in tobeaddedPerInd[prop]:
-                    graph.add((ind, URIRef(prop), Literal(tobeaddedPerInd[prop]["value"])))
-            elif "value" in tobeaddedPerInd[prop] and not "uri" in tobeaddedPerInd[prop]:
-                graph.add((ind, URIRef(prop), URIRef(str(tobeaddedPerInd[prop]["value"]))))
 
     def replaceStandardVariables(self, template, subject, checkdepth, indexpage):
         template = template.replace("{{indexpage}}", str(indexpage)).replace("{{subject}}", str(subject)).replace(
@@ -184,9 +167,11 @@ class OntDocGeneration:
         labeltouri = {}
         uritolabel = {}
         uritotreeitem = {}
+        """
         voidstats = {"http://rdfs.org/ns/void#classes": 0, "http://rdfs.org/ns/void#entities": 0,
                      "http://rdfs.org/ns/void#distinctObjects": 0, "http://rdfs.org/ns/void#distinctSubjects": 0,
                      "http://rdfs.org/ns/void#properties": 0, "http://rdfs.org/ns/void#triples": 0}
+        """
         if self.createVOWL:
             vowlinstance = OWL2VOWL()
             vowlinstance.convertOWL2VOWL(self.graph, outpath)
@@ -194,13 +179,16 @@ class OntDocGeneration:
         curlicense=tmp[0]
         self.licensehtml = tmp[0]
         self.licenseuri=tmp[1]
+        """
         res = self.getPropertyRelations(self.graph, outpath)
         voidstats["http://rdfs.org/ns/void#properties"] = res["preds"]
         voidstats["http://ldf.fi/void-ext#propertyClasses"] = res["predclasses"]
         voidstats["http://ldf.fi/void-ext#averagePropertyIRILength"] = res["avgpredlen"]
         voidstats["http://rdfs.org/ns/void#distinctObjects"] = res["objs"]
         predmap = res["predmap"]
+        """
         voidds = prefixnamespace + self.datasettitle
+
         if self.createColl:
             self.graph = self.createCollections(self.graph, prefixnamespace)
         if self.logoname != None and self.logoname != "" and not self.logoname.startswith("http"):
@@ -209,6 +197,7 @@ class OntDocGeneration:
             shutil.copy(self.logoname, outpath + "/logo/logo." + self.logoname[self.logoname.rfind("."):])
             self.logoname = outpath + "/logo/logo." + self.logoname[self.logoname.rfind("."):]
         self.updateProgressBar(0, 1, "Creating classtree and search index")
+        """
         subjectstorender = set()
         subjectstorender.add(URIRef(voidds))
         nonnscount = {}
@@ -301,6 +290,9 @@ class OntDocGeneration:
                                                                     res["preds"] + res["objs"]
         voidstats["http://ldf.fi/void-ext#distinctRDFNodes"] = len(blanknodes) + len(literals) + voidstats[
             "http://ldf.fi/void-ext#distinctIRIReferences"]
+        """
+        res=GraphUtils.analyzeGraph(self.graph, prefixnamespace, self.typeproperty, voidds, labeltouri, uritolabel, outpath, self.createVOWL)
+        subjectstorender=res["subjectstorender"]
         if os.path.exists(outpath + corpusid + '_search.js'):
             try:
                 with open(outpath + corpusid + '_search.js', 'r', encoding='utf-8') as f:
@@ -329,14 +321,14 @@ class OntDocGeneration:
         for tr in prevtree:
             if tr["id"] not in classidset:
                 tree["core"]["data"].append(tr)
-        voidstats["http://rdfs.org/ns/void#classes"] = len(classidset)
-        voidstats["http://rdfs.org/ns/void#triples"] = len(self.graph)
+        res["voidstats"]["http://rdfs.org/ns/void#classes"] = len(classidset)
+        res["voidstats"]["http://rdfs.org/ns/void#triples"] = len(self.graph)
         voidgraph = VoidExporter.createVoidDataset(self.datasettitle, prefixnamespace, self.namespaceshort,
                                                    self.repository, self.deploypath, self.outpath, self.licenseuri,
-                                                   self.modtime, self.labellang, voidstats, subjectstorender,
-                                                   self.prefixes, tree, predmap, nonnscount, nscount, instancecount,
+                                                   self.modtime, self.labellang, res["voidstats"], subjectstorender,
+                                                   self.prefixes, tree, res["predmap"], res["nonnscount"], res["nscount"], res["instancecount"],
                                                    self.startconcept)
-        self.voidstatshtml = VoidExporter.toHTML(voidstats, self.deploypath)
+        self.voidstatshtml = VoidExporter.toHTML(res["voidstats"], self.deploypath)
         self.graph += voidgraph["graph"]
         subjectstorender = voidgraph["subjects"]
         with open(outpath + "style.css", 'w', encoding='utf-8') as f:

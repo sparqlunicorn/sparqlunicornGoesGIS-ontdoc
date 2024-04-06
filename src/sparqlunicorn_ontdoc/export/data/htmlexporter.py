@@ -9,6 +9,9 @@ import re
 class HTMLExporter():
 
 
+
+
+
     @staticmethod
     def searchObjectConnectionsForAggregateData(graph, object, pred, geojsonrep, foundmedia, imageannos,
                                                 textannos, image3dannos, annobodies, label, unitlabel, nonns, inverse,labellang,typeproperty,prefixes):
