@@ -2,7 +2,7 @@ from rdflib import URIRef, BNode, Literal
 from doc.docutils import DocUtils
 from doc.docconfig import DocConfig
 import json
-from doc.export.data.vowlexporter import OWL2VOWL
+from export.data.vowlexporter import OWL2VOWL
 
 class GraphUtils:
 
