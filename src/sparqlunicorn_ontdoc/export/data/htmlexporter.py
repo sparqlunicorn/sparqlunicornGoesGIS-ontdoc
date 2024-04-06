@@ -5,16 +5,591 @@ from export.pages.bibpage import BibPage
 from export.pages.owltimepage import OWLTimePage
 from rdflib import URIRef, Graph, BNode, Literal
 import re
+import os
+import json
+import urllib
+import traceback
+
+from src.sparqlunicorn_ontdoc.export.api.iiifexporter import IIIFAPIExporter
+from src.sparqlunicorn_ontdoc.export.pages.geometryviewpage import GeometryViewPage
+from src.sparqlunicorn_ontdoc.export.pages.lexiconpage import LexiconPage
+from src.sparqlunicorn_ontdoc.export.pages.observationpage import ObservationPage
+from src.sparqlunicorn_ontdoc.export.pages.personpage import PersonPage
+
 
 class HTMLExporter():
+    listthreshold = 5
+    maxlistthreshold = 1500
 
+    featurecollectionspaths = {}
+    iiifmanifestpaths = {"default": []}
+    imagetoURI = {}
 
+    def __init__(self, prefixes, prefixnamespace, prefixnsshort, license, labellang, outpath,
+                 metadatatable, generatePagesForNonNS, apis,templates,namespaceshort,typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                 imagemetadata=None,
+                 deploypath="", logoname="", offlinecompat=False):
+        self.prefixes = prefixes
+        self.prefixnamespace = prefixnamespace
+        self.outpath = outpath
+        self.deploypath = deploypath
+        self.metadatatable = metadatatable
+        self.logoname = logoname
+        self.templates = templates
+        self.apis = apis
+        self.labellang = labellang
+        self.license = license
+        self.licenseuri=""
+        self.publisher=""
+        self.publishingorg=""
+        self.datasettitle=""
+        self.typeproperty=typeproperty
+        self.prefixnsshort = prefixnsshort
+        self.imagemetadata = imagemetadata
+        self.namespaceshort = namespaceshort
+        self.generatePagesForNonNS = generatePagesForNonNS
+        self.offlinecompat = offlinecompat
 
+    def replaceStandardVariables(self, template, subject, checkdepth, indexpage):
+        template = template.replace("{{indexpage}}", str(indexpage)).replace("{{subject}}", str(subject)).replace(
+            "{{relativedepth}}", str(checkdepth)) \
+            .replace("{{versionurl}}", DocConfig.versionurl).replace("{{version}}", DocConfig.version).replace(
+            "{{deploypath}}", self.deploypath) \
+            .replace("{{publishingorg}}", self.publishingorg).replace("{{publisher}}", self.publisher).replace(
+            "{{datasettitle}}", self.datasettitle) \
+            .replace("{{logo}}", self.logoname)
+        return template
 
+    def createHTML(self, savepath, predobjs, subject, baseurl, subpreds, graph, searchfilename, classtreename,
+                   uritotreeitem, curlicense, subjectstorender, postprocessing, nonnsmap=None, nonns=False,
+                   foundlabel=""):
+        tablecontents = ""
+        metadatatablecontents = ""
+        geojsonrep = None
+        epsgcode = ""
+        foundmedia = {"audio": {}, "video": {}, "image": {}, "mesh": {}}
+        savepath = savepath.replace("\\", "/")
+        checkdepth = 0
+        if not nonns:
+            checkdepth = DocUtils.checkDepthFromPath(savepath, baseurl, subject)
+        logo = ""
+        if self.logoname != None and self.logoname != "":
+            logo = "<img src=\"" + self.logoname + "\" alt=\"logo\" width=\"25\" height=\"25\"/>&nbsp;&nbsp;"
+        textannos = []
+        foundvals = set()
+        imageannos = []
+        annobodies = []
+        image3dannos = []
+        predobjmap = {}
+        curtypes = set()
+        comment = {}
+        parentclass = None
+        inverse = False
+        dateprops = []
+        timeobj = None
+        tablecontentcounter = -1
+        metadatatablecontentcounter = -1
+        if uritotreeitem is not None and str(subject) in uritotreeitem and uritotreeitem[str(subject)][-1][
+            "parent"].startswith("http"):
+            parentclass = str(uritotreeitem[str(subject)][-1]["parent"])
+            if parentclass not in uritotreeitem:
+                uritotreeitem[parentclass] = [
+                    {"id": parentclass, "parent": "#", "type": "class", "text": DocUtils.shortenURI(str(parentclass)),
+                     "data": {}}]
+            # print(uritotreeitem[parentclass])
+            uritotreeitem[parentclass][-1]["instancecount"] = 0
+        ttlf = Graph(bind_namespaces="rdflib")
+        # ttlf = open(savepath + "/index.ttl", "w", encoding="utf-8")
+        if parentclass is not None:
+            uritotreeitem[parentclass][-1]["data"]["to"] = {}
+            uritotreeitem[parentclass][-1]["data"]["from"] = {}
+        hasnonns = set()
+        thetypes = set()
+        itembibtex = ""
+        collections = set()
+        if predobjs is not None:
+            for tup in sorted(predobjs, key=lambda tup: tup[0]):
+                if str(tup[0]) not in predobjmap:
+                    predobjmap[str(tup[0])] = []
+                predobjmap[str(tup[0])].append(tup[1])
+                if parentclass is not None and str(tup[0]) not in uritotreeitem[parentclass][-1]["data"]["to"]:
+                    uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])] = {}
+                    uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])]["instancecount"] = 0
+                if parentclass is not None:
+                    uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])]["instancecount"] += 1
+                    uritotreeitem[parentclass][-1]["instancecount"] += 1
+                if isinstance(tup[1], URIRef):
+                    for item in graph.objects(tup[1], URIRef(self.typeproperty)):
+                        thetypes.add(str(item))
+                        if parentclass is not None:
+                            if item not in uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])]:
+                                uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])][item] = 0
+                            uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])][item] += 1
+                    if baseurl not in str(tup[1]) and str(tup[0]) != self.typeproperty:
+                        hasnonns.add(str(tup[1]))
+                        if nonnsmap is not None:
+                            if str(tup[1]) not in nonnsmap:
+                                nonnsmap[str(tup[1])] = set()
+                            nonnsmap[str(tup[1])].add(subject)
+            for tup in sorted(predobjmap):
+                if self.metadatatable and tup not in DocConfig.labelproperties and DocUtils.shortenURI(str(tup),
+                                                                                                       True) in DocConfig.metadatanamespaces:
+                    thetable = metadatatablecontents
+                    metadatatablecontentcounter += 1
+                    if metadatatablecontentcounter % 2 == 0:
+                        thetable += "<tr class=\"odd\">"
+                    else:
+                        thetable += "<tr class=\"even\">"
+                else:
+                    thetable = tablecontents
+                    tablecontentcounter += 1
+                    if tablecontentcounter % 2 == 0:
+                        thetable += "<tr class=\"odd\">"
+                    else:
+                        thetable += "<tr class=\"even\">"
+                if str(tup) == self.typeproperty:
+                    for tp in predobjmap[tup]:
+                        thetypes.add(str(tp))
+                        curtypes.add(str(tp))
+                        if str(tp) in DocConfig.collectionclasses:
+                            uritotreeitem[str(tp)][-1]["instancecount"] += 1
+                            collections.add(DocConfig.collectionclasses[str(tp)])
+                        if str(tp) in DocConfig.bibtextypemappings:
+                            itembibtex = "<details><summary>[BIBTEX]</summary><pre>" + str(
+                                BibPage.resolveBibtexReference(graph.predicate_objects(subject), subject,
+                                                               graph)) + "</pre></details>"
+                thetable = HTMLExporter.formatPredicate(tup, baseurl, checkdepth, thetable, graph, inverse,
+                                                        self.labellang, self.prefixes)
+                if str(tup) in DocConfig.labelproperties:
+                    for lab in predobjmap[tup]:
+                        if lab.language == self.labellang:
+                            foundlabel = lab
+                    if foundlabel == "":
+                        foundlabel = str(predobjmap[tup][0])
+                if str(tup) in DocConfig.commentproperties:
+                    comment[str(tup)] = str(predobjmap[tup][0])
+                if len(predobjmap[tup]) > 0:
+                    thetable += "<td class=\"wrapword\">"
+                    if len(predobjmap[tup]) > HTMLExporter.listthreshold:
+                        thetable += "<details><summary>" + str(len(predobjmap[tup])) + " values</summary>"
+                    if len(predobjmap[tup]) > 1:
+                        thetable += "<ul>"
+                    labelmap = {}
+                    itemcounter = 0
+                    for item in predobjmap[tup]:
+                        if itemcounter >= HTMLExporter.maxlistthreshold:
+                            break
+                        if ("POINT" in str(item).upper() or "POLYGON" in str(item).upper() or "LINESTRING" in str(
+                                item).upper()) and tup in DocConfig.valueproperties and self.typeproperty in predobjmap and URIRef(
+                            "http://www.w3.org/ns/oa#WKTSelector") in predobjmap[self.typeproperty]:
+                            image3dannos.append({"value": str(item)})
+                        elif "<svg" in str(item):
+                            foundmedia["image"][str(item)] = {}
+                        elif "http" in str(item):
+                            if isinstance(item, Literal):
+                                ext = "." + ''.join(filter(str.isalpha, str(item.value).split(".")[-1]))
+                            else:
+                                ext = "." + ''.join(filter(str.isalpha, str(item).split(".")[-1]))
+                            if ext in DocConfig.fileextensionmap:
+                                foundmedia[DocConfig.fileextensionmap[ext]][str(item)] = {}
+                        elif tup in DocConfig.valueproperties:
+                            foundvals.add((str(tup), str(item)))
+                        res = HTMLExporter.createHTMLTableValueEntry(subject, tup, item, ttlf, graph,
+                                                                     baseurl, checkdepth, geojsonrep, foundmedia,
+                                                                     imageannos,
+                                                                     textannos, image3dannos, annobodies, dateprops,
+                                                                     inverse,
+                                                                     nonns, self.labellang, self.typeproperty,
+                                                                     self.namespaceshort, self.generatePagesForNonNS,
+                                                                     self.prefixes)
+                        geojsonrep = res["geojson"]
+                        foundmedia = res["foundmedia"]
+                        imageannos = res["imageannos"]
+                        textannos = res["textannos"]
+                        image3dannos = res["image3dannos"]
+                        annobodies = res["annobodies"]
+                        # print("GOT ANNO BODIES "+str(annobodies))
+                        if res["timeobj"] != None and res["timeobj"] != []:
+                            # print("RESTIMEOBJ: "+str(timeobj))
+                            timeobj = res["timeobj"]
+                        if res["label"] not in labelmap:
+                            labelmap[res["label"]] = ""
+                        if len(predobjmap[tup]) > 1:
+                            labelmap[res["label"]] += "<li>" + str(res["html"]) + "</li>"
+                        else:
+                            labelmap[res["label"]] += str(res["html"])
+                        itemcounter += 1
+                    for lab in sorted(labelmap):
+                        thetable += str(labelmap[lab])
+                    if len(predobjmap[tup]) >= HTMLExporter.maxlistthreshold:
+                        tablecontents += "<li>(...)</li>"
+                    if len(predobjmap[tup]) > 1:
+                        thetable += "</ul>"
+                    if len(predobjmap[tup]) > HTMLExporter.listthreshold:
+                        thetable += "</details>"
+                    thetable += "</td>"
+                else:
+                    thetable += "<td class=\"wrapword\"></td>"
+                thetable += "</tr>"
+                if self.metadatatable and tup not in DocConfig.labelproperties and DocUtils.shortenURI(str(tup),
+                                                                                                  True) in DocConfig.metadatanamespaces:
+                    metadatatablecontents = thetable
+                else:
+                    tablecontents = thetable
+        subpredsmap = {}
+        if subpreds != None:
+            for tup in sorted(subpreds, key=lambda tup: tup[1]):
+                if str(tup[1]) not in subpredsmap:
+                    subpredsmap[str(tup[1])] = []
+                subpredsmap[str(tup[1])].append(tup[0])
+                if parentclass != None and str(tup[1]) not in uritotreeitem[parentclass][-1]["data"]["from"]:
+                    uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])] = {}
+                    uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])]["instancecount"] = 0
+                if isinstance(tup[0], URIRef):
+                    for item in graph.objects(tup[0], URIRef(self.typeproperty)):
+                        if parentclass != None:
+                            if item not in uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])]:
+                                uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])][item] = 0
+                            uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])][item] += 1
+            for tup in subpredsmap:
+                tablecontentcounter += 1
+                if tablecontentcounter % 2 == 0:
+                    tablecontents += "<tr class=\"odd\">"
+                else:
+                    tablecontents += "<tr class=\"even\">"
+                tablecontents = HTMLExporter.formatPredicate(tup, baseurl, checkdepth, tablecontents, graph, True,
+                                                             self.labellang, self.prefixes)
+                if len(subpredsmap[tup]) > 0:
+                    tablecontents += "<td class=\"wrapword\">"
+                    if len(subpredsmap[tup]) > HTMLExporter.listthreshold:
+                        tablecontents += "<details><summary>" + str(len(subpredsmap[tup])) + " values</summary>"
+                    if len(subpredsmap[tup]) > 1:
+                        tablecontents += "<ul>"
+                    labelmap = {}
+                    itemcounter = 0
+                    for item in subpredsmap[tup]:
+                        if itemcounter >= HTMLExporter.maxlistthreshold:
+                            break
+                        if subjectstorender != None and item not in subjectstorender and baseurl in str(item):
+                            postprocessing.add((item, URIRef(tup), subject))
+                        res = HTMLExporter.createHTMLTableValueEntry(subject, tup, item, None, graph,
+                                                                     baseurl, checkdepth, geojsonrep, foundmedia,
+                                                                     imageannos,
+                                                                     textannos, image3dannos, annobodies, None, True,
+                                                                     nonns, self.labellang, self.typeproperty,
+                                                                     self.namespaceshort, self.generatePagesForNonNS,
+                                                                     self.prefixes)
+                        foundmedia = res["foundmedia"]
+                        imageannos = res["imageannos"]
+                        image3dannos = res["image3dannos"]
+                        annobodies = res["annobodies"]
+                        # print("POSTPROC ANNO BODIES "+str(annobodies))
+                        if nonns and str(tup) != self.typeproperty:
+                            hasnonns.add(str(item))
+                        if nonns:
+                            geojsonrep = res["geojson"]
+                        if res["label"] not in labelmap:
+                            labelmap[res["label"]] = ""
+                        if len(subpredsmap[tup]) > 1:
+                            labelmap[res["label"]] += "<li>" + str(res["html"]) + "</li>"
+                        else:
+                            labelmap[res["label"]] += str(res["html"])
+                        itemcounter += 1
+                    for lab in sorted(labelmap):
+                        tablecontents += str(labelmap[lab])
+                    if len(subpredsmap[tup]) >= HTMLExporter.maxlistthreshold:
+                        tablecontents += "<li>(...)</li>"
+                    if len(subpredsmap[tup]) > 1:
+                        tablecontents += "</ul>"
+                    if len(subpredsmap[tup]) > HTMLExporter.listthreshold:
+                        tablecontents += "</details>"
+                    tablecontents += "</td>"
+                else:
+                    tablecontents += "<td class=\"wrapword\"></td>"
+                tablecontents += "</tr>"
+        if self.licenseuri != None:
+            ttlf.add((subject, URIRef("http://purl.org/dc/elements/1.1/license"), URIRef(self.licenseuri)))
+        if self.apis["solidexport"] != None:
+            ttlf.add((subject, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                      URIRef("http://www.w3.org/ns/ldp#Resource")))
+            ttlf.add((subject, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                      URIRef("https://www.iana.org/assignments/media-types/text/turtle#Resource")))
+        nonnslink = ""
+        if nonns:
+            completesavepath = savepath.replace(":", "_")
+            nonnslink = "<div>This page describes linked instances to the concept  <a target=\"_blank\" href=\"" + str(
+                subject) + "\">" + str(foundlabel) + " (" + str(DocUtils.shortenURI(
+                subject)) + ") </a> in this knowledge graph. It is defined <a target=\"_blank\" href=\"" + str(
+                subject) + "\">here</a></div>"
+        else:
+            completesavepath = savepath.replace(":", "_") + "/index.html"
+        if not nonns:
+            if os.path.exists(savepath):
+                try:
+                    ttlf.serialize(savepath + "/index.ttl", encoding="utf-8")
+                    with open(savepath + "/index.json", 'w', encoding='utf-8') as f:
+                        f.write(json.dumps(predobjmap))
+                        f.close()
+                except Exception as e:
+                    print(e)
+                    print(traceback.format_exc())
+        try:
+            with open(completesavepath, 'w', encoding='utf-8') as f:
+                searchfilelink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, searchfilename, False)
+                classtreelink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, classtreename, False)
+                csslink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "style.css", False)
+                startscriptlink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "startscripts.js",
+                                                                              False)
+                proprelationslink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "proprelations.js",
+                                                                                False)
+                epsgdefslink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "epsgdefs.js", False)
+                vowlresultlink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "vowl_result.js",
+                                                                             False)
+                if geojsonrep != None:
+                    myexports = self.templates["geoexports"]
+                else:
+                    myexports = self.templates["nongeoexports"]
+                relpath = DocUtils.generateRelativePathFromGivenDepth(checkdepth)
+                if foundlabel == None or foundlabel == "":
+                    foundlabel = DocUtils.shortenURI(str(subject))
+                f.write(self.replaceStandardVariables(self.templates["htmltemplate"], subject, checkdepth, "false").replace(
+                    "{{iconprefixx}}", (relpath + "icons/" if self.offlinecompat else "")).replace("{{baseurl}}",
+                                                                                                   baseurl).replace(
+                    "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace(
+                    "{{relativedepth}}", str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace(
+                    "{{toptitle}}", foundlabel).replace(
+                    "{{startscriptpath}}", startscriptlink).replace("{{epsgdefspath}}", epsgdefslink).replace(
+                    "{{bibtex}}", itembibtex).replace("{{vowlpath}}", vowlresultlink).replace("{{proprelationpath}}",
+                                                                                              proprelationslink).replace(
+                    "{{stylepath}}", csslink).replace("{{title}}",
+                                                      "<a href=\"" + str(subject) + "\">" + str(
+                                                          foundlabel) + "</a>").replace(
+                    "{{baseurl}}", baseurl).replace("{{tablecontent}}", tablecontents).replace("{{description}}",
+                                                                                               "").replace(
+                    "{{scriptfolderpath}}", searchfilelink).replace("{{classtreefolderpath}}", classtreelink).replace(
+                    "{{exports}}", myexports).replace("{{nonnslink}}", str(nonnslink)).replace("{{subjectencoded}}",
+                                                                                               urllib.parse.quote(
+                                                                                                   str(subject))))
+                for comm in comment:
+                    f.write(self.templates["htmlcommenttemplate"].replace("{{comment}}",
+                                                                     DocUtils.shortenURI(comm) + ":" + comment[comm]))
+                # for fval in foundvals:
+                #    f.write(templates["htmlcommenttemplate"].replace("{{comment}}", "<b>Value "+ DocUtils.shortenURI(str(fval[0]))+": <mark>" + str(fval[1]) + "</mark></b>"))
+                if len(foundmedia["mesh"]) > 0 and len(image3dannos) > 0:
+                    if self.apis["iiif"]:
+                        self.iiifmanifestpaths["default"].append(
+                            IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
+                                                                 foundmedia["mesh"], image3dannos, annobodies,
+                                                                 str(subject), self.prefixnamespace, self.imagetoURI,
+                                                                 self.imagemetadata, DocConfig.metadatanamespaces,
+                                                                 foundlabel, comment, thetypes, predobjmap, "Model"))
+                    for anno in image3dannos:
+                        if ("POINT" in anno["value"].upper() or "POLYGON" in anno["value"].upper() or "LINESTRING" in
+                                anno["value"].upper()):
+                            f.write(self.templates["threejstemplate"].replace("{{wktstring}}", anno["value"]).replace(
+                                "{{meshurls}}", str(list(foundmedia["mesh"]))).replace("{{relativepath}}",
+                                                                                       DocUtils.generateRelativePathFromGivenDepth(
+                                                                                           checkdepth)))
+                elif len(foundmedia["mesh"]) > 0 and len(image3dannos) == 0:
+                    print("Found 3D Model: " + str(foundmedia["mesh"]))
+                    if self.apis["iiif"]:
+                        self.iiifmanifestpaths["default"].append(
+                            IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
+                                                                 foundmedia["mesh"], image3dannos, annobodies,
+                                                                 str(subject), self.prefixnamespace, self.imagetoURI,
+                                                                 self.imagemetadata, DocConfig.metadatanamespaces,
+                                                                 foundlabel, comment, thetypes, predobjmap, "Model"))
+                    for curitem in foundmedia["mesh"]:
+                        format = "ply"
+                        if ".nxs" in curitem or ".nxz" in curitem:
+                            format = "nexus"
+                            self.has3d = True
+                        elif format == "gltf":
+                            f.write(self.templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",
+                                                                                                      str(list(
+                                                                                                          foundmedia[
+                                                                                                              "mesh"]))).replace(
+                                "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
+                        f.write(self.templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",
+                                                                                                  str(list(foundmedia[
+                                                                                                               "mesh"]))).replace(
+                            "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
+                        # f.write(templates["3dtemplate"].replace("{{meshurl}}",curitem).replace("{{meshformat}}",format))
+                        break
+                elif len(foundmedia["mesh"]) == 0 and len(image3dannos) > 0:
+                    for anno in image3dannos:
+                        if ("POINT" in anno["value"].upper() or "POLYGON" in anno["value"].upper() or "LINESTRING" in
+                                anno["value"].upper()):
+                            f.write(self.templates["threejstemplate"].replace("{{wktstring}}", anno["value"]).replace(
+                                "{{meshurls}}", "[]").replace("{{relativepath}}",
+                                                              DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
+                carousel = "image"
+                if len(foundmedia["image"]) > 3:
+                    carousel = "carousel-item active"
+                    f.write(self.templates["imagecarouselheader"])
+                # if self.apis["iiif"] and len(annobodies)>0:
+                #    if target not in imagetoURI:
+                #        imagetoURI[target]={"uri":{str(subject):{"bodies":[]}}}
+                #    if str(subject) not in imagetoURI[target]:
+                #        imagetoURI[target]["uri"][str(subject)]={"bodies":[]}
+                #    if str(subject) not in imagetoURI[target]:
+                #        imagetoURI[target]["uri"][str(subject)]["bodies"]+=annobodies
+                if len(imageannos) > 0 and len(foundmedia["image"]) > 0:
+                    if self.apis["iiif"]:
+                        self.iiifmanifestpaths["default"].append(
+                            IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
+                                                                 foundmedia["image"], imageannos, annobodies,
+                                                                 str(subject), self.prefixnamespace, self.imagetoURI,
+                                                                 self.imagemetadata, DocConfig.metadatanamespaces,
+                                                                 foundlabel, comment, thetypes, predobjmap, "Image"))
+                    for image in foundmedia["image"]:
+                        if image not in self.imagetoURI or "uri" not in self.imagetoURI[image]:
+                            self.imagetoURI[image] = {"uri": {}}
+                        if not str(subject) in self.imagetoURI[image]["uri"]:
+                            self.imagetoURI[image]["uri"][str(subject)] = {"bodies": []}
+                        annostring = ""
+                        for anno in imageannos:
+                            annostring += anno["value"].replace("<svg>",
+                                                                "<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
+                        f.write(self.templates["imageswithannotemplate"].replace("{{carousel}}",
+                                                                            carousel + "\" style=\"position: relative;display: inline-block;").replace(
+                            "{{image}}", str(image)).replace("{{svganno}}", annostring).replace("{{imagetitle}}",
+                                                                                                str(image)[
+                                                                                                0:str(image).rfind(
+                                                                                                    '.')]))
+                        if len(foundmedia["image"]) > 3:
+                            carousel = "carousel-item"
+                elif len(foundmedia["image"]) > 0:
+                    if self.apis["iiif"]:
+                        self.iiifmanifestpaths["default"].append(
+                            IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
+                                                                 foundmedia["image"], imageannos, annobodies,
+                                                                 str(subject), self.prefixnamespace, self.imagetoURI,
+                                                                 self.imagemetadata, DocConfig.metadatanamespaces,
+                                                                 foundlabel, comment, thetypes, predobjmap, "Image"))
+                    for image in foundmedia["image"]:
+                        if image not in self.imagetoURI or "uri" not in self.imagetoURI[image]:
+                            self.imagetoURI[image] = {"uri": {}}
+                        if not str(subject) in self.imagetoURI[image]["uri"]:
+                            self.imagetoURI[image]["uri"][str(subject)] = {"bodies": []}
+                        if image == "<svg width=":
+                            continue
+                        if "<svg" in image:
+                            if "<svg>" in image:
+                                f.write(self.templates["imagestemplatesvg"].replace("{{carousel}}", carousel).replace(
+                                    "{{image}}", str(image.replace("<svg>", "<svg class=\"svgview\">"))))
+                            else:
+                                f.write(self.templates["imagestemplatesvg"].replace("{{carousel}}", carousel).replace(
+                                    "{{image}}", str(image)))
+                        else:
+                            f.write(self.templates["imagestemplate"].replace("{{carousel}}", carousel).replace("{{image}}",
+                                                                                                          str(image)).replace(
+                                "{{imagetitle}}", str(image)[0:str(image).rfind('.')]))
+                        if len(foundmedia["image"]) > 3:
+                            carousel = "carousel-item"
+                if len(foundmedia["image"]) > 3:
+                    f.write(self.templates["imagecarouselfooter"])
+                if len(textannos) > 0:
+                    for textanno in textannos:
+                        if isinstance(textanno, dict):
+                            if "src" in textanno:
+                                f.write("<span style=\"font-weight:bold\" class=\"textanno\" start=\"" + str(
+                                    textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
+                                    textanno["exact"]) + "\" src=\"" + str(textanno["src"]) + "\"><mark>" + str(
+                                    textanno["exact"]) + "</mark></span>")
+                            else:
+                                f.write("<span style=\"font-weight:bold\" class=\"textanno\" start=\"" + str(
+                                    textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
+                                    textanno["exact"]) + "\"><mark>" + str(textanno["exact"]) + "</mark></span>")
+                if len(foundmedia["audio"]) > 0 and self.apis["iiif"]:
+                    self.iiifmanifestpaths["default"].append(
+                        IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath, foundmedia["audio"],
+                                                             None, None, str(subject), self.prefixnamespace,
+                                                             self.imagetoURI,
+                                                             self.imagemetadata, DocConfig.metadatanamespaces,
+                                                             foundlabel, comment, thetypes, predobjmap, "Audio"))
+                for audio in foundmedia["audio"]:
+                    self.imagetoURI[audio] = {"uri": str(subject)}
+                    f.write(self.templates["audiotemplate"].replace("{{audio}}", str(audio)))
+                if len(foundmedia["video"]) > 0 and self.apis["iiif"]:
+                    self.iiifmanifestpaths["default"].append(
+                        IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath, foundmedia["video"],
+                                                             None, None, str(subject), self.prefixnamespace,
+                                                             self.imagetoURI,
+                                                             self.imagemetadata, DocConfig.metadatanamespaces,
+                                                             foundlabel, comment, thetypes, predobjmap, "Video"))
+                for video in foundmedia["video"]:
+                    self.imagetoURI[video] = {"uri": str(subject)}
+                    f.write(self.templates["videotemplate"].replace("{{video}}", str(video)))
+                for type in curtypes:
+                    if type in DocConfig.lexicontypes:
+                        LexiconPage().generatePageWidget(graph, subject, f, {}, False)
+                    if type in PersonPage.pageWidgetConstraint():
+                        PersonPage().generatePageWidget(graph, subject, self.templates, f, True)
+                HTMLExporter.processCollectionPages(collections, graph, subject, f)
+                if geojsonrep != None and "geocollection" not in collections:
+                    self.geocache = GeometryViewPage().generatePageWidget(graph, self.templates, subject, f, uritotreeitem,
+                                                                          geojsonrep, predobjmap, self.geocache,
+                                                                          {"dateprops": dateprops, "timeobj": timeobj,
+                                                                           "epsgcode": epsgcode,
+                                                                           "epsgdefslink": epsgdefslink,
+                                                                           "checkdepth": checkdepth,
+                                                                           "hasnonnslen": len(hasnonns)})
+                elif "geocollection" in collections or nonns:
+                    self.geocache = GeometryViewPage().generateCollectionWidget(graph, self.templates, subject, f,
+                                                                                uritotreeitem,
+                                                                                self.featurecollectionspaths,
+                                                                                {"completesavepath": completesavepath,
+                                                                                 "nonns": nonns, "hasnonns": hasnonns,
+                                                                                 "foundlabel": foundlabel,
+                                                                                 "localOptimized": self.localOptimized,
+                                                                                 "dateprops": dateprops,
+                                                                                 "timeobj": timeobj,
+                                                                                 "geocache": self.geocache,
+                                                                                 "epsgcode": epsgcode,
+                                                                                 "epsgdefslink": epsgdefslink,
+                                                                                 "checkdepth": checkdepth,
+                                                                                 "hasnonnslen": len(hasnonns)})
+                f.write(self.templates["htmltabletemplate"].replace("{{tablecontent}}", tablecontents))
+                if metadatatablecontentcounter >= 0:
+                    f.write("<h5>Metadata</h5>")
+                    f.write(self.templates["htmltabletemplate"].replace("{{tablecontent}}", metadatatablecontents))
+                tempfoot = self.replaceStandardVariables(self.templates["footer"], "", checkdepth, "false").replace(
+                    "{{exports}}",
+                    myexports).replace(
+                    "{{license}}", curlicense).replace("{{bibtex}}", "").replace("{{stats}}", "")
+                tempfoot = DocUtils.conditionalArrayReplace(tempfoot,
+                                                            [True, self.apis["ogcapifeatures"], self.apis["iiif"], self.apis["ckan"]],
+                                                            [
+                                                                "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
+                                                                    checkdepth) + "/sparql.html?endpoint=" + str(
+                                                                    self.deploypath) + "\">[SPARQL]</a>&nbsp;",
+                                                                "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
+                                                                    checkdepth) + "/api/api.html\">[OGC API Features]</a>&nbsp;",
+                                                                "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
+                                                                    checkdepth) + "/iiif/\">[IIIF]</a>&nbsp;",
+                                                                "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
+                                                                    checkdepth) + "/api/3/\">[CKAN]</a>"
+                                                            ], "{{apis}}")
+                f.write(tempfoot)
+                f.close()
+        except Exception as inst:
+            print("Could not write " + str(completesavepath))
+            print(inst)
+            print(traceback.format_exc())
+        return [postprocessing, nonnsmap]
+
+    @staticmethod
+    def processCollectionPages(pagesmap, graph, subject, templates, f):
+        if "observationcollection" in pagesmap:
+            ObservationPage().generateCollectionWidget(graph, templates, subject, f)
+        if "lexicon" in pagesmap:
+            LexiconPage().generateCollectionWidget(graph, templates, subject, f)
 
     @staticmethod
     def searchObjectConnectionsForAggregateData(graph, object, pred, geojsonrep, foundmedia, imageannos,
-                                                textannos, image3dannos, annobodies, label, unitlabel, nonns, inverse,labellang,typeproperty,prefixes):
+                                                textannos, image3dannos, annobodies, label, unitlabel, nonns, inverse,
+                                                labellang, typeproperty, prefixes):
         geoprop = False
         annosource = None
         incollection = False
@@ -35,7 +610,7 @@ class HTMLExporter():
                 onelabel = str(tup[1])
             if pred == "http://www.w3.org/ns/oa#hasSelector" and tup[0] == URIRef(typeproperty) and (
                     tup[1] == URIRef("http://www.w3.org/ns/oa#SvgSelector") or tup[1] == URIRef(
-                    "http://www.w3.org/ns/oa#WKTSelector")):
+                "http://www.w3.org/ns/oa#WKTSelector")):
                 for svglit in graph.objects(object, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#value")):
                     if "<svg" in str(svglit):
                         imageannos.append({"value": str(svglit), "bodies": []})
@@ -73,8 +648,8 @@ class HTMLExporter():
                 if ext in DocConfig.fileextensionmap:
                     foundmedia[DocConfig.fileextensionmap[ext]][str(tup[1])] = {}
             if not inverse and str(tup[0]) == "http://www.w3.org/2000/01/rdf-schema#member" and (
-            object, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-            URIRef("http://www.w3.org/ns/sosa/ObservationCollection")) in graph:
+                    object, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                    URIRef("http://www.w3.org/ns/sosa/ObservationCollection")) in graph:
                 for valtup in graph.predicate_objects(tup[1]):
                     if str(valtup[0]) in DocConfig.unitproperties:
                         foundunit = str(valtup[1])
@@ -143,7 +718,8 @@ class HTMLExporter():
 
     @staticmethod
     def createHTMLTableValueEntry(subject, pred, object, ttlf, graph, baseurl, checkdepth, geojsonrep, foundmedia,
-                                  imageannos, textannos, image3dannos, annobodies, dateprops, inverse, nonns,labellang,typeproperty,namespaceshort,generatePagesForNonNS,prefixes):
+                                  imageannos, textannos, image3dannos, annobodies, dateprops, inverse, nonns, labellang,
+                                  typeproperty, namespaceshort, generatePagesForNonNS, prefixes):
         tablecontents = ""
         label = ""
         bibtex = None
@@ -154,8 +730,10 @@ class HTMLExporter():
             label = ""
             unitlabel = ""
             mydata = HTMLExporter.searchObjectConnectionsForAggregateData(graph, object, pred, geojsonrep, foundmedia,
-                                                                  imageannos, textannos, image3dannos, annobodies,
-                                                                  label, unitlabel, nonns, inverse,labellang,typeproperty,prefixes)
+                                                                          imageannos, textannos, image3dannos,
+                                                                          annobodies,
+                                                                          label, unitlabel, nonns, inverse, labellang,
+                                                                          typeproperty, prefixes)
             label = mydata["label"]
             if label == "":
                 label = str(DocUtils.shortenURI(str(object)))
@@ -237,8 +815,9 @@ class HTMLExporter():
                     tablecontents += "<span itemprop=\"" + str(pred) + "\" property=\"" + str(
                         pred) + "\" content=\"" + str(object).replace("<", "&lt").replace(">", "&gt;").replace("\"",
                                                                                                                "'") + "\" datatype=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\" xml:lang=\"" + str(
-                        object.language) + "\">" + HTMLExporter.truncateValue(str(object).replace("<", "&lt").replace(">",
-                                                                                                              "&gt;")) + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\">rdf:langString</a>) (<a href=\"http://www.lexvo.org/page/iso639-1/" + str(
+                        object.language) + "\">" + HTMLExporter.truncateValue(
+                        str(object).replace("<", "&lt").replace(">",
+                                                                "&gt;")) + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\">rdf:langString</a>) (<a href=\"http://www.lexvo.org/page/iso639-1/" + str(
                         object.language) + "\" target=\"_blank\">iso6391:" + str(
                         object.language) + "</a>)</small></span>"
                 else:
@@ -247,12 +826,10 @@ class HTMLExporter():
                 "textannos": textannos, "image3dannos": image3dannos, "annobodies": annobodies, "label": label,
                 "timeobj": dateprops}
 
-
-
     @staticmethod
     def processLicense(license):
         if license == None or license == "" or license == "No License Statement":
-            return ["",None]
+            return ["", None]
         if license.startswith("CC"):
             spl = license.split(" ")
             res = """<span style="float:right;margin-left:auto;margin-right:0px;text-align:right">This work is released under <a rel="license" target="_blank" href="http://creativecommons.org/licenses/""" + str(
@@ -260,12 +837,12 @@ class HTMLExporter():
             <img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/""" + str(
                 spl[1]).lower() + """/""" + str(spl[2]) + """/80x15.png"/></a></span>"""
             licenseuri = "http://creativecommons.org/licenses/" + str(spl[1]).lower() + "/" + str(spl[2])
-            return [res,licenseuri]
+            return [res, licenseuri]
         else:
-            return ["""All rights reserved.""",None]
+            return ["""All rights reserved.""", None]
 
     @staticmethod
-    def formatPredicate(tup, baseurl, checkdepth, tablecontents, graph, reverse,labellang,prefixes):
+    def formatPredicate(tup, baseurl, checkdepth, tablecontents, graph, reverse, labellang, prefixes):
         label = DocUtils.getLabelForObject(URIRef(str(tup)), graph, None, labellang)
         tablecontents += "<td class=\"property\">"
         if reverse:

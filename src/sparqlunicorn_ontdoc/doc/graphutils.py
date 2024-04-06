@@ -7,6 +7,75 @@ from export.data.vowlexporter import OWL2VOWL
 class GraphUtils:
 
 
+
+    @staticmethod
+    def createCollections(graph, namespace,typeproperty):
+        classToInstances = {}
+        classToGeoColl = {}
+        classToFColl = {}
+        for tup in graph.subject_objects(URIRef(typeproperty)):
+            if namespace in str(tup[0]):
+                if str(tup[1]) not in classToInstances:
+                    classToInstances[str(tup[1])] = set()
+                    classToFColl[str(tup[1])] = 0
+                    classToGeoColl[str(tup[1])] = 0
+                classToInstances[str(tup[1])].add(str(tup[0]))
+                isgeo = False
+                isfeature = False
+                for geotup in graph.predicate_objects(tup[0]):
+                    if str(geotup[0]) in DocConfig.geopointerproperties:
+                        isfeature = True
+                    elif str(geotup[0]) in DocConfig.geoproperties:
+                        isgeo = True
+                if isgeo:
+                    classToGeoColl[str(tup[1])] += 1
+                if isfeature:
+                    classToFColl[str(tup[1])] += 1
+        for cls in classToInstances:
+            colluri = namespace + DocUtils.shortenURI(cls) + "_collection"
+            collrelprop = "http://www.w3.org/2000/01/rdf-schema#member"
+            if classToFColl[cls] == len(classToInstances[cls]):
+                graph.add((URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection"),
+                           URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
+                           URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
+                graph.add((URIRef("http://www.opengis.net/ont/geosparql#FeatureCollection"),
+                           URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
+                           URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection")))
+                graph.add((URIRef(colluri), URIRef(typeproperty),
+                           URIRef("http://www.opengis.net/ont/geosparql#FeatureCollection")))
+            elif classToGeoColl[cls] == len(classToInstances[cls]):
+                graph.add((URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection"),
+                           URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
+                           URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
+                graph.add((URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection"),
+                           URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
+                           URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection")))
+                graph.add((URIRef(colluri), URIRef(typeproperty),
+                           URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection")))
+            elif cls in DocConfig.classToCollectionClass:
+                if "super" in DocConfig.classToCollectionClass[cls]:
+                    graph.add((URIRef(DocConfig.classToCollectionClass[cls]["class"]),
+                               URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
+                               URIRef(DocConfig.classToCollectionClass[cls]["super"])))
+                    graph.add((URIRef(DocConfig.classToCollectionClass[cls]["super"]),
+                               URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
+                               URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
+                else:
+                    graph.add((URIRef(DocConfig.classToCollectionClass[cls]["class"]),
+                               URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
+                               URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
+                graph.add((URIRef(colluri), URIRef(typeproperty),
+                           URIRef(DocConfig.classToCollectionClass[cls]["class"])))
+                collrelprop = DocConfig.classToCollectionClass[cls]["prop"]
+            else:
+                graph.add((URIRef(colluri), URIRef(typeproperty),
+                           URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
+            graph.add((URIRef(colluri), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
+                       Literal(str(DocUtils.shortenURI(cls)) + " Instances Collection", lang="en")))
+            for instance in classToInstances[cls]:
+                graph.add((URIRef(colluri), URIRef(collrelprop), URIRef(instance)))
+        return graph
+
     @staticmethod
     def addAdditionalTriplesForInd(graph, ind, tobeaddedPerInd):
         for prop in tobeaddedPerInd:

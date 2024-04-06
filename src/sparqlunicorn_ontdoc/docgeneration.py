@@ -1,4 +1,6 @@
 # -*- coding: UTF-8 -*-
+from sys import prefix
+
 from rdflib import Graph
 from rdflib import URIRef, Literal, BNode
 from rdflib.plugins.sparql import prepareQuery
@@ -105,6 +107,7 @@ class OntDocGeneration:
         self.typeproperty = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
         self.createIndexPages = createIndexPages
         self.graph = graph
+        self.htmlexporter=HTMLExporter(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,metadatatable,generatePagesForNonNS,apis,templates,self.namespaceshort,self.typeproperty,imagemetadata,deploypath,logoname,offlinecompat)
         for nstup in self.graph.namespaces():
             if str(nstup[1]) not in prefixes["reversed"]:
                 prefixes["reversed"][str(nstup[1])] = str(nstup[0])
@@ -176,7 +179,7 @@ class OntDocGeneration:
         self.licenseuri=tmp[1]
         voidds = prefixnamespace + self.datasettitle
         if self.createColl:
-            self.graph = self.createCollections(self.graph, prefixnamespace)
+            self.graph = GraphUtils.createCollections(self.graph, prefixnamespace,self.typeproperty)
         if self.logoname != None and self.logoname != "" and not self.logoname.startswith("http"):
             if not os.path.isdir(outpath + "/logo/"):
                 os.mkdir(outpath + "/logo/")
@@ -247,7 +250,7 @@ class OntDocGeneration:
                 except Exception as e:
                     print(e)
                     print(traceback.format_exc())
-            res = self.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace,
+            res = self.htmlexporter.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace,
                                   self.graph.subject_predicates(subj),
                                   self.graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js",
                                   uritotreeitem, curlicense, subjectstorender, postprocessing, nonnsmap)
@@ -270,7 +273,7 @@ class OntDocGeneration:
                 except Exception as e:
                     print(e)
                     print(traceback.format_exc())
-            self.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace,
+            self.htmlexporter.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace,
                             self.graph.subject_predicates(subj),
                             self.graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", uritotreeitem,
                             curlicense, subjectstorender, postprocessing)
@@ -561,73 +564,6 @@ class OntDocGeneration:
                 f.close()
         return subjectstorender
 
-    def createCollections(self, graph, namespace):
-        classToInstances = {}
-        classToGeoColl = {}
-        classToFColl = {}
-        for tup in graph.subject_objects(URIRef(self.typeproperty)):
-            if namespace in str(tup[0]):
-                if str(tup[1]) not in classToInstances:
-                    classToInstances[str(tup[1])] = set()
-                    classToFColl[str(tup[1])] = 0
-                    classToGeoColl[str(tup[1])] = 0
-                classToInstances[str(tup[1])].add(str(tup[0]))
-                isgeo = False
-                isfeature = False
-                for geotup in graph.predicate_objects(tup[0]):
-                    if str(geotup[0]) in DocConfig.geopointerproperties:
-                        isfeature = True
-                    elif str(geotup[0]) in DocConfig.geoproperties:
-                        isgeo = True
-                if isgeo:
-                    classToGeoColl[str(tup[1])] += 1
-                if isfeature:
-                    classToFColl[str(tup[1])] += 1
-        for cls in classToInstances:
-            colluri = namespace + DocUtils.shortenURI(cls) + "_collection"
-            collrelprop = "http://www.w3.org/2000/01/rdf-schema#member"
-            if classToFColl[cls] == len(classToInstances[cls]):
-                graph.add((URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection"),
-                           URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
-                           URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
-                graph.add((URIRef("http://www.opengis.net/ont/geosparql#FeatureCollection"),
-                           URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
-                           URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection")))
-                graph.add((URIRef(colluri), URIRef(self.typeproperty),
-                           URIRef("http://www.opengis.net/ont/geosparql#FeatureCollection")))
-            elif classToGeoColl[cls] == len(classToInstances[cls]):
-                graph.add((URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection"),
-                           URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
-                           URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
-                graph.add((URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection"),
-                           URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
-                           URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection")))
-                graph.add((URIRef(colluri), URIRef(self.typeproperty),
-                           URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection")))
-            elif cls in DocConfig.classToCollectionClass:
-                if "super" in DocConfig.classToCollectionClass[cls]:
-                    graph.add((URIRef(DocConfig.classToCollectionClass[cls]["class"]),
-                               URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
-                               URIRef(DocConfig.classToCollectionClass[cls]["super"])))
-                    graph.add((URIRef(DocConfig.classToCollectionClass[cls]["super"]),
-                               URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
-                               URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
-                else:
-                    graph.add((URIRef(DocConfig.classToCollectionClass[cls]["class"]),
-                               URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
-                               URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
-                graph.add((URIRef(colluri), URIRef(self.typeproperty),
-                           URIRef(DocConfig.classToCollectionClass[cls]["class"])))
-                collrelprop = DocConfig.classToCollectionClass[cls]["prop"]
-            else:
-                graph.add((URIRef(colluri), URIRef(self.typeproperty),
-                           URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
-            graph.add((URIRef(colluri), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
-                       Literal(str(DocUtils.shortenURI(cls)) + " Instances Collection", lang="en")))
-            for instance in classToInstances[cls]:
-                graph.add((URIRef(colluri), URIRef(collrelprop), URIRef(instance)))
-        return graph
-
 
     def getSubjectPagesForNonGraphURIs(self, uristorender, graph, prefixnamespace, corpusid, outpath, nonnsmap, baseurl,
                                        uritotreeitem, labeltouri):
@@ -654,7 +590,7 @@ class OntDocGeneration:
                     labeltouri[label] = prefixnamespace + "nonns_" + DocUtils.shortenURI(uri) + ".html"
                 if counter % 10 == 0:
                     self.updateProgressBar(counter, nonnsuris, "NonNS URIs")
-                self.createHTML(outpath + "nonns_" + DocUtils.shortenURI(uri) + ".html", None, URIRef(uri), baseurl,
+                self.htmlexporter.createHTML(outpath + "nonns_" + DocUtils.shortenURI(uri) + ".html", None, URIRef(uri), baseurl,
                                 graph.subject_predicates(URIRef(uri), True), graph, str(corpusid) + "_search.js",
                                 str(corpusid) + "_classtree.js", None, self.license, None, Graph(), uristorender, True,
                                 label)
@@ -669,6 +605,7 @@ class OntDocGeneration:
     def getAccessFromBaseURL(self, baseurl, savepath):
         return savepath.replace(baseurl, "")
 
+    """
     def createHTML(self, savepath, predobjs, subject, baseurl, subpreds, graph, searchfilename, classtreename,
                    uritotreeitem, curlicense, subjectstorender, postprocessing, nonnsmap=None, nonns=False,
                    foundlabel=""):
@@ -1110,7 +1047,7 @@ class OntDocGeneration:
                         LexiconPage().generatePageWidget(graph, subject, f, {}, False)
                     if type in PersonPage.pageWidgetConstraint():
                         PersonPage().generatePageWidget(graph, subject, templates, f, True)
-                self.processCollectionPages(collections, graph, subject, f)
+                HTMLExporter.processCollectionPages(collections, graph, subject,templates, f)
                 if geojsonrep != None and "geocollection" not in collections:
                     self.geocache = GeometryViewPage().generatePageWidget(graph, templates, subject, f, uritotreeitem,
                                                                           geojsonrep, predobjmap, self.geocache,
@@ -1156,13 +1093,7 @@ class OntDocGeneration:
             print(inst)
             print(traceback.format_exc())
         return [postprocessing, nonnsmap]
-
-    def processCollectionPages(self, pagesmap, graph, subject, f):
-        if "observationcollection" in pagesmap:
-            ObservationPage().generateCollectionWidget(graph, templates, subject, f)
-        if "lexicon" in pagesmap:
-            LexiconPage().generateCollectionWidget(graph, templates, subject, f)
-
+    """
 
 def main():
     prefixes = {"reversed": {}}
