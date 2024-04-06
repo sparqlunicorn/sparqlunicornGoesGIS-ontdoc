@@ -72,7 +72,6 @@ class OntDocGeneration:
         self.datasettitle=str(datasettitle).replace(" ","_")
         self.logoname=logoname
         self.apis=apis
-        self.has3d=False
         self.repository=repository
         self.publisher=publisher
         self.publishingorg=publishingorg
@@ -256,8 +255,6 @@ class OntDocGeneration:
                                   uritotreeitem, curlicense, subjectstorender, postprocessing, nonnsmap)
             postprocessing = res[0]
             nonnsmap = res[1]
-            if res[3]:
-                self.has3d=True
             subtorencounter += 1
             if subtorencounter % 250 == 0:
                 subtorenderlen = len(subjectstorender) + len(postprocessing)
@@ -294,7 +291,7 @@ class OntDocGeneration:
         with open(outpath + corpusid + '_search.js', 'w', encoding='utf-8') as f:
             f.write("var search=" + json.dumps(labeltouri, indent=2, sort_keys=True))
             f.close()
-        if self.has3d:
+        if self.htmlexporter.has3d:
             if not os.path.exists(outpath + "/js"):
                 os.makedirs(outpath + "/js")
             with open(outpath + "/js/corto.em.js", 'w', encoding='utf-8') as f:

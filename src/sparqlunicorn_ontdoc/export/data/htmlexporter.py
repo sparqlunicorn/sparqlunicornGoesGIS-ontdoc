@@ -39,6 +39,7 @@ class HTMLExporter():
         self.templates = templates
         self.localOptimized=localOptimized
         self.apis = apis
+        self.has3d=False
         self.labellang = labellang
         self.license = license
         self.licenseuri=""
@@ -579,7 +580,7 @@ class HTMLExporter():
             print("Could not write " + str(completesavepath))
             print(inst)
             print(traceback.format_exc())
-        return [postprocessing, nonnsmap,self.has3d]
+        return [postprocessing, nonnsmap]
 
     @staticmethod
     def processCollectionPages(pagesmap, graph, subject, templates, f):
