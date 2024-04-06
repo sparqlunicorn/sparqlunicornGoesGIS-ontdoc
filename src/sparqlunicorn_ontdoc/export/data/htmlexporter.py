@@ -28,7 +28,7 @@ class HTMLExporter():
 
     def __init__(self, prefixes, prefixnamespace, prefixnsshort, license, labellang, outpath,
                  metadatatable, generatePagesForNonNS, apis,templates,namespaceshort,typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-                 imagemetadata=None,
+                 imagemetadata=None,localOptimized=False,
                  deploypath="", logoname="", offlinecompat=False):
         self.prefixes = prefixes
         self.prefixnamespace = prefixnamespace
@@ -37,6 +37,7 @@ class HTMLExporter():
         self.metadatatable = metadatatable
         self.logoname = logoname
         self.templates = templates
+        self.localOptimized=localOptimized
         self.apis = apis
         self.labellang = labellang
         self.license = license

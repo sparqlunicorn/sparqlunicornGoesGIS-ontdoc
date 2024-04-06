@@ -107,7 +107,7 @@ class OntDocGeneration:
         self.typeproperty = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
         self.createIndexPages = createIndexPages
         self.graph = graph
-        self.htmlexporter=HTMLExporter(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,metadatatable,generatePagesForNonNS,apis,templates,self.namespaceshort,self.typeproperty,imagemetadata,deploypath,logoname,offlinecompat)
+        self.htmlexporter=HTMLExporter(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,metadatatable,generatePagesForNonNS,apis,templates,self.namespaceshort,self.typeproperty,imagemetadata,localOptimized,deploypath,logoname,offlinecompat)
         for nstup in self.graph.namespaces():
             if str(nstup[1]) not in prefixes["reversed"]:
                 prefixes["reversed"][str(nstup[1])] = str(nstup[0])
