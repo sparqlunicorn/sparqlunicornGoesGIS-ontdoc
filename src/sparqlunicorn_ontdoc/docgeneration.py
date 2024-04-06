@@ -561,35 +561,6 @@ class OntDocGeneration:
                 f.close()
         return subjectstorender
 
-    def getPropertyRelations(self, graph, outpath):
-        predicates = {}
-        predicatecounter = 0
-        predicatelength = 0
-        predicateClasses = 0
-        objects = set()
-        for pred in graph.predicates(None, None, True):
-            predicates[pred] = {"from": set(), "to": set(), "triples": 0}
-            for tup in graph.subject_objects(pred):
-                if str(tup[0]) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":
-                    predicateClasses += 1
-                for item in graph.objects(tup[0], URIRef(self.typeproperty), True):
-                    predicates[pred]["from"].add(item)
-                for item in graph.objects(tup[1], URIRef(self.typeproperty), True):
-                    predicates[pred]["to"].add(item)
-                objects.add(str(tup[1]))
-                predicates[pred]["triples"] += 1
-            predicates[pred]["from"] = list(predicates[pred]["from"])
-            predicates[pred]["to"] = list(predicates[pred]["to"])
-            predicatecounter += 1
-            predicatelength += len(str(pred))
-        if self.createVOWL:
-            OWL2VOWL.convertOWL2MiniVOWL(graph, outpath, "minivowl_result.js", predicates)
-        with open(outpath + "proprelations.js", 'w', encoding='utf-8') as f:
-            f.write("var proprelations=" + json.dumps(predicates))
-            f.close()
-        return {"preds": predicatecounter, "avgpredlen": str(int(predicatelength / predicatecounter)),
-                "predclasses": predicateClasses, "objs": len(objects), "predmap": predicates}
-
     def createCollections(self, graph, namespace):
         classToInstances = {}
         classToGeoColl = {}
