@@ -167,11 +167,6 @@ class OntDocGeneration:
         labeltouri = {}
         uritolabel = {}
         uritotreeitem = {}
-        """
-        voidstats = {"http://rdfs.org/ns/void#classes": 0, "http://rdfs.org/ns/void#entities": 0,
-                     "http://rdfs.org/ns/void#distinctObjects": 0, "http://rdfs.org/ns/void#distinctSubjects": 0,
-                     "http://rdfs.org/ns/void#properties": 0, "http://rdfs.org/ns/void#triples": 0}
-        """
         if self.createVOWL:
             vowlinstance = OWL2VOWL()
             vowlinstance.convertOWL2VOWL(self.graph, outpath)
@@ -179,14 +174,6 @@ class OntDocGeneration:
         curlicense=tmp[0]
         self.licensehtml = tmp[0]
         self.licenseuri=tmp[1]
-        """
-        res = self.getPropertyRelations(self.graph, outpath)
-        voidstats["http://rdfs.org/ns/void#properties"] = res["preds"]
-        voidstats["http://ldf.fi/void-ext#propertyClasses"] = res["predclasses"]
-        voidstats["http://ldf.fi/void-ext#averagePropertyIRILength"] = res["avgpredlen"]
-        voidstats["http://rdfs.org/ns/void#distinctObjects"] = res["objs"]
-        predmap = res["predmap"]
-        """
         voidds = prefixnamespace + self.datasettitle
 
         if self.createColl:
@@ -197,102 +184,9 @@ class OntDocGeneration:
             shutil.copy(self.logoname, outpath + "/logo/logo." + self.logoname[self.logoname.rfind("."):])
             self.logoname = outpath + "/logo/logo." + self.logoname[self.logoname.rfind("."):]
         self.updateProgressBar(0, 1, "Creating classtree and search index")
-        """
-        subjectstorender = set()
-        subjectstorender.add(URIRef(voidds))
-        nonnscount = {}
-        nscount = {}
-        instancecount = {}
-        literaltypes = {}
-        blanknodes = set()
-        literallangs = set()
-        literals = set()
-        irirefs = 0
-        literallength = 0
-        literalcount = 0
-        subjectlength = 0
-        objectlength = 0
-        subjectcounter = 0
-        objectcounter = 0
-        for sub in self.graph.subjects(None, None, True):
-            if (prefixnamespace in sub and (isinstance(sub, URIRef)) or isinstance(sub, BNode)):
-                subjectstorender.add(sub)
-                label = DocUtils.shortenURI(str(sub))
-                restriction = False
-                ns = DocUtils.shortenURI(str(sub), True)
-                if ns not in nscount:
-                    nscount[ns] = 0
-                nscount[ns] += 1
-                self.graph.add((sub, URIRef("http://rdfs.org/ns/void#inDataset"),
-                                URIRef(voidds)))
-                if isinstance(sub, BNode):
-                    blanknodes.add(str(sub))
-                irirefs += 1
-                subjectcounter += 1
-                subjectlength += len(str(sub))
-                for tup in self.graph.predicate_objects(sub):
-                    if isinstance(tup[1], Literal):
-                        if tup[1].datatype != None:
-                            if str(tup[1].datatype) not in literaltypes:
-                                literaltypes[str(tup[1].datatype)] = set()
-                            literaltypes[str(tup[1].datatype)].add(str(tup[0]))
-                        if tup[1].language != None:
-                            literallangs.add(str(tup[1].language))
-                        literallength += len(str(tup[1]))
-                        literals.add(str(tup[1]))
-                        literalcount += 1
-                    elif isinstance(tup[1], BNode):
-                        blanknodes.add(str(tup[1]))
-                    else:
-                        objectlength += len(str(tup[1]))
-                        objectcounter += 1
-                        irirefs += 1
-                        ns = DocUtils.shortenURI(str(tup[1]), True)
-                        if ns not in nscount:
-                            nscount[ns] = 0
-                        nscount[ns] += 1
-                    if str(tup[0]) in DocConfig.labelproperties:
-                        labeltouri[str(tup[1])] = str(sub)
-                        uritolabel[str(sub)] = {"label": str(tup[1])}
-                        label = str(tup[1])
-                    elif str(tup[0]) == self.typeproperty:
-                        if str(tup[1]) not in instancecount:
-                            instancecount[str(tup[1])] = 0
-                        instancecount[str(tup[1])] += 1
-                    elif str(tup[1]) == "http://www.w3.org/2002/07/owl#Restriction":
-                        restriction = True
-                    elif str(tup[0]) == "http://www.w3.org/2000/01/rdf-schema#subClassOf":
-                        ressubcls = str(tup[1])
-                    if isinstance(tup[1], URIRef) and prefixnamespace not in str(tup[1]):
-                        ns = DocUtils.shortenURI(str(tup[1]), True)
-                        if ns not in nscount:
-                            nscount[ns] = 0
-                        nscount[ns] += 1
-                        if str(tup[0]) not in nonnscount:
-                            nonnscount[str(tup[0])] = {}
-                        if ns not in nonnscount[str(tup[0])]:
-                            nonnscount[str(tup[0])][ns] = 0
-                        nonnscount[str(tup[0])][ns] += 1
-                if isinstance(sub, BNode) and restriction:
-                    self.graph.add((sub, URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
-                                    Literal(label + " [Restriction]", lang="en")))
-            voidstats["http://rdfs.org/ns/void#distinctSubjects"] += 1
-        voidstats["http://rdfs.org/ns/void#entities"] = len(subjectstorender)
-        voidstats["http://ldf.fi/void-ext#languages"] = len(literallangs)
-        voidstats["http://ldf.fi/void-ext#distinctBlankNodes"] = len(blanknodes)
-        voidstats["http://ldf.fi/void-ext#datatypes"] = len(literaltypes.keys())
-        voidstats["http://ldf.fi/void-ext#distinctLiterals"] = len(literals)
-        voidstats["http://ldf.fi/void-ext#averageSubjectIRILength"] = int(subjectlength / subjectcounter)
-        voidstats["http://ldf.fi/void-ext#averageObjectIRILength"] = int(objectlength / objectcounter)
-        voidstats["http://ldf.fi/void-ext#averageLiteralLength"] = int(literallength / literalcount)
-        voidstats["http://ldf.fi/void-ext#distinctIRIReferences"] = voidstats[
-                                                                        "http://rdfs.org/ns/void#distinctSubjects"] + \
-                                                                    res["preds"] + res["objs"]
-        voidstats["http://ldf.fi/void-ext#distinctRDFNodes"] = len(blanknodes) + len(literals) + voidstats[
-            "http://ldf.fi/void-ext#distinctIRIReferences"]
-        """
         res=GraphUtils.analyzeGraph(self.graph, prefixnamespace, self.typeproperty, voidds, labeltouri, uritolabel, outpath, self.createVOWL)
         subjectstorender=res["subjectstorender"]
+        self.iiif=res["iiif"]
         if os.path.exists(outpath + corpusid + '_search.js'):
             try:
                 with open(outpath + corpusid + '_search.js', 'r', encoding='utf-8') as f:
