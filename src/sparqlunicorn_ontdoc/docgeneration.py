@@ -175,7 +175,6 @@ class OntDocGeneration:
         self.licensehtml = tmp[0]
         self.licenseuri=tmp[1]
         voidds = prefixnamespace + self.datasettitle
-
         if self.createColl:
             self.graph = self.createCollections(self.graph, prefixnamespace)
         if self.logoname != None and self.logoname != "" and not self.logoname.startswith("http"):
@@ -186,7 +185,7 @@ class OntDocGeneration:
         self.updateProgressBar(0, 1, "Creating classtree and search index")
         res=GraphUtils.analyzeGraph(self.graph, prefixnamespace, self.typeproperty, voidds, labeltouri, uritolabel, outpath, self.createVOWL)
         subjectstorender=res["subjectstorender"]
-        self.iiif=res["iiif"]
+        self.apis["iiif"]=res["iiif"]
         if os.path.exists(outpath + corpusid + '_search.js'):
             try:
                 with open(outpath + corpusid + '_search.js', 'r', encoding='utf-8') as f:
