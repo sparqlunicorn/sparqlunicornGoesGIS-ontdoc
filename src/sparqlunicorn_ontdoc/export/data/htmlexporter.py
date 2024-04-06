@@ -579,7 +579,7 @@ class HTMLExporter():
             print("Could not write " + str(completesavepath))
             print(inst)
             print(traceback.format_exc())
-        return [postprocessing, nonnsmap]
+        return [postprocessing, nonnsmap,self.has3d]
 
     @staticmethod
     def processCollectionPages(pagesmap, graph, subject, templates, f):
