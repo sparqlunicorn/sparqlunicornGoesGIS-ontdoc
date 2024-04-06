@@ -12,11 +12,6 @@ import os
 import sys
 import traceback
 
-from export.pages.bibpage import BibPage
-from export.pages.lexiconpage import LexiconPage
-from export.pages.observationpage import ObservationPage
-from export.pages.geometryviewpage import GeometryViewPage
-from export.pages.personpage import PersonPage
 from export.data.htmlexporter import HTMLExporter
 from export.data.voidexporter import VoidExporter
 
@@ -44,18 +39,10 @@ import re
 import shutil
 import json
 
-listthreshold = 5
-maxlistthreshold = 1500
-
 templatepath = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
 resourcepath = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/"))
 
-featurecollectionspaths = {}
-iiifmanifestpaths = {"default": []}
-imagetoURI = {}
-
 templates = DocDefaults.templates
-
 
 class OntDocGeneration:
 
@@ -301,7 +288,7 @@ class OntDocGeneration:
                 f.write(templates["nexus"])
                 f.close()
         if self.apis["iiif"]:
-            IIIFAPIExporter.generateIIIFAnnotations(outpath, imagetoURI)
+            IIIFAPIExporter.generateIIIFAnnotations(outpath, self.htmlexporter.imagetoURI)
         if self.createIndexPages:
             indpcounter = 0
             for path in paths:
@@ -489,8 +476,8 @@ class OntDocGeneration:
                 f.write(sparqlhtml)
                 f.close()
         relpath = DocUtils.generateRelativePathFromGivenDepth(0)
-        if len(iiifmanifestpaths["default"]) > 0:
-            IIIFAPIExporter.generateIIIFCollections(self.outpath, self.deploypath, iiifmanifestpaths["default"],
+        if len(self.htmlexporter.iiifmanifestpaths["default"]) > 0:
+            IIIFAPIExporter.generateIIIFCollections(self.outpath, self.deploypath, self.htmlexporter.iiifmanifestpaths["default"],
                                                     prefixnamespace)
             indexhtml = self.replaceStandardVariables(templates["htmltemplate"], "", "0", "true")
             indexhtml = indexhtml.replace("{{iconprefixx}}",
@@ -505,7 +492,7 @@ class OntDocGeneration:
                 "{{nonnslink}}", "").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}",
                                                                             corpusid + '_search.js').replace(
                 "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "")
-            IIIFAPIExporter.generateImageGrid(self.outpath, self.deploypath, iiifmanifestpaths["default"],
+            IIIFAPIExporter.generateImageGrid(self.outpath, self.deploypath, self.htmlexporter.iiifmanifestpaths["default"],
                                               templates["imagegrid"], indexhtml,
                                               self.replaceStandardVariables(templates["footer"], "", "0",
                                                                             "true").replace("{{license}}",
@@ -514,13 +501,13 @@ class OntDocGeneration:
                                                                              templates["nongeoexports"]).replace(
                                                   "{{bibtex}}", "").replace("{{stats}}", self.voidstatshtml),
                                               outpath + "imagegrid.html")
-        if len(featurecollectionspaths) > 0 and self.apis["ckan"]:
-            CKANExporter.generateCKANCollection(outpath, self.deploypath, featurecollectionspaths, tree["core"]["data"],
+        if len(self.htmlexporter.featurecollectionspaths) > 0 and self.apis["ckan"]:
+            CKANExporter.generateCKANCollection(outpath, self.deploypath, self.htmlexporter.featurecollectionspaths, tree["core"]["data"],
                                                 self.license)
         if self.apis["solidexport"]:
             SolidExporter.createSolidSettings(self.graph, outpath, self.deploypath, self.publisher, self.datasettitle,
                                               tree["core"]["data"])
-        if len(featurecollectionspaths) > 0:
+        if len(self.htmlexporter.featurecollectionspaths) > 0:
             indexhtml = self.replaceStandardVariables(templates["htmltemplate"], "", "0", "true")
             indexhtml = indexhtml.replace("{{iconprefixx}}",
                                           (relpath + "icons/" if self.offlinecompat else "")).replace("{{baseurl}}",
@@ -534,7 +521,7 @@ class OntDocGeneration:
                 "{{nonnslink}}", "").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}",
                                                                             corpusid + '_search.js').replace(
                 "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "")
-            OGCAPIFeaturesExporter.generateOGCAPIFeaturesPages(outpath, self.deploypath, featurecollectionspaths,
+            OGCAPIFeaturesExporter.generateOGCAPIFeaturesPages(outpath, self.deploypath, self.htmlexporter.featurecollectionspaths,
                                                                prefixnamespace, self.apis["ogcapifeatures"], True)
             indexhtml += "<p>This page shows feature collections present in the linked open data export</p>"
             indexhtml += "<script src=\"features.js\"></script>"
