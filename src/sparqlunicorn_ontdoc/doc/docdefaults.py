@@ -2250,9 +2250,17 @@ async function queryFile(){
   </section>
   <a href="vowl_result.js" target="_blank">Download VOWL File</a> <a href="minivowl_result.js" target="_blank">Download Mini VOWL File</a>
     <script>
-    function fullscreenGraph() {
-        document.getElementById("vowl").requestFullscreen()
-    }
+      function fullscreenGraph() {
+        if(!document.fullscreenElement) {
+          document.getElementById("vowl").requestFullscreen()
+          document.getElementById("svgGraph").width = "100%"
+          document.getElementById("svgGraph").height = "100%"
+        }else{
+          document.exitFullscreen()
+          document.getElementById("svgGraph").width = document.getElementById("vowl").offsetWidth;
+          document.getElementById("svgGraph").height = 600
+        }
+      }
     
     var graphTag = document.getElementById('graph')
     , linkDistanceClassSlider
