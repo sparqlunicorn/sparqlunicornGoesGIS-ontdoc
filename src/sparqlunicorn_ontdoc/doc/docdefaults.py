@@ -2249,7 +2249,12 @@ async function queryFile(){
     </div>
   </section>
   <a href="vowl_result.js" target="_blank">Download VOWL File</a> <a href="minivowl_result.js" target="_blank">Download Mini VOWL File</a>
-    <script>var graphTag = document.getElementById('graph')
+    <script>
+    function fullscreenGraph() {
+        document.getElementById("vowl").requestFullscreen()
+    }
+    
+    var graphTag = document.getElementById('graph')
     , linkDistanceClassSlider
     , linkDistanceClassLabel
     , linkDistanceLiteralLabel
@@ -2259,7 +2264,8 @@ async function queryFile(){
         , width = document.getElementById("vowl").offsetWidth;
     var graphOptions = function graphOptionsFunct() {
 
-    var   resetOption = document.getElementById('resetOption')
+    var   resetOption = document.getElementById('resetOption'),
+            fullscreenOption = document.getElementById('FullScreenOption')
         , sliderOption = document.getElementById('sliderOption');
 
     d3.select(resetOption)
@@ -2268,6 +2274,13 @@ async function queryFile(){
         .property("type", "reset")
         .text("Reset")
         .on("click", resetGraph);
+
+    d3.select(fullscreenOption)
+        .append("button")
+        .attr("id", "fullscreen")
+        .property("type", "fullscreen")
+        .text("FullScreen")
+        .on("click", fullscreenGraph);
 
     var slidDiv = d3.select(sliderOption)
         .append("div")

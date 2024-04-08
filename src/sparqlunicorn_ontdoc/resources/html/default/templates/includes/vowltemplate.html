@@ -39,9 +39,9 @@
 
     d3.select(fullscreenOption)
         .append("button")
-        .attr("id", "reset")
-        .property("type", "reset")
-        .text("Reset")
+        .attr("id", "fullscreen")
+        .property("type", "fullscreen")
+        .text("FullScreen")
         .on("click", fullscreenGraph);
 
     var slidDiv = d3.select(sliderOption)
