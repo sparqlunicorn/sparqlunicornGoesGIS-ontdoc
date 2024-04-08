@@ -2250,17 +2250,6 @@ async function queryFile(){
   </section>
   <a href="vowl_result.js" target="_blank">Download VOWL File</a> <a href="minivowl_result.js" target="_blank">Download Mini VOWL File</a>
     <script>
-      function fullscreenGraph() {
-        if(!document.fullscreenElement) {
-          document.getElementById("vowl").requestFullscreen()
-          document.getElementById("svgGraph").setAttribute("width",window.screen.width)
-          document.getElementById("svgGraph").setAttribute("height",window.screen.height)
-        }else{
-          document.exitFullscreen()
-          document.getElementById("svgGraph").width = document.getElementById("vowl").offsetWidth;
-          document.getElementById("svgGraph").height = 600
-        }
-      }
     
     var graphTag = document.getElementById('graph')
     , linkDistanceClassSlider
@@ -2275,6 +2264,18 @@ async function queryFile(){
     var   resetOption = document.getElementById('resetOption'),
             fullscreenOption = document.getElementById('FullScreenOption')
         , sliderOption = document.getElementById('sliderOption');
+
+      function fullscreenGraph() {
+        if(!document.fullscreenElement) {
+          document.getElementById("vowl").requestFullscreen()
+          document.getElementById("svgGraph").width = "100%"
+          document.getElementById("svgGraph").height = "100%"
+        }else{
+          document.exitFullscreen()
+          document.getElementById("svgGraph").width = width
+          document.getElementById("svgGraph").height = height
+        }
+      }
 
     d3.select(resetOption)
         .append("button")
