@@ -2253,8 +2253,8 @@ async function queryFile(){
       function fullscreenGraph() {
         if(!document.fullscreenElement) {
           document.getElementById("vowl").requestFullscreen()
-          document.getElementById("svgGraph").width = window.screen.width
-          document.getElementById("svgGraph").height = window.screen.height
+          document.getElementById("svgGraph").setAttribute("width",window.screen.width)
+          document.getElementById("svgGraph").setAttribute("height",window.screen.height)
         }else{
           document.exitFullscreen()
           document.getElementById("svgGraph").width = document.getElementById("vowl").offsetWidth;
