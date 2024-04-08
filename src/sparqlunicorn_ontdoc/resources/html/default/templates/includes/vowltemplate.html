@@ -29,13 +29,13 @@
 
       function fullscreenGraph() {
         if(!document.fullscreenElement) {
-          document.getElementById("svgGraph").style.width = "100%"
-          document.getElementById("svgGraph").style.height = "100%"
+          document.getElementById("svgGraph").width = "100%"
+          document.getElementById("svgGraph").height = "100%"
           document.getElementById("vowl").requestFullscreen()
         }else{
           document.exitFullscreen()
-          document.getElementById("svgGraph").style.width = width
-          document.getElementById("svgGraph").style.height = height
+          document.getElementById("svgGraph").width = width
+          document.getElementById("svgGraph").height = height
         }
       }
 

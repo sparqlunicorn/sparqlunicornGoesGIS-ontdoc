@@ -2268,12 +2268,12 @@ async function queryFile(){
       function fullscreenGraph() {
         if(!document.fullscreenElement) {
           document.getElementById("vowl").requestFullscreen()
-          document.getElementById("svgGraph").style.width = "100%"
-          document.getElementById("svgGraph").style.height = "100%"
+          document.getElementById("svgGraph").width = "100%"
+          document.getElementById("svgGraph").height = "100%"
         }else{
           document.exitFullscreen()
-          document.getElementById("svgGraph").style.width = width
-          document.getElementById("svgGraph").style.height = height
+          document.getElementById("svgGraph").width = width
+          document.getElementById("svgGraph").height = height
         }
       }
 
