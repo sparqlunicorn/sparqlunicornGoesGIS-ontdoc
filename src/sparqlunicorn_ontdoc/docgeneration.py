@@ -422,15 +422,15 @@ class OntDocGeneration:
                     "{{stats}}", self.voidstatshtml)
                 tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.apis["ogcapifeatures"], self.apis["iiif"], self.apis["ckan"]],
                                                             [
-                                                                "<a href=\"" + str(
-                                                                    self.deploypath) + "/sparql.html?endpoint=" + str(
+                                                                "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
+                                                                    checkdepth) + "/sparql.html?endpoint=" + str(
                                                                     self.deploypath) + "\">[SPARQL]</a>&nbsp;",
-                                                                "<a href=\"" + str(
-                                                                    self.deploypath) + "/api/api.html\">[OGC API Features]</a>&nbsp;",
-                                                                "<a href=\"" + str(
-                                                                    self.deploypath) + "/iiif/\">[IIIF]</a>&nbsp;",
-                                                                "<a href=\"" + str(
-                                                                    self.deploypath) + "/api/3/\">[CKAN]</a>"
+                                                                "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
+                                                                    checkdepth) + "/api/api.html\">[OGC API Features]</a>&nbsp;",
+                                                                "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
+                                                                    checkdepth) + "/iiif/\">[IIIF]</a>&nbsp;",
+                                                                "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
+                                                                    checkdepth) + "/api/3/\">[CKAN]</a>"
                                                             ], "{{apis}}")
                 indexhtml+=tempfoot
                 # print(path)
@@ -536,13 +536,11 @@ class OntDocGeneration:
                 "{{stats}}", self.voidstatshtml)
             tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.apis["ogcapifeatures"], self.apis["iiif"], self.apis["ckan"]],
                                                         [
-                                                            "<a href=\"" + str(
-                                                                self.deploypath) + "/sparql.html?endpoint=" + str(
+                                                            "<a href=\"sparql.html?endpoint=" + str(
                                                                 self.deploypath) + "\">[SPARQL]</a>&nbsp;",
-                                                            "<a href=\"" + str(
-                                                                self.deploypath) + "/api/api.html\">[OGC API Features]</a>&nbsp;",
-                                                            "<a href=\"" + str(self.deploypath) + "/iiif/\">[IIIF]</a>&nbsp;",
-                                                            "<a href=\"" + str(self.deploypath) + "/api/3/\">[CKAN]</a>"
+                                                            "<a href=\"api/api.html\">[OGC API Features]</a>&nbsp;",
+                                                            "<a href=\"iiif/\">[IIIF]</a>&nbsp;",
+                                                            "<a href=\"api/3/\">[CKAN]</a>"
                                                         ], "{{apis}}")
             indexhtml+=tempfoot
             with open(outpath + "featurecollections.html", 'w', encoding='utf-8') as f:
