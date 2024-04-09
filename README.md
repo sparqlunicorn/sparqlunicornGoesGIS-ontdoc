@@ -27,7 +27,7 @@ For a usage example please refer to this repository:
 You can install the ontology documentation script as a pip package using the following command:
 
 `
-pip install -U git+https://github.com/sparqlunicorn/sparqlunicornGoesGIS-ontdoc@v017dev
+pip install -U git+https://github.com/sparqlunicorn/sparqlunicornGoesGIS-ontdoc@v017
 `
 
 The execution parameters are the ones described in the next section.
