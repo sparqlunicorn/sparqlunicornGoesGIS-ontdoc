@@ -67,7 +67,7 @@ class OntDocGeneration:
         self.namespaceshort = prefixnsshort.replace("/","")
         self.outpath=outpath
         self.exports=exports
-        self.datasettitle=str(datasettitle).replace(" ","_")
+        self.datasettitle=str(datasettitle)
         self.logoname=logoname
         self.ckan=ckan
         self.solidexport=solidexport
