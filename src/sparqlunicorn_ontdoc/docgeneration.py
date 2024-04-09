@@ -56,7 +56,7 @@ class OntDocGeneration:
         self.namespaceshort = prefixnsshort.replace("/","")
         self.outpath=outpath
         self.exports=exports
-        self.datasettitle=str(datasettitle).replace(" ","_")
+        self.datasettitle=str(datasettitle)
         self.logoname=logoname
         self.apis=apis
         self.repository=repository
@@ -98,12 +98,12 @@ class OntDocGeneration:
             if str(nstup[1]) not in prefixes["reversed"]:
                 prefixes["reversed"][str(nstup[1])] = str(nstup[0])
         self.preparedclassquery = prepareQuery(DocConfig.classtreequery)
-        if prefixnamespace == None or prefixnsshort == None or prefixnamespace == "" or prefixnsshort == "":
+        if prefixnamespace is None or prefixnsshort is None or prefixnamespace == "" or prefixnsshort == "":
             self.namespaceshort = "suni"
             self.prefixnamespace = "http://purl.org/suni/"
         if not prefixnamespace.endswith("/") and not prefixnamespace.endswith("#"):
             self.prefixnamespace += "/"
-        if outpath == None:
+        if outpath is None:
             self.outpath = "suni_htmls/"
         else:
             self.outpath = self.outpath.replace("\\", "/")
@@ -149,7 +149,7 @@ class OntDocGeneration:
     def generateOntDocForNameSpace(self, prefixnamespace,dataformat="HTML"):
         outpath=self.outpath
         corpusid=self.namespaceshort.replace("#","")
-        if self.datasettitle==None or self.datasettitle=="":
+        if self.datasettitle is None or self.datasettitle== "":
             self.datasettitle=corpusid.replace(" ","_")+"_dataset"
         if not os.path.isdir(outpath):
             os.mkdir(outpath)
