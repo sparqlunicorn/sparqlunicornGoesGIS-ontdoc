@@ -269,7 +269,7 @@ class OntDocGeneration:
         voidstats["http://ldf.fi/void-ext#averagePropertyIRILength"] = res["avgpredlen"]
         voidstats["http://rdfs.org/ns/void#distinctObjects"] = res["objs"]
         predmap = res["predmap"]
-        voidds = prefixnamespace + self.datasettitle
+        voidds = prefixnamespace + self.datasettitle.replace(" ","_")
         if self.createColl:
             self.graph = self.createCollections(self.graph, prefixnamespace)
         if self.logoname != None and self.logoname != "" and not self.logoname.startswith("http"):
