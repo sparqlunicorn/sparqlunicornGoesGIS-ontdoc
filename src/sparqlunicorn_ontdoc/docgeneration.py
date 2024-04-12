@@ -28,15 +28,12 @@ from doc.docdefaults import DocDefaults
 from doc.docconfig import DocConfig
 from doc.templateutils import TemplateUtils
 from export.data.vowlexporter import OWL2VOWL
-from export.data.exporterutils import ExporterUtils
 from export.api.iiifexporter import IIIFAPIExporter
 from export.api.ogcapifeaturesexporter import OGCAPIFeaturesExporter
 from export.api.ckanexporter import CKANExporter
 from export.api.solidexporter import SolidExporter
 
-import urllib.parse
 import argparse
-import re
 import shutil
 import json
 
@@ -72,7 +69,7 @@ class OntDocGeneration:
         self.licensehtml = None
         self.typeproperty = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
         self.graph = graph
-        self.htmlexporter=HTMLExporter(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,metadatatable,generatePagesForNonNS,apis,templates,self.namespaceshort,self.typeproperty,imagemetadata,localOptimized,deploypath,logoname,offlinecompat)
+        self.htmlexporter=HTMLExporter(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,metadatatable,generatePagesForNonNS,apis,templates,self.pubconfig["namespaceshort"],self.typeproperty,imagemetadata,localOptimized,deploypath,logoname,offlinecompat)
         for nstup in self.graph.namespaces():
             if str(nstup[1]) not in prefixes["reversed"]:
                 prefixes["reversed"][str(nstup[1])] = str(nstup[0])
