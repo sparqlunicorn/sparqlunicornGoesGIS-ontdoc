@@ -14,6 +14,7 @@ import traceback
 
 from export.data.htmlexporter import HTMLExporter
 from export.data.voidexporter import VoidExporter
+from src.sparqlunicorn_ontdoc.export.pages.indexviewpage import IndexViewPage
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 print(sys.path)
@@ -50,34 +51,16 @@ class OntDocGeneration:
                  createIndexPages, createColl, metadatatable, generatePagesForNonNS, createVOWL, apis, localOptimized=False, imagemetadata=None, startconcept=None,
                  repository="", deploypath="", logoname="", templatename="default", offlinecompat=False,
                  exports=["json", "ttl"], datasettitle="", publisher="", publishingorg=""):
-        self.prefixes = prefixes
-        self.prefixnamespace = prefixnamespace
-        self.modtime=modtime
-        self.namespaceshort = prefixnsshort.replace("/","")
-        self.outpath=outpath
-        self.exports=exports
-        self.datasettitle=str(datasettitle)
-        self.logoname=logoname
-        self.apis=apis
-        self.repository=repository
-        self.publisher=publisher
-        self.publishingorg=publishingorg
-        self.startconcept=startconcept
-        self.createVOWL=createVOWL
-        self.imagemetadata=imagemetadata
-        self.localOptimized=localOptimized
+
+        self.pubconfig={"prefixes":prefixes,"prefixnamespace":prefixnamespace,"namespaceshort":prefixnsshort.replace("/",""),"createIndexPages":createIndexPages,
+                        "modtime":modtime,"outpath":outpath,"exports":exports,"apis":apis,"publisher":publisher,"publishingorg":publishingorg,
+                        "startconcept":startconcept,"metadatatable":metadatatable,"createVOWL":createVOWL,"templatename":templatename,"imagemetadata":imagemetadata,
+                        "datasettitle":str(datasettitle),"logoname":logoname,"localOptimized":localOptimized,"labellang":labellang,"license":license,"createIndexPages":createIndexPages,
+                        "offlinecompat":offlinecompat,"generatePagesForNonNS":generatePagesForNonNS,"repository":repository,"createColl":createColl}
         self.geocache={}
-        self.deploypath=deploypath
-        self.generatePagesForNonNS=generatePagesForNonNS
         self.geocollectionspaths=[]
-        self.metadatatable=metadatatable
         self.templatename=templatename
-        #if os.path.exists("ontdocscript"):
-        #    templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "ontdocscript/resources/html/"))
-        # else:
-        #    templatepath=os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
         templates = TemplateUtils.resolveTemplate(templatename, templatepath)
-        self.offlinecompat = offlinecompat
         if offlinecompat:
             templates["htmltemplate"] = DocUtils.createOfflineCompatibleVersion(outpath, templates["htmltemplate"],
                                                                             templatepath, templatename)
@@ -85,13 +68,9 @@ class OntDocGeneration:
                                                                            templatepath, templatename)
             templates["sparqltemplate"] = DocUtils.createOfflineCompatibleVersion(outpath, templates["sparqltemplate"],
                                                                               templatepath, templatename)
-        self.license = license
         self.licenseuri = None
         self.licensehtml = None
-        self.createColl = createColl
-        self.labellang = labellang
         self.typeproperty = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-        self.createIndexPages = createIndexPages
         self.graph = graph
         self.htmlexporter=HTMLExporter(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,metadatatable,generatePagesForNonNS,apis,templates,self.namespaceshort,self.typeproperty,imagemetadata,localOptimized,deploypath,logoname,offlinecompat)
         for nstup in self.graph.namespaces():
@@ -102,115 +81,82 @@ class OntDocGeneration:
             self.namespaceshort = "suni"
             self.prefixnamespace = "http://purl.org/suni/"
         if not prefixnamespace.endswith("/") and not prefixnamespace.endswith("#"):
-            self.prefixnamespace += "/"
+            self.pubconfig["prefixnamespace"] += "/"
         if outpath is None:
-            self.outpath = "suni_htmls/"
+            self.pubconfig["outpath"] = "suni_htmls/"
         else:
-            self.outpath = self.outpath.replace("\\", "/")
+            self.pubconfig["outpath"] = self.pubconfig["outpath"].replace("\\", "/")
             if not outpath.endswith("/"):
-                self.outpath += "/"
-        self.outpath = self.outpath.replace("//", "/")
-        self.prefixnamespace = self.prefixnamespace.replace("//", "/")
+                self.pubconfig["outpath"] += "/"
+        self.pubconfig["outpath"] = self.pubconfig["outpath"].replace("//", "/")
+        self.pubconfig["prefixnamespace"] = self.pubconfig["prefixnamespace"].replace("//", "/")
         # prefixes["reversed"]["http://purl.org/suni/"] = "suni"
 
-    def updateProgressBar(self, iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█',
-                          printEnd="\r"):
-        """
-        Call in a loop to create terminal progress bar
-        @params:
-            iteration   - Required  : current iteration (Int)
-            total       - Required  : total iterations (Int)
-            prefix      - Optional  : prefix string (Str)
-            suffix      - Optional  : suffix string (Str)
-            decimals    - Optional  : positive number of decimals in percent complete (Int)
-            length      - Optional  : character length of bar (Int)
-            fill        - Optional  : bar fill character (Str)
-            printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
-        """
-        percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
-        filledLength = int(length * iteration // total)
-        bar = fill * filledLength + '-' * (length - filledLength)
-        print(f'\r{prefix} |{bar}| {percent}% {suffix}', end=printEnd)
-        # Print New Line on Complete
-        if iteration == total:
-            print()
-
-
-    def replaceStandardVariables(self, template, subject, checkdepth, indexpage):
-        template = template.replace("{{indexpage}}", str(indexpage)).replace("{{subject}}", str(subject)).replace(
-            "{{relativedepth}}", str(checkdepth)) \
-            .replace("{{versionurl}}", DocConfig.versionurl).replace("{{version}}", DocConfig.version).replace(
-            "{{deploypath}}", self.deploypath) \
-            .replace("{{publishingorg}}", self.publishingorg).replace("{{publisher}}", self.publisher).replace(
-            "{{datasettitle}}", self.datasettitle) \
-            .replace("{{logo}}", self.logoname)
-        return template
 
     def generateOntDocForNameSpace(self, prefixnamespace,dataformat="HTML"):
-        outpath=self.outpath
-        corpusid=self.namespaceshort.replace("#","")
-        if self.datasettitle is None or self.datasettitle== "":
-            self.datasettitle=corpusid.replace(" ","_")+"_dataset"
+        outpath=self.pubconfig["outpath"]
+        self.pubconfig["corpusid"]=self.pubconfig["namespaceshort"].replace("#","")
+        if self.pubconfig["datasettitle"] is None or self.pubconfig["datasettitle"]== "":
+            self.pubconfig["datasettitle"]=self.pubconfig["corpusid"].replace(" ","_")+"_dataset"
         if not os.path.isdir(outpath):
             os.mkdir(outpath)
         labeltouri = {}
         uritolabel = {}
         uritotreeitem = {}
-        if self.createVOWL:
+        if self.pubconfig["createVOWL"]:
             vowlinstance = OWL2VOWL()
             vowlinstance.convertOWL2VOWL(self.graph, outpath)
-        tmp=HTMLExporter.processLicense(self.license)
+        tmp=HTMLExporter.processLicense(self.pubconfig["license"])
         curlicense=tmp[0]
         self.licensehtml = tmp[0]
         self.licenseuri=tmp[1]
-        voidds = prefixnamespace + self.datasettitle
-        if self.createColl:
+        voidds = prefixnamespace + self.pubconfig["datasettitle"].replace(" ","_")
+        if self.pubconfig["createColl"]:
             self.graph = GraphUtils.createCollections(self.graph, prefixnamespace,self.typeproperty)
-        if self.logoname is not None and self.logoname != "" and not self.logoname.startswith("http"):
+        if self.pubconfig["logoname"] is not None and self.pubconfig["logoname"] != "" and not self.pubconfig["logoname"].startswith("http"):
+            logoname=self.pubconfig["logoname"]
             if not os.path.isdir(outpath + "/logo/"):
                 os.mkdir(outpath + "/logo/")
-            shutil.copy(self.logoname, outpath + "/logo/logo." + self.logoname[self.logoname.rfind("."):])
-            self.logoname = outpath + "/logo/logo." + self.logoname[self.logoname.rfind("."):]
-        self.updateProgressBar(0, 1, "Creating classtree and search index")
-        res=GraphUtils.analyzeGraph(self.graph, prefixnamespace, self.typeproperty, voidds, labeltouri, uritolabel, outpath, self.createVOWL)
+            shutil.copy(logoname, outpath + "/logo/logo." + logoname[logoname.rfind("."):])
+            self.pubconfig["logoname"] = outpath + "/logo/logo." + logoname[logoname.rfind("."):]
+        DocUtils.updateProgressBar(0, 1, "Creating classtree and search index")
+        res=GraphUtils.analyzeGraph(self.graph, prefixnamespace, self.typeproperty, voidds, labeltouri, uritolabel, self.pubconfig["outpath"], self.createVOWL)
         subjectstorender=res["subjectstorender"]
-        self.apis["iiif"]=res["iiif"]
-        if os.path.exists(outpath + corpusid + '_search.js'):
+        self.pubconfig["apis"]["iiif"]=res["iiif"]
+        if os.path.exists(outpath + self.pubconfig["corpusid"] + '_search.js'):
             try:
-                with open(outpath + corpusid + '_search.js', 'r', encoding='utf-8') as f:
+                with open(outpath + self.pubconfig["corpusid"] + '_search.js', 'r', encoding='utf-8') as f:
                     data = json.loads(f.read().replace("var search=", ""))
                     for key in data:
                         labeltouri[key] = data[key]
             except Exception as e:
                 print("Exception occurred " + str(e))
                 print(traceback.format_exc())
-        with open(outpath + corpusid + '_search.js', 'w', encoding='utf-8') as f:
+        with open(outpath + self.pubconfig["corpusid"] + '_search.js', 'w', encoding='utf-8') as f:
             f.write("var search=" + json.dumps(labeltouri, indent=2, sort_keys=True))
             f.close()
-        if self.offlinecompat:
+        if self.pubconfig["offlinecompat"]:
             if os.path.exists(outpath + "icons/"):
                 shutil.rmtree(outpath + "icons/")
             shutil.copytree(templatepath + "/" + self.templatename + "/icons/", outpath + "icons/")
         prevtree = []
-        if os.path.exists(outpath + corpusid + '_classtree.js'):
+        if os.path.exists(outpath + self.pubconfig["corpusid"] + '_classtree.js'):
             try:
-                with open(outpath + corpusid + '_classtree.js', 'r', encoding='utf-8') as f:
+                with open(outpath + self.pubconfig["corpusid"] + '_classtree.js', 'r', encoding='utf-8') as f:
                     prevtree = json.loads(f.read().replace("var tree=", ""))["core"]["data"]
             except Exception as e:
                 print("Exception occurred " + str(e))
         classidset = set()
-        tree = ClassTreeUtils.getClassTree(self.graph, uritolabel, classidset, uritotreeitem,self.typeproperty,self.prefixes,self.preparedclassquery)
+        tree = ClassTreeUtils.getClassTree(self.graph, uritolabel, classidset, uritotreeitem,self.typeproperty,self.pubconfig["prefixes"],self.preparedclassquery)
         for tr in prevtree:
             if tr["id"] not in classidset:
                 tree["core"]["data"].append(tr)
         res["voidstats"]["http://rdfs.org/ns/void#classes"] = len(classidset)
         res["voidstats"]["http://rdfs.org/ns/void#triples"] = len(self.graph)
-        voidgraph = VoidExporter.createVoidDataset(self.datasettitle, prefixnamespace, self.namespaceshort,
-                                                   self.repository, self.deploypath, self.outpath, self.licenseuri,
-                                                   self.modtime, self.labellang, res["voidstats"], subjectstorender,
-                                                   self.prefixes, tree, res["predmap"], res["nonnscount"], res["nscount"], res["instancecount"],
-                                                   self.startconcept)
-        self.voidstatshtml = VoidExporter.toHTML(res["voidstats"], self.deploypath)
+        voidgraph = VoidExporter.createVoidDataset(self.pubconfig, self.licenseuri,
+                                                   res["voidstats"], subjectstorender,
+                                                   tree, res["predmap"], res["nonnscount"], res["nscount"], res["instancecount"])
+        self.voidstatshtml = VoidExporter.toHTML(res["voidstats"], self.pubconfig["deploypath"])
         self.graph += voidgraph["graph"]
         subjectstorender = voidgraph["subjects"]
         with open(outpath + "style.css", 'w', encoding='utf-8') as f:
@@ -238,14 +184,14 @@ class OntDocGeneration:
                     print(traceback.format_exc())
             res = self.htmlexporter.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace,
                                   self.graph.subject_predicates(subj),
-                                  self.graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js",
+                                  self.graph, str(self.pubconfig["corpusid"]) + "_search.js", str(self.pubconfig["corpusid"]) + "_classtree.js",
                                   uritotreeitem, curlicense, subjectstorender, postprocessing, nonnsmap)
             postprocessing = res[0]
             nonnsmap = res[1]
             subtorencounter += 1
             if subtorencounter % 250 == 0:
                 subtorenderlen = len(subjectstorender) + len(postprocessing)
-                self.updateProgressBar(subtorencounter, subtorenderlen, "Processing Subject URIs")
+                DocUtils.updateProgressBar(subtorencounter, subtorenderlen, "Processing Subject URIs")
             # except Exception as e:
             #    print("Create HTML Exception: "+str(e))
             #    print(traceback.format_exc())
@@ -261,21 +207,21 @@ class OntDocGeneration:
                     print(traceback.format_exc())
             self.htmlexporter.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace,
                             self.graph.subject_predicates(subj),
-                            self.graph, str(corpusid) + "_search.js", str(corpusid) + "_classtree.js", uritotreeitem,
+                            self.graph, str(self.pubconfig["corpusid"]) + "_search.js", str(self.pubconfig["corpusid"]) + "_classtree.js", uritotreeitem,
                             curlicense, subjectstorender, postprocessing)
             subtorencounter += 1
             if subtorencounter % 250 == 0:
                 subtorenderlen = len(subjectstorender) + len(postprocessing)
-                self.updateProgressBar(subtorencounter, subtorenderlen, "Processing Subject URIs")
+                DocUtils.updateProgressBar(subtorencounter, subtorenderlen, "Processing Subject URIs")
         ClassTreeUtils.checkGeoInstanceAssignment(uritotreeitem)
         classlist = ClassTreeUtils.assignGeoClassesToTree(tree)
-        if self.generatePagesForNonNS:
-            labeltouri = self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, corpusid, outpath,
-                                                             self.license, prefixnamespace, uritotreeitem, labeltouri)
-        with open(outpath + corpusid + "_classtree.js", 'w', encoding='utf-8') as f:
+        if self.pubconfig["generatePagesForNonNS"]:
+            labeltouri = self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, self.pubconfig["corpusid"], outpath,
+                                                             self.pubconfig["license"], prefixnamespace, uritotreeitem, labeltouri)
+        with open(outpath + self.pubconfig["corpusid"] + "_classtree.js", 'w', encoding='utf-8') as f:
             f.write("var tree=" + json.dumps(tree, indent=2))
             f.close()
-        with open(outpath + corpusid + '_search.js', 'w', encoding='utf-8') as f:
+        with open(outpath +  self.pubconfig["corpusid"] + '_search.js', 'w', encoding='utf-8') as f:
             f.write("var search=" + json.dumps(labeltouri, indent=2, sort_keys=True))
             f.close()
         if self.htmlexporter.has3d:
@@ -287,189 +233,43 @@ class OntDocGeneration:
             with open(outpath + "/js/nexus.js", 'w', encoding='utf-8') as f:
                 f.write(templates["nexus"])
                 f.close()
-        if self.apis["iiif"]:
+        if self.pubconfig["apis"]["iiif"]:
             IIIFAPIExporter.generateIIIFAnnotations(outpath, self.htmlexporter.imagetoURI)
-        if self.createIndexPages:
-            indpcounter = 0
-            for path in paths:
-                if indpcounter % 10 == 0:
-                    self.updateProgressBar(indpcounter, len(paths), "Creating Index Pages")
-                subgraph = Graph(bind_namespaces="rdflib")
-                checkdepth = DocUtils.checkDepthFromPath(path, outpath, path) - 1
-                sfilelink = DocUtils.generateRelativeLinkFromGivenDepth(prefixnamespace, checkdepth,
-                                                                        corpusid + '_search.js', False)
-                classtreelink = DocUtils.generateRelativeLinkFromGivenDepth(prefixnamespace, checkdepth,
-                                                                            corpusid + "_classtree.js", False)
-                stylelink = DocUtils.generateRelativeLinkFromGivenDepth(prefixnamespace, checkdepth, "style.css", False)
-                scriptlink = DocUtils.generateRelativeLinkFromGivenDepth(prefixnamespace, checkdepth, "startscripts.js",
-                                                                         False)
-                proprelations = DocUtils.generateRelativeLinkFromGivenDepth(prefixnamespace, checkdepth,
-                                                                            "proprelations.js", False)
-                epsgdefslink = DocUtils.generateRelativeLinkFromGivenDepth(prefixnamespace, checkdepth, "epsgdefs.js",
-                                                                           False)
-                vowllink = DocUtils.generateRelativeLinkFromGivenDepth(prefixnamespace, checkdepth, "vowl_result.js",
-                                                                       False)
-                nslink = prefixnamespace + str(self.getAccessFromBaseURL(str(outpath), str(path)))
-                for sub in subjectstorender:
-                    if nslink in sub:
-                        for tup in self.graph.predicate_objects(sub):
-                            subgraph.add((sub, tup[0], tup[1]))
-                            if self.apis["solidexport"]:
-                                subgraph.add((URIRef(sub.replace("nslink", "")),
-                                              URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                                              URIRef("http://www.w3.org/ns/ldp#Container")))
-                                subgraph.add((URIRef(sub.replace("nslink", "")),
-                                              URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                                              URIRef("http://www.w3.org/ns/ldp#BasicContainer")))
-                                subgraph.add((URIRef(sub.replace("nslink", "")),
-                                              URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                                              URIRef("http://www.w3.org/ns/ldp#Resource")))
-                for ex in self.exports:
-                    if ex in ExporterUtils.exportToFunction:
-                        if ex not in ExporterUtils.rdfformats:
-                            with open(path + "index." + str(ex), 'w', encoding='utf-8') as f:
-                                ExporterUtils.exportToFunction[ex](subgraph, f, subjectstorender, classlist, ex)
-                                f.close()
-                        else:
-                            ExporterUtils.exportToFunction[ex](subgraph, path + "index." + str(ex), subjectstorender,
-                                                               classlist, ex)
-                relpath = DocUtils.generateRelativePathFromGivenDepth(checkdepth)
-                indexhtml = self.replaceStandardVariables(templates["htmltemplate"], voidds, checkdepth,
-                                                          str(nslink == prefixnamespace).lower())
-                indexhtml = indexhtml.replace("{{iconprefixx}}",
-                                              (relpath + "icons/" if self.offlinecompat else "")).replace("{{baseurl}}",
-                                                                                                          prefixnamespace).replace(
-                    "{{relativedepth}}", str(checkdepth)).replace("{{relativepath}}", relpath).replace("{{toptitle}}",
-                                                                                                       "Index page for " + nslink).replace(
-                    "{{title}}", "Index page for <span property=\"http://rdfs.org/ns/void#uriSpace\" content=\"" + str(
-                        nslink) + "\">" + str(nslink) + "</span>").replace("{{startscriptpath}}", scriptlink).replace(
-                    "{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink) \
-                    .replace("{{classtreefolderpath}}", classtreelink).replace("{{baseurlhtml}}", nslink).replace(
-                    "{{proprelationpath}}", proprelations).replace("{{nonnslink}}", "").replace("{{scriptfolderpath}}",
-                                                                                                sfilelink).replace(
-                    "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "").replace("{{subjectencoded}}",
-                                                                                                 urllib.parse.quote(
-                                                                                                     str(voidds)))
-                indexhtml += "<p property=\"http://rdfs.org/ns/void#feature\" resource=\"http://www.w3.org/ns/formats/Turtle\">This page shows information about linked data resources in <span property=\"http://rdfs.org/ns/void#feature\" resource=\"http://www.w3.org/ns/formats/RDFa\">HTML</span>. Choose the classtree navigation or search to browse the data</p>" + \
-                             templates["vowltemplate"].replace("{{vowlpath}}", "minivowl_result.js")
-                if self.startconcept != None and path == outpath and self.startconcept in uritotreeitem:
-                    if self.createColl:
-                        indexhtml += "<p>Start exploring the graph here: <img src=\"" + \
-                                     tree["types"][uritotreeitem[self.startconcept][-1]["type"]][
-                                         "icon"] + "\" height=\"25\" width=\"25\" alt=\"" + \
-                                     uritotreeitem[self.startconcept][-1][
-                                         "type"] + "\"/><a property=\"http://rdfs.org/ns/void#rootResource\" resource=\"" + str(
-                            self.startconcept) + "\" href=\"" + DocUtils.generateRelativeLinkFromGivenDepth(
-                            prefixnamespace, 0, str(self.startconcept), True) + "\">" + DocUtils.shortenURI(
-                            self.startconcept) + "</a></p>"
-                    else:
-                        indexhtml += "<p>Start exploring the graph here: <img src=\"" + \
-                                     tree["types"][uritotreeitem[self.startconcept][-1]["type"]][
-                                         "icon"] + "\" height=\"25\" width=\"25\" alt=\"" + \
-                                     uritotreeitem[self.startconcept][-1][
-                                         "type"] + "\"/><a property=\"http://rdfs.org/ns/void#rootResource\" resource=\"" + str(
-                            self.startconcept) + "\" href=\"" + DocUtils.generateRelativeLinkFromGivenDepth(
-                            prefixnamespace, 0, str(self.startconcept), True) + "\">" + DocUtils.shortenURI(
-                            self.startconcept) + "</a></p>"
-                indexhtml += "<table about=\"" + str(
-                    voidds) + "\" typeof=\"http://rdfs.org/ns/void#Dataset\" property=\"http://rdfs.org/ns/void#dataDump\" resource=\"" + str(
-                    self.deploypath + "/index.ttl") + "\" class=\"description\" style =\"height: 100%; overflow: auto\" border=1 id=indextable><thead><tr><th>Class</th><th>Number of instances</th><th>Instance Example</th></tr></thead><tbody>"
-                for item in tree["core"]["data"]:
-                    if (item["type"] == "geoclass" or item["type"] == "class" or item["type"] == "featurecollection" or
-                        item["type"] == "geocollection") and "instancecount" in item and item["instancecount"] > 0:
-                        exitem = None
-                        for item2 in tree["core"]["data"]:
-                            if item2["parent"] == item["id"] and (
-                                    item2["type"] == "instance" or item2["type"] == "geoinstance") and nslink in item2[
-                                "id"]:
-                                checkdepth = DocUtils.checkDepthFromPath(path, prefixnamespace, item2["id"]) - 1
-                                exitem = "<td><img src=\"" + tree["types"][item2["type"]][
-                                    "icon"] + "\" height=\"25\" width=\"25\" alt=\"" + item2[
-                                             "type"] + "\"/><a property=\"http://rdfs.org/ns/void#exampleResource\" resource=\"" + str(
-                                    DocUtils.shortenURI(
-                                        str(item2["id"]))) + "\" href=\"" + DocUtils.generateRelativeLinkFromGivenDepth(
-                                    prefixnamespace, checkdepth, str(re.sub("_suniv[0-9]+_", "", item2["id"])),
-                                    True) + "\">" + str(item2["text"]) + "</a></td>"
-                                break
-                        if exitem != None:
-                            if self.createColl:
-                                indexhtml += "<tr><td><img src=\"" + tree["types"][item["type"]][
-                                    "icon"] + "\" height=\"25\" width=\"25\" alt=\"" + item[
-                                                 "type"] + "\"/><a property=\"http://rdfs.org/ns/void#exampleResource\" resource=\"" + str(
-                                    DocUtils.shortenURI(
-                                        str(item["id"])) + "_collection/") + "\" href=\"" + DocUtils.shortenURI(
-                                    str(item["id"])) + "_collection/index.html\" target=\"_blank\">" + str(
-                                    item["text"]) + "</a></td>"
-                            else:
-                                indexhtml += "<tr><td><img src=\"" + tree["types"][item["type"]][
-                                    "icon"] + "\" height=\"25\" width=\"25\" alt=\"" + item[
-                                                 "type"] + "\"/><a  href=\"" + str(
-                                    item["id"]) + "\" target=\"_blank\">" + str(item["text"]) + "</a></td>"
-                            indexhtml += "<td property=\"http://rdfs.org/ns/void#classPartition\" typeof=\"http://rdfs.org/ns/void#Dataset\" resource=\"" + str(
-                                voidds) + "_" + str(DocUtils.shortenURI(item["id"])) + "\"><span about=\"" + str(
-                                voidds) + "_" + str(DocUtils.shortenURI(
-                                item["id"])) + "\" property=\"http://rdfs.org/ns/void#class\" resource=\"" + str(
-                                item["id"]) + "\"></span><span about=\"" + str(voidds) + "_" + str(DocUtils.shortenURI(
-                                item["id"])) + "\" property=\"http://rdfs.org/ns/void#entities\" content=\"" + str(item[
-                                                                                                                       "instancecount"]) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#integer\">" + str(
-                                item["instancecount"]) + "</td>" + exitem + "</tr>"
-                indexhtml += "</tbody></table><script property=\"http://purl.org/dc/terms/modified\" content=\"" + str(
-                    self.modtime) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#dateTime\">$('#indextable').DataTable();</script>"
-                tempfoot = self.replaceStandardVariables(templates["footer"], "", checkdepth,
-                                                           str(nslink == prefixnamespace).lower()).replace(
-                    "{{license}}", curlicense).replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}",
-                                                                                                          "").replace(
-                    "{{stats}}", self.voidstatshtml)
-                tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.apis["ogcapifeatures"], self.apis["iiif"], self.apis["ckan"]],
-                                                            [
-                                                                "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
-                                                                    checkdepth) + "/sparql.html?endpoint=" + str(
-                                                                    self.deploypath) + "\">[SPARQL]</a>&nbsp;",
-                                                                "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
-                                                                    checkdepth) + "/api/api.html\">[OGC API Features]</a>&nbsp;",
-                                                                "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
-                                                                    checkdepth) + "/iiif/\">[IIIF]</a>&nbsp;",
-                                                                "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
-                                                                    checkdepth) + "/api/3/\">[CKAN]</a>"
-                                                            ], "{{apis}}")
-                indexhtml+=tempfoot
-                # print(path)
-                with open(path + "index.html", 'w', encoding='utf-8') as f:
-                    f.write(indexhtml)
-                    f.close()
+        if self.pubconfig["createIndexPages"]:
+            IndexViewPage.createIndexPages(self.pubconfig,templates,self.pubconfig["apis"],paths,subjectstorender,uritotreeitem,voidds,tree,classlist,self.graph,self.voidstatshtml,curlicense)
         if "layouts" in templates:
             for template in templates["layouts"]:
                 if template!="main":
                     templates["layouts"][template]=TemplateUtils.resolveIncludes(template,templates)
         if "sparqltemplate" in templates:
-            sparqlhtml = self.replaceStandardVariables(templates["htmltemplate"], "", "0", "false")
-            sparqlhtml = sparqlhtml.replace("{{iconprefixx}}", ("icons/" if self.offlinecompat else "")).replace(
+            sparqlhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], "", "0", "false",self.pubconfig)
+            sparqlhtml = sparqlhtml.replace("{{iconprefixx}}", ("icons/" if self.pubconfig["offlinecompat"] else "")).replace(
                 "{{baseurl}}", prefixnamespace).replace("{{relativedepth}}", "0").replace("{{relativepath}}",
                                                                                           ".").replace("{{toptitle}}",
                                                                                                        "SPARQL Query Editor").replace(
                 "{{title}}", "SPARQL Query Editor").replace("{{startscriptpath}}", "startscripts.js").replace(
                 "{{stylepath}}", "style.css") \
-                .replace("{{classtreefolderpath}}", corpusid + "_classtree.js").replace("{{baseurlhtml}}", "").replace(
-                "{{nonnslink}}", "").replace("{{scriptfolderpath}}", corpusid + "_search.js").replace("{{exports}}",
+                .replace("{{classtreefolderpath}}", self.pubconfig["corpusid"] + "_classtree.js").replace("{{baseurlhtml}}", "").replace(
+                "{{nonnslink}}", "").replace("{{scriptfolderpath}}", self.pubconfig["corpusid"] + "_search.js").replace("{{exports}}",
                                                                                                       templates[
                                                                                                           "nongeoexports"]).replace(
                 "{{versionurl}}", DocConfig.versionurl).replace("{{version}}", DocConfig.version).replace("{{bibtex}}",
                                                                                                           "").replace(
                 "{{proprelationpath}}", "proprelations.js")
             sparqlhtml += templates["sparqltemplate"]
-            tempfoot = self.replaceStandardVariables(templates["footer"], "", "0", "false").replace("{{license}}",
+            tempfoot = DocUtils.replaceStandardVariables(templates["footer"], "", "0", "false",self.pubconfig).replace("{{license}}",
                                                                                                        curlicense).replace(
                 "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "").replace("{{stats}}",
                                                                                              self.voidstatshtml)
-            tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.apis["ogcapifeatures"], self.apis["iiif"], self.apis["ckan"]],
+            tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.pubconfig["apis"]["ogcapifeatures"], self.pubconfig["apis"]["iiif"], self.pubconfig["apis"]["ckan"]],
                                                         [
                                                             "APIs: <a href=\"" + str(
-                                                                self.deploypath) + "/sparql.html?endpoint=" + str(
-                                                                self.deploypath) + "\">[SPARQL]</a>&nbsp;",
+                                                                self.pubconfig["deploypath"]) + "/sparql.html?endpoint=" + str(
+                                                                self.pubconfig["deploypath"]) + "\">[SPARQL]</a>&nbsp;",
                                                             "<a href=\"" + str(
-                                                                self.deploypath) + "/api/api.html\">[OGC API Features]</a>&nbsp;",
-                                                            "<a href=\"" + str(self.deploypath) + "/iiif/\">[IIIF]</a>&nbsp;",
-                                                            "<a href=\"" + str(self.deploypath) + "/api/3/\">[CKAN]</a>"
+                                                                self.pubconfig["deploypath"]) + "/api/api.html\">[OGC API Features]</a>&nbsp;",
+                                                            "<a href=\"" + str(self.pubconfig["deploypath"]) + "/iiif/\">[IIIF]</a>&nbsp;",
+                                                            "<a href=\"" + str(self.pubconfig["deploypath"]) + "/api/3/\">[CKAN]</a>"
                                                         ], "{{apis}}")
             sparqlhtml += tempfoot
             with open(outpath + "sparql.html", 'w', encoding='utf-8') as f:
@@ -477,52 +277,52 @@ class OntDocGeneration:
                 f.close()
         relpath = DocUtils.generateRelativePathFromGivenDepth(0)
         if len(self.htmlexporter.iiifmanifestpaths["default"]) > 0:
-            IIIFAPIExporter.generateIIIFCollections(self.outpath, self.deploypath, self.htmlexporter.iiifmanifestpaths["default"],
+            IIIFAPIExporter.generateIIIFCollections(self.pubconfig["outpath"], self.pubconfig["deploypath"], self.htmlexporter.iiifmanifestpaths["default"],
                                                     prefixnamespace)
-            indexhtml = self.replaceStandardVariables(templates["htmltemplate"], "", "0", "true")
+            indexhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], "", "0", "true",self.pubconfig)
             indexhtml = indexhtml.replace("{{iconprefixx}}",
-                                          (relpath + "icons/" if self.offlinecompat else "")).replace("{{baseurl}}",
-                                                                                                      prefixnamespace).replace(
+                                          (relpath + "icons/" if self.pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",
+                                                                                                      self.pubconfig["prefixnamespace"]).replace(
                 "{{relativepath}}", relpath).replace("{{toptitle}}", "Feature Collection Overview").replace("{{title}}",
                                                                                                             "Image Grid View").replace(
                 "{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}",
                                                                                                         "vowl_result.js") \
-                .replace("{{classtreefolderpath}}", corpusid + "_classtree.js").replace("{{proprelationpath}}",
+                .replace("{{classtreefolderpath}}", self.pubconfig["corpusid"] + "_classtree.js").replace("{{proprelationpath}}",
                                                                                         "proprelations.js").replace(
                 "{{nonnslink}}", "").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}",
-                                                                            corpusid + '_search.js').replace(
+                                                                            self.pubconfig["corpusid"] + '_search.js').replace(
                 "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "")
-            IIIFAPIExporter.generateImageGrid(self.outpath, self.deploypath, self.htmlexporter.iiifmanifestpaths["default"],
+            IIIFAPIExporter.generateImageGrid(self.pubconfig["outpath"], self.pubconfig["deploypath"], self.htmlexporter.iiifmanifestpaths["default"],
                                               templates["imagegrid"], indexhtml,
-                                              self.replaceStandardVariables(templates["footer"], "", "0",
-                                                                            "true").replace("{{license}}",
+                                              DocUtils.replaceStandardVariables(templates["footer"], "", "0",
+                                                                            "true",self.pubconfig).replace("{{license}}",
                                                                                             curlicense).replace(
                                                   "{{subject}}", "").replace("{{exports}}",
                                                                              templates["nongeoexports"]).replace(
                                                   "{{bibtex}}", "").replace("{{stats}}", self.voidstatshtml),
                                               outpath + "imagegrid.html")
-        if len(self.htmlexporter.featurecollectionspaths) > 0 and self.apis["ckan"]:
-            CKANExporter.generateCKANCollection(outpath, self.deploypath, self.htmlexporter.featurecollectionspaths, tree["core"]["data"],
-                                                self.license)
-        if self.apis["solidexport"]:
-            SolidExporter.createSolidSettings(self.graph, outpath, self.deploypath, self.publisher, self.datasettitle,
+        if len(self.htmlexporter.featurecollectionspaths) > 0 and self.pubconfig["apis"]["ckan"]:
+            CKANExporter.generateCKANCollection(outpath, self.pubconfig["deploypath"], self.htmlexporter.featurecollectionspaths, tree["core"]["data"],
+                                                self.pubconfig["license"])
+        if self.pubconfig["apis"]["solidexport"]:
+            SolidExporter.createSolidSettings(self.graph, outpath, self.pubconfig["deploypath"], self.pubconfig["publisher"], self.pubconfig["datasettitle"],
                                               tree["core"]["data"])
         if len(self.htmlexporter.featurecollectionspaths) > 0:
-            indexhtml = self.replaceStandardVariables(templates["htmltemplate"], "", "0", "true")
+            indexhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], "", "0", "true",self.pubconfig)
             indexhtml = indexhtml.replace("{{iconprefixx}}",
-                                          (relpath + "icons/" if self.offlinecompat else "")).replace("{{baseurl}}",
-                                                                                                      prefixnamespace).replace(
+                                          (relpath + "icons/" if self.pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",
+                                                                                                      self.pubconfig["prefixnamespace"]).replace(
                 "{{relativepath}}", relpath).replace("{{toptitle}}", "Feature Collection Overview").replace("{{title}}",
                                                                                                             "Feature Collection Overview").replace(
                 "{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}",
                                                                                                         "vowl_result.js") \
-                .replace("{{classtreefolderpath}}", corpusid + "_classtree.js").replace("{{proprelationpath}}",
+                .replace("{{classtreefolderpath}}", self.pubconfig["corpusid"] + "_classtree.js").replace("{{proprelationpath}}",
                                                                                         "proprelations.js").replace(
                 "{{nonnslink}}", "").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}",
-                                                                            corpusid + '_search.js').replace(
+                                                                            self.pubconfig["corpusid"] + '_search.js').replace(
                 "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "")
-            OGCAPIFeaturesExporter.generateOGCAPIFeaturesPages(outpath, self.deploypath, self.htmlexporter.featurecollectionspaths,
-                                                               prefixnamespace, self.apis["ogcapifeatures"], True)
+            OGCAPIFeaturesExporter.generateOGCAPIFeaturesPages(outpath, self.pubconfig["deploypath"], self.htmlexporter.featurecollectionspaths,
+                                                               self.pubconfig["prefixnamespace"], self.pubconfig["apis"]["ogcapifeatures"], True)
             indexhtml += "<p>This page shows feature collections present in the linked open data export</p>"
             indexhtml += "<script src=\"features.js\"></script>"
             indexhtml += templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace(
@@ -530,14 +330,14 @@ class OntDocGeneration:
                                                                 DocUtils.generateRelativePathFromGivenDepth(0)).replace(
                 "{{baselayers}}",
                 json.dumps(DocConfig.baselayers).replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{dateatt}}", ""))
-            tempfoot = self.replaceStandardVariables(templates["footer"], "", "0", "true").replace("{{license}}",
+            tempfoot = DocUtils.replaceStandardVariables(templates["footer"], "", "0", "true",self.pubconfig).replace("{{license}}",
                                                                                                      curlicense).replace(
                 "{{subject}}", "").replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "").replace(
                 "{{stats}}", self.voidstatshtml)
-            tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.apis["ogcapifeatures"], self.apis["iiif"], self.apis["ckan"]],
+            tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.pubconfig["apis"]["ogcapifeatures"], self.pubconfig["apis"]["iiif"], self.pubconfig["apis"]["ckan"]],
                                                         [
                                                             "<a href=\"sparql.html?endpoint=" + str(
-                                                                self.deploypath) + "\">[SPARQL]</a>&nbsp;",
+                                                                self.pubconfig["deploypath"]) + "\">[SPARQL]</a>&nbsp;",
                                                             "<a href=\"api/api.html\">[OGC API Features]</a>&nbsp;",
                                                             "<a href=\"iiif/\">[IIIF]</a>&nbsp;",
                                                             "<a href=\"api/3/\">[CKAN]</a>"
@@ -562,8 +362,8 @@ class OntDocGeneration:
                     if str(tup[0]) in DocConfig.labelproperties:
                         label = str(tup[1])
                 if uri in uritotreeitem:
-                    res = DocUtils.replaceNameSpacesInLabel(self.prefixes, str(uri))
-                    label = DocUtils.getLabelForObject(URIRef(str(uri)), graph, None, self.labellang)
+                    res = DocUtils.replaceNameSpacesInLabel(self.pubconfig["prefixes"], str(uri))
+                    label = DocUtils.getLabelForObject(URIRef(str(uri)), graph, None, self.pubconfig["labellang"])
                     if res != None and label != "":
                         uritotreeitem[uri][-1]["text"] = label + " (" + res["uri"] + ")"
                     elif label != "":
@@ -573,7 +373,7 @@ class OntDocGeneration:
                     uritotreeitem[uri][-1]["id"] = prefixnamespace + "nonns_" + DocUtils.shortenURI(uri) + ".html"
                     labeltouri[label] = prefixnamespace + "nonns_" + DocUtils.shortenURI(uri) + ".html"
                 if counter % 10 == 0:
-                    self.updateProgressBar(counter, nonnsuris, "NonNS URIs")
+                    DocUtils.updateProgressBar(counter, nonnsuris, "NonNS URIs")
                 self.htmlexporter.createHTML(outpath + "nonns_" + DocUtils.shortenURI(uri) + ".html", None, URIRef(uri), baseurl,
                                 graph.subject_predicates(URIRef(uri), True), graph, str(corpusid) + "_search.js",
                                 str(corpusid) + "_classtree.js", None, self.license, None, Graph(), uristorender, True,
@@ -585,9 +385,6 @@ class OntDocGeneration:
         svg = svg.replace("<polygon", "<path").replace("points=\"", "d=\"M").replace("\"></polygon>", " Z\"></polygon>")
         return svg.replace("<svg>",
                            "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">")
-
-    def getAccessFromBaseURL(self, baseurl, savepath):
-        return savepath.replace(baseurl, "")
 
 def main():
     prefixes = {"reversed": {}}
@@ -716,10 +513,10 @@ def main():
             g.parse(fp)
             g=DocUtils.resolveOWLImports(g)
             modtime = datetime.fromtimestamp(os.path.getmtime(fp)).strftime("%Y-%m-%dT%H:%M:%S")
-            if args.prefixns == None or args.prefixns == "None":
+            if args.prefixns is None or args.prefixns == "None":
                 print("No Datanamespace defined. Trying to detect it...")
                 pres = DocUtils.getDataNamespace(g)
-                if pres == None:
+                if pres is None:
                     args.prefixns = "http://www.sparqlunicorn.link/data/"
                 else:
                     args.prefixns = pres
@@ -767,7 +564,7 @@ def main():
         indexf = open(outpath[0] + "/index.html", "w", encoding="utf-8")
         nonnslink = ""
         relpath = ""
-        indexhtml = docgen.replaceStandardVariables(templates["htmltemplate"], "", "0", "true")
+        indexhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], "", "0", "true",docgen.pubconfig)
         indexhtml = indexhtml.replace("{{iconprefixx}}", (relpath + "icons/" if args.offlinecompat else "")).replace(
             "{{baseurl}}", args.prefixns).replace("{{relativepath}}", relpath).replace("{{relativedepth}}",
                                                                                        "0").replace("{{toptitle}}",

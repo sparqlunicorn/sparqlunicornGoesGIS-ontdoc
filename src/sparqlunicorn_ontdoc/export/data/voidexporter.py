@@ -7,25 +7,26 @@ from doc.docutils import DocUtils
 class VoidExporter:
 
     @staticmethod
-    def createVoidDataset(dsname,prefixnamespace,prefixshort,repository,deploypath,outpath,licenseuri,modtime,language,stats,subjectstorender,prefixes,classtree=None,propstats=None,nonnscount=None,nscount=None,objectmap=None,startconcept=None):
+    def createVoidDataset(pubconfig,licenseuri,stats,subjectstorender,classtree=None,propstats=None,nonnscount=None,nscount=None,objectmap=None):
         g=Graph()
         g.bind("voaf","http://purl.org/vocommons/voaf#")
         g.bind("vext", "http://ldf.fi/void-ext#")
         g.bind("vann", "http://purl.org/vocab/vann/")
         g.bind("adms", "http://www.w3.org/ns/adms#")
         g.bind("dcat", "http://www.w3.org/ns/dcat#")
-        if dsname==None or dsname=="":
+        dsname=pubconfig["datasettitle"]
+        if pubconfig["datasettitle"]==None or pubconfig["datasettitle"]=="":
             dsname="dataset"
         dsname=dsname.replace(" ","_")
-        voidds=prefixnamespace+dsname
-        if repository!=None and repository!="" and repository.startswith("http"):
-            g.add((URIRef(repository), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+        voidds=pubconfig["prefixnamespace"]+dsname
+        if pubconfig["repository"] is not None and pubconfig["repository"]!= "" and pubconfig["repository"].startswith("http"):
+            g.add((URIRef(pubconfig["repository"]), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
                    URIRef("http://www.w3.org/ns/adms#AssetRepository")))
-            g.add((URIRef(repository), URIRef("http://www.w3.org/ns/dcat#accessURL"),
-                   Literal(str(repository),datatype="http://www.w3.org/2001/XMLSchema#anyURI")))
-            g.add((URIRef(repository), URIRef("http://www.w3.org/ns/dcat#dataset"),
+            g.add((URIRef(pubconfig["repository"]), URIRef("http://www.w3.org/ns/dcat#accessURL"),
+                   Literal(str(pubconfig["repository"]),datatype="http://www.w3.org/2001/XMLSchema#anyURI")))
+            g.add((URIRef(pubconfig["repository"]), URIRef("http://www.w3.org/ns/dcat#dataset"),
                    URIRef(voidds)))
-            g.add((URIRef(repository), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
+            g.add((URIRef(pubconfig["repository"]), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
                    Literal("Repository for "+str(dsname), lang="en")))
         g.add((URIRef(voidds),URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://rdfs.org/ns/void#Dataset")))
         g.add((URIRef(voidds), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://www.w3.org/ns/adms#Asset")))
@@ -33,54 +34,54 @@ class VoidExporter:
               Literal(dsname,lang="en")))
         g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/title"),
               Literal(dsname,lang="en")))
-        if language!=None and language!="":
+        if pubconfig["labellang"] is not None and pubconfig["labellang"]!= "":
             g.add((URIRef(voidds), URIRef("http://purl.org/dc/elements/1.1/language"),
-                  URIRef("http://www.lexvo.org/page/iso639-1/"+str(language))))
+                  URIRef("http://www.lexvo.org/page/iso639-1/"+str(pubconfig["labellang"]))))
         g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/modified"),
-              Literal(modtime,datatype="http://www.w3.org/2001/XMLSchema#dateTime")))
-        if licenseuri!=None:
+              Literal(pubconfig["modtime"],datatype="http://www.w3.org/2001/XMLSchema#dateTime")))
+        if licenseuri is not None:
             g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/license"),
                   URIRef(licenseuri)))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#dataDump"),
-              URIRef(deploypath+"/index.ttl")))
+              URIRef(pubconfig["deploypath"]+"/index.ttl")))
         g.add((URIRef(voidds), URIRef("http://xmlns.com/foaf/0.1/homepage"),
-              URIRef(deploypath)))
+              URIRef(pubconfig["deploypath"])))
         g.add((URIRef(voidds), URIRef("http://www.w3.org/ns/dcat#landingPage"),
-              URIRef(deploypath)))
+              URIRef(pubconfig["deploypath"])))
         g.add((URIRef(voidds), URIRef("http://xmlns.com/foaf/0.1/page"),
-              URIRef(deploypath+"/index.html")))
+              URIRef(pubconfig["deploypath"]+"/index.html")))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#dataDump"),
-              URIRef(deploypath+"/index.ttl")))
+              URIRef(pubconfig["deploypath"]+"/index.ttl")))
         g.add((URIRef(voidds), URIRef("http://www.w3.org/ns/dcat#distribution"),
                URIRef(voidds+"_dist_ttl")))
         g.add((URIRef(voidds + "_dist_ttl"), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://www.w3.org/ns/adms#AssetDistribution")))
         g.add((URIRef(voidds+"_dist_ttl"), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
                Literal(dsname+" TTL Distribution",lang="en")))
         g.add((URIRef(voidds+"_dist_ttl"), URIRef("http://www.w3.org/ns/dcat#downloadURL"),
-               Literal(deploypath+"/index.ttl",datatype="http://www.w3.org/2001/XMLSchema#anyURI")))
+               Literal(pubconfig["deploypath"]+"/index.ttl",datatype="http://www.w3.org/2001/XMLSchema#anyURI")))
         g.add((URIRef(voidds+"_dist_ttl"), URIRef("http://www.w3.org/ns/dcat#mediaType"),
                URIRef("http://www.w3.org/ns/formats/Turtle")))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#feature"),
               URIRef("http://www.w3.org/ns/formats/Turtle")))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#feature"),
               URIRef("http://www.w3.org/ns/formats/RDFa")))
-        if startconcept!=None and startconcept!="":
-            g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#rootResource"), URIRef(startconcept.replace("index.html",""))))
-            g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#exampleResource"), URIRef(startconcept.replace("index.html",""))))
+        if pubconfig["startconcept"] is not None and pubconfig["startconcept"]!= "":
+            g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#rootResource"), URIRef(pubconfig["startconcept"].replace("index.html",""))))
+            g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#exampleResource"), URIRef(pubconfig["startconcept"].replace("index.html",""))))
         for stat in stats:
             g.add((URIRef(voidds), URIRef(stat),Literal(stats[stat], datatype="http://www.w3.org/2001/XMLSchema#integer")))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#uriSpace"),
-              Literal(prefixnamespace,datatype="http://www.w3.org/2001/XMLSchema#string")))
+              Literal(pubconfig["prefixnamespace"],datatype="http://www.w3.org/2001/XMLSchema#string")))
         g.add((URIRef(voidds), URIRef("http://purl.org/vocab/vann/preferredNamespaceUri"),
-               Literal(prefixnamespace, datatype="http://www.w3.org/2001/XMLSchema#anyURI")))
+               Literal(pubconfig["prefixnamespace"], datatype="http://www.w3.org/2001/XMLSchema#anyURI")))
         g.add((URIRef(voidds), URIRef("http://purl.org/vocab/vann/preferredNamespacePrefix"),
-               Literal(prefixshort, datatype="http://www.w3.org/2001/XMLSchema#string")))
+               Literal(pubconfig["prefixnsshort"], datatype="http://www.w3.org/2001/XMLSchema#string")))
         for ns_prefix, namespace in g.namespaces():
             g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#vocabulary"),URIRef(namespace)))
             g.add((URIRef(namespace), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://purl.org/vocommons/voaf#Vocabulary")))
-            if "nstolabel" in prefixes and str(namespace) in prefixes["nstolabel"]:
+            if "nstolabel" in pubconfig["prefixes"] and str(namespace) in pubconfig["prefixes"]["nstolabel"]:
                 g.add((URIRef(namespace), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
-                       Literal(prefixes["nstolabel"][str(namespace)],lang="en")))
+                       Literal(pubconfig["prefixes"]["nstolabel"][str(namespace)],lang="en")))
             else:
                 g.add((URIRef(namespace), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
                        Literal(str(ns_prefix)+" Vocabulary",lang="en")))
@@ -88,15 +89,15 @@ class VoidExporter:
                    Literal(namespace,datatype="http://www.w3.org/2001/XMLSchema#anyURI")))
             g.add((URIRef(namespace), URIRef("http://purl.org/vocab/vann/preferredNamespacePrefix"),
                    Literal(ns_prefix,datatype="http://www.w3.org/2001/XMLSchema#string")))
-            g.add((URIRef(prefixnamespace+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            g.add((URIRef(pubconfig["prefixnamespace"]+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
                    URIRef("http://purl.org/vocommons/voaf#DatasetOccurrence")))
-            g.add((URIRef(prefixnamespace+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
+            g.add((URIRef(pubconfig["prefixnamespace"]+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
                    Literal("Occurrences of vocabulary "+str(namespace)+" in "+dsname)))
-            if nscount!=None and str(namespace) in nscount:
-                g.add((URIRef(prefixnamespace+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://purl.org/vocommons/voaf#occurrences"),
+            if nscount is not None and str(namespace) in nscount:
+                g.add((URIRef(pubconfig["prefixnamespace"]+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://purl.org/vocommons/voaf#occurrences"),
                        Literal(str(nscount[str(namespace)]),datatype="http://www.w3.org/2001/XMLSchema#integer")))
             g.add((URIRef(namespace), URIRef("http://purl.org/vocommons/voaf#usageInDataset"), URIRef(namespace+"_"+str(dsname)+"_occ")))
-            g.add((URIRef(prefixnamespace+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://purl.org/vocommons/voaf#inDataset"), URIRef(voidds)))
+            g.add((URIRef(pubconfig["prefixnamespace"]+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://purl.org/vocommons/voaf#inDataset"), URIRef(voidds)))
             if str(namespace) in DocConfig.namespaceToTopic:
                 for entry in DocConfig.namespaceToTopic[str(namespace)]:
                     g.add((URIRef(voidds), URIRef("http://www.w3.org/ns/dcat#keyword"), Literal(DocUtils.shortenURI(entry["uri"]).replace("_"," "),lang="en")))
@@ -124,13 +125,13 @@ class VoidExporter:
             for ns in nonnscount[prop]:
                 cururi=voidds+"_"+ns.replace("http://","").replace("https://","").replace("/","_").replace("#","_")
                 g.add((URIRef(cururi), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),URIRef("http://rdfs.org/ns/void#Linkset")))
-                g.add((URIRef(cururi), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),Literal("Linkset: "+str(DocUtils.shortenURI(voidds))+" - "+str(DocUtils.getLabelForObject(URIRef(ns),g,prefixes)),lang="en")))
+                g.add((URIRef(cururi), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),Literal("Linkset: "+str(DocUtils.shortenURI(voidds))+" - "+str(DocUtils.getLabelForObject(URIRef(ns),g,pubconfig["prefixes"])),lang="en")))
                 g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#subjectsTarget"),URIRef(voidds)))
                 g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#objectsTarget"),URIRef(ns)))
                 g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#linkPredicate"),URIRef(prop)))
                 g.add((URIRef(cururi), URIRef("http://rdfs.org/ns/void#triples"),Literal(str(nonnscount[prop][ns]),datatype="http://www.w3.org/2001/XMLSchema#integer")))
                 subjectstorender.add(URIRef(cururi))
-        g.serialize(outpath+"/void.ttl", encoding="utf-8")
+        g.serialize(pubconfig["outpath"]+"/void.ttl", encoding="utf-8")
         return {"graph":g,"subjects":subjectstorender}
 
     @staticmethod
