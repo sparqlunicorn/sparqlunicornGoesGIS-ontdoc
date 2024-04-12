@@ -5,8 +5,7 @@ from doc.docutils import DocUtils
 from export.data.exporterutils import ExporterUtils
 
 import re
-import urllib
-
+import urllib.parse
 
 class IndexViewPage:
 
@@ -14,6 +13,7 @@ class IndexViewPage:
     @staticmethod
     def getAccessFromBaseURL(baseurl, savepath):
         return savepath.replace(baseurl, "")
+
 
     @staticmethod
     def createIndexPages(pubconfig,templates,apis,paths,subjectstorender,uritotreeitem,voidds,tree,classlist,graph,voidstatshtml,curlicense):
@@ -154,12 +154,9 @@ class IndexViewPage:
                                                             "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
                                                                 checkdepth) + "/sparql.html?endpoint=" + str(
                                                                 pubconfig["deploypath"]) + "\">[SPARQL]</a>&nbsp;",
-                                                            "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
-                                                                checkdepth) + "/api/api.html\">[OGC API Features]</a>&nbsp;",
-                                                            "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
-                                                                checkdepth) + "/iiif/\">[IIIF]</a>&nbsp;",
-                                                            "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
-                                                                checkdepth) + "/api/3/\">[CKAN]</a>"
+                                                            "<a href=\"" + relpath + "/api/api.html\">[OGC API Features]</a>&nbsp;",
+                                                            "<a href=\"" +  relpath + "/iiif/\">[IIIF]</a>&nbsp;",
+                                                            "<a href=\"" +  relpath + "/api/3/\">[CKAN]</a>"
                                                         ], "{{apis}}")
             indexhtml += tempfoot
             # print(path)
