@@ -75,7 +75,7 @@ class VoidExporter:
         g.add((URIRef(voidds), URIRef("http://purl.org/vocab/vann/preferredNamespaceUri"),
                Literal(pubconfig["prefixnamespace"], datatype="http://www.w3.org/2001/XMLSchema#anyURI")))
         g.add((URIRef(voidds), URIRef("http://purl.org/vocab/vann/preferredNamespacePrefix"),
-               Literal(pubconfig["prefixnsshort"], datatype="http://www.w3.org/2001/XMLSchema#string")))
+               Literal(pubconfig["namespaceshort"], datatype="http://www.w3.org/2001/XMLSchema#string")))
         for ns_prefix, namespace in g.namespaces():
             g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#vocabulary"),URIRef(namespace)))
             g.add((URIRef(namespace), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://purl.org/vocommons/voaf#Vocabulary")))
