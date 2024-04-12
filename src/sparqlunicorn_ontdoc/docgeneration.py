@@ -117,7 +117,7 @@ class OntDocGeneration:
             shutil.copy(logoname, outpath + "/logo/logo." + logoname[logoname.rfind("."):])
             self.pubconfig["logoname"] = outpath + "/logo/logo." + logoname[logoname.rfind("."):]
         DocUtils.updateProgressBar(0, 1, "Creating classtree and search index")
-        res=GraphUtils.analyzeGraph(self.graph, prefixnamespace, self.typeproperty, voidds, labeltouri, uritolabel, self.pubconfig["outpath"], self.createVOWL)
+        res=GraphUtils.analyzeGraph(self.graph, prefixnamespace, self.typeproperty, voidds, labeltouri, uritolabel, self.pubconfig["outpath"], self.pubconfig["createVOWL"])
         subjectstorender=res["subjectstorender"]
         self.pubconfig["apis"]["iiif"]=res["iiif"]
         if os.path.exists(outpath + self.pubconfig["corpusid"] + '_search.js'):
