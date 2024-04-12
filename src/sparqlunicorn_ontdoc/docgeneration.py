@@ -52,7 +52,7 @@ class OntDocGeneration:
         self.pubconfig={"prefixes":prefixes,"prefixnamespace":prefixnamespace,"namespaceshort":prefixnsshort.replace("/",""),"createIndexPages":createIndexPages,
                         "modtime":modtime,"outpath":outpath,"exports":exports,"apis":apis,"publisher":publisher,"publishingorg":publishingorg,
                         "startconcept":startconcept,"metadatatable":metadatatable,"createVOWL":createVOWL,"templatename":templatename,"imagemetadata":imagemetadata,
-                        "datasettitle":str(datasettitle),"logoname":logoname,"localOptimized":localOptimized,"labellang":labellang,"license":license,"createIndexPages":createIndexPages,
+                        "datasettitle":str(datasettitle),"logoname":logoname,"localOptimized":localOptimized,"labellang":labellang,"license":license,"deploypath":deploypath,
                         "offlinecompat":offlinecompat,"generatePagesForNonNS":generatePagesForNonNS,"repository":repository,"createColl":createColl}
         self.geocache={}
         self.geocollectionspaths=[]
