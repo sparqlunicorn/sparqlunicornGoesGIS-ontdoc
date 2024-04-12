@@ -79,11 +79,11 @@ class OntDocGeneration:
             self.prefixnamespace = "http://purl.org/suni/"
         if not prefixnamespace.endswith("/") and not prefixnamespace.endswith("#"):
             self.pubconfig["prefixnamespace"] += "/"
-        if outpath is None:
+        if self.pubconfig["outpath"] is None:
             self.pubconfig["outpath"] = "suni_htmls/"
         else:
             self.pubconfig["outpath"] = self.pubconfig["outpath"].replace("\\", "/")
-            if not outpath.endswith("/"):
+            if not self.pubconfig["outpath"].endswith("/"):
                 self.pubconfig["outpath"] += "/"
         self.pubconfig["outpath"] = self.pubconfig["outpath"].replace("//", "/")
         self.pubconfig["prefixnamespace"] = self.pubconfig["prefixnamespace"].replace("//", "/")
@@ -373,7 +373,7 @@ class OntDocGeneration:
                     DocUtils.updateProgressBar(counter, nonnsuris, "NonNS URIs")
                 self.htmlexporter.createHTML(outpath + "nonns_" + DocUtils.shortenURI(uri) + ".html", None, URIRef(uri), baseurl,
                                 graph.subject_predicates(URIRef(uri), True), graph, str(corpusid) + "_search.js",
-                                str(corpusid) + "_classtree.js", None, self.license, None, Graph(), uristorender, True,
+                                str(corpusid) + "_classtree.js", None, self.pubconfig["license"], None, Graph(), uristorender, True,
                                 label)
                 counter += 1
         return labeltouri
