@@ -18,6 +18,7 @@ class IndexViewPage:
     @staticmethod
     def createIndexPages(pubconfig,templates,apis,paths,subjectstorender,uritotreeitem,voidds,tree,classlist,graph,voidstatshtml,curlicense):
         indpcounter = 0
+        print("PATHS: "+str(paths))
         for path in paths:
             if indpcounter % 10 == 0:
                 DocUtils.updateProgressBar(indpcounter, len(paths), "Creating Index Pages")
@@ -61,6 +62,7 @@ class IndexViewPage:
                         ExporterUtils.exportToFunction[ex](subgraph, path + "index." + str(ex), subjectstorender,
                                                            classlist, ex)
             relpath = DocUtils.generateRelativePathFromGivenDepth(checkdepth)
+            print("RELPATH: " + str(relpath))
             indexhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], voidds, checkdepth,
                                                       str(nslink == pubconfig["prefixnamespace"]).lower(),pubconfig)
             indexhtml = indexhtml.replace("{{iconprefixx}}",
@@ -79,7 +81,7 @@ class IndexViewPage:
                                                                                                  str(voidds)))
             indexhtml += "<p property=\"http://rdfs.org/ns/void#feature\" resource=\"http://www.w3.org/ns/formats/Turtle\">This page shows information about linked data resources in <span property=\"http://rdfs.org/ns/void#feature\" resource=\"http://www.w3.org/ns/formats/RDFa\">HTML</span>. Choose the classtree navigation or search to browse the data</p>" + \
                          templates["vowltemplate"].replace("{{vowlpath}}", "minivowl_result.js")
-            if pubconfig["startconcept"] != None and path == pubconfig["outpath"] and pubconfig["startconcept"] in uritotreeitem:
+            if pubconfig["startconcept"] is not None and path == pubconfig["outpath"] and pubconfig["startconcept"] in uritotreeitem:
                 startconcept=pubconfig["startconcept"]
                 if pubconfig["createColl"]:
                     indexhtml += "<p>Start exploring the graph here: <img src=\"" + \
