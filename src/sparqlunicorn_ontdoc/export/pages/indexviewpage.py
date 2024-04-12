@@ -19,6 +19,7 @@ class IndexViewPage:
     def createIndexPages(pubconfig,templates,apis,paths,subjectstorender,uritotreeitem,voidds,tree,classlist,graph,voidstatshtml,curlicense):
         indpcounter = 0
         print("PATHS: "+str(paths))
+        print(tree)
         for path in paths:
             if indpcounter % 10 == 0:
                 DocUtils.updateProgressBar(indpcounter, len(paths), "Creating Index Pages")
