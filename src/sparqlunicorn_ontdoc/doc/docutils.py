@@ -9,7 +9,9 @@ from doc.docconfig import DocConfig
 
 class DocUtils:
 
-
+    @staticmethod
+    def zero_div(x,y):
+        return y and x/y or 0
 
     @staticmethod
     def getLDFilesFromFolder(folder):
