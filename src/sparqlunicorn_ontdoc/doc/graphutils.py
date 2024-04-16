@@ -6,6 +6,23 @@ from export.data.vowlexporter import OWL2VOWL
 
 class GraphUtils:
 
+    subclassofproperties=["http://www.w3.org/2000/01/rdf-schema#subClassOf","http://www.w3.org/2000/01/rdf-schema#subClassOf"]
+
+    typeproperties=["http://www.w3.org/1999/02/22-rdf-syntax-ns#type","http://www.w3.org/2000/01/rdf-schema#subClassOf"]
+
+    @staticmethod
+    def determineKeyProperties(graph):
+        res={"typeproperty":{},"subclassofproperty":{}}
+        subclassofprops=[]
+        typeprops=[]
+        for pred in graph.predicates(None,None,True):
+            if str(pred) in GraphUtils.subclassofproperties and str(pred) not in subclassofprops:
+                subclassofprops.append(str(pred))
+            if str(pred) in GraphUtils.typeproperties and str(pred) not in typeprops:
+                typeprops.append(str(pred))
+        res["typeproperty"]=typeprops
+        res["subclassproperty"]=subclassofprops
+        return res
 
 
     @staticmethod
@@ -123,7 +140,7 @@ class GraphUtils:
         with open(outpath + "proprelations.js", 'w', encoding='utf-8') as f:
             f.write("var proprelations=" + json.dumps(predicates))
             f.close()
-        return {"preds": predicatecounter, "avgpredlen": str(int(predicatelength / predicatecounter)),
+        return {"preds": predicatecounter, "avgpredlen": str(int(DocUtils.zero_div(predicatelength,predicatecounter))),
                 "predclasses": predicateClasses, "objs": len(objects), "predmap": predicates}
 
     @staticmethod
@@ -229,9 +246,9 @@ class GraphUtils:
         voidstats["http://ldf.fi/void-ext#distinctBlankNodes"] = len(blanknodes)
         voidstats["http://ldf.fi/void-ext#datatypes"] = len(literaltypes.keys())
         voidstats["http://ldf.fi/void-ext#distinctLiterals"] = len(literals)
-        voidstats["http://ldf.fi/void-ext#averageSubjectIRILength"] = int(subjectlength / subjectcounter)
-        voidstats["http://ldf.fi/void-ext#averageObjectIRILength"] = int(objectlength / objectcounter)
-        voidstats["http://ldf.fi/void-ext#averageLiteralLength"] = int(literallength / literalcount)
+        voidstats["http://ldf.fi/void-ext#averageSubjectIRILength"] = int(DocUtils.zero_div(subjectlength,subjectcounter))
+        voidstats["http://ldf.fi/void-ext#averageObjectIRILength"] = int(DocUtils.zero_div(objectlength,objectcounter))
+        voidstats["http://ldf.fi/void-ext#averageLiteralLength"] = int(DocUtils.zero_div(literallength,literalcount))
         voidstats["http://ldf.fi/void-ext#distinctIRIReferences"] = voidstats[
                                                                         "http://rdfs.org/ns/void#distinctSubjects"] + \
                                                                     res["preds"] + res["objs"]
