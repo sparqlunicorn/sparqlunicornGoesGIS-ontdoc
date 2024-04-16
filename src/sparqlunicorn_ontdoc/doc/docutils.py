@@ -9,6 +9,9 @@ from doc.docconfig import DocConfig
 
 class DocUtils:
 
+    @staticmethod
+    def zero_div(x,y):
+        return y and x/y or 0
 
     @staticmethod
     def updateProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█',
