@@ -344,9 +344,9 @@ class OntDocGeneration:
         voidstats["http://ldf.fi/void-ext#distinctBlankNodes"]=len(blanknodes)
         voidstats["http://ldf.fi/void-ext#datatypes"]=len(literaltypes.keys())
         voidstats["http://ldf.fi/void-ext#distinctLiterals"]=len(literals)
-        voidstats["http://ldf.fi/void-ext#averageSubjectIRILength"] = int(subjectlength/subjectcounter)
-        voidstats["http://ldf.fi/void-ext#averageObjectIRILength"] = int(objectlength/objectcounter)
-        voidstats["http://ldf.fi/void-ext#averageLiteralLength"]=int(literallength/literalcount)
+        voidstats["http://ldf.fi/void-ext#averageSubjectIRILength"] = int(DocUtils.zero_div(subjectlength,subjectcounter))
+        voidstats["http://ldf.fi/void-ext#averageObjectIRILength"] = int(DocUtils.zero_div(objectlength,objectcounter))
+        voidstats["http://ldf.fi/void-ext#averageLiteralLength"] = int(DocUtils.zero_div(literallength,literalcount))
         voidstats["http://ldf.fi/void-ext#distinctIRIReferences"]=voidstats["http://rdfs.org/ns/void#distinctSubjects"]+res["preds"]+res["objs"]
         voidstats["http://ldf.fi/void-ext#distinctRDFNodes"] = len(blanknodes)+len(literals)+voidstats["http://ldf.fi/void-ext#distinctIRIReferences"]
         if os.path.exists(outpath + corpusid + '_search.js'):
@@ -583,7 +583,7 @@ class OntDocGeneration:
         with open(outpath+"proprelations.js", 'w', encoding='utf-8') as f:
             f.write("var proprelations="+json.dumps(predicates))
             f.close()
-        return {"preds":predicatecounter,"avgpredlen":str(int(predicatelength/predicatecounter)),"predclasses":predicateClasses,"objs":len(objects),"predmap":predicates}
+        return {"preds":predicatecounter,"avgpredlen":str(int(DocUtils.zero_div(predicatelength,predicatecounter))),"predclasses":predicateClasses,"objs":len(objects),"predmap":predicates}
 
     def createCollections(self,graph,namespace):
         classToInstances={}
