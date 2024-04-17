@@ -1091,6 +1091,7 @@ class DocDefaults:
         renderer.setSize( width, height );
         document.getElementById(domelement).appendChild( renderer.domElement );
         camera = new THREE.PerspectiveCamera(90,width / height, 0.1, 2000 );
+	controls = new THREE.OrbitControls( camera, renderer.domElement );
 	if(meshurls.length>0){
             if(meshurls[0].includes(".ply")){
                 var loader = new THREE.PLYLoader();
@@ -1152,7 +1153,7 @@ class DocDefaults:
         console.log("Depth: "+(maxz-minz))
         scene.add( annotations );
         centervec=new THREE.Vector3()
-        controls = new THREE.OrbitControls( camera, renderer.domElement );
+        
         //controls.target.set( centervec.x,centervec.y,centervec.z );
         controls.target.set( 0,0,0 );
         camera.position.x= 0
