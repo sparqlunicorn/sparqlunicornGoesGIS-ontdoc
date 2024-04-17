@@ -319,13 +319,13 @@ class HTMLExporter():
                       URIRef("https://www.iana.org/assignments/media-types/text/turtle#Resource")))
         nonnslink = ""
         if nonns:
-            completesavepath = savepath.replace(":", "_")
+            completesavepath = savepath.replace(":", "_").replace("/","_")
             nonnslink = "<div>This page describes linked instances to the concept  <a target=\"_blank\" href=\"" + str(
                 subject) + "\">" + str(foundlabel) + " (" + str(DocUtils.shortenURI(
                 subject)) + ") </a> in this knowledge graph. It is defined <a target=\"_blank\" href=\"" + str(
                 subject) + "\">here</a></div>"
         else:
-            completesavepath = savepath.replace(":", "_") + "/index.html"
+            completesavepath = savepath.replace(":", "_").replace("/","_") + "/index.html"
         if not nonns:
             if os.path.exists(savepath):
                 try:
