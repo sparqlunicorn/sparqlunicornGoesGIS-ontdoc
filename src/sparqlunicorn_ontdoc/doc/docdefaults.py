@@ -1090,7 +1090,8 @@ class DocDefaults:
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize( width, height );
         document.getElementById(domelement).appendChild( renderer.domElement );
-        if(meshurls.length>0){
+        camera = new THREE.PerspectiveCamera(90,width / height, 0.1, 2000 );
+	if(meshurls.length>0){
             if(meshurls[0].includes(".ply")){
                 var loader = new THREE.PLYLoader();
                 loader.load(meshurls[0], function(object){
@@ -1139,7 +1140,6 @@ class DocDefaults:
                 });
             }
         }
-        camera = new THREE.PerspectiveCamera(90,width / height, 0.1, 2000 );
         scene.add(new THREE.AmbientLight(0x222222));
         var light = new THREE.DirectionalLight(0xffffff, 1);
         light.position.set(20, 20, 0);
