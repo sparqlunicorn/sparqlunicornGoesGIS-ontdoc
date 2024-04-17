@@ -2,7 +2,7 @@ from rdflib import Graph, URIRef
 
 from doc.docutils import DocUtils
 
-from export.data.exporterutils import ExporterUtils
+from export.exporterutils import ExporterUtils
 
 import re
 import urllib.parse
