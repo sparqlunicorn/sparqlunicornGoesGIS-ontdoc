@@ -68,16 +68,22 @@ class OntDocGeneration:
         self.licenseuri = None
         self.licensehtml = None
         self.typeproperty = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+        self.subclassproperty = "http://www.w3.org/2000/01/rdf-schema#subClassO"
+        keyprops=GraphUtils.determineKeyProperties(graph)
+        if len(keyprops["typeproperty"])>0:
+            self.typeproperty=keyprops["typeproperty"][0]
+        if len(keyprops["subclassproperty"])>0:
+            self.suclassproperty=keyprops["subclassproperty"][0]
         self.graph = graph
         self.htmlexporter=HTMLExporter(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,metadatatable,generatePagesForNonNS,apis,templates,self.pubconfig["namespaceshort"],self.typeproperty,imagemetadata,localOptimized,deploypath,logoname,offlinecompat)
         for nstup in self.graph.namespaces():
             if str(nstup[1]) not in prefixes["reversed"]:
                 prefixes["reversed"][str(nstup[1])] = str(nstup[0])
-        self.preparedclassquery = prepareQuery(DocConfig.classtreequery)
-        if prefixnamespace is None or prefixnsshort is None or prefixnamespace == "" or prefixnsshort == "":
-            self.namespaceshort = "suni"
-            self.prefixnamespace = "http://purl.org/suni/"
-        if not prefixnamespace.endswith("/") and not prefixnamespace.endswith("#"):
+        self.preparedclassquery = prepareQuery(DocConfig.classtreequery.replace("%%typeproperty%%","<"+self.typeproperty+">").replace("%%subclassproperty%%","<"+self.subclassproperty+">"))
+        if self.pubconfig["prefixnamespace"] is None or prefixnsshort is None or self.pubconfig["prefixnamespace"] == "" or prefixnsshort == "":
+            self.pubconfig["namespaceshort"] = "suni"
+            self.pubconfig["prefixnamespace"] = "http://purl.org/suni/"
+        if not self.pubconfig["prefixnamespace"].endswith("/") and not self.pubconfig["prefixnamespace"].endswith("#"):
             self.pubconfig["prefixnamespace"] += "/"
         if self.pubconfig["outpath"] is None:
             self.pubconfig["outpath"] = "suni_htmls/"
@@ -145,6 +151,7 @@ class OntDocGeneration:
                 print("Exception occurred " + str(e))
         classidset = set()
         tree = ClassTreeUtils.getClassTree(self.graph, uritolabel, classidset, uritotreeitem,self.typeproperty,self.pubconfig["prefixes"],self.preparedclassquery)
+        print(str(tree))
         for tr in prevtree:
             if tr["id"] not in classidset:
                 tree["core"]["data"].append(tr)
@@ -361,7 +368,7 @@ class OntDocGeneration:
                 if uri in uritotreeitem:
                     res = DocUtils.replaceNameSpacesInLabel(self.pubconfig["prefixes"], str(uri))
                     label = DocUtils.getLabelForObject(URIRef(str(uri)), graph, None, self.pubconfig["labellang"])
-                    if res != None and label != "":
+                    if res is not None and label != "":
                         uritotreeitem[uri][-1]["text"] = label + " (" + res["uri"] + ")"
                     elif label != "":
                         uritotreeitem[uri][-1]["text"] = label + " (" + DocUtils.shortenURI(uri) + ")"
@@ -582,7 +589,7 @@ def main():
             indexhtml += "<tr><td><a href=\"" + path.replace(outpath[0] + "/", "") + "/index.html\">" + path.replace(
                 outpath[0] + "/", "") + "</a></td></tr>"
         indexhtml += "</tbody></table><script>$('#indextable').DataTable();</script>"
-        indexhtml += templates["footer"].replace("{{license}}", curlicense).replace("{{exports}}",
+        indexhtml += DocUtils.replaceStandardVariables(templates["footer"], "", "0", "true",docgen.pubconfig).replace("{{license}}", curlicense).replace("{{exports}}",
                                                                                     templates["nongeoexports"]).replace(
             "{{bibtex}}", "").replace("{{stats}}", "")
         # print(indexhtml)
