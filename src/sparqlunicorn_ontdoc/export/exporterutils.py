@@ -1,6 +1,6 @@
-from src.sparqlunicorn_ontdoc.export.data.geoexporter import GeoExporter
-from src.sparqlunicorn_ontdoc.export.data.graphexporter import GraphExporter
-from src.sparqlunicorn_ontdoc.export.data.miscexporter import MiscExporter
+from export.data.geoexporter import GeoExporter
+from export.data.graphexporter import GraphExporter
+from export.data.miscexporter import MiscExporter
 
 class ExporterUtils:
 
