@@ -1,14 +1,18 @@
+from doc.docconfig import DocConfig
+
+from export.api.iiifexporter import IIIFAPIExporter
+
 
 class Model3DPage:
 
-    def generatePageWidget(self,graph,templates,foundmedia,subject,f,onlybody=False):
+    def generatePageWidget(self,graph,templates,foundmedia,subject,iiifmanifestpaths,image3dannos,pubconfig,f,onlybody=False):
         print("PageWidget")
         if len(foundmedia["mesh"]) > 0 and len(image3dannos) > 0:
-            if self.iiif:
+            if self.pubconfig["apis"]["iiif"]:
                 iiifmanifestpaths["default"].append(
-                    IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath, foundmedia["mesh"],
-                                                         image3dannos, annobodies, str(subject), self.prefixnamespace,
-                                                         imagetoURI, self.imagemetadata, DocConfig.metadatanamespaces,
+                    IIIFAPIExporter.generateIIIFManifest(graph, pubconfig["outpath"], pubconfig["deploypath"], foundmedia["mesh"],
+                                                         image3dannos, annobodies, str(subject), pubconfig["prefixnamespace"],
+                                                         imagetoURI, pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
                                                          foundlabel, comment, thetypes, predobjmap, "Model"))
             for anno in image3dannos:
                 if ("POINT" in anno["value"].upper() or "POLYGON" in anno["value"].upper() or "LINESTRING" in anno[
@@ -19,11 +23,11 @@ class Model3DPage:
                                                                                                                  "mesh"]))))
         elif len(foundmedia["mesh"]) > 0 and len(image3dannos) == 0:
             print("Found 3D Model: " + str(foundmedia["mesh"]))
-            if self.iiif:
+            if  pubconfig["apis"]["iiif"]:
                 iiifmanifestpaths["default"].append(
-                    IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath, foundmedia["mesh"],
-                                                         image3dannos, annobodies, str(subject), self.prefixnamespace,
-                                                         imagetoURI, self.imagemetadata, DocConfig.metadatanamespaces,
+                    IIIFAPIExporter.generateIIIFManifest(graph, pubconfig["outpath"], pubconfig["deploypath"], foundmedia["mesh"],
+                                                         image3dannos, annobodies, str(subject), pubconfig["prefixnamespace"],
+                                                         imagetoURI, pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
                                                          foundlabel, comment, thetypes, predobjmap, "Model"))
             for curitem in foundmedia["mesh"]:
                 format = "ply"
@@ -43,6 +47,6 @@ class Model3DPage:
     def generateCollectionWidget(self,graph,templates,subject,f):
         print("CollectionWidget")
 
-    def generatePageView(self,headertemplate,footertemplate,g,f):
-        f.write(str(headertemplate))
+    def generatePageView(self,templates,g,f):
+        f.write(str(templates["headertamplate"]))
         print("PageView")

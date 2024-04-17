@@ -15,6 +15,7 @@ import traceback
 from export.data.htmlexporter import HTMLExporter
 from export.data.voidexporter import VoidExporter
 from export.pages.indexviewpage import IndexViewPage
+from src.sparqlunicorn_ontdoc.export.pages.sparqlpage import SPARQLPage
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 print(sys.path)
@@ -246,38 +247,8 @@ class OntDocGeneration:
                 if template!="main":
                     templates["layouts"][template]=TemplateUtils.resolveIncludes(template,templates)
         if "sparqltemplate" in templates:
-            sparqlhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], "", "0", "false",self.pubconfig)
-            sparqlhtml = sparqlhtml.replace("{{iconprefixx}}", ("icons/" if self.pubconfig["offlinecompat"] else "")).replace(
-                "{{baseurl}}", prefixnamespace).replace("{{relativedepth}}", "0").replace("{{relativepath}}",
-                                                                                          ".").replace("{{toptitle}}",
-                                                                                                       "SPARQL Query Editor").replace(
-                "{{title}}", "SPARQL Query Editor").replace("{{startscriptpath}}", "startscripts.js").replace(
-                "{{stylepath}}", "style.css") \
-                .replace("{{classtreefolderpath}}", self.pubconfig["corpusid"] + "_classtree.js").replace("{{baseurlhtml}}", "").replace(
-                "{{nonnslink}}", "").replace("{{scriptfolderpath}}", self.pubconfig["corpusid"] + "_search.js").replace("{{exports}}",
-                                                                                                      templates[
-                                                                                                          "nongeoexports"]).replace(
-                "{{versionurl}}", DocConfig.versionurl).replace("{{version}}", DocConfig.version).replace("{{bibtex}}",
-                                                                                                          "").replace(
-                "{{proprelationpath}}", "proprelations.js")
-            sparqlhtml += templates["sparqltemplate"]
-            tempfoot = DocUtils.replaceStandardVariables(templates["footer"], "", "0", "false",self.pubconfig).replace("{{license}}",
-                                                                                                       curlicense).replace(
-                "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "").replace("{{stats}}",
-                                                                                             self.voidstatshtml)
-            tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.pubconfig["apis"]["ogcapifeatures"], self.pubconfig["apis"]["iiif"], self.pubconfig["apis"]["ckan"]],
-                                                        [
-                                                            "APIs: <a href=\"" + str(
-                                                                self.pubconfig["deploypath"]) + "/sparql.html?endpoint=" + str(
-                                                                self.pubconfig["deploypath"]) + "\">[SPARQL]</a>&nbsp;",
-                                                            "<a href=\"" + str(
-                                                                self.pubconfig["deploypath"]) + "/api/api.html\">[OGC API Features]</a>&nbsp;",
-                                                            "<a href=\"" + str(self.pubconfig["deploypath"]) + "/iiif/\">[IIIF]</a>&nbsp;",
-                                                            "<a href=\"" + str(self.pubconfig["deploypath"]) + "/api/3/\">[CKAN]</a>"
-                                                        ], "{{apis}}")
-            sparqlhtml += tempfoot
             with open(outpath + "sparql.html", 'w', encoding='utf-8') as f:
-                f.write(sparqlhtml)
+                SPARQLPage().generatePageView(templates, self.pubconfig, self.voidstatshtml, self.graph, f)
                 f.close()
         relpath = DocUtils.generateRelativePathFromGivenDepth(0)
         if len(self.htmlexporter.iiifmanifestpaths["default"]) > 0:

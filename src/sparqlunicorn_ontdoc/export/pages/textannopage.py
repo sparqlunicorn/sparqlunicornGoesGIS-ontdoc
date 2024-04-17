@@ -39,9 +39,10 @@ class TextAnnoPage:
                     end = str(pred[1])
                 elif str(pred[0]) == "http://www.w3.org/ns/oa#exact":
                     exact = str(pred[1])
+            annobody=""
             for obj in graph.objects(anno[0],URIRef("http://www.w3.org/ns/oa#hasBody")):
-
-            f.write("<tr><td><a href=\""+str(anno.replace(prefixnamespace,outpath))+"\">"+str(DocUtils.shortenURI(anno))+"</a></td><td><a href=\""+str(thetype)+"\">"+DocUtils.shortenURI(str(thetype))+"</a></td><td>"+str(exact)+" ["+str(start)+"-"+str(end)+"]</td><td></td></tr>")
+                annobody+=str(obj)+" "
+            f.write("<tr><td><a href=\""+str(anno.replace(prefixnamespace,outpath))+"\">"+str(DocUtils.shortenURI(anno))+"</a></td><td><a href=\""+str(thetype)+"\">"+DocUtils.shortenURI(str(thetype))+"</a></td><td>"+str(exact)+" ["+str(start)+"-"+str(end)+"]</td><td>"+str(annobody)+"</td></tr>")
         f.write("</tbody></table>")
 
 

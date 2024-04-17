@@ -4,7 +4,9 @@ from export.api.iiifexporter import IIIFAPIExporter
 
 
 class MediaPage:
-    def generatePageWidget(self, foundmedia,iiifmanifestpaths, graph, templates, subject, f, onlybody=False):
+
+    @staticmethod
+    def generatePageWidget(foundmedia,iiifmanifestpaths, graph,imageannos,imagetoURI,annobodies,foundlabel,comment,thetypes,predobjmap, templates, subject, pubconfig, f, onlybody=False):
         print("PageWidget")
         carousel = "image"
         if len(foundmedia["image"]) > 3:
@@ -18,11 +20,11 @@ class MediaPage:
         #    if str(subject) not in imagetoURI[target]:
         #        imagetoURI[target]["uri"][str(subject)]["bodies"]+=annobodies
         if len(imageannos) > 0 and len(foundmedia["image"]) > 0:
-            if self.iiif:
+            if pubconfig["apis"]["iiif"]:
                 iiifmanifestpaths["default"].append(
-                    IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath, foundmedia["image"],
-                                                         imageannos, annobodies, str(subject), self.prefixnamespace,
-                                                         imagetoURI, self.imagemetadata, DocConfig.metadatanamespaces,
+                    IIIFAPIExporter.generateIIIFManifest(graph, pubconfig["outpath"], pubconfig["deploypath"], foundmedia["image"],
+                                                         imageannos, annobodies, str(subject), pubconfig["prefixnamespace"],
+                                                         imagetoURI, pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
                                                          foundlabel, comment, thetypes, predobjmap, "Image"))
             for image in foundmedia["image"]:
                 if image not in imagetoURI or "uri" not in imagetoURI[image]:
@@ -42,11 +44,11 @@ class MediaPage:
                 if len(foundmedia["image"]) > 3:
                     carousel = "carousel-item"
         elif len(foundmedia["image"]) > 0:
-            if self.iiif:
+            if pubconfig["apis"]["iiif"]:
                 iiifmanifestpaths["default"].append(
-                    IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath, foundmedia["image"],
-                                                         imageannos, annobodies, str(subject), self.prefixnamespace,
-                                                         imagetoURI, self.imagemetadata, DocConfig.metadatanamespaces,
+                    IIIFAPIExporter.generateIIIFManifest(graph, pubconfig["outpath"], pubconfig["deploypath"], foundmedia["image"],
+                                                         imageannos, annobodies, str(subject), pubconfig["prefixnamespace"],
+                                                         imagetoURI, pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
                                                          foundlabel, comment, thetypes, predobjmap, "Image"))
             for image in foundmedia["image"]:
                 if image not in imagetoURI or "uri" not in imagetoURI[image]:
@@ -72,20 +74,20 @@ class MediaPage:
                     carousel = "carousel-item"
         if len(foundmedia["image"]) > 3:
             f.write(templates["imagecarouselfooter"])
-        if len(foundmedia["audio"]) > 0 and self.iiif:
+        if len(foundmedia["audio"]) > 0 and pubconfig["apis"]["iiif"]:
             iiifmanifestpaths["default"].append(
-                IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath, foundmedia["audio"], None,
-                                                     None, str(subject), self.prefixnamespace, imagetoURI,
-                                                     self.imagemetadata, DocConfig.metadatanamespaces, foundlabel,
+                IIIFAPIExporter.generateIIIFManifest(graph, pubconfig["outpath"], pubconfig["deploypath"], foundmedia["audio"], None,
+                                                     None, str(subject), pubconfig["prefixnamespace"], imagetoURI,
+                                                     pubconfig["imagemetadata"], DocConfig.metadatanamespaces, foundlabel,
                                                      comment, thetypes, predobjmap, "Audio"))
         for audio in foundmedia["audio"]:
             imagetoURI[audio] = {"uri": str(subject)}
             f.write(templates["audiotemplate"].replace("{{audio}}", str(audio)))
-        if len(foundmedia["video"]) > 0 and self.iiif:
+        if len(foundmedia["video"]) > 0 and pubconfig["apis"]["iiif"]:
             iiifmanifestpaths["default"].append(
-                IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath, foundmedia["video"], None,
-                                                     None, str(subject), self.prefixnamespace, imagetoURI,
-                                                     self.imagemetadata, DocConfig.metadatanamespaces, foundlabel,
+                IIIFAPIExporter.generateIIIFManifest(graph, pubconfig["outpath"], pubconfig["deploypath"], foundmedia["video"], None,
+                                                     None, str(subject), pubconfig["prefixnamespace"], imagetoURI,
+                                                     pubconfig["imagemetadata"], DocConfig.metadatanamespaces, foundlabel,
                                                      comment, thetypes, predobjmap, "Video"))
         for video in foundmedia["video"]:
             imagetoURI[video] = {"uri": str(subject)}

@@ -40,6 +40,5 @@ class CIDOCOverviewPage:
     def generateCollectionWidget(self,graph,templates,subject,f):
         print("CollectionWidget")
 
-    def generatePageView(self,headertemplate,footertemplate,g,f):
-        f.write(str(headertemplate))
+    def generatePageView(self,templates,g,f):
         print("PageView")

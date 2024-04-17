@@ -52,7 +52,7 @@ class GeometryViewPage:
         return geocache
 
     def generateCollectionWidget(self,graph,templates,subject,f,uritotreeitem,featurecollectionspaths,parameters={"foundlabel":""}):
-        if parameters.get("foundlabel") != None and parameters.get("foundlabel") != "":
+        if parameters.get("foundlabel") is not None and parameters.get("foundlabel") != "":
             featcoll = {"type": "FeatureCollection", "id": subject, "name": str(parameters["foundlabel"]),
                         "features": []}
         else:
@@ -68,19 +68,19 @@ class GeometryViewPage:
             for memberid in graph.objects(subject, memberpred, True):
                 for geoinstance in graph.predicate_objects(memberid, True):
                     geojsonrep = None
-                    if geoinstance != None and isinstance(geoinstance[1], Literal) and (
+                    if geoinstance is not None and isinstance(geoinstance[1], Literal) and (
                             str(geoinstance[0]) in DocConfig.geoproperties or str(
                         geoinstance[1].datatype) in DocConfig.geoliteraltypes):
                         geojsonrep = LiteralUtils.processLiteral(str(geoinstance[1]), str(geoinstance[1].datatype), "")
                         uritotreeitem[str(subject)][-1]["type"] = "geocollection"
-                    elif geoinstance != None and str(geoinstance[0]) in DocConfig.geopointerproperties:
+                    elif geoinstance is not None and str(geoinstance[0]) in DocConfig.geopointerproperties:
                         uritotreeitem[str(subject)][-1]["type"] = "featurecollection"
                         for geotup in graph.predicate_objects(geoinstance[1], True):
                             if isinstance(geotup[1], Literal) and (str(geotup[0]) in DocConfig.geoproperties or str(
                                     geotup[1].datatype) in DocConfig.geoliteraltypes):
                                 geojsonrep = LiteralUtils.processLiteral(str(geotup[1]), str(geotup[1].datatype), "")
-                    if geojsonrep != None and "coordinates" in geojsonrep and len(geojsonrep["coordinates"]) > 0:
-                        if uritotreeitem != None and str(memberid) in uritotreeitem:
+                    if geojsonrep is not None and geojsonrep!= "" and "coordinates" in geojsonrep and len(geojsonrep["coordinates"]) > 0:
+                        if uritotreeitem is not None and str(memberid) in uritotreeitem:
                             featcoll["features"].append({"type": "Feature", 'id': str(memberid),
                                                          'name': uritotreeitem[str(memberid)][-1]["text"],
                                                          'dateprops': parameters.get("dateprops", {}), 'properties': {},

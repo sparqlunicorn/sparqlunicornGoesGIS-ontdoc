@@ -1,7 +1,7 @@
-from src.sparqlunicorn_ontdoc.export.pages.bibpage import BibPage
-from src.sparqlunicorn_ontdoc.export.pages.geometryviewpage import GeometryViewPage
-from src.sparqlunicorn_ontdoc.export.pages.graphviewerpage import GraphViewerPage
-from src.sparqlunicorn_ontdoc.export.pages.lexiconpage import LexiconPage
+from export.pages.bibpage import BibPage
+from export.pages.geometryviewpage import GeometryViewPage
+from export.pages.graphviewerpage import GraphViewerPage
+from export.pages.lexiconpage import LexiconPage
 
 
 

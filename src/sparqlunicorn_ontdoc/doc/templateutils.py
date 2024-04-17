@@ -4,14 +4,13 @@ import re
 from doc.docdefaults import DocDefaults
 
 
-
-includepattern=r'{%\s*include\s*(.*)\s*%}'
-
 class TemplateUtils:
+
+    includepattern = r'{%\s*include\s*(.*)\s*%}'
 
     @staticmethod
     def resolveIncludes(template,templates):
-        matches=re.findall(includepattern,template)
+        matches=re.findall(TemplateUtils.includepattern,template)
         if len(matches)>0:
             for mat in matches:
                 if mat.replace(".html","") in templates:
@@ -84,6 +83,6 @@ class TemplateUtils:
                                 templates[filename.replace(".css", "")] = content
         print("Found templates.... "+str(len(templates)))
         for temp in templates:
-            if temp!="includes" and temp!="layouts" and temp!="js":
+            if temp!="includes" and temp!="layouts" and temp!="js" and templates[temp]!=None:
                 templates[temp]=TemplateUtils.resolveIncludes(templates[temp],templates)
         return templates

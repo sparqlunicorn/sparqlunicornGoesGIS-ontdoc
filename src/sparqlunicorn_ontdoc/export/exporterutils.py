@@ -1,6 +1,6 @@
-from .geoexporter import GeoExporter
-from .graphexporter import GraphExporter
-from .miscexporter import MiscExporter
+from src.sparqlunicorn_ontdoc.export.data.geoexporter import GeoExporter
+from src.sparqlunicorn_ontdoc.export.data.graphexporter import GraphExporter
+from src.sparqlunicorn_ontdoc.export.data.miscexporter import MiscExporter
 
 class ExporterUtils:
 

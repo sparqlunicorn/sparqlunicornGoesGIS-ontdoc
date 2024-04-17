@@ -240,17 +240,17 @@ class HTMLExporter():
                 else:
                     tablecontents = thetable
         subpredsmap = {}
-        if subpreds != None:
+        if subpreds is not None:
             for tup in sorted(subpreds, key=lambda tup: tup[1]):
                 if str(tup[1]) not in subpredsmap:
                     subpredsmap[str(tup[1])] = []
                 subpredsmap[str(tup[1])].append(tup[0])
-                if parentclass != None and str(tup[1]) not in uritotreeitem[parentclass][-1]["data"]["from"]:
+                if parentclass is not None and str(tup[1]) not in uritotreeitem[parentclass][-1]["data"]["from"]:
                     uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])] = {}
                     uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])]["instancecount"] = 0
                 if isinstance(tup[0], URIRef):
                     for item in graph.objects(tup[0], URIRef(self.typeproperty)):
-                        if parentclass != None:
+                        if parentclass is not None:
                             if item not in uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])]:
                                 uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])][item] = 0
                             uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])][item] += 1
@@ -273,7 +273,7 @@ class HTMLExporter():
                     for item in subpredsmap[tup]:
                         if itemcounter >= HTMLExporter.maxlistthreshold:
                             break
-                        if subjectstorender != None and item not in subjectstorender and baseurl in str(item):
+                        if subjectstorender is not None and item not in subjectstorender and baseurl in str(item):
                             postprocessing.add((item, URIRef(tup), subject))
                         res = HTMLExporter.createHTMLTableValueEntry(subject, tup, item, None, graph,
                                                                      baseurl, checkdepth, geojsonrep, foundmedia,
@@ -310,9 +310,9 @@ class HTMLExporter():
                 else:
                     tablecontents += "<td class=\"wrapword\"></td>"
                 tablecontents += "</tr>"
-        if self.licenseuri != None:
+        if self.licenseuri is not None:
             ttlf.add((subject, URIRef("http://purl.org/dc/elements/1.1/license"), URIRef(self.licenseuri)))
-        if self.apis["solidexport"] != None:
+        if self.apis["solidexport"] is not None:
             ttlf.add((subject, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
                       URIRef("http://www.w3.org/ns/ldp#Resource")))
             ttlf.add((subject, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
@@ -348,7 +348,7 @@ class HTMLExporter():
                 epsgdefslink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "epsgdefs.js", False)
                 vowlresultlink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "vowl_result.js",
                                                                              False)
-                if geojsonrep != None:
+                if geojsonrep is not None:
                     myexports = self.templates["geoexports"]
                 else:
                     myexports = self.templates["nongeoexports"]

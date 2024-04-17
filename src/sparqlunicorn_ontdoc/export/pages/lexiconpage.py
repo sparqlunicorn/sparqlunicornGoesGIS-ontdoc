@@ -1,9 +1,10 @@
 from rdflib import URIRef, Literal
 from doc.docutils import DocUtils
 from doc.docconfig import DocConfig
+from export.pages.page import Page
 
 
-class LexiconPage:
+class LexiconPage(Page):
 
     tableheader="<thead><th>Lemma</th><th>Lexical Category</th><th>Language</th><th>Forms</th><th>Senses</th></thead>"
 
@@ -67,6 +68,5 @@ class LexiconPage:
             self.generatePageWidget(graph,lexentry,f,True)
         f.write("</tbody></table>")
 
-    def generatePageView(self,headertemplate,footertemplate,g,f):
-        f.write(str(headertemplate))
+    def generatePageView(self,templates,g,f):
         print("PageView")

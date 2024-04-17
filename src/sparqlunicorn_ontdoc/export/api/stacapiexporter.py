@@ -6,7 +6,7 @@ from pathlib import Path
 from doc.docutils import DocUtils
 
 
-class OGCAPIFeaturesExporter:
+class StacAPIExporter:
 
     @staticmethod
     def generateOGCAPIFeaturesPages(outpath,deploypath, featurecollectionspaths, prefixnamespace, ogcapi, mergeJSON):
