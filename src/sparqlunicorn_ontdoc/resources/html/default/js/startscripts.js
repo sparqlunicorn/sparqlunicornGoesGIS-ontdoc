@@ -1075,7 +1075,8 @@ function initThreeJS(domelement,verts,meshurls) {
     bbox=null
     //camera = new THREE.PerspectiveCamera(90,window.innerWidth / window.innerHeight, 0.1, 150 );
     camera = new THREE.PerspectiveCamera(90,width / height, 0.1, 2000 );
-    if(meshurls.length>0){
+    controls = new THREE.OrbitControls( camera, renderer.domElement ); 
+   if(meshurls.length>0){
         if(meshurls[0].includes(".ply")){
             var loader = new THREE.PLYLoader();
             loader.load(meshurls[0], function(object){
@@ -1136,7 +1137,7 @@ function initThreeJS(domelement,verts,meshurls) {
     console.log("Depth: "+(maxz-minz))
     scene.add( annotations );
 	centervec=new THREE.Vector3()
-    controls = new THREE.OrbitControls( camera, renderer.domElement );
+
     //controls.target.set( centervec.x,centervec.y,centervec.z );
     controls.target.set( 0,0,0 );
     camera.position.x= 0
