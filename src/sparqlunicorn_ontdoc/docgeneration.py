@@ -15,7 +15,7 @@ import traceback
 from export.data.htmlexporter import HTMLExporter
 from export.data.voidexporter import VoidExporter
 from export.pages.indexviewpage import IndexViewPage
-from src.sparqlunicorn_ontdoc.export.pages.sparqlpage import SPARQLPage
+from export.pages.sparqlpage import SPARQLPage
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 print(sys.path)
