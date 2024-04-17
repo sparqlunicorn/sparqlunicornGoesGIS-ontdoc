@@ -1100,7 +1100,7 @@ function initThreeJS(domelement,verts,meshurls) {
             objects.add(nexus_obj)
             scene.add(objects);
             addRotationControls(nexus_obj,geometryF,objects)
-            if(objects.children.length>0){
+            if(objects.children.length>0 && typeof(camera)!=="undefined" && camera!=null){
                 camera.lookAt( objects.children[0].position );
             }
             fitCameraToSelection(camera, controls, objects.children)
@@ -1114,7 +1114,7 @@ function initThreeJS(domelement,verts,meshurls) {
                 objects.add(box)
                 scene.add(objects);
                 addRotationControls(box,geometryF,objects)
-                if(objects.children.length>0){
+                if(objects.children.length>0 && typeof(camera)!=="undefined" && camera!=null){
                     camera.lookAt( objects.children[0].position );
                 }
                 fitCameraToSelection(camera, controls, objects.children)
