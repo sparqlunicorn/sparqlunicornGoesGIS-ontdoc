@@ -1073,6 +1073,8 @@ function initThreeJS(domelement,verts,meshurls) {
     renderer.setSize( width, height);
     document.getElementById(domelement).appendChild( renderer.domElement );
     bbox=null
+    //camera = new THREE.PerspectiveCamera(90,window.innerWidth / window.innerHeight, 0.1, 150 );
+    camera = new THREE.PerspectiveCamera(90,width / height, 0.1, 2000 );
     if(meshurls.length>0){
         if(meshurls[0].includes(".ply")){
             var loader = new THREE.PLYLoader();
@@ -1121,8 +1123,7 @@ function initThreeJS(domelement,verts,meshurls) {
             });
         }
     }
-    //camera = new THREE.PerspectiveCamera(90,window.innerWidth / window.innerHeight, 0.1, 150 );
-    camera = new THREE.PerspectiveCamera(90,width / height, 0.1, 2000 );
+
     scene.add(new THREE.AmbientLight(0x222222));
     var light = new THREE.DirectionalLight(0xffffff, 1);
     light.position.set(20, 20, 0);
