@@ -93,7 +93,7 @@ class OntDocGeneration:
             if not self.pubconfig["outpath"].endswith("/"):
                 self.pubconfig["outpath"] += "/"
         self.pubconfig["outpath"] = self.pubconfig["outpath"].replace("//", "/")
-        self.pubconfig["prefixnamespace"] = self.pubconfig["prefixnamespace"].replace("//", "/")
+        #self.pubconfig["prefixnamespace"] = self.pubconfig["prefixnamespace"].replace("//", "/")
         # prefixes["reversed"]["http://purl.org/suni/"] = "suni"
 
 

@@ -339,250 +339,250 @@ class HTMLExporter():
                 except Exception as e:
                     print(e)
                     print(traceback.format_exc())
-        try:
-            with open(completesavepath, 'w', encoding='utf-8') as f:
-                searchfilelink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, searchfilename, False)
-                classtreelink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, classtreename, False)
-                csslink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "style.css", False)
-                startscriptlink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "startscripts.js",
-                                                                              False)
-                proprelationslink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "proprelations.js",
-                                                                                False)
-                epsgdefslink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "epsgdefs.js", False)
-                vowlresultlink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "vowl_result.js",
-                                                                             False)
-                if geojsonrep is not None:
-                    myexports = self.templates["geoexports"]
-                else:
-                    myexports = self.templates["nongeoexports"]
-                relpath = DocUtils.generateRelativePathFromGivenDepth(checkdepth)
-                if foundlabel == None or foundlabel == "":
-                    foundlabel = DocUtils.shortenURI(str(subject))
-                f.write(self.replaceStandardVariables(self.templates["htmltemplate"], subject, checkdepth, "false").replace(
-                    "{{iconprefixx}}", (relpath + "icons/" if self.offlinecompat else "")).replace("{{baseurl}}",
-                                                                                                   baseurl).replace(
-                    "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace(
-                    "{{relativedepth}}", str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace(
-                    "{{toptitle}}", foundlabel).replace(
-                    "{{startscriptpath}}", startscriptlink).replace("{{epsgdefspath}}", epsgdefslink).replace(
-                    "{{bibtex}}", itembibtex).replace("{{vowlpath}}", vowlresultlink).replace("{{proprelationpath}}",
-                                                                                              proprelationslink).replace(
-                    "{{stylepath}}", csslink).replace("{{title}}",
-                                                      "<a href=\"" + str(subject) + "\">" + str(
-                                                          foundlabel) + "</a>").replace(
-                    "{{baseurl}}", baseurl).replace("{{tablecontent}}", tablecontents).replace("{{description}}",
-                                                                                               "").replace(
-                    "{{scriptfolderpath}}", searchfilelink).replace("{{classtreefolderpath}}", classtreelink).replace(
-                    "{{exports}}", myexports).replace("{{nonnslink}}", str(nonnslink)).replace("{{subjectencoded}}",
-                                                                                               urllib.parse.quote(
-                                                                                                   str(subject))))
-                for comm in comment:
-                    f.write(self.templates["htmlcommenttemplate"].replace("{{comment}}",
-                                                                     DocUtils.shortenURI(comm) + ":" + comment[comm]))
-                # for fval in foundvals:
-                #    f.write(templates["htmlcommenttemplate"].replace("{{comment}}", "<b>Value "+ DocUtils.shortenURI(str(fval[0]))+": <mark>" + str(fval[1]) + "</mark></b>"))
-                if len(foundmedia["mesh"]) > 0 and len(image3dannos) > 0:
-                    if self.apis["iiif"]:
-                        self.iiifmanifestpaths["default"].append(
-                            IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
-                                                                 foundmedia["mesh"], image3dannos, annobodies,
-                                                                 str(subject), self.prefixnamespace, self.imagetoURI,
-                                                                 self.imagemetadata, DocConfig.metadatanamespaces,
-                                                                 foundlabel, comment, thetypes, predobjmap, "Model"))
-                    for anno in image3dannos:
-                        if ("POINT" in anno["value"].upper() or "POLYGON" in anno["value"].upper() or "LINESTRING" in
-                                anno["value"].upper()):
-                            f.write(self.templates["threejstemplate"].replace("{{wktstring}}", anno["value"]).replace(
-                                "{{meshurls}}", str(list(foundmedia["mesh"]))).replace("{{relativepath}}",
-                                                                                       DocUtils.generateRelativePathFromGivenDepth(
-                                                                                           checkdepth)))
-                elif len(foundmedia["mesh"]) > 0 and len(image3dannos) == 0:
-                    print("Found 3D Model: " + str(foundmedia["mesh"]))
-                    if self.apis["iiif"]:
-                        self.iiifmanifestpaths["default"].append(
-                            IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
-                                                                 foundmedia["mesh"], image3dannos, annobodies,
-                                                                 str(subject), self.prefixnamespace, self.imagetoURI,
-                                                                 self.imagemetadata, DocConfig.metadatanamespaces,
-                                                                 foundlabel, comment, thetypes, predobjmap, "Model"))
-                    for curitem in foundmedia["mesh"]:
-                        format = "ply"
-                        if ".nxs" in curitem or ".nxz" in curitem:
-                            format = "nexus"
-                            self.has3d = True
-                        elif format == "gltf":
-                            f.write(self.templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",
-                                                                                                      str(list(
-                                                                                                          foundmedia[
-                                                                                                              "mesh"]))).replace(
-                                "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
+        #try:
+        with open(completesavepath, 'w', encoding='utf-8') as f:
+            searchfilelink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, searchfilename, False)
+            classtreelink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, classtreename, False)
+            csslink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "style.css", False)
+            startscriptlink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "startscripts.js",
+                                                                          False)
+            proprelationslink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "proprelations.js",
+                                                                            False)
+            epsgdefslink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "epsgdefs.js", False)
+            vowlresultlink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "vowl_result.js",
+                                                                         False)
+            if geojsonrep is not None:
+                myexports = self.templates["geoexports"]
+            else:
+                myexports = self.templates["nongeoexports"]
+            relpath = DocUtils.generateRelativePathFromGivenDepth(checkdepth)
+            if foundlabel == None or foundlabel == "":
+                foundlabel = DocUtils.shortenURI(str(subject))
+            f.write(self.replaceStandardVariables(self.templates["htmltemplate"], subject, checkdepth, "false").replace(
+                "{{iconprefixx}}", (relpath + "icons/" if self.offlinecompat else "")).replace("{{baseurl}}",
+                                                                                               baseurl).replace(
+                "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace(
+                "{{relativedepth}}", str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace(
+                "{{toptitle}}", foundlabel).replace(
+                "{{startscriptpath}}", startscriptlink).replace("{{epsgdefspath}}", epsgdefslink).replace(
+                "{{bibtex}}", itembibtex).replace("{{vowlpath}}", vowlresultlink).replace("{{proprelationpath}}",
+                                                                                          proprelationslink).replace(
+                "{{stylepath}}", csslink).replace("{{title}}",
+                                                  "<a href=\"" + str(subject) + "\">" + str(
+                                                      foundlabel) + "</a>").replace(
+                "{{baseurl}}", baseurl).replace("{{tablecontent}}", tablecontents).replace("{{description}}",
+                                                                                           "").replace(
+                "{{scriptfolderpath}}", searchfilelink).replace("{{classtreefolderpath}}", classtreelink).replace(
+                "{{exports}}", myexports).replace("{{nonnslink}}", str(nonnslink)).replace("{{subjectencoded}}",
+                                                                                           urllib.parse.quote(
+                                                                                               str(subject))))
+            for comm in comment:
+                f.write(self.templates["htmlcommenttemplate"].replace("{{comment}}",
+                                                                 DocUtils.shortenURI(comm) + ":" + comment[comm]))
+            # for fval in foundvals:
+            #    f.write(templates["htmlcommenttemplate"].replace("{{comment}}", "<b>Value "+ DocUtils.shortenURI(str(fval[0]))+": <mark>" + str(fval[1]) + "</mark></b>"))
+            if len(foundmedia["mesh"]) > 0 and len(image3dannos) > 0:
+                if self.apis["iiif"]:
+                    self.iiifmanifestpaths["default"].append(
+                        IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
+                                                             foundmedia["mesh"], image3dannos, annobodies,
+                                                             str(subject), self.prefixnamespace, self.imagetoURI,
+                                                             self.imagemetadata, DocConfig.metadatanamespaces,
+                                                             foundlabel, comment, thetypes, predobjmap, "Model"))
+                for anno in image3dannos:
+                    if ("POINT" in anno["value"].upper() or "POLYGON" in anno["value"].upper() or "LINESTRING" in
+                            anno["value"].upper()):
+                        f.write(self.templates["threejstemplate"].replace("{{wktstring}}", anno["value"]).replace(
+                            "{{meshurls}}", str(list(foundmedia["mesh"]))).replace("{{relativepath}}",
+                                                                                   DocUtils.generateRelativePathFromGivenDepth(
+                                                                                       checkdepth)))
+            elif len(foundmedia["mesh"]) > 0 and len(image3dannos) == 0:
+                print("Found 3D Model: " + str(foundmedia["mesh"]))
+                if self.apis["iiif"]:
+                    self.iiifmanifestpaths["default"].append(
+                        IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
+                                                             foundmedia["mesh"], image3dannos, annobodies,
+                                                             str(subject), self.prefixnamespace, self.imagetoURI,
+                                                             self.imagemetadata, DocConfig.metadatanamespaces,
+                                                             foundlabel, comment, thetypes, predobjmap, "Model"))
+                for curitem in foundmedia["mesh"]:
+                    format = "ply"
+                    if ".nxs" in curitem or ".nxz" in curitem:
+                        format = "nexus"
+                        self.has3d = True
+                    elif format == "gltf":
                         f.write(self.templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",
-                                                                                                  str(list(foundmedia[
-                                                                                                               "mesh"]))).replace(
+                                                                                                  str(list(
+                                                                                                      foundmedia[
+                                                                                                          "mesh"]))).replace(
                             "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
-                        # f.write(templates["3dtemplate"].replace("{{meshurl}}",curitem).replace("{{meshformat}}",format))
-                        break
-                elif len(foundmedia["mesh"]) == 0 and len(image3dannos) > 0:
-                    for anno in image3dannos:
-                        if ("POINT" in anno["value"].upper() or "POLYGON" in anno["value"].upper() or "LINESTRING" in
-                                anno["value"].upper()):
-                            f.write(self.templates["threejstemplate"].replace("{{wktstring}}", anno["value"]).replace(
-                                "{{meshurls}}", "[]").replace("{{relativepath}}",
-                                                              DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
-                carousel = "image"
-                if len(foundmedia["image"]) > 3:
-                    carousel = "carousel-item active"
-                    f.write(self.templates["imagecarouselheader"])
-                # if self.apis["iiif"] and len(annobodies)>0:
-                #    if target not in imagetoURI:
-                #        imagetoURI[target]={"uri":{str(subject):{"bodies":[]}}}
-                #    if str(subject) not in imagetoURI[target]:
-                #        imagetoURI[target]["uri"][str(subject)]={"bodies":[]}
-                #    if str(subject) not in imagetoURI[target]:
-                #        imagetoURI[target]["uri"][str(subject)]["bodies"]+=annobodies
-                if len(imageannos) > 0 and len(foundmedia["image"]) > 0:
-                    if self.apis["iiif"]:
-                        self.iiifmanifestpaths["default"].append(
-                            IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
-                                                                 foundmedia["image"], imageannos, annobodies,
-                                                                 str(subject), self.prefixnamespace, self.imagetoURI,
-                                                                 self.imagemetadata, DocConfig.metadatanamespaces,
-                                                                 foundlabel, comment, thetypes, predobjmap, "Image"))
-                    for image in foundmedia["image"]:
-                        if image not in self.imagetoURI or "uri" not in self.imagetoURI[image]:
-                            self.imagetoURI[image] = {"uri": {}}
-                        if not str(subject) in self.imagetoURI[image]["uri"]:
-                            self.imagetoURI[image]["uri"][str(subject)] = {"bodies": []}
-                        annostring = ""
-                        for anno in imageannos:
-                            annostring += anno["value"].replace("<svg>",
-                                                                "<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
-                        f.write(self.templates["imageswithannotemplate"].replace("{{carousel}}",
-                                                                            carousel + "\" style=\"position: relative;display: inline-block;").replace(
-                            "{{image}}", str(image)).replace("{{svganno}}", annostring).replace("{{imagetitle}}",
-                                                                                                str(image)[
-                                                                                                0:str(image).rfind(
-                                                                                                    '.')]))
-                        if len(foundmedia["image"]) > 3:
-                            carousel = "carousel-item"
-                elif len(foundmedia["image"]) > 0:
-                    if self.apis["iiif"]:
-                        self.iiifmanifestpaths["default"].append(
-                            IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
-                                                                 foundmedia["image"], imageannos, annobodies,
-                                                                 str(subject), self.prefixnamespace, self.imagetoURI,
-                                                                 self.imagemetadata, DocConfig.metadatanamespaces,
-                                                                 foundlabel, comment, thetypes, predobjmap, "Image"))
-                    for image in foundmedia["image"]:
-                        if image not in self.imagetoURI or "uri" not in self.imagetoURI[image]:
-                            self.imagetoURI[image] = {"uri": {}}
-                        if not str(subject) in self.imagetoURI[image]["uri"]:
-                            self.imagetoURI[image]["uri"][str(subject)] = {"bodies": []}
-                        if image == "<svg width=":
-                            continue
-                        if "<svg" in image:
-                            if "<svg>" in image:
-                                f.write(self.templates["imagestemplatesvg"].replace("{{carousel}}", carousel).replace(
-                                    "{{image}}", str(image.replace("<svg>", "<svg class=\"svgview\">"))))
-                            else:
-                                f.write(self.templates["imagestemplatesvg"].replace("{{carousel}}", carousel).replace(
-                                    "{{image}}", str(image)))
+                    f.write(self.templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",
+                                                                                              str(list(foundmedia[
+                                                                                                           "mesh"]))).replace(
+                        "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
+                    # f.write(templates["3dtemplate"].replace("{{meshurl}}",curitem).replace("{{meshformat}}",format))
+                    break
+            elif len(foundmedia["mesh"]) == 0 and len(image3dannos) > 0:
+                for anno in image3dannos:
+                    if ("POINT" in anno["value"].upper() or "POLYGON" in anno["value"].upper() or "LINESTRING" in
+                            anno["value"].upper()):
+                        f.write(self.templates["threejstemplate"].replace("{{wktstring}}", anno["value"]).replace(
+                            "{{meshurls}}", "[]").replace("{{relativepath}}",
+                                                          DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
+            carousel = "image"
+            if len(foundmedia["image"]) > 3:
+                carousel = "carousel-item active"
+                f.write(self.templates["imagecarouselheader"])
+            # if self.apis["iiif"] and len(annobodies)>0:
+            #    if target not in imagetoURI:
+            #        imagetoURI[target]={"uri":{str(subject):{"bodies":[]}}}
+            #    if str(subject) not in imagetoURI[target]:
+            #        imagetoURI[target]["uri"][str(subject)]={"bodies":[]}
+            #    if str(subject) not in imagetoURI[target]:
+            #        imagetoURI[target]["uri"][str(subject)]["bodies"]+=annobodies
+            if len(imageannos) > 0 and len(foundmedia["image"]) > 0:
+                if self.apis["iiif"]:
+                    self.iiifmanifestpaths["default"].append(
+                        IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
+                                                             foundmedia["image"], imageannos, annobodies,
+                                                             str(subject), self.prefixnamespace, self.imagetoURI,
+                                                             self.imagemetadata, DocConfig.metadatanamespaces,
+                                                             foundlabel, comment, thetypes, predobjmap, "Image"))
+                for image in foundmedia["image"]:
+                    if image not in self.imagetoURI or "uri" not in self.imagetoURI[image]:
+                        self.imagetoURI[image] = {"uri": {}}
+                    if not str(subject) in self.imagetoURI[image]["uri"]:
+                        self.imagetoURI[image]["uri"][str(subject)] = {"bodies": []}
+                    annostring = ""
+                    for anno in imageannos:
+                        annostring += anno["value"].replace("<svg>",
+                                                            "<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
+                    f.write(self.templates["imageswithannotemplate"].replace("{{carousel}}",
+                                                                        carousel + "\" style=\"position: relative;display: inline-block;").replace(
+                        "{{image}}", str(image)).replace("{{svganno}}", annostring).replace("{{imagetitle}}",
+                                                                                            str(image)[
+                                                                                            0:str(image).rfind(
+                                                                                                '.')]))
+                    if len(foundmedia["image"]) > 3:
+                        carousel = "carousel-item"
+            elif len(foundmedia["image"]) > 0:
+                if self.apis["iiif"]:
+                    self.iiifmanifestpaths["default"].append(
+                        IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
+                                                             foundmedia["image"], imageannos, annobodies,
+                                                             str(subject), self.prefixnamespace, self.imagetoURI,
+                                                             self.imagemetadata, DocConfig.metadatanamespaces,
+                                                             foundlabel, comment, thetypes, predobjmap, "Image"))
+                for image in foundmedia["image"]:
+                    if image not in self.imagetoURI or "uri" not in self.imagetoURI[image]:
+                        self.imagetoURI[image] = {"uri": {}}
+                    if not str(subject) in self.imagetoURI[image]["uri"]:
+                        self.imagetoURI[image]["uri"][str(subject)] = {"bodies": []}
+                    if image == "<svg width=":
+                        continue
+                    if "<svg" in image:
+                        if "<svg>" in image:
+                            f.write(self.templates["imagestemplatesvg"].replace("{{carousel}}", carousel).replace(
+                                "{{image}}", str(image.replace("<svg>", "<svg class=\"svgview\">"))))
                         else:
-                            f.write(self.templates["imagestemplate"].replace("{{carousel}}", carousel).replace("{{image}}",
-                                                                                                          str(image)).replace(
-                                "{{imagetitle}}", str(image)[0:str(image).rfind('.')]))
-                        if len(foundmedia["image"]) > 3:
-                            carousel = "carousel-item"
-                if len(foundmedia["image"]) > 3:
-                    f.write(self.templates["imagecarouselfooter"])
-                if len(textannos) > 0:
-                    for textanno in textannos:
-                        if isinstance(textanno, dict):
-                            if "src" in textanno:
-                                f.write("<span style=\"font-weight:bold\" class=\"textanno\" start=\"" + str(
-                                    textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
-                                    textanno["exact"]) + "\" src=\"" + str(textanno["src"]) + "\"><mark>" + str(
-                                    textanno["exact"]) + "</mark></span>")
-                            else:
-                                f.write("<span style=\"font-weight:bold\" class=\"textanno\" start=\"" + str(
-                                    textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
-                                    textanno["exact"]) + "\"><mark>" + str(textanno["exact"]) + "</mark></span>")
-                if len(foundmedia["audio"]) > 0 and self.apis["iiif"]:
-                    self.iiifmanifestpaths["default"].append(
-                        IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath, foundmedia["audio"],
-                                                             None, None, str(subject), self.prefixnamespace,
-                                                             self.imagetoURI,
-                                                             self.imagemetadata, DocConfig.metadatanamespaces,
-                                                             foundlabel, comment, thetypes, predobjmap, "Audio"))
-                for audio in foundmedia["audio"]:
-                    self.imagetoURI[audio] = {"uri": str(subject)}
-                    f.write(self.templates["audiotemplate"].replace("{{audio}}", str(audio)))
-                if len(foundmedia["video"]) > 0 and self.apis["iiif"]:
-                    self.iiifmanifestpaths["default"].append(
-                        IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath, foundmedia["video"],
-                                                             None, None, str(subject), self.prefixnamespace,
-                                                             self.imagetoURI,
-                                                             self.imagemetadata, DocConfig.metadatanamespaces,
-                                                             foundlabel, comment, thetypes, predobjmap, "Video"))
-                for video in foundmedia["video"]:
-                    self.imagetoURI[video] = {"uri": str(subject)}
-                    f.write(self.templates["videotemplate"].replace("{{video}}", str(video)))
-                for type in curtypes:
-                    if type in DocConfig.lexicontypes:
-                        LexiconPage().generatePageWidget(graph, subject, f, {}, False)
-                    if type in PersonPage.pageWidgetConstraint():
-                        PersonPage().generatePageWidget(graph, subject, self.templates, f, True)
-                HTMLExporter.processCollectionPages(collections, graph, subject,self.templates, f)
-                if geojsonrep != None and "geocollection" not in collections:
-                    self.geocache = GeometryViewPage().generatePageWidget(graph, self.templates, subject, f, uritotreeitem,
-                                                                          geojsonrep, predobjmap, self.geocache,
-                                                                          {"dateprops": dateprops, "timeobj": timeobj,
-                                                                           "epsgcode": epsgcode,
-                                                                           "epsgdefslink": epsgdefslink,
-                                                                           "checkdepth": checkdepth,
-                                                                           "hasnonnslen": len(hasnonns)})
-                elif "geocollection" in collections or nonns:
-                    self.geocache = GeometryViewPage().generateCollectionWidget(graph, self.templates, subject, f,
-                                                                                uritotreeitem,
-                                                                                self.featurecollectionspaths,
-                                                                                {"completesavepath": completesavepath,
-                                                                                 "nonns": nonns, "hasnonns": hasnonns,
-                                                                                 "foundlabel": foundlabel,
-                                                                                 "localOptimized": self.localOptimized,
-                                                                                 "dateprops": dateprops,
-                                                                                 "timeobj": timeobj,
-                                                                                 "geocache": self.geocache,
-                                                                                 "epsgcode": epsgcode,
-                                                                                 "epsgdefslink": epsgdefslink,
-                                                                                 "checkdepth": checkdepth,
-                                                                                 "hasnonnslen": len(hasnonns)})
-                f.write(self.templates["htmltabletemplate"].replace("{{tablecontent}}", tablecontents))
-                if metadatatablecontentcounter >= 0:
-                    f.write("<h5>Metadata</h5>")
-                    f.write(self.templates["htmltabletemplate"].replace("{{tablecontent}}", metadatatablecontents))
-                tempfoot = self.replaceStandardVariables(self.templates["footer"], "", checkdepth, "false").replace(
-                    "{{exports}}",
-                    myexports).replace(
-                    "{{license}}", curlicense).replace("{{bibtex}}", "").replace("{{stats}}", "")
-                tempfoot = DocUtils.conditionalArrayReplace(tempfoot,
-                                                            [True, self.apis["ogcapifeatures"], self.apis["iiif"], self.apis["ckan"]],
-                                                            [
-                                                                "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
-                                                                    checkdepth) + "/sparql.html?endpoint=" + str(
-                                                                    self.deploypath) + "\">[SPARQL]</a>&nbsp;",
-                                                                "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
-                                                                    checkdepth) + "/api/api.html\">[OGC API Features]</a>&nbsp;",
-                                                                "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
-                                                                    checkdepth) + "/iiif/\">[IIIF]</a>&nbsp;",
-                                                                "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
-                                                                    checkdepth) + "/api/3/\">[CKAN]</a>"
-                                                            ], "{{apis}}")
-                f.write(tempfoot)
-                f.close()
-        except Exception as inst:
-            print("Could not write " + str(completesavepath))
-            print(inst)
-            print(traceback.format_exc())
+                            f.write(self.templates["imagestemplatesvg"].replace("{{carousel}}", carousel).replace(
+                                "{{image}}", str(image)))
+                    else:
+                        f.write(self.templates["imagestemplate"].replace("{{carousel}}", carousel).replace("{{image}}",
+                                                                                                      str(image)).replace(
+                            "{{imagetitle}}", str(image)[0:str(image).rfind('.')]))
+                    if len(foundmedia["image"]) > 3:
+                        carousel = "carousel-item"
+            if len(foundmedia["image"]) > 3:
+                f.write(self.templates["imagecarouselfooter"])
+            if len(textannos) > 0:
+                for textanno in textannos:
+                    if isinstance(textanno, dict):
+                        if "src" in textanno:
+                            f.write("<span style=\"font-weight:bold\" class=\"textanno\" start=\"" + str(
+                                textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
+                                textanno["exact"]) + "\" src=\"" + str(textanno["src"]) + "\"><mark>" + str(
+                                textanno["exact"]) + "</mark></span>")
+                        else:
+                            f.write("<span style=\"font-weight:bold\" class=\"textanno\" start=\"" + str(
+                                textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
+                                textanno["exact"]) + "\"><mark>" + str(textanno["exact"]) + "</mark></span>")
+            if len(foundmedia["audio"]) > 0 and self.apis["iiif"]:
+                self.iiifmanifestpaths["default"].append(
+                    IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath, foundmedia["audio"],
+                                                         None, None, str(subject), self.prefixnamespace,
+                                                         self.imagetoURI,
+                                                         self.imagemetadata, DocConfig.metadatanamespaces,
+                                                         foundlabel, comment, thetypes, predobjmap, "Audio"))
+            for audio in foundmedia["audio"]:
+                self.imagetoURI[audio] = {"uri": str(subject)}
+                f.write(self.templates["audiotemplate"].replace("{{audio}}", str(audio)))
+            if len(foundmedia["video"]) > 0 and self.apis["iiif"]:
+                self.iiifmanifestpaths["default"].append(
+                    IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath, foundmedia["video"],
+                                                         None, None, str(subject), self.prefixnamespace,
+                                                         self.imagetoURI,
+                                                         self.imagemetadata, DocConfig.metadatanamespaces,
+                                                         foundlabel, comment, thetypes, predobjmap, "Video"))
+            for video in foundmedia["video"]:
+                self.imagetoURI[video] = {"uri": str(subject)}
+                f.write(self.templates["videotemplate"].replace("{{video}}", str(video)))
+            for type in curtypes:
+                if type in DocConfig.lexicontypes:
+                    LexiconPage().generatePageWidget(graph, subject, f, {}, False)
+                if type in PersonPage.pageWidgetConstraint():
+                    PersonPage().generatePageWidget(graph, subject, self.templates, f, True)
+            HTMLExporter.processCollectionPages(collections, graph, subject,self.templates, f)
+            if geojsonrep != None and "geocollection" not in collections:
+                self.geocache = GeometryViewPage().generatePageWidget(graph, self.templates, subject, f, uritotreeitem,
+                                                                      geojsonrep, predobjmap, self.geocache,
+                                                                      {"dateprops": dateprops, "timeobj": timeobj,
+                                                                       "epsgcode": epsgcode,
+                                                                       "epsgdefslink": epsgdefslink,
+                                                                       "checkdepth": checkdepth,
+                                                                       "hasnonnslen": len(hasnonns)})
+            elif "geocollection" in collections or nonns:
+                self.geocache = GeometryViewPage().generateCollectionWidget(graph, self.templates, subject, f,
+                                                                            uritotreeitem,
+                                                                            self.featurecollectionspaths,
+                                                                            {"completesavepath": completesavepath,
+                                                                             "nonns": nonns, "hasnonns": hasnonns,
+                                                                             "foundlabel": foundlabel,
+                                                                             "localOptimized": self.localOptimized,
+                                                                             "dateprops": dateprops,
+                                                                             "timeobj": timeobj,
+                                                                             "geocache": self.geocache,
+                                                                             "epsgcode": epsgcode,
+                                                                             "epsgdefslink": epsgdefslink,
+                                                                             "checkdepth": checkdepth,
+                                                                             "hasnonnslen": len(hasnonns)})
+            f.write(self.templates["htmltabletemplate"].replace("{{tablecontent}}", tablecontents))
+            if metadatatablecontentcounter >= 0:
+                f.write("<h5>Metadata</h5>")
+                f.write(self.templates["htmltabletemplate"].replace("{{tablecontent}}", metadatatablecontents))
+            tempfoot = self.replaceStandardVariables(self.templates["footer"], "", checkdepth, "false").replace(
+                "{{exports}}",
+                myexports).replace(
+                "{{license}}", curlicense).replace("{{bibtex}}", "").replace("{{stats}}", "")
+            tempfoot = DocUtils.conditionalArrayReplace(tempfoot,
+                                                        [True, self.apis["ogcapifeatures"], self.apis["iiif"], self.apis["ckan"]],
+                                                        [
+                                                            "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
+                                                                checkdepth) + "/sparql.html?endpoint=" + str(
+                                                                self.deploypath) + "\">[SPARQL]</a>&nbsp;",
+                                                            "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
+                                                                checkdepth) + "/api/api.html\">[OGC API Features]</a>&nbsp;",
+                                                            "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
+                                                                checkdepth) + "/iiif/\">[IIIF]</a>&nbsp;",
+                                                            "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
+                                                                checkdepth) + "/api/3/\">[CKAN]</a>"
+                                                        ], "{{apis}}")
+            f.write(tempfoot)
+            f.close()
+        #except Exception as inst:
+        #    print("Could not write " + str(completesavepath))
+        #    print(inst)
+        #    print(traceback.format_exc())
         return [postprocessing, nonnsmap]
 
     @staticmethod
