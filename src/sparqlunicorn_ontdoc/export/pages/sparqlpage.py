@@ -21,7 +21,7 @@ class SPARQLPage():
 
     def generatePageView(self, templates,pubconfig,voidstatshtml, g, f):
         print("PageView")
-        sparqlhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], "", "0", "false")
+        sparqlhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], "", "0", "false",pubconfig)
         sparqlhtml = sparqlhtml.replace("{{iconprefixx}}", ("icons/" if pubconfig["offlinecompat"] else "")).replace(
             "{{baseurl}}", pubconfig["prefixnamespace"]).replace("{{relativedepth}}", "0").replace("{{relativepath}}",
                                                                                       ".").replace("{{toptitle}}",
@@ -36,7 +36,7 @@ class SPARQLPage():
                                                                                                       "").replace(
             "{{proprelationpath}}", "proprelations.js")
         sparqlhtml += templates["sparqltemplate"]
-        tempfoot = DocUtils.replaceStandardVariables(templates["footer"], "", "0", "false").replace("{{license}}",
+        tempfoot = DocUtils.replaceStandardVariables(templates["footer"], "", "0", "false",pubconfig).replace("{{license}}",
                                                                                                 pubconfig["license"]).replace(
             "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "").replace("{{stats}}",
                                                                                          voidstatshtml)
