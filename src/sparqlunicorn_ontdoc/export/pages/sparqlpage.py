@@ -19,7 +19,7 @@ class SPARQLPage():
     def generateCollectionWidget(self, graph, templates, subject, f):
         print("CollectionWidget")
 
-    def generatePageView(self, templates,pubconfig,voidstatshtml, g, f):
+    def generatePageView(self, templates,pubconfig,curlicense,voidstatshtml, g, f):
         print("PageView")
         sparqlhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], "", "0", "false",pubconfig)
         sparqlhtml = sparqlhtml.replace("{{iconprefixx}}", ("icons/" if pubconfig["offlinecompat"] else "")).replace(
@@ -37,7 +37,7 @@ class SPARQLPage():
             "{{proprelationpath}}", "proprelations.js")
         sparqlhtml += templates["sparqltemplate"]
         tempfoot = DocUtils.replaceStandardVariables(templates["footer"], "", "0", "false",pubconfig).replace("{{license}}",
-                                                                                                pubconfig["license"]).replace(
+                                                                                                curlicense).replace(
             "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "").replace("{{stats}}",
                                                                                          voidstatshtml)
         tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, pubconfig["apis"]["ogcapifeatures"], pubconfig["apis"]["iiif"],

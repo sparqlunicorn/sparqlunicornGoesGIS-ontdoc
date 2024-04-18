@@ -248,7 +248,7 @@ class OntDocGeneration:
                     templates["layouts"][template]=TemplateUtils.resolveIncludes(template,templates)
         if "sparqltemplate" in templates:
             with open(outpath + "sparql.html", 'w', encoding='utf-8') as f:
-                SPARQLPage().generatePageView(templates, self.pubconfig, self.voidstatshtml, self.graph, f)
+                SPARQLPage().generatePageView(templates, self.pubconfig, curlicense, self.voidstatshtml,self.graph, f)
                 f.close()
         relpath = DocUtils.generateRelativePathFromGivenDepth(0)
         if len(self.htmlexporter.iiifmanifestpaths["default"]) > 0:
