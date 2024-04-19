@@ -69,12 +69,12 @@ class GeometryViewPage:
             for memberid in graph.objects(subject, memberpred, True):
                 for geoinstance in graph.predicate_objects(memberid, True):
                     geojsonrep = None
-                    if geoinstance is not None and isinstance(geoinstance[1], Literal) and (
+                    if isinstance(geoinstance[1], Literal) and (
                             str(geoinstance[0]) in DocConfig.geoproperties or str(
                         geoinstance[1].datatype) in DocConfig.geoliteraltypes):
                         geojsonrep = LiteralUtils.processLiteral(str(geoinstance[1]), str(geoinstance[1].datatype), "")
                         uritotreeitem[str(subject)][-1]["type"] = "geocollection"
-                    elif geoinstance is not None and str(geoinstance[0]) in DocConfig.geopointerproperties:
+                    elif str(geoinstance[0]) in DocConfig.geopointerproperties:
                         uritotreeitem[str(subject)][-1]["type"] = "featurecollection"
                         for geotup in graph.predicate_objects(geoinstance[1], True):
                             if isinstance(geotup[1], Literal) and (str(geotup[0]) in DocConfig.geoproperties or str(
@@ -93,6 +93,8 @@ class GeometryViewPage:
                                  'properties': {}, "geometry": geojsonrep})
                         if len(featcoll["features"][-1]["dateprops"]) > 0:
                             dateatt = featcoll["features"][-1]["dateprops"][0]
+                        if "crs" in geojsonrep:
+                            thecrs.add(geojsonrep["crs"])
             if parameters.get("hasnonnslen", 0) > 0:
                 geocache[str(subject)] = featcoll
         else:
