@@ -36,6 +36,7 @@ class GeometryViewPage:
                     'properties': props, "geometry": geojsonrep}
         if epsgcode == "" and "crs" in geojsonrep:
             epsgcode = "EPSG:" + geojsonrep["crs"]
+            jsonfeat["crs"]=epsgcode
         if parameters.get("hasnonnslen",0) > 0:
             geocache[str(subject)] = jsonfeat
         geom=shapely.geometry.shape(jsonfeat["geometry"])
@@ -108,7 +109,6 @@ class GeometryViewPage:
             geomcoll=shapely.geometry.GeometryCollection(
                 [shapely.geometry.shape(feature["geometry"]) for feature in featcoll["features"]])
             featcoll["bbox"]=geomcoll.bounds
-            print("GEOMETRY COLLECTION HAS Z???? "+str(geomcoll.has_z))
             if geomcoll.has_z:
                 self.createSVGFromWKT(templates,featcoll,f)
             else:
