@@ -36,6 +36,7 @@ class GeometryViewPage:
                     'properties': props, "geometry": geojsonrep}
         if epsgcode == "" and "crs" in geojsonrep:
             epsgcode = "EPSG:" + geojsonrep["crs"]
+            jsonfeat["crs"]=epsgcode
         if parameters.get("hasnonnslen",0) > 0:
             geocache[str(subject)] = jsonfeat
         geom=shapely.geometry.shape(jsonfeat["geometry"])
