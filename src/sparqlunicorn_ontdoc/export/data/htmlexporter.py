@@ -662,13 +662,13 @@ class HTMLExporter():
                 for valtup in graph.predicate_objects(tup[1]):
                     if str(valtup[0]) in DocConfig.unitproperties:
                         foundunit = str(valtup[1])
-                    if str(valtup[0]) in DocConfig.valueproperties and isinstance(valtup[1], Literal):
+                    elif str(valtup[0]) in DocConfig.valueproperties and isinstance(valtup[1], Literal):
                         foundval = str(valtup[1])
             if str(tup[0]) in DocConfig.valueproperties:
                 if tempvalprop == None and str(tup[0]) == "http://www.w3.org/ns/oa#hasSource":
                     tempvalprop = str(tup[0])
                     foundval = str(tup[1])
-                if str(tup[0]) != "http://www.w3.org/ns/oa#hasSource" and DocConfig.valueproperties[
+                elif str(tup[0]) != "http://www.w3.org/ns/oa#hasSource" and DocConfig.valueproperties[
                     str(tup[0])] == "DatatypeProperty" and (isinstance(tup[1], Literal) or isinstance(tup[1], URIRef)):
                     tempvalprop = str(tup[0])
                     foundval = str(tup[1])
@@ -679,7 +679,7 @@ class HTMLExporter():
                             for valtup in graph.predicate_objects(inttup[1]):
                                 if str(valtup[0]) in DocConfig.unitproperties:
                                     foundunit = str(valtup[1])
-                                if str(valtup[0]) in DocConfig.valueproperties and (
+                                elif str(valtup[0]) in DocConfig.valueproperties and (
                                         isinstance(valtup[1], Literal) or isinstance(valtup[1], URIRef)):
                                     foundval = str(valtup[1])
                 elif DocConfig.valueproperties[str(tup[0])] == "DatatypeProperty":
@@ -690,7 +690,7 @@ class HTMLExporter():
                     for valtup in graph.predicate_objects(tup[1]):
                         if str(valtup[0]) in DocConfig.unitproperties:
                             foundunit = str(valtup[1])
-                        if str(valtup[0]) in DocConfig.valueproperties and isinstance(valtup[1], Literal):
+                        elif str(valtup[0]) in DocConfig.valueproperties and isinstance(valtup[1], Literal):
                             foundval = str(valtup[1])
             if str(tup[0]) in DocConfig.unitproperties:
                 foundunit = tup[1]
@@ -703,7 +703,7 @@ class HTMLExporter():
             if pred == "http://www.w3.org/ns/oa#hasBody":
                 # print("ADD ANNO BODY: "+str({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"}))
                 annobodies.append({"value": foundval, "unit": foundunit, "type": "TextualBody", "format": "text/plain"})
-        if foundunit == None and foundval != None:
+        if foundunit is None and foundval is not None:
             if "http" in foundval:
                 thelabel = DocUtils.getLabelForObject(str(foundunit), graph, prefixes)
                 unitlabel = "<a href=\"" + str(foundval) + "\" target=\"_blank\">" + thelabel + "</a>"
@@ -712,14 +712,14 @@ class HTMLExporter():
             if pred == "http://www.w3.org/ns/oa#hasBody":
                 # print("ADD ANNO BODY: "+str({"value":foundval,"type":"TextualBody","format":"text/plain"}))
                 annobodies.append({"value": foundval, "type": "TextualBody", "format": "text/plain"})
-        if annosource != None:
+        if annosource is not None:
             for textanno in textannos:
                 textanno["src"] = annosource
             for imganno in imageannos:
                 imganno["src"] = annosource
             for imganno in image3dannos:
                 imganno["src"] = annosource
-        if label == "" and onelabel != None:
+        if label == "" and onelabel is not None:
             label = onelabel
         return {"geojsonrep": geojsonrep, "label": label, "unitlabel": unitlabel, "foundmedia": foundmedia,
                 "imageannos": imageannos, "textannos": textannos, "image3dannos": image3dannos,
@@ -855,10 +855,7 @@ class HTMLExporter():
         else:
             res = DocUtils.replaceNameSpacesInLabel(prefixes, tup)
             tablecontents += "<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"" + str(
-                tup) + "\">" + label
-            if res["uri"]!="":
-                tablecontents += " <span style=\"color: #666;\">(" + res["uri"] + ")</span>"
-            tablecontents += "</a> </span>"
+                tup) + "\">" + label +(" <span style=\"color: #666;\">(" + res["uri"] + ")</span>" if res["uri"]!="" else "")+"</a> </span>"
         if reverse:
             tablecontents += " of"
         tablecontents += "</td>"
