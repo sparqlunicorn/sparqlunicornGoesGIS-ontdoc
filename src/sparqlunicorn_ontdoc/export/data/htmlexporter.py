@@ -323,13 +323,13 @@ class HTMLExporter():
             vowlresultlink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "vowl_result.js",
                                                                          False)
             if geojsonrep is not None:
-                myexports = self.pubconfig["templates"]["geoexports"]
+                myexports = self.templates["geoexports"]
             else:
-                myexports = self.pubconfig["templates"]["nongeoexports"]
+                myexports = self.templates["nongeoexports"]
             relpath = DocUtils.generateRelativePathFromGivenDepth(checkdepth)
             if foundlabel is None or foundlabel == "":
                 foundlabel = DocUtils.shortenURI(str(subject))
-            f.write(DocUtils.replaceStandardVariables(self.pubconfig["templates"]["htmltemplate"], subject, checkdepth, "false").replace(
+            f.write(DocUtils.replaceStandardVariables(self.templates["htmltemplate"], subject, checkdepth, "false").replace(
                 "{{iconprefixx}}", (relpath + "icons/" if self.pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",
                                                                                                baseurl).replace(
                 "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace(
@@ -348,7 +348,7 @@ class HTMLExporter():
                                                                                            urllib.parse.quote(
                                                                                                str(subject))))
             for comm in comment:
-                f.write(self.pubconfig["templates"]["htmlcommenttemplate"].replace("{{comment}}",
+                f.write(self.templates["htmlcommenttemplate"].replace("{{comment}}",
                                                                       DocUtils.shortenURI(comm) + ":" + comment[comm]))
             # for fval in foundvals:
             #    f.write(templates["htmlcommenttemplate"].replace("{{comment}}", "<b>Value "+ DocUtils.shortenURI(str(fval[0]))+": <mark>" + str(fval[1]) + "</mark></b>"))
@@ -365,7 +365,7 @@ class HTMLExporter():
                 for anno in image3dannos:
                     if ("POINT" in anno["value"].upper() or "POLYGON" in anno["value"].upper() or "LINESTRING" in
                             anno["value"].upper()):
-                        f.write(self.pubconfig["templates"]["threejstemplate"].replace("{{wktstring}}", anno["value"]).replace(
+                        f.write(self.templates["threejstemplate"].replace("{{wktstring}}", anno["value"]).replace(
                             "{{meshurls}}", str(list(foundmedia["mesh"]))).replace("{{relativepath}}",
                                                                                    DocUtils.generateRelativePathFromGivenDepth(
                                                                                        checkdepth)))
@@ -384,12 +384,12 @@ class HTMLExporter():
                         format = "nexus"
                         self.has3d = True
                     elif format == "gltf":
-                        f.write(self.pubconfig["templates"]["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",
+                        f.write(self.templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",
                                                                                                        str(list(
                                                                                                            foundmedia[
                                                                                                                "mesh"]))).replace(
                             "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
-                    f.write(self.pubconfig["templates"]["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",
+                    f.write(self.templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",
                                                                                                    str(list(foundmedia[
                                                                                                                 "mesh"]))).replace(
                         "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
@@ -399,13 +399,13 @@ class HTMLExporter():
                 for anno in image3dannos:
                     if ("POINT" in anno["value"].upper() or "POLYGON" in anno["value"].upper() or "LINESTRING" in
                             anno["value"].upper()):
-                        f.write(self.pubconfig["templates"]["threejstemplate"].replace("{{wktstring}}", anno["value"]).replace(
+                        f.write(self.templates["threejstemplate"].replace("{{wktstring}}", anno["value"]).replace(
                             "{{meshurls}}", "[]").replace("{{relativepath}}",
                                                           DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
             carousel = "image"
             if len(foundmedia["image"]) > 3:
                 carousel = "carousel-item active"
-                f.write(self.pubconfig["templates"]["imagecarouselheader"])
+                f.write(self.templates["imagecarouselheader"])
             # if self.apis["iiif"] and len(annobodies)>0:
             #    if target not in imagetoURI:
             #        imagetoURI[target]={"uri":{str(subject):{"bodies":[]}}}
@@ -416,7 +416,7 @@ class HTMLExporter():
 
             if len(imageannos) > 0 and len(foundmedia["image"]) > 0:
                 MediaPage.generatePageWidget(foundmedia, self.iiifmanifestpaths, graph, imageannos, self.imagetoURI,
-                                             annobodies, foundlabel, comment, thetypes, predobjmap, self.pubconfig["templates"],
+                                             annobodies, foundlabel, comment, thetypes, predobjmap, self.templates,
                                              subject, self.pubconfig, f)
                 """
                 if self.apis["iiif"]:
