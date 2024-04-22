@@ -106,6 +106,7 @@ class HTMLExporter():
                                 nonnsmap[str(tup[1])] = set()
                             nonnsmap[str(tup[1])].add(subject)
             for tup in sorted(predobjmap):
+                predobjtuplen=len(predobjmap[tup])
                 if self.pubconfig["metadatatable"] and tup not in DocConfig.labelproperties and DocUtils.shortenURI(str(tup),
                                                                                                        True) in DocConfig.metadatanamespaces:
                     thetable = metadatatablecontents
@@ -142,19 +143,19 @@ class HTMLExporter():
                         foundlabel = str(predobjmap[tup][0])
                 if str(tup) in DocConfig.commentproperties:
                     comment[str(tup)] = str(predobjmap[tup][0])
-                if len(predobjmap[tup]) > 0:
+                if predobjtuplen > 0:
                     thetable += "<td class=\"wrapword\">"
-                    if len(predobjmap[tup]) > HTMLExporter.listthreshold:
-                        thetable += "<details><summary>" + str(len(predobjmap[tup])) + " values</summary>"
-                    if len(predobjmap[tup]) > 1:
+                    if predobjtuplen > HTMLExporter.listthreshold:
+                        thetable += "<details><summary>" + str(predobjtuplen) + " values</summary>"
+                    if predobjtuplen > 1:
                         thetable += "<ul>"
                     labelmap = {}
                     itemcounter = 0
                     for item in predobjmap[tup]:
                         if itemcounter >= HTMLExporter.maxlistthreshold:
                             break
-                        if ("POINT" in str(item).upper() or "POLYGON" in str(item).upper() or "LINESTRING" in str(
-                                item).upper()) and tup in DocConfig.valueproperties and self.typeproperty in predobjmap and URIRef(
+                        if tup in DocConfig.valueproperties and ("POINT" in str(item).upper() or "POLYGON" in str(item).upper() or "LINESTRING" in str(
+                                item).upper()) and self.typeproperty in predobjmap and URIRef(
                             "http://www.w3.org/ns/oa#WKTSelector") in predobjmap[self.typeproperty]:
                             image3dannos.append({"value": str(item)})
                         elif "<svg" in str(item):
@@ -183,23 +184,23 @@ class HTMLExporter():
                         image3dannos = res["image3dannos"]
                         annobodies = res["annobodies"]
                         # print("GOT ANNO BODIES "+str(annobodies))
-                        if res["timeobj"] != None and res["timeobj"] != []:
+                        if res["timeobj"] is not None and res["timeobj"] != []:
                             # print("RESTIMEOBJ: "+str(timeobj))
                             timeobj = res["timeobj"]
                         if res["label"] not in labelmap:
                             labelmap[res["label"]] = ""
-                        if len(predobjmap[tup]) > 1:
+                        if predobjtuplen > 1:
                             labelmap[res["label"]] += "<li>" + str(res["html"]) + "</li>"
                         else:
                             labelmap[res["label"]] += str(res["html"])
                         itemcounter += 1
                     for lab in sorted(labelmap):
                         thetable += str(labelmap[lab])
-                    if len(predobjmap[tup]) >= HTMLExporter.maxlistthreshold:
+                    if predobjtuplen >= HTMLExporter.maxlistthreshold:
                         tablecontents += "<li>(...)</li>"
-                    if len(predobjmap[tup]) > 1:
+                    if predobjtuplen > 1:
                         thetable += "</ul>"
-                    if len(predobjmap[tup]) > HTMLExporter.listthreshold:
+                    if predobjtuplen > HTMLExporter.listthreshold:
                         thetable += "</details>"
                     thetable += "</td>"
                 else:
@@ -226,6 +227,7 @@ class HTMLExporter():
                                 uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])][item] = 0
                             uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])][item] += 1
             for tup in subpredsmap:
+                subpredtuplen=len(subpredsmap[tup])
                 tablecontentcounter += 1
                 if tablecontentcounter % 2 == 0:
                     tablecontents += "<tr class=\"odd\">"
@@ -233,11 +235,11 @@ class HTMLExporter():
                     tablecontents += "<tr class=\"even\">"
                 tablecontents = HTMLExporter.formatPredicate(tup, baseurl, checkdepth, tablecontents, graph, True,
                                                              self.pubconfig["labellang"], self.pubconfig["prefixes"])
-                if len(subpredsmap[tup]) > 0:
+                if subpredtuplen > 0:
                     tablecontents += "<td class=\"wrapword\">"
-                    if len(subpredsmap[tup]) > HTMLExporter.listthreshold:
-                        tablecontents += "<details><summary>" + str(len(subpredsmap[tup])) + " values</summary>"
-                    if len(subpredsmap[tup]) > 1:
+                    if subpredtuplen > HTMLExporter.listthreshold:
+                        tablecontents += "<details><summary>" + str(subpredtuplen) + " values</summary>"
+                    if subpredtuplen > 1:
                         tablecontents += "<ul>"
                     labelmap = {}
                     itemcounter = 0
@@ -264,18 +266,18 @@ class HTMLExporter():
                             geojsonrep = res["geojson"]
                         if res["label"] not in labelmap:
                             labelmap[res["label"]] = ""
-                        if len(subpredsmap[tup]) > 1:
+                        if subpredtuplen > 1:
                             labelmap[res["label"]] += "<li>" + str(res["html"]) + "</li>"
                         else:
                             labelmap[res["label"]] += str(res["html"])
                         itemcounter += 1
                     for lab in sorted(labelmap):
                         tablecontents += str(labelmap[lab])
-                    if len(subpredsmap[tup]) >= HTMLExporter.maxlistthreshold:
+                    if subpredtuplen >= HTMLExporter.maxlistthreshold:
                         tablecontents += "<li>(...)</li>"
-                    if len(subpredsmap[tup]) > 1:
+                    if subpredtuplen > 1:
                         tablecontents += "</ul>"
-                    if len(subpredsmap[tup]) > HTMLExporter.listthreshold:
+                    if subpredtuplen > HTMLExporter.listthreshold:
                         tablecontents += "</details>"
                     tablecontents += "</td>"
                 else:
@@ -511,7 +513,7 @@ class HTMLExporter():
                 if type in PersonPage.pageWidgetConstraint():
                     PersonPage().generatePageWidget(graph, subject, self.templates, f, True)
             HTMLExporter.processCollectionPages(collections, graph, subject, self.templates, f)
-            if geojsonrep != None and "geocollection" not in collections:
+            if geojsonrep is not None and "geocollection" not in collections:
                 self.geocache = GeometryViewPage().generatePageWidget(graph, self.templates, subject, f, uritotreeitem,
                                                                       geojsonrep, predobjmap, self.geocache,
                                                                       {"dateprops": dateprops, "timeobj": timeobj,
@@ -589,58 +591,42 @@ class HTMLExporter():
         bibtex = None
         timeobj = None
         for tup in graph.predicate_objects(object):
-            if str(tup[0]) in DocConfig.labelproperties:
+            tuppredstr=str(tup[0])
+            if tuppredstr in DocConfig.labelproperties:
                 if tup[1].language == labellang:
                     label = str(tup[1])
                 onelabel = str(tup[1])
-            if pred == "http://www.w3.org/ns/oa#hasSelector" and tup[0] == URIRef(typeproperty) and (
-                    tup[1] == URIRef("http://www.w3.org/ns/oa#SvgSelector") or tup[1] == URIRef(
-                "http://www.w3.org/ns/oa#WKTSelector")):
-                for svglit in graph.objects(object, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#value")):
-                    if "<svg" in str(svglit):
-                        imageannos.append({"value": str(svglit), "bodies": []})
-                    elif ("POINT" in str(svglit).upper() or "POLYGON" in str(svglit).upper() or "LINESTRING" in str(
-                            svglit).upper()):
-                        image3dannos.append({"value": str(svglit), "bodies": []})
-            elif pred == "http://www.w3.org/ns/oa#hasSelector" and tup[0] == URIRef(
-                    typeproperty) and tup[1] == URIRef(
-                "http://www.w3.org/ns/oa#TextPositionSelector"):
-                curanno = {}
-                for txtlit in graph.predicate_objects(object):
-                    if str(txtlit[0]) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#value":
-                        curanno["exact"] = str(txtlit[1])
-                    elif str(txtlit[0]) == "http://www.w3.org/ns/oa#start":
-                        curanno["start"] = str(txtlit[1])
-                    elif str(txtlit[0]) == "http://www.w3.org/ns/oa#end":
-                        curanno["end"] = str(txtlit[1])
-                textannos.append(curanno)
-            if str(tup[0]) == "http://www.w3.org/ns/oa#hasSource":
+            elif tuppredstr==typeproperty:
+                if (pred == "http://purl.org/dc/terms/isReferencedBy" or pred == "http://purl.org/spar/cito/hasCitingEntity") and ("http://purl.org/ontology/bibo/" in str(tup[1])):
+                    bibtex = BibPage.resolveBibtexReference(graph.predicate_objects(object), object, graph)
+                elif pred == "http://www.w3.org/ns/oa#hasSelector":
+                    if tup[1] == URIRef("http://www.w3.org/ns/oa#SvgSelector") or tup[1] == URIRef("http://www.w3.org/ns/oa#WKTSelector"):
+                        for svglit in graph.objects(object, URIRef(typeproperty)):
+                            if "<svg" in str(svglit):
+                                imageannos.append({"value": str(svglit), "bodies": []})
+                            elif "POINT" in str(svglit).upper() or "POLYGON" in str(svglit).upper() or "LINESTRING" in str(svglit).upper():
+                                image3dannos.append({"value": str(svglit), "bodies": []})
+                    elif tup[1] == URIRef("http://www.w3.org/ns/oa#TextPositionSelector"):
+                        curanno = {}
+                        for txtlit in graph.predicate_objects(object):
+                            if str(txtlit[0]) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#value":
+                                curanno["exact"] = str(txtlit[1])
+                            elif str(txtlit[0]) == "http://www.w3.org/ns/oa#start":
+                                curanno["start"] = str(txtlit[1])
+                            elif str(txtlit[0]) == "http://www.w3.org/ns/oa#end":
+                                curanno["end"] = str(txtlit[1])
+                        textannos.append(curanno)
+            elif tuppredstr == "http://www.w3.org/2000/01/rdf-schema#member":
+                if not inverse and (object, URIRef(typeproperty),URIRef("http://www.w3.org/ns/sosa/ObservationCollection")) in graph:
+                    for valtup in graph.predicate_objects(tup[1]):
+                        if str(valtup[0]) in DocConfig.unitproperties:
+                            foundunit = str(valtup[1])
+                        elif str(valtup[0]) in DocConfig.valueproperties and isinstance(valtup[1], Literal):
+                            foundval = str(valtup[1])
+            elif tuppredstr == "http://www.w3.org/ns/oa#hasSource":
                 annosource = str(tup[1])
-                print(
-                    "Found annosource " + str(tup[1]) + " from " + str(object) + " Imageannos: " + str(len(imageannos)))
-            if (
-                    pred == "http://purl.org/dc/terms/isReferencedBy" or pred == "http://purl.org/spar/cito/hasCitingEntity") and \
-                    tup[0] == URIRef(typeproperty) and ("http://purl.org/ontology/bibo/" in str(tup[1])):
-                bibtex = BibPage.resolveBibtexReference(graph.predicate_objects(object), object, graph)
-            if pred in DocConfig.timepointerproperties:
-                timeobj = OWLTimePage.resolveTimeLiterals(pred, object, graph)
-            if not nonns:
-                geojsonrep = LiteralUtils.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep, nonns)
-            if incollection and "<svg" in str(tup[1]):
-                foundmedia["image"][str(tup[1])] = {}
-            elif incollection and "http" in str(tup[1]):
-                ext = "." + ''.join(filter(str.isalpha, str(tup[1]).split(".")[-1]))
-                if ext in DocConfig.fileextensionmap:
-                    foundmedia[DocConfig.fileextensionmap[ext]][str(tup[1])] = {}
-            if not inverse and str(tup[0]) == "http://www.w3.org/2000/01/rdf-schema#member" and (
-                    object, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                    URIRef("http://www.w3.org/ns/sosa/ObservationCollection")) in graph:
-                for valtup in graph.predicate_objects(tup[1]):
-                    if str(valtup[0]) in DocConfig.unitproperties:
-                        foundunit = str(valtup[1])
-                    elif str(valtup[0]) in DocConfig.valueproperties and isinstance(valtup[1], Literal):
-                        foundval = str(valtup[1])
-            if str(tup[0]) in DocConfig.valueproperties:
+                print("Found annosource " + str(tup[1]) + " from " + str(object) + " Imageannos: " + str(len(imageannos)))
+            elif tuppredstr in DocConfig.valueproperties:
                 if tempvalprop == None and str(tup[0]) == "http://www.w3.org/ns/oa#hasSource":
                     tempvalprop = str(tup[0])
                     foundval = str(tup[1])
@@ -668,26 +654,38 @@ class HTMLExporter():
                             foundunit = str(valtup[1])
                         elif str(valtup[0]) in DocConfig.valueproperties and isinstance(valtup[1], Literal):
                             foundval = str(valtup[1])
-            if str(tup[0]) in DocConfig.unitproperties:
+            elif tuppredstr in DocConfig.unitproperties:
                 foundunit = tup[1]
-        if foundunit != None and foundval != None:
-            if "http" in foundunit:
-                thelabel = DocUtils.getLabelForObject(str(foundunit), graph, prefixes)
-                unitlabel = str(foundval) + " <a href=\"" + str(foundunit) + "\" target=\"_blank\">" + thelabel + "</a>"
-            else:
-                unitlabel = str(foundval) + " " + str(foundunit)
-            if pred == "http://www.w3.org/ns/oa#hasBody":
-                # print("ADD ANNO BODY: "+str({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"}))
-                annobodies.append({"value": foundval, "unit": foundunit, "type": "TextualBody", "format": "text/plain"})
-        if foundunit is None and foundval is not None:
-            if "http" in foundval:
-                thelabel = DocUtils.getLabelForObject(str(foundunit), graph, prefixes)
-                unitlabel = "<a href=\"" + str(foundval) + "\" target=\"_blank\">" + thelabel + "</a>"
-            else:
-                unitlabel = str(foundval)
-            if pred == "http://www.w3.org/ns/oa#hasBody":
-                # print("ADD ANNO BODY: "+str({"value":foundval,"type":"TextualBody","format":"text/plain"}))
-                annobodies.append({"value": foundval, "type": "TextualBody", "format": "text/plain"})
+            if incollection:
+                if "<svg" in str(tup[1]):
+                    foundmedia["image"][str(tup[1])] = {}
+                elif "http" in str(tup[1]):
+                    ext = "." + ''.join(filter(str.isalpha, str(tup[1]).split(".")[-1]))
+                    if ext in DocConfig.fileextensionmap:
+                        foundmedia[DocConfig.fileextensionmap[ext]][str(tup[1])] = {}
+            if pred in DocConfig.timepointerproperties:
+                timeobj = OWLTimePage.resolveTimeLiterals(pred, object, graph)
+            if not nonns:
+                geojsonrep = LiteralUtils.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep, nonns)
+        if foundval is not None:
+            if foundunit is not None:
+                if "http" in foundunit:
+                    thelabel = DocUtils.getLabelForObject(str(foundunit), graph, prefixes)
+                    unitlabel = str(foundval) + " <a href=\"" + str(foundunit) + "\" target=\"_blank\">" + thelabel + "</a>"
+                else:
+                    unitlabel = str(foundval) + " " + str(foundunit)
+                if pred == "http://www.w3.org/ns/oa#hasBody":
+                    # print("ADD ANNO BODY: "+str({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"}))
+                    annobodies.append({"value": foundval, "unit": foundunit, "type": "TextualBody", "format": "text/plain"})
+            if foundunit is None:
+                if "http" in foundval:
+                    thelabel = DocUtils.getLabelForObject(str(foundunit), graph, prefixes)
+                    unitlabel = "<a href=\"" + str(foundval) + "\" target=\"_blank\">" + thelabel + "</a>"
+                else:
+                    unitlabel = str(foundval)
+                if pred == "http://www.w3.org/ns/oa#hasBody":
+                    # print("ADD ANNO BODY: "+str({"value":foundval,"type":"TextualBody","format":"text/plain"}))
+                    annobodies.append({"value": foundval, "type": "TextualBody", "format": "text/plain"})
         if annosource is not None:
             for textanno in textannos:
                 textanno["src"] = annosource
@@ -710,7 +708,7 @@ class HTMLExporter():
         bibtex = None
         timeobj = None
         if isinstance(object, URIRef) or isinstance(object, BNode):
-            if ttlf != None:
+            if ttlf is not None:
                 ttlf.add((subject, URIRef(pred), object))
             label = ""
             unitlabel = ""
