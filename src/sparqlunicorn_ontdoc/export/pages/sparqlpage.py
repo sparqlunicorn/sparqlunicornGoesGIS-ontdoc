@@ -19,11 +19,12 @@ class SPARQLPage():
     def generateCollectionWidget(self, graph, templates, subject, f):
         print("CollectionWidget")
 
+
     def generatePageView(self, templates,pubconfig,curlicense,voidstatshtml, g, f):
         print("PageView")
         sparqlhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], "", "0", "false",pubconfig)
         sparqlhtml = sparqlhtml.replace("{{iconprefixx}}", ("icons/" if pubconfig["offlinecompat"] else "")).replace(
-            "{{baseurl}}", pubconfig["prefixnamespace"]).replace("{{relativedepth}}", "0").replace("{{relativepath}}",
+            "{{baseurl}}", pubconfig["prefixns"]).replace("{{relativedepth}}", "0").replace("{{relativepath}}",
                                                                                       ".").replace("{{toptitle}}",
                                                                                                    "SPARQL Query Editor").replace(
             "{{title}}", "SPARQL Query Editor").replace("{{startscriptpath}}", "startscripts.js").replace(
