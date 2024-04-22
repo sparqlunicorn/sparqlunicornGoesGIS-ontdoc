@@ -49,6 +49,10 @@ class OntDocGeneration:
 
         self.pubconfig=pubconfig
         self.pubconfig["namespaceshort"]=pubconfig["prefixnsshort"].replace("/","")
+        self.pubconfig["outpath"]=outpath
+        self.pubconfig["apis"]=apis
+        self.pubconfig["prefixes"]=prefixes
+        self.pubconfig["exports"]=exports
         #{"prefixes":prefixes,"prefixns":prefixnamespace,"namespaceshort":prefixnsshort.replace("/",""),"createIndexPages":createIndexPages,
         #                "modtime":modtime,"outpath":outpath,"exports":exports,"apis":apis,"publisher":publisher,"publishingorg":publishingorg,
         #                "startconcept":startconcept,"metadatatable":metadatatable,"createVOWL":createVOWL,"templatename":templatename,"imagemetadata":imagemetadata,
