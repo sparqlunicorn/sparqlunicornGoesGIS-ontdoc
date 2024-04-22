@@ -52,7 +52,7 @@ class OntDocGeneration:
         #                "modtime":modtime,"outpath":outpath,"exports":exports,"apis":apis,"publisher":publisher,"publishingorg":publishingorg,
         #                "startconcept":startconcept,"metadatatable":metadatatable,"createVOWL":createVOWL,"templatename":templatename,"imagemetadata":imagemetadata,
         #                "datasettitle":str(datasettitle),"logoname":logoname,"localOptimized":localOptimized,"labellang":labellang,"license":license,"deploypath":deploypath,
-        #                "offlinecompat":offlinecompat,"generatePagesForNonNS":generatePagesForNonNS,"repository":repository,"createColl":createColl}
+        #                "offlinecompat":offlinecompat,"nonnspages":nonnspages,"repository":repository,"createColl":createColl}
         self.geocache={}
         self.geocollectionspaths=[]
         self.templatename=pubconfig["templatename"]
@@ -74,7 +74,7 @@ class OntDocGeneration:
         if len(keyprops["subclassproperty"])>0:
             self.suclassproperty=keyprops["subclassproperty"][0]
         self.graph = graph
-        self.htmlexporter=HTMLExporter(prefixes,pubconfig["prefixns"],pubconfig["prefixnsshort"],license,pubconfig["labellang"],outpath,pubconfig["metadatatable"],pubconfig["generatePagesForNonNS"],apis,templates,pubconfig["namespaceshort"],self.typeproperty,pubconfig["imagemetadata"],pubconfig["localOptimized"],pubconfig["deploypath"],pubconfig["logoname"],pubconfig["offlinecompat"])
+        self.htmlexporter=HTMLExporter(prefixes,pubconfig["prefixns"],pubconfig["prefixnsshort"],license,pubconfig["labellang"],outpath,pubconfig["metadatatable"],pubconfig["nonnspages"],apis,templates,pubconfig["namespaceshort"],self.typeproperty,pubconfig["imagemetadata"],pubconfig["localOptimized"],pubconfig["deploypath"],pubconfig["logoname"],pubconfig["offlinecompat"])
         for nstup in self.graph.namespaces():
             if str(nstup[1]) not in prefixes["reversed"]:
                 prefixes["reversed"][str(nstup[1])] = str(nstup[0])
@@ -218,7 +218,7 @@ class OntDocGeneration:
                 DocUtils.updateProgressBar(subtorencounter, subtorenderlen, "Processing Subject URIs")
         ClassTreeUtils.checkGeoInstanceAssignment(uritotreeitem)
         classlist = ClassTreeUtils.assignGeoClassesToTree(tree)
-        if self.pubconfig["generatePagesForNonNS"]:
+        if self.pubconfig["nonnspages"]:
             labeltouri = self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, self.pubconfig["corpusid"], outpath,
                                                              self.pubconfig["license"], prefixnamespace, uritotreeitem, labeltouri)
         with open(outpath + self.pubconfig["corpusid"] + "_classtree.js", 'w', encoding='utf-8') as f:
