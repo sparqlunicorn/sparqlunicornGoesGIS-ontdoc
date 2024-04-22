@@ -18,7 +18,7 @@ class VoidExporter:
         if pubconfig["datasettitle"]==None or pubconfig["datasettitle"]=="":
             dsname="dataset"
         dsname=dsname.replace(" ","_")
-        voidds=pubconfig["prefixnamespace"]+dsname
+        voidds=pubconfig["prefixns"]+dsname
         if pubconfig["repository"] is not None and pubconfig["repository"]!= "" and pubconfig["repository"].startswith("http"):
             g.add((URIRef(pubconfig["repository"]), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
                    URIRef("http://www.w3.org/ns/adms#AssetRepository")))
@@ -71,9 +71,9 @@ class VoidExporter:
         for stat in stats:
             g.add((URIRef(voidds), URIRef(stat),Literal(stats[stat], datatype="http://www.w3.org/2001/XMLSchema#integer")))
         g.add((URIRef(voidds), URIRef("http://rdfs.org/ns/void#uriSpace"),
-              Literal(pubconfig["prefixnamespace"],datatype="http://www.w3.org/2001/XMLSchema#string")))
+              Literal(pubconfig["prefixns"],datatype="http://www.w3.org/2001/XMLSchema#string")))
         g.add((URIRef(voidds), URIRef("http://purl.org/vocab/vann/preferredNamespaceUri"),
-               Literal(pubconfig["prefixnamespace"], datatype="http://www.w3.org/2001/XMLSchema#anyURI")))
+               Literal(pubconfig["prefixns"], datatype="http://www.w3.org/2001/XMLSchema#anyURI")))
         g.add((URIRef(voidds), URIRef("http://purl.org/vocab/vann/preferredNamespacePrefix"),
                Literal(pubconfig["namespaceshort"], datatype="http://www.w3.org/2001/XMLSchema#string")))
         for ns_prefix, namespace in g.namespaces():
@@ -89,15 +89,15 @@ class VoidExporter:
                    Literal(namespace,datatype="http://www.w3.org/2001/XMLSchema#anyURI")))
             g.add((URIRef(namespace), URIRef("http://purl.org/vocab/vann/preferredNamespacePrefix"),
                    Literal(ns_prefix,datatype="http://www.w3.org/2001/XMLSchema#string")))
-            g.add((URIRef(pubconfig["prefixnamespace"]+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            g.add((URIRef(pubconfig["prefixns"]+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
                    URIRef("http://purl.org/vocommons/voaf#DatasetOccurrence")))
-            g.add((URIRef(pubconfig["prefixnamespace"]+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
+            g.add((URIRef(pubconfig["prefixns"]+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
                    Literal("Occurrences of vocabulary "+str(namespace)+" in "+dsname)))
             if nscount is not None and str(namespace) in nscount:
-                g.add((URIRef(pubconfig["prefixnamespace"]+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://purl.org/vocommons/voaf#occurrences"),
+                g.add((URIRef(pubconfig["prefixns"]+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://purl.org/vocommons/voaf#occurrences"),
                        Literal(str(nscount[str(namespace)]),datatype="http://www.w3.org/2001/XMLSchema#integer")))
             g.add((URIRef(namespace), URIRef("http://purl.org/vocommons/voaf#usageInDataset"), URIRef(namespace+"_"+str(dsname)+"_occ")))
-            g.add((URIRef(pubconfig["prefixnamespace"]+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://purl.org/vocommons/voaf#inDataset"), URIRef(voidds)))
+            g.add((URIRef(pubconfig["prefixns"]+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://purl.org/vocommons/voaf#inDataset"), URIRef(voidds)))
             if str(namespace) in DocConfig.namespaceToTopic:
                 for entry in DocConfig.namespaceToTopic[str(namespace)]:
                     g.add((URIRef(voidds), URIRef("http://www.w3.org/ns/dcat#keyword"), Literal(DocUtils.shortenURI(entry["uri"]).replace("_"," "),lang="en")))

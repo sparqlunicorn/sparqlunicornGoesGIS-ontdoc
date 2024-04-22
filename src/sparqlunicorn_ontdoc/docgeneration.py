@@ -155,7 +155,7 @@ class OntDocGeneration:
                 print("Exception occurred " + str(e))
         classidset = set()
         tree = ClassTreeUtils.getClassTree(self.graph, uritolabel, classidset, uritotreeitem,self.typeproperty,self.pubconfig["prefixes"],self.preparedclassquery)
-        print(str(tree))
+        #print(str(tree))
         for tr in prevtree:
             if tr["id"] not in classidset:
                 tree["core"]["data"].append(tr)
@@ -434,7 +434,7 @@ def main():
     parser.add_argument("-tn", "--templatename", help="the name of the HTML template", action="store",
                         default="default")
     args, unknown = parser.parse_known_args()
-    print(args)
+    #print(args)
     print("The following arguments were not recognized: " + str(unknown))
     if args.input == None or args.input[0] == "None" or args.input == "":
         print("No input files specified... trying to find files in the script folder")
@@ -500,7 +500,7 @@ def main():
                     args.prefixns = pres
                 print("Detected " + args.prefixns + " as data namespace")
             apis={"iiif":args.iiifmanifest,"ogcapifeatures":args.ogcapifeatures,"ckan":args.ckanapi,"solidexport":args.solidexport,"stac":args.stacapi}
-            print("Args: "+str(vars(args)))
+            #print("Args: "+str(vars(args)))
             if fcounter < len(outpath):
                 docgen = OntDocGeneration(prefixes, modtime, outpath[fcounter],apis, g, vars(args),dataexports)
             else:
