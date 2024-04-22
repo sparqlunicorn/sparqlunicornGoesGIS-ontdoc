@@ -415,10 +415,10 @@ class HTMLExporter():
             #        imagetoURI[target]["uri"][str(subject)]["bodies"]+=annobodies
 
             if len(imageannos) > 0 and len(foundmedia["image"]) > 0:
-                MediaPage.generatePageWidget(foundmedia, self.iiifmanifestpaths, graph, imageannos, self.imagetoURI,
-                                             annobodies, foundlabel, comment, thetypes, predobjmap, self.templates,
-                                             subject, self.pubconfig, f)
-                """
+                #MediaPage.generatePageWidget(foundmedia, self.iiifmanifestpaths, graph, imageannos, self.imagetoURI,
+                #                             annobodies, foundlabel, comment, thetypes, predobjmap, self.templates,
+                #                             subject, self.pubconfig, f)
+
                 if self.apis["iiif"]:
                     self.iiifmanifestpaths["default"].append(
                         IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
@@ -473,7 +473,6 @@ class HTMLExporter():
                         carousel = "carousel-item"
             if len(foundmedia["image"]) > 3:
                 f.write(self.templates["imagecarouselfooter"])
-            """
             if len(textannos) > 0:
                 for textanno in textannos:
                     if isinstance(textanno, dict):
