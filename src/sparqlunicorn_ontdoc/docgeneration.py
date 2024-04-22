@@ -55,7 +55,7 @@ class OntDocGeneration:
         self.pubconfig["exports"]=exports
         #{"prefixes":prefixes,"prefixns":prefixnamespace,"namespaceshort":prefixnsshort.replace("/",""),"createIndexPages":createIndexPages,
         #                "modtime":modtime,"outpath":outpath,"exports":exports,"apis":apis,"publisher":publisher,"publishingorg":publishingorg,
-        #                "startconcept":startconcept,"metadatatable":metadatatable,"createVOWL":createVOWL,"templatename":templatename,"imagemetadata":imagemetadata,
+        #                "startconcept":startconcept,"metadatatable":metadatatable,"createvowl":createVOWL,"templatename":templatename,"imagemetadata":imagemetadata,
         #                "datasettitle":str(datasettitle),"logourl":logoname,"localOptimized":localOptimized,"labellang":labellang,"license":license,"deploypath":deploypath,
         #                "offlinecompat":offlinecompat,"nonnspages":nonnspages,"repository":repository,"createColl":createColl}
         self.geocache={}
@@ -110,7 +110,7 @@ class OntDocGeneration:
         labeltouri = {}
         uritolabel = {}
         uritotreeitem = {}
-        if self.pubconfig["createVOWL"]:
+        if self.pubconfig["createvowl"]:
             vowlinstance = OWL2VOWL()
             vowlinstance.convertOWL2VOWL(self.graph, outpath)
         tmp=HTMLExporter.processLicense(self.pubconfig["license"])
@@ -127,7 +127,7 @@ class OntDocGeneration:
             shutil.copy(logoname, outpath + "/logo/logo." + logoname[logoname.rfind("."):])
             self.pubconfig["logourl"] = outpath + "/logo/logo." + logoname[logoname.rfind("."):]
         DocUtils.updateProgressBar(0, 1, "Creating classtree and search index")
-        res=GraphUtils.analyzeGraph(self.graph, prefixnamespace, self.typeproperty, voidds, labeltouri, uritolabel, self.pubconfig["outpath"], self.pubconfig["createVOWL"])
+        res=GraphUtils.analyzeGraph(self.graph, prefixnamespace, self.typeproperty, voidds, labeltouri, uritolabel, self.pubconfig["outpath"], self.pubconfig["createvowl"])
         subjectstorender=res["subjectstorender"]
         self.pubconfig["apis"]["iiif"]=res["iiif"]
         if os.path.exists(outpath + self.pubconfig["corpusid"] + '_search.js'):
