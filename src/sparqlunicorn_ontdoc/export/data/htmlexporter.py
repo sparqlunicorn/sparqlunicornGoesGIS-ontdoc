@@ -329,7 +329,7 @@ class HTMLExporter():
             relpath = DocUtils.generateRelativePathFromGivenDepth(checkdepth)
             if foundlabel is None or foundlabel == "":
                 foundlabel = DocUtils.shortenURI(str(subject))
-            f.write(DocUtils.replaceStandardVariables(self.templates["htmltemplate"], subject, checkdepth, "false").replace(
+            f.write(DocUtils.replaceStandardVariables(self.templates["htmltemplate"], subject, checkdepth, "false",self.pubconfig).replace(
                 "{{iconprefixx}}", (relpath + "icons/" if self.pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",
                                                                                                baseurl).replace(
                 "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace(
@@ -539,7 +539,7 @@ class HTMLExporter():
             if metadatatablecontentcounter >= 0:
                 f.write("<h5>Metadata</h5>")
                 f.write(self.templates["htmltabletemplate"].replace("{{tablecontent}}", metadatatablecontents))
-            tempfoot = DocUtils.replaceStandardVariables(self.templates["footer"], "", checkdepth, "false").replace(
+            tempfoot = DocUtils.replaceStandardVariables(self.templates["footer"], "", checkdepth, "false",self.pubconfig).replace(
                 "{{exports}}",
                 myexports).replace(
                 "{{license}}", curlicense).replace("{{bibtex}}", "").replace("{{stats}}", "")
