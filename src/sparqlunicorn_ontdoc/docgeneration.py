@@ -45,27 +45,25 @@ templates = DocDefaults.templates
 
 class OntDocGeneration:
 
-    def __init__(self, prefixes, modtime, prefixnamespace, prefixnsshort, license, labellang, outpath, graph,
-                 createIndexPages, createColl, metadatatable, generatePagesForNonNS, createVOWL, apis, localOptimized=False, imagemetadata=None, startconcept=None,
-                 repository="", deploypath="", logoname="", templatename="default", offlinecompat=False,
-                 exports=["json", "ttl"], datasettitle="", publisher="", publishingorg=""):
+    def __init__(self, prefixes, modtime, outpath, apis, graph, pubconfig, exports=["json", "ttl"]):
 
-        self.pubconfig={"prefixes":prefixes,"prefixnamespace":prefixnamespace,"namespaceshort":prefixnsshort.replace("/",""),"createIndexPages":createIndexPages,
-                        "modtime":modtime,"outpath":outpath,"exports":exports,"apis":apis,"publisher":publisher,"publishingorg":publishingorg,
-                        "startconcept":startconcept,"metadatatable":metadatatable,"createVOWL":createVOWL,"templatename":templatename,"imagemetadata":imagemetadata,
-                        "datasettitle":str(datasettitle),"logoname":logoname,"localOptimized":localOptimized,"labellang":labellang,"license":license,"deploypath":deploypath,
-                        "offlinecompat":offlinecompat,"generatePagesForNonNS":generatePagesForNonNS,"repository":repository,"createColl":createColl}
+        self.pubconfig=pubconfig
+        #{"prefixes":prefixes,"prefixnamespace":prefixnamespace,"namespaceshort":prefixnsshort.replace("/",""),"createIndexPages":createIndexPages,
+        #                "modtime":modtime,"outpath":outpath,"exports":exports,"apis":apis,"publisher":publisher,"publishingorg":publishingorg,
+        #                "startconcept":startconcept,"metadatatable":metadatatable,"createVOWL":createVOWL,"templatename":templatename,"imagemetadata":imagemetadata,
+        #                "datasettitle":str(datasettitle),"logoname":logoname,"localOptimized":localOptimized,"labellang":labellang,"license":license,"deploypath":deploypath,
+        #                "offlinecompat":offlinecompat,"generatePagesForNonNS":generatePagesForNonNS,"repository":repository,"createColl":createColl}
         self.geocache={}
         self.geocollectionspaths=[]
-        self.templatename=templatename
-        templates = TemplateUtils.resolveTemplate(templatename, templatepath)
-        if offlinecompat:
+        self.templatename=pubconfig["templatename"]
+        templates = TemplateUtils.resolveTemplate(pubconfig["templatename"], templatepath)
+        if pubconfig["offlinecompat"]:
             templates["htmltemplate"] = DocUtils.createOfflineCompatibleVersion(outpath, templates["htmltemplate"],
-                                                                            templatepath, templatename)
+                                                                            templatepath, pubconfig["templatename"])
             templates["maptemplate"] = DocUtils.createOfflineCompatibleVersion(outpath, templates["maptemplate"],
-                                                                           templatepath, templatename)
+                                                                           templatepath, pubconfig["templatename"])
             templates["sparqltemplate"] = DocUtils.createOfflineCompatibleVersion(outpath, templates["sparqltemplate"],
-                                                                              templatepath, templatename)
+                                                                              templatepath, pubconfig["templatename"])
         self.licenseuri = None
         self.licensehtml = None
         self.typeproperty = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
@@ -76,12 +74,12 @@ class OntDocGeneration:
         if len(keyprops["subclassproperty"])>0:
             self.suclassproperty=keyprops["subclassproperty"][0]
         self.graph = graph
-        self.htmlexporter=HTMLExporter(prefixes,prefixnamespace,prefixnsshort,license,labellang,outpath,metadatatable,generatePagesForNonNS,apis,templates,self.pubconfig["namespaceshort"],self.typeproperty,imagemetadata,localOptimized,deploypath,logoname,offlinecompat)
+        self.htmlexporter=HTMLExporter(prefixes,pubconfig["prefixnamespace"],pubconfig["prefixnsshort"],license,pubconfig["labellang"],outpath,pubconfig["metadatatable"],pubconfig["generatePagesForNonNS"],apis,templates,pubconfig["namespaceshort"],self.typeproperty,pubconfig["imagemetadata"],pubconfig["localOptimized"],pubconfig["deploypath"],pubconfig["logoname"],pubconfig["offlinecompat"])
         for nstup in self.graph.namespaces():
             if str(nstup[1]) not in prefixes["reversed"]:
                 prefixes["reversed"][str(nstup[1])] = str(nstup[0])
         self.preparedclassquery = prepareQuery(DocConfig.classtreequery.replace("%%typeproperty%%","<"+self.typeproperty+">").replace("%%subclassproperty%%","<"+self.subclassproperty+">"))
-        if self.pubconfig["prefixnamespace"] is None or prefixnsshort is None or self.pubconfig["prefixnamespace"] == "" or prefixnsshort == "":
+        if self.pubconfig["prefixnamespace"] is None or pubconfig["prefixnsshort"] is None or self.pubconfig["prefixnamespace"] == "" or pubconfig["prefixnsshort"] == "":
             self.pubconfig["namespaceshort"] = "suni"
             self.pubconfig["prefixnamespace"] = "http://purl.org/suni/"
         if not self.pubconfig["prefixnamespace"].endswith("/") and not self.pubconfig["prefixnamespace"].endswith("#"):
@@ -497,21 +495,11 @@ def main():
                     args.prefixns = pres
                 print("Detected " + args.prefixns + " as data namespace")
             apis={"iiif":args.iiifmanifest,"ogcapifeatures":args.ogcapifeatures,"ckan":args.ckanapi,"solidexport":args.solidexport,"stac":args.stacapi}
+            print("Args: "+str(args))
             if fcounter < len(outpath):
-                docgen = OntDocGeneration(prefixes, modtime, args.prefixns, args.prefixnsshort, args.license,
-                                          args.labellang, outpath[fcounter], g, args.createIndexPages,
-                                          args.createCollections, args.metadatatable, args.nonnspages, args.createvowl,
-                                          apis,
-                                          args.localOptimized, args.imagemetadata, args.startconcept, args.repository,
-                                          args.deploypath, args.logourl, args.templatename, args.offlinecompat,
-                                          dataexports, args.datasettitle, args.publisher, args.publishingorg)
+                docgen = OntDocGeneration(prefixes, modtime, outpath[fcounter],apis, g, args,dataexports)
             else:
-                docgen = OntDocGeneration(prefixes, modtime, args.prefixns, args.prefixnsshort, args.license,
-                                          args.labellang, outpath[-1], g, args.createIndexPages, args.createCollections,
-                                          args.metadatatable, args.nonnspages, args.createvowl, apis, args.localOptimized,
-                                          args.imagemetadata, args.startconcept, args.repository, args.deploypath,
-                                          args.logourl, args.templatename, args.offlinecompat, dataexports,
-                                          args.datasettitle, args.publisher, args.publishingorg)
+                docgen = OntDocGeneration(prefixes, modtime, outpath[-1],apis, g, args,dataexports)
             subrend = docgen.generateOntDocForNameSpace(args.prefixns, dataformat="HTML")
         except Exception as inst:
             print("Could not parse " + str(fp))
