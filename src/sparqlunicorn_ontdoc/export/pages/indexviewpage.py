@@ -18,27 +18,27 @@ class IndexViewPage:
     @staticmethod
     def createIndexPages(pubconfig,templates,apis,paths,subjectstorender,uritotreeitem,voidds,tree,classlist,graph,voidstatshtml,curlicense):
         indpcounter = 0
-        print("PATHS: "+str(paths))
-        print(tree)
+        #print("PATHS: "+str(paths))
+        #print(tree)
         for path in paths:
             if indpcounter % 10 == 0:
                 DocUtils.updateProgressBar(indpcounter, len(paths), "Creating Index Pages")
             subgraph = Graph(bind_namespaces="rdflib")
             checkdepth = DocUtils.checkDepthFromPath(path, pubconfig["outpath"], path) - 1
-            sfilelink = DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixnamespace"], checkdepth,
+            sfilelink = DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixns"], checkdepth,
                                                                     pubconfig["corpusid"] + '_search.js', False)
-            classtreelink = DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixnamespace"], checkdepth,
+            classtreelink = DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixns"], checkdepth,
                                                                         pubconfig["corpusid"] + "_classtree.js", False)
-            stylelink = DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixnamespace"], checkdepth, "style.css", False)
-            scriptlink = DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixnamespace"], checkdepth, "startscripts.js",
+            stylelink = DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixns"], checkdepth, "style.css", False)
+            scriptlink = DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixns"], checkdepth, "startscripts.js",
                                                                      False)
-            proprelations = DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixnamespace"], checkdepth,
+            proprelations = DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixns"], checkdepth,
                                                                         "proprelations.js", False)
-            epsgdefslink = DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixnamespace"], checkdepth, "epsgdefs.js",
+            epsgdefslink = DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixns"], checkdepth, "epsgdefs.js",
                                                                        False)
-            vowllink = DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixnamespace"], checkdepth, "vowl_result.js",
+            vowllink = DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixns"], checkdepth, "vowl_result.js",
                                                                    False)
-            nslink = pubconfig["prefixnamespace"] + str(IndexViewPage.getAccessFromBaseURL(str(pubconfig["outpath"]), str(path)))
+            nslink = pubconfig["prefixns"] + str(IndexViewPage.getAccessFromBaseURL(str(pubconfig["outpath"]), str(path)))
             for sub in subjectstorender:
                 if nslink in sub:
                     for tup in graph.predicate_objects(sub):
@@ -65,10 +65,10 @@ class IndexViewPage:
             relpath = DocUtils.generateRelativePathFromGivenDepth(checkdepth)
             print("RELPATH: " + str(relpath))
             indexhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], voidds, checkdepth,
-                                                      str(nslink == pubconfig["prefixnamespace"]).lower(),pubconfig)
+                                                      str(nslink == pubconfig["prefixns"]).lower(),pubconfig)
             indexhtml = indexhtml.replace("{{iconprefixx}}",
                                           (relpath + "icons/" if pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",
-                                                                                                      pubconfig["prefixnamespace"]).replace(
+                                                                                                      pubconfig["prefixns"]).replace(
                 "{{relativedepth}}", str(checkdepth)).replace("{{relativepath}}", relpath).replace("{{toptitle}}",
                                                                                                    "Index page for " + nslink).replace(
                 "{{title}}", "Index page for <span property=\"http://rdfs.org/ns/void#uriSpace\" content=\"" + str(
@@ -91,7 +91,7 @@ class IndexViewPage:
                                  uritotreeitem[startconcept][-1][
                                      "type"] + "\"/><a property=\"http://rdfs.org/ns/void#rootResource\" resource=\"" + str(
                         startconcept) + "\" href=\"" + DocUtils.generateRelativeLinkFromGivenDepth(
-                        pubconfig["prefixnamespace"], 0, str(startconcept), True) + "\">" + DocUtils.shortenURI(
+                        pubconfig["prefixns"], 0, str(startconcept), True) + "\">" + DocUtils.shortenURI(
                         startconcept) + "</a></p>"
                 else:
                     indexhtml += "<p>Start exploring the graph here: <img src=\"" + \
@@ -100,7 +100,7 @@ class IndexViewPage:
                                  uritotreeitem[startconcept][-1][
                                      "type"] + "\"/><a property=\"http://rdfs.org/ns/void#rootResource\" resource=\"" + str(
                         startconcept) + "\" href=\"" + DocUtils.generateRelativeLinkFromGivenDepth(
-                        pubconfig["prefixnamespace"], 0, str(startconcept), True) + "\">" + DocUtils.shortenURI(
+                        pubconfig["prefixns"], 0, str(startconcept), True) + "\">" + DocUtils.shortenURI(
                         startconcept) + "</a></p>"
             indexhtml += "<table about=\"" + str(
                 voidds) + "\" typeof=\"http://rdfs.org/ns/void#Dataset\" property=\"http://rdfs.org/ns/void#dataDump\" resource=\"" + str(
@@ -113,13 +113,13 @@ class IndexViewPage:
                         if item2["parent"] == item["id"] and (
                                 item2["type"] == "instance" or item2["type"] == "geoinstance") and nslink in item2[
                             "id"]:
-                            checkdepth = DocUtils.checkDepthFromPath(path, pubconfig["prefixnamespace"], item2["id"]) - 1
+                            checkdepth = DocUtils.checkDepthFromPath(path, pubconfig["prefixns"], item2["id"]) - 1
                             exitem = "<td><img src=\"" + tree["types"][item2["type"]][
                                 "icon"] + "\" height=\"25\" width=\"25\" alt=\"" + item2[
                                          "type"] + "\"/><a property=\"http://rdfs.org/ns/void#exampleResource\" resource=\"" + str(
                                 DocUtils.shortenURI(
                                     str(item2["id"]))) + "\" href=\"" + DocUtils.generateRelativeLinkFromGivenDepth(
-                                pubconfig["prefixnamespace"], checkdepth, str(re.sub("_suniv[0-9]+_", "", item2["id"])),
+                                pubconfig["prefixns"], checkdepth, str(re.sub("_suniv[0-9]+_", "", item2["id"])),
                                 True) + "\">" + str(item2["text"]) + "</a></td>"
                             break
                     if exitem != None:
@@ -147,7 +147,7 @@ class IndexViewPage:
             indexhtml += "</tbody></table><script property=\"http://purl.org/dc/terms/modified\" content=\"" + str(
                 pubconfig["modtime"]) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#dateTime\">$('#indextable').DataTable();</script>"
             tempfoot = DocUtils.replaceStandardVariables(templates["footer"], "", checkdepth,
-                                                     str(nslink == pubconfig["prefixnamespace"]).lower(),pubconfig).replace(
+                                                     str(nslink == pubconfig["prefixns"]).lower(),pubconfig).replace(
                 "{{license}}", curlicense).replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}",
                                                                                                       "").replace(
                 "{{stats}}", voidstatshtml)
