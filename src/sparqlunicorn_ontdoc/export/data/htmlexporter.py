@@ -589,15 +589,16 @@ class HTMLExporter():
         timeobj = None
         for tup in graph.predicate_objects(object):
             tuppredstr=str(tup[0])
+            tupobjstr=str(tup[1])
             if tuppredstr in DocConfig.labelproperties:
                 if tup[1].language == labellang:
-                    label = str(tup[1])
-                onelabel = str(tup[1])
+                    label = tupobjstr
+                onelabel = tupobjstr
             elif tuppredstr==typeproperty:
-                if (pred == "http://purl.org/dc/terms/isReferencedBy" or pred == "http://purl.org/spar/cito/hasCitingEntity") and ("http://purl.org/ontology/bibo/" in str(tup[1])):
+                if (pred == "http://purl.org/dc/terms/isReferencedBy" or pred == "http://purl.org/spar/cito/hasCitingEntity") and ("http://purl.org/ontology/bibo/" in tupobjstr):
                     bibtex = BibPage.resolveBibtexReference(graph.predicate_objects(object), object, graph)
                 elif pred == "http://www.w3.org/ns/oa#hasSelector":
-                    if tup[1] == URIRef("http://www.w3.org/ns/oa#SvgSelector") or tup[1] == URIRef("http://www.w3.org/ns/oa#WKTSelector"):
+                    if tupobjstr == "http://www.w3.org/ns/oa#SvgSelector" or tupobjstr == "http://www.w3.org/ns/oa#WKTSelector":
                         for svglit in graph.objects(object, URIRef(typeproperty)):
                             if "<svg" in str(svglit):
                                 imageannos.append({"value": str(svglit), "bodies": []})
@@ -622,15 +623,15 @@ class HTMLExporter():
                             foundval = str(valtup[1])
             elif tuppredstr == "http://www.w3.org/ns/oa#hasSource":
                 annosource = str(tup[1])
-                print("Found annosource " + str(tup[1]) + " from " + str(object) + " Imageannos: " + str(len(imageannos)))
+                print("Found annosource " + tupobjstr + " from " + str(object) + " Imageannos: " + str(len(imageannos)))
             elif tuppredstr in DocConfig.valueproperties:
                 if tempvalprop == None and tuppredstr == "http://www.w3.org/ns/oa#hasSource":
                     tempvalprop = tuppredstr
-                    foundval = str(tup[1])
+                    foundval = tupobjstr
                 elif tuppredstr != "http://www.w3.org/ns/oa#hasSource" and DocConfig.valueproperties[
                 tuppredstr] == "DatatypeProperty" and (isinstance(tup[1], Literal) or isinstance(tup[1], URIRef)):
                     tempvalprop = tuppredstr
-                    foundval = str(tup[1])
+                    foundval = tupobjstr
                 elif tuppredstr == "http://www.w3.org/ns/oa#hasTarget":
                     tempvalprop = "http://www.w3.org/ns/oa#hasTarget"
                     for inttup in graph.predicate_objects(tup[1]):
@@ -644,7 +645,7 @@ class HTMLExporter():
                 elif DocConfig.valueproperties[tuppredstr] == "DatatypeProperty":
                     if tuppredstr in DocConfig.valueproperties and isinstance(tup[1], Literal):
                         tempvalprop = tuppredstr
-                        foundval = str(tup[1])
+                        foundval = tupobjstr
                 else:
                     for valtup in graph.predicate_objects(tup[1]):
                         if str(valtup[0]) in DocConfig.unitproperties:
@@ -654,12 +655,12 @@ class HTMLExporter():
             elif tuppredstr in DocConfig.unitproperties:
                 foundunit = tup[1]
             if incollection:
-                if "<svg" in str(tup[1]):
-                    foundmedia["image"][str(tup[1])] = {}
-                elif "http" in str(tup[1]):
-                    ext = "." + ''.join(filter(str.isalpha, str(tup[1]).split(".")[-1]))
+                if "<svg" in tupobjstr:
+                    foundmedia["image"][tupobjstr] = {}
+                elif "http" in tupobjstr:
+                    ext = "." + ''.join(filter(str.isalpha, tupobjstr.split(".")[-1]))
                     if ext in DocConfig.fileextensionmap:
-                        foundmedia[DocConfig.fileextensionmap[ext]][str(tup[1])] = {}
+                        foundmedia[DocConfig.fileextensionmap[ext]][tupobjstr] = {}
             if pred in DocConfig.timepointerproperties:
                 timeobj = OWLTimePage.resolveTimeLiterals(pred, object, graph)
             if not nonns:
