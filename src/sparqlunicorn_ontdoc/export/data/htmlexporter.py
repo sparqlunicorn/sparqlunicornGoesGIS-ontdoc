@@ -251,7 +251,7 @@ class HTMLExporter():
                                                                      imageannos,
                                                                      textannos, image3dannos, annobodies, None, True,
                                                                      nonns, self.pubconfig["labellang"], self.typeproperty,
-                                                                     self.pubconfig["namespaceshort"], self.pubconfing["nonnspages"],
+                                                                     self.pubconfig["namespaceshort"], self.pubconfig["nonnspages"],
                                                                      self.pubconfig["prefixes"])
                         foundmedia = res["foundmedia"]
                         imageannos = res["imageannos"]
