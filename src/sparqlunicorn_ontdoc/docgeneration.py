@@ -57,7 +57,7 @@ class OntDocGeneration:
         #                "modtime":modtime,"outpath":outpath,"exports":exports,"apis":apis,"publisher":publisher,"publishingorg":publishingorg,
         #                "startconcept":startconcept,"metadatatable":metadatatable,"createvowl":createVOWL,"templatename":templatename,"imagemetadata":imagemetadata,
         #                "datasettitle":str(datasettitle),"logourl":logoname,"localOptimized":localOptimized,"labellang":labellang,"license":license,"deploypath":deploypath,
-        #                "offlinecompat":offlinecompat,"nonnspages":nonnspages,"repository":repository,"createColl":createColl}
+        #                "offlinecompat":offlinecompat,"nonnspages":nonnspages,"repository":repository,"createCollections":createColl}
         self.geocache={}
         self.geocollectionspaths=[]
         self.templatename=pubconfig["templatename"]
@@ -118,7 +118,7 @@ class OntDocGeneration:
         self.licensehtml = tmp[0]
         self.licenseuri=tmp[1]
         voidds = prefixnamespace + self.pubconfig["datasettitle"].replace(" ","_")
-        if self.pubconfig["createColl"]:
+        if self.pubconfig["createCollections"]:
             self.graph = GraphUtils.createCollections(self.graph, prefixnamespace,self.typeproperty)
         if self.pubconfig["logourl"] is not None and self.pubconfig["logourl"] != "" and not self.pubconfig["logourl"].startswith("http"):
             logoname=self.pubconfig["logourl"]
