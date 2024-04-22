@@ -84,7 +84,7 @@ class IndexViewPage:
                          templates["vowltemplate"].replace("{{vowlpath}}", "minivowl_result.js")
             if pubconfig["startconcept"] is not None and path == pubconfig["outpath"] and pubconfig["startconcept"] in uritotreeitem:
                 startconcept=pubconfig["startconcept"]
-                if pubconfig["createColl"]:
+                if pubconfig["createCollections"]:
                     indexhtml += "<p>Start exploring the graph here: <img src=\"" + \
                                  tree["types"][uritotreeitem[startconcept][-1]["type"]][
                                      "icon"] + "\" height=\"25\" width=\"25\" alt=\"" + \
@@ -123,7 +123,7 @@ class IndexViewPage:
                                 True) + "\">" + str(item2["text"]) + "</a></td>"
                             break
                     if exitem != None:
-                        if pubconfig["createColl"]:
+                        if pubconfig["createCollections"]:
                             indexhtml += "<tr><td><img src=\"" + tree["types"][item["type"]][
                                 "icon"] + "\" height=\"25\" width=\"25\" alt=\"" + item[
                                              "type"] + "\"/><a property=\"http://rdfs.org/ns/void#exampleResource\" resource=\"" + str(
