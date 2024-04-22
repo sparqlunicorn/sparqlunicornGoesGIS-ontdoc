@@ -419,12 +419,12 @@ class HTMLExporter():
                 #                             annobodies, foundlabel, comment, thetypes, predobjmap, self.templates,
                 #                             subject, self.pubconfig, f)
 
-                if self.apis["iiif"]:
+                if self.pubconfig["apis"]["iiif"]:
                     self.iiifmanifestpaths["default"].append(
-                        IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
+                        IIIFAPIExporter.generateIIIFManifest(graph, self.pubconfig["outpath"], self.pubconfig["deploypath"],
                                                              foundmedia["image"], imageannos, annobodies,
-                                                             str(subject), self.prefixnamespace, self.imagetoURI,
-                                                             self.imagemetadata, DocConfig.metadatanamespaces,
+                                                             str(subject), self.pubconfig["prefixns"], self.imagetoURI,
+                                                             self.pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
                                                              foundlabel, comment, thetypes, predobjmap, "Image"))
                 for image in foundmedia["image"]:
                     if image not in self.imagetoURI or "uri" not in self.imagetoURI[image]:
@@ -444,12 +444,12 @@ class HTMLExporter():
                     if len(foundmedia["image"]) > 3:
                         carousel = "carousel-item"
             elif len(foundmedia["image"]) > 0:
-                if self.apis["iiif"]:
+                if self.pubconfig["apis"]["iiif"]:
                     self.iiifmanifestpaths["default"].append(
-                        IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
+                        IIIFAPIExporter.generateIIIFManifest(graph, self.pubconfig["outpath"], self.pubconfig["deploypath"],
                                                              foundmedia["image"], imageannos, annobodies,
-                                                             str(subject), self.prefixnamespace, self.imagetoURI,
-                                                             self.imagemetadata, DocConfig.metadatanamespaces,
+                                                             str(subject), self.pubconfig["prefixns"], self.imagetoURI,
+                                                             self.pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
                                                              foundlabel, comment, thetypes, predobjmap, "Image"))
                 for image in foundmedia["image"]:
                     if image not in self.imagetoURI or "uri" not in self.imagetoURI[image]:
