@@ -28,43 +28,11 @@ class HTMLExporter():
     imagetoURI = {}
     geocache = {}
 
-    def __init__(self, prefixes, prefixnamespace, prefixnsshort, license, labellang, outpath,
-                 metadatatable, generatePagesForNonNS, apis, templates, namespaceshort,
-                 typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-                 imagemetadata=None, localOptimized=False,
-                 deploypath="", logoname="", offlinecompat=False):
-        self.prefixes = prefixes
-        self.prefixnamespace = prefixnamespace
-        self.outpath = outpath
-        self.deploypath = deploypath
-        self.metadatatable = metadatatable
-        self.logoname = logoname
-        self.templates = templates
-        self.localOptimized = localOptimized
-        self.apis = apis
+    def __init__(self, pubconfig,templates,typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"):
+        self.pubconfig=pubconfig
+        self.templates=templates
+        self.typeproperty=typeproperty
         self.has3d = False
-        self.labellang = labellang
-        self.license = license
-        self.licenseuri = ""
-        self.publisher = ""
-        self.publishingorg = ""
-        self.datasettitle = ""
-        self.typeproperty = typeproperty
-        self.prefixnsshort = prefixnsshort
-        self.imagemetadata = imagemetadata
-        self.namespaceshort = namespaceshort
-        self.generatePagesForNonNS = generatePagesForNonNS
-        self.offlinecompat = offlinecompat
-
-    def replaceStandardVariables(self, template, subject, checkdepth, indexpage):
-        template = template.replace("{{indexpage}}", str(indexpage)).replace("{{subject}}", str(subject)).replace(
-            "{{relativedepth}}", str(checkdepth)) \
-            .replace("{{versionurl}}", DocConfig.versionurl).replace("{{version}}", DocConfig.version).replace(
-            "{{deploypath}}", self.deploypath) \
-            .replace("{{publishingorg}}", self.publishingorg).replace("{{publisher}}", self.publisher).replace(
-            "{{datasettitle}}", self.datasettitle) \
-            .replace("{{logo}}", self.logoname)
-        return template
 
     def createHTML(self, savepath, predobjs, subject, baseurl, subpreds, graph, searchfilename, classtreename,
                    uritotreeitem, curlicense, subjectstorender, postprocessing, nonnsmap=None, nonns=False,
@@ -79,8 +47,8 @@ class HTMLExporter():
         if not nonns:
             checkdepth = DocUtils.checkDepthFromPath(savepath, baseurl, subject)
         logo = ""
-        if self.logoname != None and self.logoname != "":
-            logo = "<img src=\"" + self.logoname + "\" alt=\"logo\" width=\"25\" height=\"25\"/>&nbsp;&nbsp;"
+        if self.pubconfig["logourl"] != None and self.pubconfig["logourl"] != "":
+            logo = "<img src=\"" + self.pubconfig["logourl"] + "\" alt=\"logo\" width=\"25\" height=\"25\"/>&nbsp;&nbsp;"
         textannos = []
         foundvals = set()
         imageannos = []
@@ -138,7 +106,7 @@ class HTMLExporter():
                                 nonnsmap[str(tup[1])] = set()
                             nonnsmap[str(tup[1])].add(subject)
             for tup in sorted(predobjmap):
-                if self.metadatatable and tup not in DocConfig.labelproperties and DocUtils.shortenURI(str(tup),
+                if self.pubconfig["metadatatable"] and tup not in DocConfig.labelproperties and DocUtils.shortenURI(str(tup),
                                                                                                        True) in DocConfig.metadatanamespaces:
                     thetable = metadatatablecontents
                     metadatatablecontentcounter += 1
@@ -165,10 +133,10 @@ class HTMLExporter():
                                 BibPage.resolveBibtexReference(graph.predicate_objects(subject), subject,
                                                                graph)) + "</pre></details>"
                 thetable = HTMLExporter.formatPredicate(tup, baseurl, checkdepth, thetable, graph, inverse,
-                                                        self.labellang, self.prefixes)
+                                                        self.pubconfig["labellang"], self.pubconfig["prefixes"])
                 if str(tup) in DocConfig.labelproperties:
                     for lab in predobjmap[tup]:
-                        if lab.language == self.labellang:
+                        if lab.language == self.pubconfig["labellang"]:
                             foundlabel = lab
                     if foundlabel == "":
                         foundlabel = str(predobjmap[tup][0])
@@ -205,9 +173,9 @@ class HTMLExporter():
                                                                      imageannos,
                                                                      textannos, image3dannos, annobodies, dateprops,
                                                                      inverse,
-                                                                     nonns, self.labellang, self.typeproperty,
-                                                                     self.namespaceshort, self.generatePagesForNonNS,
-                                                                     self.prefixes)
+                                                                     nonns, self.pubconfig["labellang"], self.typeproperty,
+                                                                     self.pubconfig["namespaceshort"], self.pubconfig["nonnspages"],
+                                                                     self.pubconfig["prefixes"])
                         geojsonrep = res["geojson"]
                         foundmedia = res["foundmedia"]
                         imageannos = res["imageannos"]
@@ -237,7 +205,7 @@ class HTMLExporter():
                 else:
                     thetable += "<td class=\"wrapword\"></td>"
                 thetable += "</tr>"
-                if self.metadatatable and tup not in DocConfig.labelproperties and DocUtils.shortenURI(str(tup),
+                if self.pubconfig["metadatatable"] and tup not in DocConfig.labelproperties and DocUtils.shortenURI(str(tup),
                                                                                                        True) in DocConfig.metadatanamespaces:
                     metadatatablecontents = thetable
                 else:
@@ -264,7 +232,7 @@ class HTMLExporter():
                 else:
                     tablecontents += "<tr class=\"even\">"
                 tablecontents = HTMLExporter.formatPredicate(tup, baseurl, checkdepth, tablecontents, graph, True,
-                                                             self.labellang, self.prefixes)
+                                                             self.pubconfig["labellang"], self.pubconfig["prefixes"])
                 if len(subpredsmap[tup]) > 0:
                     tablecontents += "<td class=\"wrapword\">"
                     if len(subpredsmap[tup]) > HTMLExporter.listthreshold:
@@ -282,9 +250,9 @@ class HTMLExporter():
                                                                      baseurl, checkdepth, geojsonrep, foundmedia,
                                                                      imageannos,
                                                                      textannos, image3dannos, annobodies, None, True,
-                                                                     nonns, self.labellang, self.typeproperty,
-                                                                     self.namespaceshort, self.generatePagesForNonNS,
-                                                                     self.prefixes)
+                                                                     nonns, self.pubconfig["labellang"], self.typeproperty,
+                                                                     self.pubconfig["namespaceshort"], self.pubconfing["nonnspages"],
+                                                                     self.pubconfig["prefixes"])
                         foundmedia = res["foundmedia"]
                         imageannos = res["imageannos"]
                         image3dannos = res["image3dannos"]
@@ -313,9 +281,9 @@ class HTMLExporter():
                 else:
                     tablecontents += "<td class=\"wrapword\"></td>"
                 tablecontents += "</tr>"
-        if self.licenseuri is not None:
-            ttlf.add((subject, URIRef("http://purl.org/dc/elements/1.1/license"), URIRef(self.licenseuri)))
-        if self.apis["solidexport"] is not None:
+        if self.pubconfig["licenseuri"] is not None:
+            ttlf.add((subject, URIRef("http://purl.org/dc/elements/1.1/license"), URIRef(self.pubconfig["licenseuri"])))
+        if self.pubconfig["apis"]["solidexport"] is not None:
             ttlf.add((subject, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
                       URIRef("http://www.w3.org/ns/ldp#Resource")))
             ttlf.add((subject, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
@@ -355,17 +323,17 @@ class HTMLExporter():
             vowlresultlink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "vowl_result.js",
                                                                          False)
             if geojsonrep is not None:
-                myexports = self.templates["geoexports"]
+                myexports = self.pubconfig["templates"]["geoexports"]
             else:
-                myexports = self.templates["nongeoexports"]
+                myexports = self.pubconfig["templates"]["nongeoexports"]
             relpath = DocUtils.generateRelativePathFromGivenDepth(checkdepth)
             if foundlabel is None or foundlabel == "":
                 foundlabel = DocUtils.shortenURI(str(subject))
-            f.write(self.replaceStandardVariables(self.templates["htmltemplate"], subject, checkdepth, "false").replace(
-                "{{iconprefixx}}", (relpath + "icons/" if self.offlinecompat else "")).replace("{{baseurl}}",
+            f.write(DocUtils.replaceStandardVariables(self.pubconfig["templates"]["htmltemplate"], subject, checkdepth, "false").replace(
+                "{{iconprefixx}}", (relpath + "icons/" if self.pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",
                                                                                                baseurl).replace(
                 "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace(
-                "{{relativedepth}}", str(checkdepth)).replace("{{prefixpath}}", self.prefixnamespace).replace(
+                "{{relativedepth}}", str(checkdepth)).replace("{{prefixpath}}", self.pubconfig["prefixns"]).replace(
                 "{{toptitle}}", foundlabel).replace(
                 "{{startscriptpath}}", startscriptlink).replace("{{epsgdefspath}}", epsgdefslink).replace(
                 "{{bibtex}}", itembibtex).replace("{{vowlpath}}", vowlresultlink).replace("{{proprelationpath}}",
@@ -380,35 +348,35 @@ class HTMLExporter():
                                                                                            urllib.parse.quote(
                                                                                                str(subject))))
             for comm in comment:
-                f.write(self.templates["htmlcommenttemplate"].replace("{{comment}}",
+                f.write(self.pubconfig["templates"]["htmlcommenttemplate"].replace("{{comment}}",
                                                                       DocUtils.shortenURI(comm) + ":" + comment[comm]))
             # for fval in foundvals:
             #    f.write(templates["htmlcommenttemplate"].replace("{{comment}}", "<b>Value "+ DocUtils.shortenURI(str(fval[0]))+": <mark>" + str(fval[1]) + "</mark></b>"))
 
 
             if len(foundmedia["mesh"]) > 0 and len(image3dannos) > 0:
-                if self.apis["iiif"]:
+                if self.pubconfig["apis"]["iiif"]:
                     self.iiifmanifestpaths["default"].append(
-                        IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
+                        IIIFAPIExporter.generateIIIFManifest(graph, self.pubconfig["outpath"], self.pubconfig["deploypath"],
                                                              foundmedia["mesh"], image3dannos, annobodies,
-                                                             str(subject), self.prefixnamespace, self.imagetoURI,
-                                                             self.imagemetadata, DocConfig.metadatanamespaces,
+                                                             str(subject), self.pubconfig["prefixns"], self.imagetoURI,
+                                                             self.pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
                                                              foundlabel, comment, thetypes, predobjmap, "Model"))
                 for anno in image3dannos:
                     if ("POINT" in anno["value"].upper() or "POLYGON" in anno["value"].upper() or "LINESTRING" in
                             anno["value"].upper()):
-                        f.write(self.templates["threejstemplate"].replace("{{wktstring}}", anno["value"]).replace(
+                        f.write(self.pubconfig["templates"]["threejstemplate"].replace("{{wktstring}}", anno["value"]).replace(
                             "{{meshurls}}", str(list(foundmedia["mesh"]))).replace("{{relativepath}}",
                                                                                    DocUtils.generateRelativePathFromGivenDepth(
                                                                                        checkdepth)))
             elif len(foundmedia["mesh"]) > 0 and len(image3dannos) == 0:
                 print("Found 3D Model: " + str(foundmedia["mesh"]))
-                if self.apis["iiif"]:
+                if self.pubconfig["apis"]["iiif"]:
                     self.iiifmanifestpaths["default"].append(
-                        IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
+                        IIIFAPIExporter.generateIIIFManifest(graph, self.pubconfig["outpath"], self.pubconfig["deploypath"],
                                                              foundmedia["mesh"], image3dannos, annobodies,
-                                                             str(subject), self.prefixnamespace, self.imagetoURI,
-                                                             self.imagemetadata, DocConfig.metadatanamespaces,
+                                                             str(subject), self.pubconfig["prefixns"], self.imagetoURI,
+                                                             self.pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
                                                              foundlabel, comment, thetypes, predobjmap, "Model"))
                 for curitem in foundmedia["mesh"]:
                     format = "ply"
@@ -416,12 +384,12 @@ class HTMLExporter():
                         format = "nexus"
                         self.has3d = True
                     elif format == "gltf":
-                        f.write(self.templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",
+                        f.write(self.pubconfig["templates"]["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",
                                                                                                        str(list(
                                                                                                            foundmedia[
                                                                                                                "mesh"]))).replace(
                             "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
-                    f.write(self.templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",
+                    f.write(self.pubconfig["templates"]["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",
                                                                                                    str(list(foundmedia[
                                                                                                                 "mesh"]))).replace(
                         "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
@@ -431,13 +399,13 @@ class HTMLExporter():
                 for anno in image3dannos:
                     if ("POINT" in anno["value"].upper() or "POLYGON" in anno["value"].upper() or "LINESTRING" in
                             anno["value"].upper()):
-                        f.write(self.templates["threejstemplate"].replace("{{wktstring}}", anno["value"]).replace(
+                        f.write(self.pubconfig["templates"]["threejstemplate"].replace("{{wktstring}}", anno["value"]).replace(
                             "{{meshurls}}", "[]").replace("{{relativepath}}",
                                                           DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
             carousel = "image"
             if len(foundmedia["image"]) > 3:
                 carousel = "carousel-item active"
-                f.write(self.templates["imagecarouselheader"])
+                f.write(self.pubconfig["templates"]["imagecarouselheader"])
             # if self.apis["iiif"] and len(annobodies)>0:
             #    if target not in imagetoURI:
             #        imagetoURI[target]={"uri":{str(subject):{"bodies":[]}}}
@@ -448,7 +416,7 @@ class HTMLExporter():
 
             if len(imageannos) > 0 and len(foundmedia["image"]) > 0:
                 MediaPage.generatePageWidget(foundmedia, self.iiifmanifestpaths, graph, imageannos, self.imagetoURI,
-                                             annobodies, foundlabel, comment, thetypes, predobjmap, self.templates,
+                                             annobodies, foundlabel, comment, thetypes, predobjmap, self.pubconfig["templates"],
                                              subject, self.pubconfig, f)
                 """
                 if self.apis["iiif"]:
@@ -518,22 +486,22 @@ class HTMLExporter():
                             f.write("<span style=\"font-weight:bold\" class=\"textanno\" start=\"" + str(
                                 textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
                                 textanno["exact"]) + "\"><mark>" + str(textanno["exact"]) + "</mark></span>")
-            if len(foundmedia["audio"]) > 0 and self.apis["iiif"]:
+            if len(foundmedia["audio"]) > 0 and self.pubconfig["apis"]["iiif"]:
                 self.iiifmanifestpaths["default"].append(
-                    IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath, foundmedia["audio"],
-                                                         None, None, str(subject), self.prefixnamespace,
+                    IIIFAPIExporter.generateIIIFManifest(graph, self.pubconfig["outpath"], self.pubconfig["deploypath"], foundmedia["audio"],
+                                                         None, None, str(subject), self.pubconfig["prefixns"],
                                                          self.imagetoURI,
-                                                         self.imagemetadata, DocConfig.metadatanamespaces,
+                                                         self.pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
                                                          foundlabel, comment, thetypes, predobjmap, "Audio"))
             for audio in foundmedia["audio"]:
                 self.imagetoURI[audio] = {"uri": str(subject)}
                 f.write(self.templates["audiotemplate"].replace("{{audio}}", str(audio)))
-            if len(foundmedia["video"]) > 0 and self.apis["iiif"]:
+            if len(foundmedia["video"]) > 0 and self.pubconfig["apis"]["iiif"]:
                 self.iiifmanifestpaths["default"].append(
-                    IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath, foundmedia["video"],
-                                                         None, None, str(subject), self.prefixnamespace,
+                    IIIFAPIExporter.generateIIIFManifest(graph, self.pubconfig["outpath"], self.pubconfig["deploypath"], foundmedia["video"],
+                                                         None, None, str(subject), self.pubconfig["prefixns"],
                                                          self.imagetoURI,
-                                                         self.imagemetadata, DocConfig.metadatanamespaces,
+                                                         self.pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
                                                          foundlabel, comment, thetypes, predobjmap, "Video"))
             for video in foundmedia["video"]:
                 self.imagetoURI[video] = {"uri": str(subject)}
@@ -559,7 +527,7 @@ class HTMLExporter():
                                                                             {"completesavepath": completesavepath,
                                                                              "nonns": nonns, "hasnonns": hasnonns,
                                                                              "foundlabel": foundlabel,
-                                                                             "localOptimized": self.localOptimized,
+                                                                             "localOptimized": self.pubconfig["localOptimized"],
                                                                              "dateprops": dateprops,
                                                                              "timeobj": timeobj,
                                                                              "geocache": self.geocache,
@@ -571,17 +539,17 @@ class HTMLExporter():
             if metadatatablecontentcounter >= 0:
                 f.write("<h5>Metadata</h5>")
                 f.write(self.templates["htmltabletemplate"].replace("{{tablecontent}}", metadatatablecontents))
-            tempfoot = self.replaceStandardVariables(self.templates["footer"], "", checkdepth, "false").replace(
+            tempfoot = DocUtils.replaceStandardVariables(self.templates["footer"], "", checkdepth, "false").replace(
                 "{{exports}}",
                 myexports).replace(
                 "{{license}}", curlicense).replace("{{bibtex}}", "").replace("{{stats}}", "")
             tempfoot = DocUtils.conditionalArrayReplace(tempfoot,
-                                                        [True, self.apis["ogcapifeatures"], self.apis["iiif"],
-                                                         self.apis["ckan"]],
+                                                        [True, self.pubconfig["apis"]["ogcapifeatures"], self.pubconfig["apis"]["iiif"],
+                                                         self.pubconfig["apis"]["ckan"]],
                                                         [
                                                             "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
                                                                 checkdepth) + "/sparql.html?endpoint=" + str(
-                                                                self.deploypath) + "\">[SPARQL]</a>&nbsp;",
+                                                                self.pubconfig["deploypath"]) + "\">[SPARQL]</a>&nbsp;",
                                                             "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
                                                                 checkdepth) + "/api/api.html\">[OGC API Features]</a>&nbsp;",
                                                             "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(

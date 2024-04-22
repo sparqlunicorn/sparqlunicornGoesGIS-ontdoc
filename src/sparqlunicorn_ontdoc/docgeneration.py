@@ -75,7 +75,7 @@ class OntDocGeneration:
         if len(keyprops["subclassproperty"])>0:
             self.suclassproperty=keyprops["subclassproperty"][0]
         self.graph = graph
-        self.htmlexporter=HTMLExporter(prefixes,pubconfig["prefixns"],pubconfig["prefixnsshort"],license,pubconfig["labellang"],outpath,pubconfig["metadatatable"],pubconfig["nonnspages"],apis,templates,pubconfig["namespaceshort"],self.typeproperty,pubconfig["imagemetadata"],pubconfig["localOptimized"],pubconfig["deploypath"],pubconfig["logourl"],pubconfig["offlinecompat"])
+        self.htmlexporter=HTMLExporter(prefixes,templates,pubconfig,self.typeproperty)
         for nstup in self.graph.namespaces():
             if str(nstup[1]) not in prefixes["reversed"]:
                 prefixes["reversed"][str(nstup[1])] = str(nstup[0])
