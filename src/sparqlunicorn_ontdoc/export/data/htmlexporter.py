@@ -16,6 +16,8 @@ from export.pages.lexiconpage import LexiconPage
 from export.pages.observationpage import ObservationPage
 from export.pages.personpage import PersonPage
 
+from export.pages.mediapage import MediaPage
+
 
 class HTMLExporter():
     listthreshold = 5
@@ -331,7 +333,6 @@ class HTMLExporter():
                 subject) + "\">here</a></div>"
         else:
             completesavepath = savepath + "/index.html"
-        if not nonns:
             if os.path.exists(savepath):
                 try:
                     ttlf.serialize(savepath + "/index.ttl", encoding="utf-8")
@@ -358,7 +359,7 @@ class HTMLExporter():
             else:
                 myexports = self.templates["nongeoexports"]
             relpath = DocUtils.generateRelativePathFromGivenDepth(checkdepth)
-            if foundlabel == None or foundlabel == "":
+            if foundlabel is None or foundlabel == "":
                 foundlabel = DocUtils.shortenURI(str(subject))
             f.write(self.replaceStandardVariables(self.templates["htmltemplate"], subject, checkdepth, "false").replace(
                 "{{iconprefixx}}", (relpath + "icons/" if self.offlinecompat else "")).replace("{{baseurl}}",
@@ -383,6 +384,8 @@ class HTMLExporter():
                                                                       DocUtils.shortenURI(comm) + ":" + comment[comm]))
             # for fval in foundvals:
             #    f.write(templates["htmlcommenttemplate"].replace("{{comment}}", "<b>Value "+ DocUtils.shortenURI(str(fval[0]))+": <mark>" + str(fval[1]) + "</mark></b>"))
+
+
             if len(foundmedia["mesh"]) > 0 and len(image3dannos) > 0:
                 if self.apis["iiif"]:
                     self.iiifmanifestpaths["default"].append(
@@ -442,7 +445,12 @@ class HTMLExporter():
             #        imagetoURI[target]["uri"][str(subject)]={"bodies":[]}
             #    if str(subject) not in imagetoURI[target]:
             #        imagetoURI[target]["uri"][str(subject)]["bodies"]+=annobodies
+
             if len(imageannos) > 0 and len(foundmedia["image"]) > 0:
+                MediaPage.generatePageWidget(foundmedia, self.iiifmanifestpaths, graph, imageannos, self.imagetoURI,
+                                             annobodies, foundlabel, comment, thetypes, predobjmap, self.templates,
+                                             subject, self.pubconfig, f)
+                """
                 if self.apis["iiif"]:
                     self.iiifmanifestpaths["default"].append(
                         IIIFAPIExporter.generateIIIFManifest(graph, self.outpath, self.deploypath,
@@ -497,6 +505,7 @@ class HTMLExporter():
                         carousel = "carousel-item"
             if len(foundmedia["image"]) > 3:
                 f.write(self.templates["imagecarouselfooter"])
+            """
             if len(textannos) > 0:
                 for textanno in textannos:
                     if isinstance(textanno, dict):
@@ -787,8 +796,8 @@ class HTMLExporter():
             if unitlabel != "":
                 tablecontents += " <span style=\"font-weight:bold\">[" + str(unitlabel) + "]</span>"
             if timeobj is not None:
-                res = str(OWLTimePage.timeObjectToHTML(timeobj, prefixes))
-                if res != "None":
+                res = OWLTimePage.timeObjectToHTML(timeobj, prefixes)
+                if res != "":
                     tablecontents += " <span style=\"font-weight:bold\">[" + str(res) + "]</span>"
                 dateprops = timeobj
             tablecontents += "</span>"

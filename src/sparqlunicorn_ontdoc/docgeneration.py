@@ -544,7 +544,7 @@ def main():
         indexhtml += "<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"
         indexhtml += "<table class=\"description\" border=1 id=indextable><thead><tr><th>Dataset</th></tr></thead><tbody>"
         subfolders = [f.path for f in os.scandir(outpath[0]) if f.is_dir()]
-        print(subfolders)
+        #print(subfolders)
         for path in subfolders:
             indexhtml += "<tr><td><a href=\"" + path.replace(outpath[0] + "/", "") + "/index.html\">" + path.replace(
                 outpath[0] + "/", "") + "</a></td></tr>"
