@@ -281,8 +281,8 @@ class HTMLExporter():
                 else:
                     tablecontents += "<td class=\"wrapword\"></td>"
                 tablecontents += "</tr>"
-        if self.pubconfig["licenseuri"] is not None:
-            ttlf.add((subject, URIRef("http://purl.org/dc/elements/1.1/license"), URIRef(self.pubconfig["licenseuri"])))
+        if licenseuri is not None:
+            ttlf.add((subject, URIRef("http://purl.org/dc/elements/1.1/license"), URIRef(licenseuri)))
         if self.pubconfig["apis"]["solidexport"] is not None:
             ttlf.add((subject, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
                       URIRef("http://www.w3.org/ns/ldp#Resource")))

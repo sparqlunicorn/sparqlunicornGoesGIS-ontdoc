@@ -112,7 +112,7 @@ class OntDocGeneration:
         tmp=HTMLExporter.processLicense(self.pubconfig["license"])
         curlicense=tmp[0]
         self.licensehtml = tmp[0]
-        self.licenseuri=tmp[1]
+        self.pubconfig["licenseuri"]=tmp[1]
         voidds = prefixnamespace + self.pubconfig["datasettitle"].replace(" ","_")
         if self.pubconfig["createCollections"]:
             self.graph = GraphUtils.createCollections(self.graph, prefixnamespace,self.typeproperty)
@@ -157,7 +157,7 @@ class OntDocGeneration:
                 tree["core"]["data"].append(tr)
         res["voidstats"]["http://rdfs.org/ns/void#classes"] = len(classidset)
         res["voidstats"]["http://rdfs.org/ns/void#triples"] = len(self.graph)
-        voidgraph = VoidExporter.createVoidDataset(self.pubconfig, self.licenseuri,
+        voidgraph = VoidExporter.createVoidDataset(self.pubconfig, self.pubconfig["licenseuri"],
                                                    res["voidstats"], subjectstorender,
                                                    tree, res["predmap"], res["nonnscount"], res["nscount"], res["instancecount"])
         self.voidstatshtml = VoidExporter.toHTML(res["voidstats"], self.pubconfig["deploypath"])
