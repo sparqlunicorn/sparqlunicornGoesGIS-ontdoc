@@ -44,7 +44,7 @@ class DocUtils:
             "{{deploypath}}", pubconfig["deploypath"]) \
             .replace("{{publishingorg}}", pubconfig["publishingorg"]).replace("{{publisher}}", pubconfig["publisher"]).replace(
             "{{datasettitle}}", pubconfig["datasettitle"]) \
-            .replace("{{logo}}", pubconfig["logoname"])
+            .replace("{{logo}}", pubconfig["logourl"])
         return template
 
     @staticmethod
