@@ -190,53 +190,55 @@ class GraphUtils:
                 subjectcounter += 1
                 subjectlength += len(str(sub))
                 for tup in graph.predicate_objects(sub):
-                    if isinstance(tup[1], Literal):
-                        if tup[1].datatype != None:
+                    tuppredstr=str(tup[0])
+                    tupobjstr = str(tup[1])
+                    if isinstance(tupobjstr, Literal):
+                        if tup[1].datatype is not None:
                             if str(tup[1].datatype) not in literaltypes:
                                 literaltypes[str(tup[1].datatype)] = set()
-                            literaltypes[str(tup[1].datatype)].add(str(tup[0]))
-                            if str(tup[1].datatype) in DocConfig.geoliteraltypes or str(tup[0]) in DocConfig.geoproperties:
+                            literaltypes[str(tup[1].datatype)].add(tuppredstr)
+                            if str(tup[1].datatype) in DocConfig.geoliteraltypes or tuppredstr in DocConfig.geoproperties:
                                 geocounter+=1
-                        if tup[1].language != None:
+                        if tup[1].language is not None:
                             literallangs.add(str(tup[1].language))
-                        val=str(tup[1])
+                        val=tupobjstr
                         literallength += len(val)
                         literals.add(val)
                         if "." in val and val[val.rfind("."):] in DocConfig.imageextensions:
                             imgcounter+=1
                         literalcount += 1
                     elif isinstance(tup[1], BNode):
-                        blanknodes.add(str(tup[1]))
+                        blanknodes.add(tupobjstr)
                     else:
-                        objectlength += len(str(tup[1]))
+                        objectlength += len(tupobjstr)
                         objectcounter += 1
                         irirefs += 1
-                        ns = DocUtils.shortenURI(str(tup[1]), True)
+                        ns = DocUtils.shortenURI(tupobjstr, True)
                         if ns not in nscount:
                             nscount[ns] = 0
                         nscount[ns] += 1
-                    if str(tup[0]) in DocConfig.labelproperties:
-                        labeltouri[str(tup[1])] = str(sub)
-                        uritolabel[str(sub)] = {"label": str(tup[1])}
-                        label = str(tup[1])
-                    elif str(tup[0]) == typeproperty:
-                        if str(tup[1]) not in instancecount:
-                            instancecount[str(tup[1])] = 0
-                        instancecount[str(tup[1])] += 1
-                    elif str(tup[1]) == "http://www.w3.org/2002/07/owl#Restriction":
+                    if tuppredstr in DocConfig.labelproperties:
+                        labeltouri[tupobjstr] = str(sub)
+                        uritolabel[str(sub)] = {"label": tupobjstr}
+                        label = tupobjstr
+                    elif tuppredstr == typeproperty:
+                        if tupobjstr not in instancecount:
+                            instancecount[tupobjstr] = 0
+                        instancecount[tupobjstr] += 1
+                    elif tupobjstr == "http://www.w3.org/2002/07/owl#Restriction":
                         restriction = True
-                    elif str(tup[0]) == "http://www.w3.org/2000/01/rdf-schema#subClassOf":
-                        ressubcls = str(tup[1])
-                    if isinstance(tup[1], URIRef) and prefixnamespace not in str(tup[1]):
-                        ns = DocUtils.shortenURI(str(tup[1]), True)
+                    elif tuppredstr == "http://www.w3.org/2000/01/rdf-schema#subClassOf":
+                        ressubcls =tupobjstr
+                    if isinstance(tup[1], URIRef) and prefixnamespace not in tupobjstr:
+                        ns = DocUtils.shortenURI(tupobjstr, True)
                         if ns not in nscount:
                             nscount[ns] = 0
                         nscount[ns] += 1
-                        if str(tup[0]) not in nonnscount:
-                            nonnscount[str(tup[0])] = {}
-                        if ns not in nonnscount[str(tup[0])]:
-                            nonnscount[str(tup[0])][ns] = 0
-                        nonnscount[str(tup[0])][ns] += 1
+                        if tuppredstr not in nonnscount:
+                            nonnscount[tuppredstr] = {}
+                        if ns not in nonnscount[tuppredstr]:
+                            nonnscount[tuppredstr][ns] = 0
+                        nonnscount[tuppredstr][ns] += 1
                 if isinstance(sub, BNode) and restriction:
                     graph.add((sub, URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
                                     Literal(label + " [Restriction]", lang="en")))
