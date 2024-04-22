@@ -52,7 +52,7 @@ class OntDocGeneration:
         #{"prefixes":prefixes,"prefixns":prefixnamespace,"namespaceshort":prefixnsshort.replace("/",""),"createIndexPages":createIndexPages,
         #                "modtime":modtime,"outpath":outpath,"exports":exports,"apis":apis,"publisher":publisher,"publishingorg":publishingorg,
         #                "startconcept":startconcept,"metadatatable":metadatatable,"createVOWL":createVOWL,"templatename":templatename,"imagemetadata":imagemetadata,
-        #                "datasettitle":str(datasettitle),"logoname":logoname,"localOptimized":localOptimized,"labellang":labellang,"license":license,"deploypath":deploypath,
+        #                "datasettitle":str(datasettitle),"logourl":logoname,"localOptimized":localOptimized,"labellang":labellang,"license":license,"deploypath":deploypath,
         #                "offlinecompat":offlinecompat,"nonnspages":nonnspages,"repository":repository,"createColl":createColl}
         self.geocache={}
         self.geocollectionspaths=[]
@@ -75,7 +75,7 @@ class OntDocGeneration:
         if len(keyprops["subclassproperty"])>0:
             self.suclassproperty=keyprops["subclassproperty"][0]
         self.graph = graph
-        self.htmlexporter=HTMLExporter(prefixes,pubconfig["prefixns"],pubconfig["prefixnsshort"],license,pubconfig["labellang"],outpath,pubconfig["metadatatable"],pubconfig["nonnspages"],apis,templates,pubconfig["namespaceshort"],self.typeproperty,pubconfig["imagemetadata"],pubconfig["localOptimized"],pubconfig["deploypath"],pubconfig["logoname"],pubconfig["offlinecompat"])
+        self.htmlexporter=HTMLExporter(prefixes,pubconfig["prefixns"],pubconfig["prefixnsshort"],license,pubconfig["labellang"],outpath,pubconfig["metadatatable"],pubconfig["nonnspages"],apis,templates,pubconfig["namespaceshort"],self.typeproperty,pubconfig["imagemetadata"],pubconfig["localOptimized"],pubconfig["deploypath"],pubconfig["logourl"],pubconfig["offlinecompat"])
         for nstup in self.graph.namespaces():
             if str(nstup[1]) not in prefixes["reversed"]:
                 prefixes["reversed"][str(nstup[1])] = str(nstup[0])
@@ -116,12 +116,12 @@ class OntDocGeneration:
         voidds = prefixnamespace + self.pubconfig["datasettitle"].replace(" ","_")
         if self.pubconfig["createColl"]:
             self.graph = GraphUtils.createCollections(self.graph, prefixnamespace,self.typeproperty)
-        if self.pubconfig["logoname"] is not None and self.pubconfig["logoname"] != "" and not self.pubconfig["logoname"].startswith("http"):
-            logoname=self.pubconfig["logoname"]
+        if self.pubconfig["logourl"] is not None and self.pubconfig["logourl"] != "" and not self.pubconfig["logourl"].startswith("http"):
+            logoname=self.pubconfig["logourl"]
             if not os.path.isdir(outpath + "/logo/"):
                 os.mkdir(outpath + "/logo/")
             shutil.copy(logoname, outpath + "/logo/logo." + logoname[logoname.rfind("."):])
-            self.pubconfig["logoname"] = outpath + "/logo/logo." + logoname[logoname.rfind("."):]
+            self.pubconfig["logourl"] = outpath + "/logo/logo." + logoname[logoname.rfind("."):]
         DocUtils.updateProgressBar(0, 1, "Creating classtree and search index")
         res=GraphUtils.analyzeGraph(self.graph, prefixnamespace, self.typeproperty, voidds, labeltouri, uritolabel, self.pubconfig["outpath"], self.pubconfig["createVOWL"])
         subjectstorender=res["subjectstorender"]
