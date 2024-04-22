@@ -51,13 +51,9 @@ class OntDocGeneration:
         self.pubconfig["namespaceshort"]=pubconfig["prefixnsshort"].replace("/","")
         self.pubconfig["outpath"]=outpath
         self.pubconfig["apis"]=apis
+        self.pubconfig["modtime"]=modtime
         self.pubconfig["prefixes"]=prefixes
         self.pubconfig["exports"]=exports
-        #{"prefixes":prefixes,"prefixns":prefixnamespace,"namespaceshort":prefixnsshort.replace("/",""),"createIndexPages":createIndexPages,
-        #                "modtime":modtime,"outpath":outpath,"exports":exports,"apis":apis,"publisher":publisher,"publishingorg":publishingorg,
-        #                "startconcept":startconcept,"metadatatable":metadatatable,"createvowl":createVOWL,"templatename":templatename,"imagemetadata":imagemetadata,
-        #                "datasettitle":str(datasettitle),"logourl":logoname,"localOptimized":localOptimized,"labellang":labellang,"license":license,"deploypath":deploypath,
-        #                "offlinecompat":offlinecompat,"nonnspages":nonnspages,"repository":repository,"createCollections":createColl}
         self.geocache={}
         self.geocollectionspaths=[]
         self.templatename=pubconfig["templatename"]
