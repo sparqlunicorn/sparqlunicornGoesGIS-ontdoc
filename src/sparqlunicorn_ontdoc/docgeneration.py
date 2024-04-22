@@ -200,6 +200,7 @@ class OntDocGeneration:
             #    print("Create HTML Exception: "+str(e))
             #    print(traceback.format_exc())
         print("Postprocessing " + str(len(postprocessing)))
+        subtorenderlen = len(subjectstorender) + len(postprocessing)
         for subj in postprocessing.subjects(None, None, True):
             path = str(subj).replace(prefixnamespace, "")
             paths = DocUtils.processSubjectPath(outpath, paths, path, self.graph)
@@ -215,7 +216,6 @@ class OntDocGeneration:
                             curlicense, subjectstorender, postprocessing)
             subtorencounter += 1
             if subtorencounter % 250 == 0:
-                subtorenderlen = len(subjectstorender) + len(postprocessing)
                 DocUtils.updateProgressBar(subtorencounter, subtorenderlen, "Processing Subject URIs")
         ClassTreeUtils.checkGeoInstanceAssignment(uritotreeitem)
         classlist = ClassTreeUtils.assignGeoClassesToTree(tree)
