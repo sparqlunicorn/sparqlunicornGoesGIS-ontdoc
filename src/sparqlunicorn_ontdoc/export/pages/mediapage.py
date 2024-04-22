@@ -23,7 +23,7 @@ class MediaPage:
             if pubconfig["apis"]["iiif"]:
                 iiifmanifestpaths["default"].append(
                     IIIFAPIExporter.generateIIIFManifest(graph, pubconfig["outpath"], pubconfig["deploypath"], foundmedia["image"],
-                                                         imageannos, annobodies, str(subject), pubconfig["prefixnamespace"],
+                                                         imageannos, annobodies, str(subject), pubconfig["prefixns"],
                                                          imagetoURI, pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
                                                          foundlabel, comment, thetypes, predobjmap, "Image"))
             for image in foundmedia["image"]:
@@ -47,7 +47,7 @@ class MediaPage:
             if pubconfig["apis"]["iiif"]:
                 iiifmanifestpaths["default"].append(
                     IIIFAPIExporter.generateIIIFManifest(graph, pubconfig["outpath"], pubconfig["deploypath"], foundmedia["image"],
-                                                         imageannos, annobodies, str(subject), pubconfig["prefixnamespace"],
+                                                         imageannos, annobodies, str(subject), pubconfig["prefixns"],
                                                          imagetoURI, pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
                                                          foundlabel, comment, thetypes, predobjmap, "Image"))
             for image in foundmedia["image"]:
@@ -77,7 +77,7 @@ class MediaPage:
         if len(foundmedia["audio"]) > 0 and pubconfig["apis"]["iiif"]:
             iiifmanifestpaths["default"].append(
                 IIIFAPIExporter.generateIIIFManifest(graph, pubconfig["outpath"], pubconfig["deploypath"], foundmedia["audio"], None,
-                                                     None, str(subject), pubconfig["prefixnamespace"], imagetoURI,
+                                                     None, str(subject), pubconfig["prefixns"], imagetoURI,
                                                      pubconfig["imagemetadata"], DocConfig.metadatanamespaces, foundlabel,
                                                      comment, thetypes, predobjmap, "Audio"))
         for audio in foundmedia["audio"]:
@@ -86,7 +86,7 @@ class MediaPage:
         if len(foundmedia["video"]) > 0 and pubconfig["apis"]["iiif"]:
             iiifmanifestpaths["default"].append(
                 IIIFAPIExporter.generateIIIFManifest(graph, pubconfig["outpath"], pubconfig["deploypath"], foundmedia["video"], None,
-                                                     None, str(subject), pubconfig["prefixnamespace"], imagetoURI,
+                                                     None, str(subject), pubconfig["prefixns"], imagetoURI,
                                                      pubconfig["imagemetadata"], DocConfig.metadatanamespaces, foundlabel,
                                                      comment, thetypes, predobjmap, "Video"))
         for video in foundmedia["video"]:
