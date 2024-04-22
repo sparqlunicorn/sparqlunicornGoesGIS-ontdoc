@@ -495,11 +495,11 @@ def main():
                     args.prefixns = pres
                 print("Detected " + args.prefixns + " as data namespace")
             apis={"iiif":args.iiifmanifest,"ogcapifeatures":args.ogcapifeatures,"ckan":args.ckanapi,"solidexport":args.solidexport,"stac":args.stacapi}
-            print("Args: "+str(args))
+            print("Args: "+str(vars(args)))
             if fcounter < len(outpath):
-                docgen = OntDocGeneration(prefixes, modtime, outpath[fcounter],apis, g, args,dataexports)
+                docgen = OntDocGeneration(prefixes, modtime, outpath[fcounter],apis, g, vars(args),dataexports)
             else:
-                docgen = OntDocGeneration(prefixes, modtime, outpath[-1],apis, g, args,dataexports)
+                docgen = OntDocGeneration(prefixes, modtime, outpath[-1],apis, g, vars(args),dataexports)
             subrend = docgen.generateOntDocForNameSpace(args.prefixns, dataformat="HTML")
         except Exception as inst:
             print("Could not parse " + str(fp))
