@@ -48,7 +48,7 @@ class OntDocGeneration:
     def __init__(self, prefixes, modtime, outpath, apis, graph, pubconfig, exports=["json", "ttl"]):
 
         self.pubconfig=pubconfig
-        #{"prefixes":prefixes,"prefixnamespace":prefixnamespace,"namespaceshort":prefixnsshort.replace("/",""),"createIndexPages":createIndexPages,
+        #{"prefixes":prefixes,"prefixns":prefixnamespace,"namespaceshort":prefixnsshort.replace("/",""),"createIndexPages":createIndexPages,
         #                "modtime":modtime,"outpath":outpath,"exports":exports,"apis":apis,"publisher":publisher,"publishingorg":publishingorg,
         #                "startconcept":startconcept,"metadatatable":metadatatable,"createVOWL":createVOWL,"templatename":templatename,"imagemetadata":imagemetadata,
         #                "datasettitle":str(datasettitle),"logoname":logoname,"localOptimized":localOptimized,"labellang":labellang,"license":license,"deploypath":deploypath,
@@ -74,16 +74,16 @@ class OntDocGeneration:
         if len(keyprops["subclassproperty"])>0:
             self.suclassproperty=keyprops["subclassproperty"][0]
         self.graph = graph
-        self.htmlexporter=HTMLExporter(prefixes,pubconfig["prefixnamespace"],pubconfig["prefixnsshort"],license,pubconfig["labellang"],outpath,pubconfig["metadatatable"],pubconfig["generatePagesForNonNS"],apis,templates,pubconfig["namespaceshort"],self.typeproperty,pubconfig["imagemetadata"],pubconfig["localOptimized"],pubconfig["deploypath"],pubconfig["logoname"],pubconfig["offlinecompat"])
+        self.htmlexporter=HTMLExporter(prefixes,pubconfig["prefixns"],pubconfig["prefixnsshort"],license,pubconfig["labellang"],outpath,pubconfig["metadatatable"],pubconfig["generatePagesForNonNS"],apis,templates,pubconfig["namespaceshort"],self.typeproperty,pubconfig["imagemetadata"],pubconfig["localOptimized"],pubconfig["deploypath"],pubconfig["logoname"],pubconfig["offlinecompat"])
         for nstup in self.graph.namespaces():
             if str(nstup[1]) not in prefixes["reversed"]:
                 prefixes["reversed"][str(nstup[1])] = str(nstup[0])
         self.preparedclassquery = prepareQuery(DocConfig.classtreequery.replace("%%typeproperty%%","<"+self.typeproperty+">").replace("%%subclassproperty%%","<"+self.subclassproperty+">"))
-        if self.pubconfig["prefixnamespace"] is None or pubconfig["prefixnsshort"] is None or self.pubconfig["prefixnamespace"] == "" or pubconfig["prefixnsshort"] == "":
+        if self.pubconfig["prefixns"] is None or pubconfig["prefixnsshort"] is None or self.pubconfig["prefixns"] == "" or pubconfig["prefixnsshort"] == "":
             self.pubconfig["namespaceshort"] = "suni"
-            self.pubconfig["prefixnamespace"] = "http://purl.org/suni/"
-        if not self.pubconfig["prefixnamespace"].endswith("/") and not self.pubconfig["prefixnamespace"].endswith("#"):
-            self.pubconfig["prefixnamespace"] += "/"
+            self.pubconfig["prefixns"] = "http://purl.org/suni/"
+        if not self.pubconfig["prefixns"].endswith("/") and not self.pubconfig["prefixns"].endswith("#"):
+            self.pubconfig["prefixns"] += "/"
         if self.pubconfig["outpath"] is None:
             self.pubconfig["outpath"] = "suni_htmls/"
         else:
@@ -91,7 +91,7 @@ class OntDocGeneration:
             if not self.pubconfig["outpath"].endswith("/"):
                 self.pubconfig["outpath"] += "/"
         self.pubconfig["outpath"] = self.pubconfig["outpath"].replace("//", "/")
-        #self.pubconfig["prefixnamespace"] = self.pubconfig["prefixnamespace"].replace("//", "/")
+        #self.pubconfig["prefixns"] = self.pubconfig["prefixns"].replace("//", "/")
         # prefixes["reversed"]["http://purl.org/suni/"] = "suni"
 
 
@@ -255,7 +255,7 @@ class OntDocGeneration:
             indexhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], "", "0", "true",self.pubconfig)
             indexhtml = indexhtml.replace("{{iconprefixx}}",
                                           (relpath + "icons/" if self.pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",
-                                                                                                      self.pubconfig["prefixnamespace"]).replace(
+                                                                                                      self.pubconfig["prefixns"]).replace(
                 "{{relativepath}}", relpath).replace("{{toptitle}}", "Feature Collection Overview").replace("{{title}}",
                                                                                                             "Image Grid View").replace(
                 "{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}",
@@ -284,7 +284,7 @@ class OntDocGeneration:
             indexhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], "", "0", "true",self.pubconfig)
             indexhtml = indexhtml.replace("{{iconprefixx}}",
                                           (relpath + "icons/" if self.pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",
-                                                                                                      self.pubconfig["prefixnamespace"]).replace(
+                                                                                                      self.pubconfig["prefixns"]).replace(
                 "{{relativepath}}", relpath).replace("{{toptitle}}", "Feature Collection Overview").replace("{{title}}",
                                                                                                             "Feature Collection Overview").replace(
                 "{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}",
@@ -295,7 +295,7 @@ class OntDocGeneration:
                                                                             self.pubconfig["corpusid"] + '_search.js').replace(
                 "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "")
             OGCAPIFeaturesExporter.generateOGCAPIFeaturesPages(outpath, self.pubconfig["deploypath"], self.htmlexporter.featurecollectionspaths,
-                                                               self.pubconfig["prefixnamespace"], self.pubconfig["apis"]["ogcapifeatures"], True)
+                                                               self.pubconfig["prefixns"], self.pubconfig["apis"]["ogcapifeatures"], True)
             indexhtml += "<p>This page shows feature collections present in the linked open data export</p>"
             indexhtml += "<script src=\"features.js\"></script>"
             indexhtml += templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace(
