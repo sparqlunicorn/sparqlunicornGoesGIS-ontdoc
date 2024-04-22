@@ -1117,9 +1117,9 @@ class DocDefaults:
                 objects.add(nexus_obj)
                 scene.add(objects);
                 addRotationControls(nexus_obj,geometryF,objects)
-                if(objects.children.length>0){
+                /*if(objects.children.length>0){
                         camera.lookAt( objects.children[0].position );
-                }
+                }*/
                 fitCameraToSelection(camera, controls, objects.children)
             }else if(meshurls[0].includes(".gltf")){
                 var loader = new THREE.GLTFLoader();

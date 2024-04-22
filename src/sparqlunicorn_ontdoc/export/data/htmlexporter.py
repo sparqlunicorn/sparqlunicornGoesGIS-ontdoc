@@ -577,11 +577,8 @@ class HTMLExporter():
     def searchObjectConnectionsForAggregateData(graph, object, pred, geojsonrep, foundmedia, imageannos,
                                                 textannos, image3dannos, annobodies, label, unitlabel, nonns, inverse,
                                                 labellang, typeproperty, prefixes):
-        geoprop = False
         annosource = None
         incollection = False
-        if pred in DocConfig.geopointerproperties:
-            geoprop = True
         if pred in DocConfig.collectionrelationproperties:
             incollection = True
         foundval = None
@@ -627,14 +624,14 @@ class HTMLExporter():
                 annosource = str(tup[1])
                 print("Found annosource " + str(tup[1]) + " from " + str(object) + " Imageannos: " + str(len(imageannos)))
             elif tuppredstr in DocConfig.valueproperties:
-                if tempvalprop == None and str(tup[0]) == "http://www.w3.org/ns/oa#hasSource":
-                    tempvalprop = str(tup[0])
+                if tempvalprop == None and tuppredstr == "http://www.w3.org/ns/oa#hasSource":
+                    tempvalprop = tuppredstr
                     foundval = str(tup[1])
-                elif str(tup[0]) != "http://www.w3.org/ns/oa#hasSource" and DocConfig.valueproperties[
-                    str(tup[0])] == "DatatypeProperty" and (isinstance(tup[1], Literal) or isinstance(tup[1], URIRef)):
-                    tempvalprop = str(tup[0])
+                elif tuppredstr != "http://www.w3.org/ns/oa#hasSource" and DocConfig.valueproperties[
+                tuppredstr] == "DatatypeProperty" and (isinstance(tup[1], Literal) or isinstance(tup[1], URIRef)):
+                    tempvalprop = tuppredstr
                     foundval = str(tup[1])
-                elif str(tup[0]) == "http://www.w3.org/ns/oa#hasTarget":
+                elif tuppredstr == "http://www.w3.org/ns/oa#hasTarget":
                     tempvalprop = "http://www.w3.org/ns/oa#hasTarget"
                     for inttup in graph.predicate_objects(tup[1]):
                         if str(inttup[0]) == "http://www.w3.org/ns/oa#hasSelector":
@@ -644,9 +641,9 @@ class HTMLExporter():
                                 elif str(valtup[0]) in DocConfig.valueproperties and (
                                         isinstance(valtup[1], Literal) or isinstance(valtup[1], URIRef)):
                                     foundval = str(valtup[1])
-                elif DocConfig.valueproperties[str(tup[0])] == "DatatypeProperty":
-                    if str(tup[0]) in DocConfig.valueproperties and isinstance(tup[1], Literal):
-                        tempvalprop = str(tup[0])
+                elif DocConfig.valueproperties[tuppredstr] == "DatatypeProperty":
+                    if tuppredstr in DocConfig.valueproperties and isinstance(tup[1], Literal):
+                        tempvalprop = tuppredstr
                         foundval = str(tup[1])
                 else:
                     for valtup in graph.predicate_objects(tup[1]):
