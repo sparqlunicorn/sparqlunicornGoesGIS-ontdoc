@@ -712,6 +712,8 @@ class HTMLExporter():
         label = ""
         bibtex = None
         timeobj = None
+        objstr=str(object)
+        predstr=str(pred)
         if isinstance(object, URIRef) or isinstance(object, BNode):
             if ttlf is not None:
                 ttlf.add((subject, URIRef(pred), object))
@@ -724,7 +726,7 @@ class HTMLExporter():
                                                                           typeproperty, prefixes)
             label = mydata["label"]
             if label == "":
-                label = str(DocUtils.shortenURI(str(object)))
+                label = str(DocUtils.shortenURI(objstr))
             geojsonrep = mydata["geojsonrep"]
             foundmedia = mydata["foundmedia"]
             imageannos = mydata["imageannos"]
@@ -735,33 +737,30 @@ class HTMLExporter():
             timeobj = mydata["timeobj"]
             annobodies = mydata["annobodies"]
             if inverse:
-                rdfares = " about=\"" + str(object) + "\" resource=\"" + str(subject) + "\""
-                microdatares = " itemref=\"" + str(object) + "\" "
+                rdfares = " about=\"" + objstr + "\" resource=\"" + str(subject) + "\""
+                microdatares = " itemref=\"" + objstr + "\" "
             else:
-                rdfares = "resource=\"" + str(object) + "\""
+                rdfares = "resource=\"" + objstr + "\""
                 microdatares = " "
-            if baseurl in str(object) or isinstance(object, BNode):
-                rellink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, str(object), True)
-                tablecontents += "<span><a itemprop=\"" + str(pred) + "\"" + microdatares + "property=\"" + str(
+            if baseurl in objstr or isinstance(object, BNode):
+                rellink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, objstr, True)
+                tablecontents += "<span><a itemprop=\"" + predstr + "\"" + microdatares + "property=\"" + str(
                     pred) + "\" " + rdfares + " href=\"" + rellink + "\">" + label + " <span style=\"color: #666;\">(" + namespaceshort + ":" + str(
-                    DocUtils.shortenURI(str(object))) + ")</span></a>"
+                    DocUtils.shortenURI(objstr)) + ")</span></a>"
                 if bibtex is not None:
                     tablecontents += "<details><summary>[BIBTEX]</summary><pre>" + str(bibtex) + "</pre></details>"
             else:
-                res = DocUtils.replaceNameSpacesInLabel(prefixes, str(object))
+                res = DocUtils.replaceNameSpacesInLabel(prefixes, objstr)
                 if res is not None and res["uri"] != "":
-                    tablecontents += "<span><a itemprop=\"" + str(pred) + "\"" + microdatares + "property=\"" + str(
-                        pred) + "\" " + rdfares + " target=\"_blank\" href=\"" + str(
-                        object) + "\">" + label + " <span style=\"color: #666;\">(" + res["uri"] + ")</span></a>"
+                    tablecontents += "<span><a itemprop=\"" + predstr + "\"" + microdatares + "property=\"" + predstr + "\" " + rdfares + " target=\"_blank\" href=\"" + objstr + "\">" + label + " <span style=\"color: #666;\">(" + res["uri"] + ")</span></a>"
                 else:
-                    tablecontents += "<span><a itemprop=\"" + str(pred) + "\"" + microdatares + "property=\"" + str(
-                        pred) + "\" " + rdfares + " target=\"_blank\" href=\"" + str(object) + "\">" + label + "</a>"
+                    tablecontents += "<span><a itemprop=\"" + predstr + "\"" + microdatares + "property=\"" + predstr + "\" " + rdfares + " target=\"_blank\" href=\"" + objstr + "\">" + label + "</a>"
                 if bibtex is not None:
                     tablecontents += "<details><summary>[BIBTEX]</summary><pre>" + str(bibtex) + "</pre></details>"
                 if generatePagesForNonNS:
                     rellink = DocUtils.generateRelativeLinkFromGivenDepth(str(baseurl), checkdepth,
                                                                           str(baseurl) + "nonns_" + DocUtils.shortenURI(
-                                                                              str(object).replace(":", "_")), False)
+                                                                              objstr.replace(":", "_")), False)
                     tablecontents += " <a href=\"" + rellink + ".html\">[x]</a>"
             if unitlabel != "":
                 tablecontents += " <span style=\"font-weight:bold\">[" + str(unitlabel) + "]</span>"
@@ -772,20 +771,18 @@ class HTMLExporter():
                 dateprops = timeobj
             tablecontents += "</span>"
         else:
-            label = str(object)
+            label = objstr
             if ttlf is not None:
                 ttlf.add((subject, URIRef(pred), object))
             if isinstance(object, Literal) and object.datatype is not None:
                 res = DocUtils.replaceNameSpacesInLabel(prefixes, str(object.datatype))
-                objstring = str(object).replace("<", "&lt").replace(">", "&gt;")
+                objstring = objstr.replace("<", "&lt").replace(">", "&gt;")
                 if str(object.datatype) == "http://www.w3.org/2001/XMLSchema#anyURI":
-                    objstring = "<a href=\"" + str(object) + "\">" + str(object) + "</a>"
+                    objstring = "<a href=\"" + objstr + "\">" + objstr + "</a>"
                 elif str(object.datatype) in DocConfig.timeliteraltypes and dateprops is not None and DocUtils.shortenURI(
-                        str(pred), True) not in DocConfig.metadatanamespaces and str(pred) not in dateprops:
-                    dateprops.append(str(pred))
-                tablecontents += "<span itemprop=\"" + str(pred) + "\" property=\"" + str(
-                    pred) + "\" content=\"" + str(
-                    object).replace("<", "&lt").replace(">", "&gt;").replace("\"", "'") + "\" datatype=\"" + str(
+                        predstr, True) not in DocConfig.metadatanamespaces and str(pred) not in dateprops:
+                    dateprops.append(predstr)
+                tablecontents += "<span itemprop=\"" + predstr + "\" property=\"" + predstr + "\" content=\"" + objstr.replace("<", "&lt").replace(">", "&gt;").replace("\"", "'") + "\" datatype=\"" + str(
                     object.datatype) + "\">" + HTMLExporter.truncateValue(
                     objstring) + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"" + str(
                     object.datatype) + "\">" + (res["uri"] if res is not None else DocUtils.shortenURI(
@@ -793,11 +790,10 @@ class HTMLExporter():
                 geojsonrep = LiteralUtils.resolveGeoLiterals(URIRef(pred), object, graph, geojsonrep, nonns, subject)
             else:
                 if object.language is not None:
-                    tablecontents += "<span itemprop=\"" + str(pred) + "\" property=\"" + str(
-                        pred) + "\" content=\"" + str(object).replace("<", "&lt").replace(">", "&gt;").replace("\"",
+                    tablecontents += "<span itemprop=\"" + predstr + "\" property=\"" + predstr + "\" content=\"" + objstr.replace("<", "&lt").replace(">", "&gt;").replace("\"",
                                                                                                                "'") + "\" datatype=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\" xml:lang=\"" + str(
                         object.language) + "\">" + HTMLExporter.truncateValue(
-                        str(object).replace("<", "&lt").replace(">",
+                        objstr.replace("<", "&lt").replace(">",
                                                                 "&gt;")) + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\">rdf:langString</a>) (<a href=\"http://www.lexvo.org/page/iso639-1/" + str(
                         object.language) + "\" target=\"_blank\">iso6391:" + str(
                         object.language) + "</a>)</small></span>"
