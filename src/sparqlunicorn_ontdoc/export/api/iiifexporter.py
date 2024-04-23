@@ -76,7 +76,7 @@ class IIIFAPIExporter:
                     f = open(outpath + "/iiif/svg/" + DocUtils.shortenURI(curind) + "_" + str(pagecounter) + ".svg", "w", encoding="utf-8")
                     f.write(str(imgpath).replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">"))
                     f.close()
-                    imgpath = outpath + "/iiif/svg/" + DocUtils.shortenURI(curind) + "_" + str(pagecounter) + ".svg"
+                    imgpath = deploypath + "/iiif/svg/" + DocUtils.shortenURI(curind) + "_" + str(pagecounter) + ".svg"
                 if imgpath not in imagetoURI:
                     imagetoURI[imgpath] = {}
                 if "anno" not in imagetoURI[imgpath]:
@@ -165,7 +165,7 @@ class IIIFAPIExporter:
                    imghtml+=str(imgpath["label"])+"</a></figcaption></figure></li>"
                 else:
                    imghtml += DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", "")) + "</a></figcaption></figure></li>"
-        if targetfile!=None:
+        if targetfile is not None:
             f = open(targetfile, "w")
             f.write(headertemplate)
             f.write(imagegridtemplate.replace("{{imagecontainers}}",imghtml).replace("{{categories}}",str(categories).replace("{","").replace("}","")))
