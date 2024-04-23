@@ -110,7 +110,7 @@ class GraphUtils:
                                Literal(tobeaddedPerInd[prop]["value"], datatype=tobeaddedPerInd[prop]["type"])))
                 elif "value" in tobeaddedPerInd[prop]:
                     graph.add((ind, URIRef(prop), Literal(tobeaddedPerInd[prop]["value"])))
-            elif "value" in tobeaddedPerInd[prop] and not "uri" in tobeaddedPerInd[prop]:
+            elif "value" in tobeaddedPerInd[prop] and "uri" not in tobeaddedPerInd[prop]:
                 graph.add((ind, URIRef(prop), URIRef(str(tobeaddedPerInd[prop]["value"]))))
 
     @staticmethod
@@ -182,8 +182,7 @@ class GraphUtils:
                 if ns not in nscount:
                     nscount[ns] = 0
                 nscount[ns] += 1
-                graph.add((sub, URIRef("http://rdfs.org/ns/void#inDataset"),
-                                URIRef(voidds)))
+                graph.add((sub, URIRef("http://rdfs.org/ns/void#inDataset"),URIRef(voidds)))
                 if isinstance(sub, BNode):
                     blanknodes.add(str(sub))
                 irirefs += 1
@@ -240,8 +239,7 @@ class GraphUtils:
                             nonnscount[tuppredstr][ns] = 0
                         nonnscount[tuppredstr][ns] += 1
                 if isinstance(sub, BNode) and restriction:
-                    graph.add((sub, URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
-                                    Literal(label + " [Restriction]", lang="en")))
+                    graph.add((sub, URIRef("http://www.w3.org/2000/01/rdf-schema#label"),Literal(label + " [Restriction]", lang="en")))
             voidstats["http://rdfs.org/ns/void#distinctSubjects"] += 1
         voidstats["http://rdfs.org/ns/void#entities"] = len(subjectstorender)
         voidstats["http://ldf.fi/void-ext#languages"] = len(literallangs)
@@ -251,10 +249,7 @@ class GraphUtils:
         voidstats["http://ldf.fi/void-ext#averageSubjectIRILength"] = int(DocUtils.zero_div(subjectlength,subjectcounter))
         voidstats["http://ldf.fi/void-ext#averageObjectIRILength"] = int(DocUtils.zero_div(objectlength,objectcounter))
         voidstats["http://ldf.fi/void-ext#averageLiteralLength"] = int(DocUtils.zero_div(literallength,literalcount))
-        voidstats["http://ldf.fi/void-ext#distinctIRIReferences"] = voidstats[
-                                                                        "http://rdfs.org/ns/void#distinctSubjects"] + \
-                                                                    res["preds"] + res["objs"]
-        voidstats["http://ldf.fi/void-ext#distinctRDFNodes"] = len(blanknodes) + len(literals) + voidstats[
-            "http://ldf.fi/void-ext#distinctIRIReferences"]
+        voidstats["http://ldf.fi/void-ext#distinctIRIReferences"] = voidstats["http://rdfs.org/ns/void#distinctSubjects"] + res["preds"] + res["objs"]
+        voidstats["http://ldf.fi/void-ext#distinctRDFNodes"] = len(blanknodes) + len(literals) + voidstats["http://ldf.fi/void-ext#distinctIRIReferences"]
         return {"voidstats":voidstats,"iiif":(imgcounter>0),"geo":(geocounter>0),
                 "subjectstorender":subjectstorender,"predmap":predmap,"nonnscount":nonnscount,"nscount":nscount,"instancecount":instancecount}
