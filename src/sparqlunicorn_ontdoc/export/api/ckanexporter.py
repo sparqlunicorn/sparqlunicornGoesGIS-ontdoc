@@ -84,7 +84,7 @@ class CKANExporter:
         f.write(ckanapihtml)
         f.close()
         f = open(outpath + "/api/"+str(version)+"/action/group_list/index.json", "w")
-        if classtree!=None and len(classtree)>0:
+        if classtree is not None and len(classtree)>0:
             classes=[]
             for item in classtree:
                 if item["type"]=="class" or item["type"]=="geoclass":

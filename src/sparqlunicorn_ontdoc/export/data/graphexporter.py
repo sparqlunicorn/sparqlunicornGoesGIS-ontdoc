@@ -62,8 +62,7 @@ class GraphExporter:
                     literalcounter += 1
                 else:
                     if tup[1] not in subjectstorender and str(tup[1]) not in addednodes:
-                        file.write("<node id=\"" + str(tup[1]) + "\" uri=\"" + str(tup[
-                                                                                       1]) + "\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#800080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">" + str(
+                        file.write(f"<node id=\"{tup[1]}\" uri=\"{tup[1]}\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#800080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">" + str(
                             DocUtils.shortenURI(str(tup[1]))) + "</y:NodeLabel></y:ShapeNode></data></node>\n")
                         addednodes.add(str(tup[1]))
                     file.write("<edge id=\"e" + str(edgecounter) + "\" uri=\"" + str(tup[0]) + "\" source=\"" + str(

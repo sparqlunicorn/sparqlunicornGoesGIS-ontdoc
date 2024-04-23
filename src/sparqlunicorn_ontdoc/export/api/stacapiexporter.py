@@ -21,6 +21,7 @@ class StacAPIExporter:
                                           "https://api.statspec.org/v1.0.0/collections",
                                           "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core",
                                           "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html",
+                                          "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30",
                                           "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson"]}
         if ogcapi:
             apijson["paths"]["/api"] = {
@@ -88,7 +89,7 @@ class StacAPIExporter:
                                                               "xml": {"name": "TemporalExtent",
                                                                       "namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
                                                  "LandingPage": {"type": "object"}}}
-            landingpagejson = {"title": "Landing Page", "description": "Landing Page", "links": [{
+            landingpagejson = {"stac_version":"1.0.0","title": "Landing Page", "description": "Landing Page", "conformsTo":conformancejson,"type":"Catalog","links": [{
                 "href": str(deploypath) + "/index.json",
                 "rel": "self",
                 "type": "application/json",
@@ -173,7 +174,7 @@ class StacAPIExporter:
                     opwebcoll = opwebcoll[0:-1]
                 opwebcoll = opwebcoll.replace("//", "/")
                 collectionsjson["collections"].append(
-                    {"id": coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:],"type":"Collection",
+                    {"stac_version":"1.0.0","stac_extensions":[],"id": coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:],"type":"Collection",
                      "title": featurecollectionspaths[coll]["name"], "links": [
                         {"href": str(opweb.replace(".geojson", "") + "/index.json").replace("//", "/"),
                          "rel": "collection", "type": "application/json", "title": "Collection as JSON"},
@@ -353,7 +354,7 @@ class StacAPIExporter:
                             print(e)
                     if mergeJSON:
                         result.append(curcoll)
-                collectiontable += "</tbody></table>"
+        collectiontable += "</tbody></table>"
         if mergeJSON:
             with open(outpath + "/features.js", 'w', encoding="utf-8") as output_file:
                 output_file.write("var featurecolls=" + json.dumps(result))

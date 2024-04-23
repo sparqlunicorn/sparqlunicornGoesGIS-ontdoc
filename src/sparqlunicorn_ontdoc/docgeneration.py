@@ -342,13 +342,13 @@ class OntDocGeneration:
                     res = DocUtils.replaceNameSpacesInLabel(self.pubconfig["prefixes"], str(uri))
                     label = DocUtils.getLabelForObject(URIRef(str(uri)), graph, None, self.pubconfig["labellang"])
                     if res is not None and label != "":
-                        uritotreeitem[uri][-1]["text"] = label + " (" + res["uri"] + ")"
+                        uritotreeitem[uri][-1]["text"] = f"{label} ({res['uri']})"
                     elif label != "":
-                        uritotreeitem[uri][-1]["text"] = label + " (" + DocUtils.shortenURI(uri) + ")"
+                        uritotreeitem[uri][-1]["text"] = f"{label} ({DocUtils.shortenURI(uri)})"
                     else:
                         uritotreeitem[uri][-1]["text"] = DocUtils.shortenURI(uri)
-                    uritotreeitem[uri][-1]["id"] = prefixnamespace + "nonns_" + DocUtils.shortenURI(uri) + ".html"
-                    labeltouri[label] = prefixnamespace + "nonns_" + DocUtils.shortenURI(uri) + ".html"
+                    uritotreeitem[uri][-1]["id"] = f"{prefixnamespace}nonns_{DocUtils.shortenURI(uri)}.html"
+                    labeltouri[label] = f"{prefixnamespace}nonns_{DocUtils.shortenURI(uri)}.html"
                 if counter % 10 == 0:
                     DocUtils.updateProgressBar(counter, nonnsuris, "NonNS URIs")
                 self.htmlexporter.createHTML(outpath + "nonns_" + DocUtils.shortenURI(uri) + ".html", None, URIRef(uri), baseurl,
@@ -360,8 +360,7 @@ class OntDocGeneration:
 
     def polygonToPath(self, svg):
         svg = svg.replace("<polygon", "<path").replace("points=\"", "d=\"M").replace("\"></polygon>", " Z\"></polygon>")
-        return svg.replace("<svg>",
-                           "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">")
+        return svg.replace("<svg>", "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">")
 
 def main():
     prefixes = {"reversed": {}}

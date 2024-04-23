@@ -89,9 +89,9 @@ class ClassTreeUtils:
                     uritotreeitem[clsstr].append(result[-1])
             else:
                 if "label" in cls and ress[cls]["label"] != None:
-                    restext = ress[cls]["label"] + " (" + DocUtils.shortenURI(clsstr) + ")"
+                    restext = f"{ress[cls]['label']} ({DocUtils.shortenURI(clsstr)})"
                     if res is not None:
-                        restext = ress[cls]["label"] + " (" + res["uri"] + ")"
+                        restext = f"{ress[cls]['label']} ({res['uri']})"
                 else:
                     restext = DocUtils.shortenURI(clsstr)
                     if res is not None:

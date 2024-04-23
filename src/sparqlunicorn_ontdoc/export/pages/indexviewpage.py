@@ -140,8 +140,7 @@ class IndexViewPage:
                             item["id"])) + "\" property=\"http://rdfs.org/ns/void#entities\" content=\"" + str(item[
                                                                                                                    "instancecount"]) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#integer\">" + str(
                             item["instancecount"]) + "</td>" + exitem + "</tr>"
-            indexhtml += "</tbody></table><script property=\"http://purl.org/dc/terms/modified\" content=\"" + str(
-                pubconfig["modtime"]) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#dateTime\">$('#indextable').DataTable();</script>"
+            indexhtml += f"</tbody></table><script property=\"http://purl.org/dc/terms/modified\" content=\"{pubconfig['modtime']}\" datatype=\"http://www.w3.org/2001/XMLSchema#dateTime\">$('#indextable').DataTable();</script>"
             tempfoot = DocUtils.replaceStandardVariables(templates["footer"], "", checkdepth,
                                                      str(nslink == pubconfig["prefixns"]).lower(),pubconfig).replace(
                 "{{license}}", curlicense).replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}",
@@ -150,12 +149,10 @@ class IndexViewPage:
             tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, apis["ogcapifeatures"], apis["iiif"],
                                                                    apis["ckan"]],
                                                         [
-                                                            "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
-                                                                checkdepth) + "sparql.html?endpoint=" + str(
-                                                                pubconfig["deploypath"]) + "\">[SPARQL]</a>&nbsp;",
-                                                            "<a href=\"" + relpath + "api/api.html\">[OGC API Features]</a>&nbsp;",
-                                                            "<a href=\"" + relpath + "iiif/\">[IIIF]</a>&nbsp;",
-                                                            "<a href=\"" + relpath + "api/3/\">[CKAN]</a>"
+                                                            f"<a href=\"{DocUtils.generateRelativePathFromGivenDepth(checkdepth)}sparql.html?endpoint={pubconfig['deploypath']}\">[SPARQL]</a>&nbsp;",
+                                                            f"<a href=\"{relpath}api/api.html\">[OGC API Features]</a>&nbsp;",
+                                                            f"<a href=\"{relpath}iiif/\">[IIIF]</a>&nbsp;",
+                                                            f"<a href=\"{relpath}api/3/\">[CKAN]</a>"
                                                         ], "{{apis}}")
             indexhtml += tempfoot
             # print(path)

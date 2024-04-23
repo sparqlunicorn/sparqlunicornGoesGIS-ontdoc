@@ -32,30 +32,30 @@ class BibPage:
                           }
         bibtexitem = {"type": "@misc"}
         for tup in predobjs:
-            if str(tup[0]) == "http://purl.org/dc/elements/1.1/creator" or str(
-                    tup[0]) == "http://purl.org/dc/terms/creator":
+            tupstr=str(tup[0])
+            tupstrobj=str(tup[1])
+            if tupstr == "http://purl.org/dc/elements/1.1/creator" or tupstr == "http://purl.org/dc/terms/creator":
                 if "author" not in bibtexitem:
                     bibtexitem["author"] = []
                 if isinstance(tup[1], URIRef):
                     bibtexitem["author"].append(DocUtils.getLabelForObject(tup[1], graph))
                 else:
-                    bibtexitem["author"].append(str(tup[1]))
-            elif str(tup[0]) == "http://purl.org/ontology/bibo/pageStart":
+                    bibtexitem["author"].append(tupstrobj)
+            elif tupstr == "http://purl.org/ontology/bibo/pageStart":
                 if "pages" not in bibtexitem:
                     bibtexitem["pages"] = {}
-                bibtexitem["pages"]["start"] = str(tup[1])
-            elif str(tup[0]) == "http://purl.org/ontology/bibo/pageEnd":
+                bibtexitem["pages"]["start"] = tupstrobj
+            elif tupstr == "http://purl.org/ontology/bibo/pageEnd":
                 if "pages" not in bibtexitem:
                     bibtexitem["pages"] = {}
-                bibtexitem["pages"]["end"] = str(tup[1])
-            elif str(tup[0]) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" and str(
-                    tup[1]) in DocConfig.bibtextypemappings:
-                bibtexitem["type"] = DocConfig.bibtextypemappings[str(tup[1])]
-            elif str(tup[0]) in bibtexmappings:
+                bibtexitem["pages"]["end"] = tupstrobj
+            elif tupstr == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" and tupstrobj in DocConfig.bibtextypemappings:
+                bibtexitem["type"] = DocConfig.bibtextypemappings[tupstrobj]
+            elif tupstr in bibtexmappings:
                 if isinstance(tup[1], URIRef):
-                    bibtexitem[bibtexmappings[str(tup[0])]] = DocUtils.getLabelForObject(tup[1], graph)
+                    bibtexitem[bibtexmappings[tupstr]] = DocUtils.getLabelForObject(tup[1], graph)
                 else:
-                    bibtexitem[bibtexmappings[str(tup[0])]] = str(tup[1])
+                    bibtexitem[bibtexmappings[tupstr]] = tupstrobj
         res = bibtexitem["type"] + "{" + DocUtils.shortenURI(item) + ",\n"
         for bibpart in sorted(bibtexitem):
             if bibpart == "type":

@@ -27,8 +27,8 @@ class IIIFAPIExporter:
                         f.close()
                         annocounter = 2
                         for anno in imagetoURI[imgpath]["anno"]:
-                            anno["id"] = imgpath + "/canvas/p2/anno-" + str(annocounter)
-                            anno["target"]["source"] = imgpath + "/canvas/p1"
+                            anno["id"] = f"{imgpath}/canvas/p2/anno-{annocounter}"
+                            anno["target"]["source"] = f"{imgpath}/canvas/p1"
                             if "bodies" in imagetoURI[imgpath]["uri"]:
                                 anno["body"] = [anno["body"]]
                                 anno["body"] += imagetoURI[imgpath]["uri"]["bodies"]
@@ -77,7 +77,7 @@ class IIIFAPIExporter:
                     f = open(outpath + "/iiif/svg/" + DocUtils.shortenURI(curind) + "_" + pcstr + ".svg", "w", encoding="utf-8")
                     f.write(str(imgpath).replace("<svg","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" "))
                     f.close()
-                    imgpath = deploypath + "/iiif/svg/" + DocUtils.shortenURI(curind) + "_" +  pcstr + ".svg"
+                    imgpath = f"{deploypath}/iiif/svg/{DocUtils.shortenURI(curind)}_{pcstr}.svg"
                 if imgpath not in imagetoURI:
                     imagetoURI[imgpath] = {}
                 if "anno" not in imagetoURI[imgpath]:
@@ -148,7 +148,7 @@ class IIIFAPIExporter:
                 break
         if besttype == "" and len(thetypes) > 0:
             besttype = next(iter(thetypes))
-        return {"url": outpath + "/iiif/mf/" + DocUtils.shortenURI(curind) + "/manifest.json", "imgpath": list(imgpaths.keys()), "label": str(label),
+        return {"url": f"{outpath}/iiif/mf/{DocUtils.shortenURI(curind)}/manifest.json", "imgpath": list(imgpaths.keys()), "label": str(label),
                 "class": besttype,"ind":curind}
 
     @staticmethod
