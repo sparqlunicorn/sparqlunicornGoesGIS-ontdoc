@@ -125,7 +125,8 @@ class OntDocGeneration:
         DocUtils.updateProgressBar(0, 1, "Creating classtree and search index")
         res=GraphUtils.analyzeGraph(self.graph, prefixnamespace, self.typeproperty, voidds, labeltouri, uritolabel, self.pubconfig["outpath"], self.pubconfig["createvowl"])
         subjectstorender=res["subjectstorender"]
-        self.pubconfig["apis"]["iiif"]=res["iiif"]
+        if not self.pubconfig["apis"]["iiif"]:
+            self.pubconfig["apis"]["iiif"]=res["iiif"]
         if os.path.exists(outpath + self.pubconfig["corpusid"] + '_search.js'):
             try:
                 with open(outpath + self.pubconfig["corpusid"] + '_search.js', 'r', encoding='utf-8') as f:
@@ -432,7 +433,7 @@ def main():
     args, unknown = parser.parse_known_args()
     #print(args)
     print("The following arguments were not recognized: " + str(unknown))
-    if args.input == None or args.input[0] == "None" or args.input == "":
+    if args.input is None or args.input[0] == "None" or args.input == "":
         print("No input files specified... trying to find files in the script folder")
         args.input = DocUtils.getLDFilesFromFolder(".")
         print("Found " + str(args.input))
@@ -460,7 +461,7 @@ def main():
             dataexports.append(expo)
     print("EXPORTS: "+str(dataexports))
     print(os.listdir(os.getcwd()))
-    if args.templatepath!=None:
+    if args.templatepath is not None:
         templatepath=args.templatepath
         if templatepath.startswith("http") and templatepath.endswith(".zip"):
             with urlopen(templatepath) as zipresp:
@@ -508,10 +509,10 @@ def main():
             print(traceback.format_exc())
         fcounter += 1
     curlicense = license
-    if docgen != None:
+    if docgen is not None:
         curlicense = docgen.licensehtml
     print("Path exists? " + outpath[0] + '/index.html ' + str(os.path.exists(outpath[0] + '/index.html')))
-    if not os.path.exists(outpath[0] + '/index.ttl') and subrend != None:
+    if not os.path.exists(outpath[0] + '/index.ttl') and subrend is not None:
         resg = Graph()
         for sub in subrend:
             for predobj in g.predicate_objects(sub):

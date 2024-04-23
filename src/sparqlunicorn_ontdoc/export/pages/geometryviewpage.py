@@ -80,7 +80,7 @@ class GeometryViewPage:
                             if isinstance(geotup[1], Literal) and (str(geotup[0]) in DocConfig.geoproperties or str(
                                     geotup[1].datatype) in DocConfig.geoliteraltypes):
                                 geojsonrep = LiteralUtils.processLiteral(str(geotup[1]), str(geotup[1].datatype), "")
-                    if geojsonrep is not None and geojsonrep!= "" and "coordinates" in geojsonrep and len(geojsonrep["coordinates"]) > 0:
+                    if geojsonrep is not None and geojsonrep!= "" and isinstance(geojsonrep,dict) and "coordinates" in geojsonrep and len(geojsonrep["coordinates"]) > 0:
                         if uritotreeitem is not None and str(memberid) in uritotreeitem:
                             featcoll["features"].append({"type": "Feature", 'id': str(memberid),
                                                          'name': uritotreeitem[str(memberid)][-1]["text"],
@@ -95,6 +95,7 @@ class GeometryViewPage:
                             dateatt = featcoll["features"][-1]["dateprops"][0]
                         if "crs" in geojsonrep:
                             thecrs.add(geojsonrep["crs"])
+                        break
             if parameters.get("hasnonnslen", 0) > 0:
                 geocache[str(subject)] = featcoll
         else:

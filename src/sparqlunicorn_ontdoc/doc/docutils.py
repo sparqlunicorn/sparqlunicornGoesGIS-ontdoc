@@ -285,7 +285,7 @@ class DocUtils:
                 myhtmltemplate = myhtmltemplate.replace(match, "{{relativepath}}js/" + match[match.rfind("/") + 1:])
         matched = re.findall(r'href="(http.*.css)"', myhtmltemplate)
         for match in matched:
-            print(match.replace("\"", ""))
+            #print(match.replace("\"", ""))
             match = match.replace("\"", "").replace("/>", "")
             match = match.replace(">", "")
             try:
