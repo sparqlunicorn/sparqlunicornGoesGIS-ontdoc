@@ -24,22 +24,23 @@ class OWLTimePage:
 
     @staticmethod
     def timeObjectToHTML(timeobj,prefixes):
-        timeres = None
-        if "begin" in timeobj and "end" in timeobj:
-            timeres = str(timeobj["begin"]) + " "
-            if str(timeobj["begin"].datatype) in DocConfig.timeliteraltypes:
-                timeres += DocUtils.createURILink(prefixes,
-                                                  DocConfig.timeliteraltypes[str(timeobj["begin"].datatype)])
-            timeres += " - " + str(timeobj["end"])
-            if str(timeobj["end"].datatype) in DocConfig.timeliteraltypes:
-                timeres += DocUtils.createURILink(prefixes,
-                                                  DocConfig.timeliteraltypes[str(timeobj["end"].datatype)])
-        elif "begin" in timeobj and not "end" in timeobj:
-            timeres = str(timeobj["begin"])
-            if str(timeobj["begin"].datatype) in DocConfig.timeliteraltypes:
-                timeres += DocUtils.createURILink(prefixes,
-                                                  DocConfig.timeliteraltypes[str(timeobj["begin"].datatype)])
-        elif "begin" not in timeobj and "end" in timeobj:
+        timeres = ""
+        if "begin" in timeobj:
+            if "end" in timeobj:
+                timeres = str(timeobj["begin"]) + " "
+                if str(timeobj["begin"].datatype) in DocConfig.timeliteraltypes:
+                    timeres += DocUtils.createURILink(prefixes,
+                                                      DocConfig.timeliteraltypes[str(timeobj["begin"].datatype)])
+                timeres += " - " + str(timeobj["end"])
+                if str(timeobj["end"].datatype) in DocConfig.timeliteraltypes:
+                    timeres += DocUtils.createURILink(prefixes,
+                                                      DocConfig.timeliteraltypes[str(timeobj["end"].datatype)])
+            else:
+                timeres = str(timeobj["begin"])
+                if str(timeobj["begin"].datatype) in DocConfig.timeliteraltypes:
+                    timeres += DocUtils.createURILink(prefixes,
+                                                      DocConfig.timeliteraltypes[str(timeobj["begin"].datatype)])
+        elif "end" in timeobj:
             timeres = str(timeobj["end"])
             if str(timeobj["end"].datatype) in DocConfig.timeliteraltypes:
                 timeres += DocUtils.createURILink(prefixes,

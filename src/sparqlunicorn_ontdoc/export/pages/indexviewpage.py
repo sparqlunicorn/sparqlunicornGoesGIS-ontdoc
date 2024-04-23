@@ -122,7 +122,7 @@ class IndexViewPage:
                                 pubconfig["prefixns"], checkdepth, str(re.sub("_suniv[0-9]+_", "", item2["id"])),
                                 True) + "\">" + str(item2["text"]) + "</a></td>"
                             break
-                    if exitem != None:
+                    if exitem is not None:
                         if pubconfig["createCollections"]:
                             indexhtml += "<tr><td><img src=\"" + tree["types"][item["type"]][
                                 "icon"] + "\" height=\"25\" width=\"25\" alt=\"" + item[

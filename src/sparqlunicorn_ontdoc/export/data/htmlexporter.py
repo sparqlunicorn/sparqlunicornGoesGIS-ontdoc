@@ -83,31 +83,33 @@ class HTMLExporter():
         collections = set()
         if predobjs is not None:
             for tup in sorted(predobjs, key=lambda tup: tup[0]):
-                if str(tup[0]) not in predobjmap:
-                    predobjmap[str(tup[0])] = []
-                predobjmap[str(tup[0])].append(tup[1])
-                if parentclass is not None and str(tup[0]) not in uritotreeitem[parentclass][-1]["data"]["to"]:
-                    uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])] = {}
-                    uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])]["instancecount"] = 0
+                tupobjstr = str(tup[1])
+                tuppredstr = str(tup[0])
+                if tuppredstr not in predobjmap:
+                    predobjmap[tuppredstr] = []
+                predobjmap[tuppredstr].append(tup[1])
+                if parentclass is not None and tuppredstr not in uritotreeitem[parentclass][-1]["data"]["to"]:
+                    uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr] = {}
+                    uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr]["instancecount"] = 0
                 if parentclass is not None:
-                    uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])]["instancecount"] += 1
+                    uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr]["instancecount"] += 1
                     uritotreeitem[parentclass][-1]["instancecount"] += 1
                 if isinstance(tup[1], URIRef):
                     for item in graph.objects(tup[1], URIRef(self.typeproperty)):
                         thetypes.add(str(item))
                         if parentclass is not None:
-                            if item not in uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])]:
-                                uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])][item] = 0
-                            uritotreeitem[parentclass][-1]["data"]["to"][str(tup[0])][item] += 1
-                    if baseurl not in str(tup[1]) and str(tup[0]) != self.typeproperty:
-                        hasnonns.add(str(tup[1]))
+                            if item not in uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr]:
+                                uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr][item] = 0
+                            uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr][item] += 1
+                    if baseurl not in tupobjstr and tuppredstr != self.typeproperty:
+                        hasnonns.add(tupobjstr)
                         if nonnsmap is not None:
-                            if str(tup[1]) not in nonnsmap:
-                                nonnsmap[str(tup[1])] = set()
-                            nonnsmap[str(tup[1])].add(subject)
+                            if tupobjstr not in nonnsmap:
+                                nonnsmap[tupobjstr] = set()
+                            nonnsmap[tupobjstr].add(subject)
             for tup in sorted(predobjmap):
                 predobjtuplen=len(predobjmap[tup])
-                if self.pubconfig["metadatatable"] and tup not in DocConfig.labelproperties and DocUtils.shortenURI(str(tup),
+                if self.pubconfig["metadatatable"] and tup not in DocConfig.labelproperties and DocUtils.shortenURI(tup,
                                                                                                        True) in DocConfig.metadatanamespaces:
                     thetable = metadatatablecontents
                     metadatatablecontentcounter += 1
@@ -122,27 +124,28 @@ class HTMLExporter():
                         thetable += "<tr class=\"odd\">"
                     else:
                         thetable += "<tr class=\"even\">"
-                if str(tup) == self.typeproperty:
+                if tup == self.typeproperty:
                     for tp in predobjmap[tup]:
-                        thetypes.add(str(tp))
-                        curtypes.add(str(tp))
-                        if str(tp) in DocConfig.collectionclasses:
-                            uritotreeitem[str(tp)][-1]["instancecount"] += 1
-                            collections.add(DocConfig.collectionclasses[str(tp)])
-                        if str(tp) in DocConfig.bibtextypemappings:
+                        tpstr=str(tp)
+                        thetypes.add(tpstr)
+                        curtypes.add(tpstr)
+                        if tpstr in DocConfig.collectionclasses:
+                            uritotreeitem[tpstr][-1]["instancecount"] += 1
+                            collections.add(DocConfig.collectionclasses[tpstr])
+                        if tpstr in DocConfig.bibtextypemappings:
                             itembibtex = "<details><summary>[BIBTEX]</summary><pre>" + str(
                                 BibPage.resolveBibtexReference(graph.predicate_objects(subject), subject,
                                                                graph)) + "</pre></details>"
                 thetable = HTMLExporter.formatPredicate(tup, baseurl, checkdepth, thetable, graph, inverse,
                                                         self.pubconfig["labellang"], self.pubconfig["prefixes"])
-                if str(tup) in DocConfig.labelproperties:
+                if tup in DocConfig.labelproperties:
                     for lab in predobjmap[tup]:
                         if lab.language == self.pubconfig["labellang"]:
                             foundlabel = lab
                     if foundlabel == "":
                         foundlabel = str(predobjmap[tup][0])
-                if str(tup) in DocConfig.commentproperties:
-                    comment[str(tup)] = str(predobjmap[tup][0])
+                if tup in DocConfig.commentproperties:
+                    comment[tup] = str(predobjmap[tup][0])
                 if predobjtuplen > 0:
                     thetable += "<td class=\"wrapword\">"
                     if predobjtuplen > HTMLExporter.listthreshold:
@@ -168,7 +171,7 @@ class HTMLExporter():
                             if ext in DocConfig.fileextensionmap:
                                 foundmedia[DocConfig.fileextensionmap[ext]][str(item)] = {}
                         elif tup in DocConfig.valueproperties:
-                            foundvals.add((str(tup), str(item)))
+                            foundvals.add((tup, str(item)))
                         res = HTMLExporter.createHTMLTableValueEntry(subject, tup, item, ttlf, graph,
                                                                      baseurl, checkdepth, geojsonrep, foundmedia,
                                                                      imageannos,
@@ -206,7 +209,7 @@ class HTMLExporter():
                 else:
                     thetable += "<td class=\"wrapword\"></td>"
                 thetable += "</tr>"
-                if self.pubconfig["metadatatable"] and tup not in DocConfig.labelproperties and DocUtils.shortenURI(str(tup),
+                if self.pubconfig["metadatatable"] and tup not in DocConfig.labelproperties and DocUtils.shortenURI(tup,
                                                                                                        True) in DocConfig.metadatanamespaces:
                     metadatatablecontents = thetable
                 else:
@@ -214,18 +217,19 @@ class HTMLExporter():
         subpredsmap = {}
         if subpreds is not None:
             for tup in sorted(subpreds, key=lambda tup: tup[1]):
-                if str(tup[1]) not in subpredsmap:
-                    subpredsmap[str(tup[1])] = []
-                subpredsmap[str(tup[1])].append(tup[0])
-                if parentclass is not None and str(tup[1]) not in uritotreeitem[parentclass][-1]["data"]["from"]:
-                    uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])] = {}
-                    uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])]["instancecount"] = 0
+                tupobjstr=str(tup[1])
+                if tupobjstr not in subpredsmap:
+                    subpredsmap[tupobjstr] = []
+                subpredsmap[tupobjstr].append(tup[0])
+                if parentclass is not None and tupobjstr not in uritotreeitem[parentclass][-1]["data"]["from"]:
+                    uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr] = {}
+                    uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr]["instancecount"] = 0
                 if isinstance(tup[0], URIRef):
                     for item in graph.objects(tup[0], URIRef(self.typeproperty)):
                         if parentclass is not None:
-                            if item not in uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])]:
-                                uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])][item] = 0
-                            uritotreeitem[parentclass][-1]["data"]["from"][str(tup[1])][item] += 1
+                            if item not in uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr]:
+                                uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr][item] = 0
+                            uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr][item] += 1
             for tup in subpredsmap:
                 subpredtuplen=len(subpredsmap[tup])
                 tablecontentcounter += 1
@@ -260,7 +264,7 @@ class HTMLExporter():
                         image3dannos = res["image3dannos"]
                         annobodies = res["annobodies"]
                         # print("POSTPROC ANNO BODIES "+str(annobodies))
-                        if nonns and str(tup) != self.typeproperty:
+                        if nonns and tup != self.typeproperty:
                             hasnonns.add(str(item))
                         if nonns:
                             geojsonrep = res["geojson"]
@@ -595,25 +599,28 @@ class HTMLExporter():
                     label = tupobjstr
                 onelabel = tupobjstr
             elif tuppredstr==typeproperty:
-                if (pred == "http://purl.org/dc/terms/isReferencedBy" or pred == "http://purl.org/spar/cito/hasCitingEntity") and ("http://purl.org/ontology/bibo/" in tupobjstr):
-                    bibtex = BibPage.resolveBibtexReference(graph.predicate_objects(object), object, graph)
-                elif pred == "http://www.w3.org/ns/oa#hasSelector":
+                if pred == "http://www.w3.org/ns/oa#hasSelector":
                     if tupobjstr == "http://www.w3.org/ns/oa#SvgSelector" or tupobjstr == "http://www.w3.org/ns/oa#WKTSelector":
                         for svglit in graph.objects(object, URIRef(typeproperty)):
-                            if "<svg" in str(svglit):
-                                imageannos.append({"value": str(svglit), "bodies": []})
-                            elif "POINT" in str(svglit).upper() or "POLYGON" in str(svglit).upper() or "LINESTRING" in str(svglit).upper():
-                                image3dannos.append({"value": str(svglit), "bodies": []})
-                    elif tup[1] == URIRef("http://www.w3.org/ns/oa#TextPositionSelector"):
+                            svglitstr=str(svglit)
+                            if "<svg" in svglitstr:
+                                imageannos.append({"value": svglitstr, "bodies": []})
+                            elif "POINT" in svglitstr.upper() or "POLYGON" in svglitstr.upper() or "LINESTRING" in svglitstr.upper():
+                                image3dannos.append({"value": svglitstr, "bodies": []})
+                    elif tupobjstr == "http://www.w3.org/ns/oa#TextPositionSelector":
                         curanno = {}
                         for txtlit in graph.predicate_objects(object):
-                            if str(txtlit[0]) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#value":
-                                curanno["exact"] = str(txtlit[1])
-                            elif str(txtlit[0]) == "http://www.w3.org/ns/oa#start":
-                                curanno["start"] = str(txtlit[1])
-                            elif str(txtlit[0]) == "http://www.w3.org/ns/oa#end":
-                                curanno["end"] = str(txtlit[1])
+                            txtlitpredstr = str(txtlit[0])
+                            txtlitobjstr=str(txtlit[1])
+                            if txtlitpredstr == "http://www.w3.org/1999/02/22-rdf-syntax-ns#value":
+                                curanno["exact"] = txtlitobjstr
+                            elif txtlitpredstr == "http://www.w3.org/ns/oa#start":
+                                curanno["start"] = txtlitobjstr
+                            elif txtlitpredstr == "http://www.w3.org/ns/oa#end":
+                                curanno["end"] = txtlitobjstr
                         textannos.append(curanno)
+                elif (pred == "http://purl.org/dc/terms/isReferencedBy" or pred == "http://purl.org/spar/cito/hasCitingEntity") and ("http://purl.org/ontology/bibo/" in tupobjstr):
+                    bibtex = BibPage.resolveBibtexReference(graph.predicate_objects(object), object, graph)
             elif tuppredstr == "http://www.w3.org/2000/01/rdf-schema#member":
                 if not inverse and (object, URIRef(typeproperty),URIRef("http://www.w3.org/ns/sosa/ObservationCollection")) in graph:
                     for valtup in graph.predicate_objects(tup[1]):
@@ -622,7 +629,7 @@ class HTMLExporter():
                         elif str(valtup[0]) in DocConfig.valueproperties and isinstance(valtup[1], Literal):
                             foundval = str(valtup[1])
             elif tuppredstr == "http://www.w3.org/ns/oa#hasSource":
-                annosource = str(tup[1])
+                annosource = tupobjstr
                 print("Found annosource " + tupobjstr + " from " + str(object) + " Imageannos: " + str(len(imageannos)))
             elif tuppredstr in DocConfig.valueproperties:
                 if tempvalprop == None and tuppredstr == "http://www.w3.org/ns/oa#hasSource":
