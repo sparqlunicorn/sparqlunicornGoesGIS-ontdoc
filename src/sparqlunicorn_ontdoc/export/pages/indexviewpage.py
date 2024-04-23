@@ -155,11 +155,11 @@ class IndexViewPage:
                                                                    apis["ckan"]],
                                                         [
                                                             "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
-                                                                checkdepth) + "/sparql.html?endpoint=" + str(
+                                                                checkdepth) + "sparql.html?endpoint=" + str(
                                                                 pubconfig["deploypath"]) + "\">[SPARQL]</a>&nbsp;",
-                                                            "<a href=\"" + relpath + "/api/api.html\">[OGC API Features]</a>&nbsp;",
-                                                            "<a href=\"" +  relpath + "/iiif/\">[IIIF]</a>&nbsp;",
-                                                            "<a href=\"" +  relpath + "/api/3/\">[CKAN]</a>"
+                                                            "<a href=\"" + relpath + "api/api.html\">[OGC API Features]</a>&nbsp;",
+                                                            "<a href=\"" +  relpath + "iiif/\">[IIIF]</a>&nbsp;",
+                                                            "<a href=\"" +  relpath + "api/3/\">[CKAN]</a>"
                                                         ], "{{apis}}")
             indexhtml += tempfoot
             # print(path)
