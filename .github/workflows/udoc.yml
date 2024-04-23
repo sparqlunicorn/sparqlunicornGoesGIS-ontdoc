@@ -145,9 +145,11 @@ jobs:
           repository: sparqlunicorn/sparqlunicornGoesGIS-ontdoc
           ref: "main"
           path: ontdocscript    
-      - name: Generate Ontology Documentation
+      - name: Install dependencies
         run: |
           sudo pip3 install rdflib shapely pillow
+      - name: Generate Ontology Documentation
+        run: |
           ls
           pwd
           python3 ontdocscript/src/sparqlunicorn_ontdoc/docgeneration.py --input "${{inputs.rdffilepath}}" --output "${{inputs.docpath}}" --prefixns "${{inputs.prefixns}}" --prefixnsshort "${{inputs.prefixnsshort}}" --createIndexPages "${{inputs.indexpages}}" --createCollections "${{inputs.createcollections}}" --labellang "${{inputs.preferredlang}}" --license "${{inputs.license}}" --logourl "${{inputs.logourl}}" --metadatatable "${{inputs.metadatatable}}" --nonnspages "${{inputs.createnonNSPages}}" --createvowl "${{inputs.createVOWL}}" --ogcapifeatures "${{inputs.ogcapifeatures}}" --iiif "${{inputs.iiif}}" --ckan "${{inputs.ckan}}" --startconcept "${{inputs.startconcept}}" --repository "${{ github.server_url }}/${{ github.repository }}" --deploypath "https://${{github.repository_owner}}.github.io/${{ github.event.repository.name }}/${{ inputs.ghpagesfolder }}" --templatepath "${{inputs.templatedir}}" --offlinecompat "${{inputs.offlinecompat}}" --publishingorg "${{inputs.publishingorg}}" --publisher "${{inputs.publisher}}" --exports "${{inputs.exports}}" --datasettitle "${{inputs.datasettitle}}"    
