@@ -547,7 +547,7 @@ def main():
         #print(subfolders)
         for path in subfolders:
             indexhtml += "<tr><td><a href=\"" + path.replace(outpath[0] + "/", "") + "/index.html\">" + path.replace(
-                outpath[0] + "/", "") + "</a></td></tr>"
+        outpath[0] + "/", "") + "</a></td></tr>"
         indexhtml += "</tbody></table><script>$('#indextable').DataTable();</script>"
         indexhtml += DocUtils.replaceStandardVariables(templates["footer"], "", "0", "true",docgen.pubconfig).replace("{{license}}", curlicense).replace("{{exports}}",
                                                                                     templates["nongeoexports"]).replace(
