@@ -72,11 +72,12 @@ class IIIFAPIExporter:
                          "format": "text/html", "language": ["en"]}], "metadata": [], "items": []}
             pagecounter = 1
             for imgpath in imgpaths:
+                pcstr=str(pagecounter)
                 if imgpath.startswith("<svg") and "http" not in imgpath:
-                    f = open(outpath + "/iiif/svg/" + DocUtils.shortenURI(curind) + "_" + str(pagecounter) + ".svg", "w", encoding="utf-8")
+                    f = open(outpath + "/iiif/svg/" + DocUtils.shortenURI(curind) + "_" + pcstr + ".svg", "w", encoding="utf-8")
                     f.write(str(imgpath).replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">"))
                     f.close()
-                    imgpath = deploypath + "/iiif/svg/" + DocUtils.shortenURI(curind) + "_" + str(pagecounter) + ".svg"
+                    imgpath = deploypath + "/iiif/svg/" + DocUtils.shortenURI(curind) + "_" +  pcstr + ".svg"
                 if imgpath not in imagetoURI:
                     imagetoURI[imgpath] = {}
                 if "anno" not in imagetoURI[imgpath]:
@@ -110,15 +111,15 @@ class IIIFAPIExporter:
                 else:
                     height = imagetoURI[imgpath]["height"]
                     width = imagetoURI[imgpath]["width"]
-                curitem = {"id": imgpath + "/canvas/p" + str(pagecounter), "height": height, "width": width,
+                curitem = {"id": imgpath + "/canvas/p" + pcstr, "height": height, "width": width,
                            "type": "Canvas",
                            "label": {"en": [str(label) + " " + str(maintype) + " " + str(pagecounter + 1)]}, "items": [
-                        {"id": imgpath + "/canvas/p" + str(pagecounter) + "/1", "type": "AnnotationPage", "items": [
-                            {"id": imgpath + "/annotation/p" + str(pagecounter) + "/1", "type": "Annotation",
+                        {"id": imgpath + "/canvas/p" + pcstr + "/1", "type": "AnnotationPage", "items": [
+                            {"id": imgpath + "/annotation/p" + pcstr + "/1", "type": "Annotation",
                              "motivation": "painting",
                              "body": {"id": imgpath, "type": str(maintype), "format": "image/png"},
-                             "target": imgpath + "/canvas/p" + str(pagecounter)}]}], "annotations": [
-                        {"id": imgpath + "/canvas/p" + str(pagecounter) + "/annopage-2", "type": "AnnotationPage",
+                             "target": imgpath + "/canvas/p" + pcstr}]}], "annotations": [
+                        {"id": imgpath + "/canvas/p" + pcstr + "/annopage-2", "type": "AnnotationPage",
                          "items": []}]}
                 curiiifmanifest["items"].append(curitem)
                 pagecounter += 1
