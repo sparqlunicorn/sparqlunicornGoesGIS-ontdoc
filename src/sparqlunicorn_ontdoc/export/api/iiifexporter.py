@@ -75,7 +75,7 @@ class IIIFAPIExporter:
                 pcstr=str(pagecounter)
                 if imgpath.startswith("<svg") and "http" not in imgpath:
                     f = open(outpath + "/iiif/svg/" + DocUtils.shortenURI(curind) + "_" + pcstr + ".svg", "w", encoding="utf-8")
-                    f.write(str(imgpath).replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">"))
+                    f.write(str(imgpath).replace("<svg","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" "))
                     f.close()
                     imgpath = deploypath + "/iiif/svg/" + DocUtils.shortenURI(curind) + "_" +  pcstr + ".svg"
                 if imgpath not in imagetoURI:
@@ -180,10 +180,11 @@ class IIIFAPIExporter:
 
     @staticmethod
     def generateIIIFCollections(outpath, deploypath, imagespaths, prefixnamespace):
-        apihtml = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><metaname=\"description\" content=\"SwaggerUI\"/><title>SwaggerUI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist/swagger-ui.css\" /></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js\" crossorigin></script><script>const swaggerUrl = \"" + str(deploypath) + "/iiif/api.json\"; const apiUrl = \"" + str(deploypath) + "/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
-        apijson = {"openapi": "3.0.1", "info": {"title": str(deploypath) + " IIIF", "description": "IIIF API of " + str(deploypath)},"servers": [{"url": str(deploypath)}], "paths": {}}
+        deploypath=str(deploypath)
+        apihtml = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><metaname=\"description\" content=\"SwaggerUI\"/><title>SwaggerUI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist/swagger-ui.css\" /></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js\" crossorigin></script><script>const swaggerUrl = \"" + deploypath + "/iiif/api.json\"; const apiUrl = \"" + deploypath + "/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
+        apijson = {"openapi": "3.0.1", "info": {"title": deploypath + " IIIF", "description": "IIIF API of " + deploypath},"servers": [{"url": deploypath}], "paths": {}}
         apijson["paths"]["/iiif/collection/"] = {"get": {"tags": ["IIIF"],
-                                                                                "summary": "Retrieves IIIF Collections of "+str(deploypath),
+                                                                                "summary": "Retrieves IIIF Collections of "+deploypath,
                                                                                 "description": "Retrieves the IIIF Collections of this IIIF API",
                                                                                 "operationId": "iiif-collections",
                                                                                 "parameters": [],
