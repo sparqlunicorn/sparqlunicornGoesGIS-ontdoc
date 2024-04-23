@@ -376,7 +376,7 @@ class HTMLExporter():
                                                                                    DocUtils.generateRelativePathFromGivenDepth(
                                                                                        checkdepth)))
             elif len(foundmedia["mesh"]) > 0 and len(image3dannos) == 0:
-                print("Found 3D Model: " + str(foundmedia["mesh"]))
+                #print("Found 3D Model: " + str(foundmedia["mesh"]))
                 if self.pubconfig["apis"]["iiif"]:
                     self.iiifmanifestpaths["default"].append(
                         IIIFAPIExporter.generateIIIFManifest(graph, self.pubconfig["outpath"], self.pubconfig["deploypath"],
@@ -630,7 +630,7 @@ class HTMLExporter():
                             foundval = str(valtup[1])
             elif tuppredstr == "http://www.w3.org/ns/oa#hasSource":
                 annosource = tupobjstr
-                print("Found annosource " + tupobjstr + " from " + str(object) + " Imageannos: " + str(len(imageannos)))
+                #print("Found annosource " + tupobjstr + " from " + str(object) + " Imageannos: " + str(len(imageannos)))
             elif tuppredstr in DocConfig.valueproperties:
                 if tempvalprop == None and tuppredstr == "http://www.w3.org/ns/oa#hasSource":
                     tempvalprop = tuppredstr
