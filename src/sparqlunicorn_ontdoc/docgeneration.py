@@ -75,7 +75,7 @@ class OntDocGeneration:
         if len(keyprops["subclassproperty"])>0:
             self.suclassproperty=keyprops["subclassproperty"][0]
         self.graph = graph
-        self.htmlexporter=HTMLExporter(prefixes,pubconfig["prefixns"],pubconfig["prefixnsshort"],license,pubconfig["labellang"],outpath,pubconfig["metadatatable"],pubconfig["nonnspages"],apis,templates,pubconfig["namespaceshort"],self.typeproperty,pubconfig["imagemetadata"],pubconfig["localOptimized"],pubconfig["deploypath"],pubconfig["logourl"],pubconfig["offlinecompat"])
+        self.htmlexporter=HTMLExporter(pubconfig,templates,self.typeproperty)
         for nstup in self.graph.namespaces():
             if str(nstup[1]) not in prefixes["reversed"]:
                 prefixes["reversed"][str(nstup[1])] = str(nstup[0])
@@ -112,7 +112,7 @@ class OntDocGeneration:
         tmp=HTMLExporter.processLicense(self.pubconfig["license"])
         curlicense=tmp[0]
         self.licensehtml = tmp[0]
-        self.licenseuri=tmp[1]
+        self.pubconfig["licenseuri"]=tmp[1]
         voidds = prefixnamespace + self.pubconfig["datasettitle"].replace(" ","_")
         if self.pubconfig["createCollections"]:
             self.graph = GraphUtils.createCollections(self.graph, prefixnamespace,self.typeproperty)
@@ -157,7 +157,7 @@ class OntDocGeneration:
                 tree["core"]["data"].append(tr)
         res["voidstats"]["http://rdfs.org/ns/void#classes"] = len(classidset)
         res["voidstats"]["http://rdfs.org/ns/void#triples"] = len(self.graph)
-        voidgraph = VoidExporter.createVoidDataset(self.pubconfig, self.licenseuri,
+        voidgraph = VoidExporter.createVoidDataset(self.pubconfig, self.pubconfig["licenseuri"],
                                                    res["voidstats"], subjectstorender,
                                                    tree, res["predmap"], res["nonnscount"], res["nscount"], res["instancecount"])
         self.voidstatshtml = VoidExporter.toHTML(res["voidstats"], self.pubconfig["deploypath"])
@@ -200,6 +200,7 @@ class OntDocGeneration:
             #    print("Create HTML Exception: "+str(e))
             #    print(traceback.format_exc())
         print("Postprocessing " + str(len(postprocessing)))
+        subtorenderlen = len(subjectstorender) + len(postprocessing)
         for subj in postprocessing.subjects(None, None, True):
             path = str(subj).replace(prefixnamespace, "")
             paths = DocUtils.processSubjectPath(outpath, paths, path, self.graph)
@@ -215,7 +216,6 @@ class OntDocGeneration:
                             curlicense, subjectstorender, postprocessing)
             subtorencounter += 1
             if subtorencounter % 250 == 0:
-                subtorenderlen = len(subjectstorender) + len(postprocessing)
                 DocUtils.updateProgressBar(subtorencounter, subtorenderlen, "Processing Subject URIs")
         ClassTreeUtils.checkGeoInstanceAssignment(uritotreeitem)
         classlist = ClassTreeUtils.assignGeoClassesToTree(tree)

@@ -22,9 +22,9 @@ class ObservationPage:
                         gottime = str(val[1])
             if observ[0] == URIRef("http://www.w3.org/ns/sosa/hasResult"):
                 for val in graph.predicate_objects(observ[1]):
-                    if str(val[0]) in DocConfig.valueproperties and val[1] != None and str(val[1]) != "":
+                    if str(val[0]) in DocConfig.valueproperties and val[1] is not None and str(val[1]) != "":
                         gotvalue = str(val[1])
-                    if str(val[0]) in DocConfig.unitproperties and val[1] != None and str(val[1]) != "":
+                    if str(val[0]) in DocConfig.unitproperties and val[1] is not None and str(val[1]) != "":
                         xLabel = "Value (" + str(val[1]) + ")"
         if pageWidget:
             f.write(templates["chartviewtemplate"].replace("{{xValues}}", str([gotvalue]))
@@ -39,7 +39,7 @@ class ObservationPage:
         yLabel = "Time"
         for memberid in graph.objects(subject, memberpred, True):
             res=self.generatePageWidget(graph,memberid,templates,f,False)
-            if res["timeValue"] != None and res["xValue"] != None:
+            if res["timeValue"] is not None and res["xValue"] is not None:
                 xValues.append(res["xValue"])
                 timeValues.append(res["timeValue"])
             if "xLabel" in res:

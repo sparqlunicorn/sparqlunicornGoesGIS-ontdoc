@@ -1035,11 +1035,12 @@ function fitCameraToSelection(camera, controls, selection, fitOffset = 1.2) {
   controls.maxDistance = distance * 10;
   controls.target.copy(center);
 
-  camera.near = distance / 100;
-  camera.far = distance * 100;
-  camera.updateProjectionMatrix();
-
-  camera.position.copy(controls.target).sub(direction);
+  if(typeof(camera)!="undefined" && camera!=null){
+      camera.near = distance / 100;
+      camera.far = distance * 100;
+      camera.updateProjectionMatrix();
+      camera.position.copy(controls.target).sub(direction);
+  }
 
   controls.update();
 }
@@ -1088,7 +1089,7 @@ function initThreeJS(domelement,verts,meshurls) {
                 objects.add(mesh);
                 scene.add(objects);
                 addRotationControls(object,geometryF,objects)
-                if(objects.children.length>0){
+                if(objects.children.length>0 && typeof(camera)!=="undefined" && camera!=null){
                     camera.lookAt( objects.children[0].position );
                 }
                 fitCameraToSelection(camera, controls, objects.children)
@@ -1101,10 +1102,10 @@ function initThreeJS(domelement,verts,meshurls) {
             objects.add(nexus_obj)
             scene.add(objects);
             addRotationControls(nexus_obj,geometryF,objects)
-            if(objects.children.length>0){
+            /*if(objects.children.length>0){
                 camera.lookAt( objects.children[0].position );
             }
-            fitCameraToSelection(camera, controls, objects.children)
+            fitCameraToSelection(camera, controls, objects.children)*/
         }else if(meshurls[0].includes(".gltf")){
             var loader = new THREE.GLTFLoader();
             loader.load(meshurls[0], function ( gltf )
