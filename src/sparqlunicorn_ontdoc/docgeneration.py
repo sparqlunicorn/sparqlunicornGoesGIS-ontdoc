@@ -549,8 +549,7 @@ def main():
         subfolders = [f.path for f in os.scandir(outpath[0]) if f.is_dir()]
         #print(subfolders)
         for path in subfolders:
-            indexhtml += "<tr><td><a href=\"" + path.replace(outpath[0] + "/", "") + "/index.html\">" + path.replace(
-                outpath[0] + "/", "") + "</a></td></tr>"
+            indexhtml += f"<tr><td><a href=\"{path.replace(outpath[0] + '/', '')}/index.html\">{path.replace(outpath[0] + '/', '')}</a></td></tr>"
         indexhtml += "</tbody></table><script>$('#indextable').DataTable();</script>"
         indexhtml += DocUtils.replaceStandardVariables(templates["footer"], "", "0", "true",docgen.pubconfig).replace("{{license}}", curlicense).replace("{{exports}}",
                                                                                     templates["nongeoexports"]).replace(

@@ -127,15 +127,11 @@ class IndexViewPage:
                             indexhtml += "<tr><td><img src=\"" + tree["types"][item["type"]][
                                 "icon"] + "\" height=\"25\" width=\"25\" alt=\"" + item[
                                              "type"] + "\"/><a property=\"http://rdfs.org/ns/void#exampleResource\" resource=\"" + str(
-                                DocUtils.shortenURI(
-                                    str(item["id"])) + "_collection/") + "\" href=\"" + DocUtils.shortenURI(
+                                DocUtils.shortenURI(str(item["id"])) + "_collection/") + "\" href=\"" + DocUtils.shortenURI(
                                 str(item["id"])) + "_collection/index.html\" target=\"_blank\">" + str(
                                 item["text"]) + "</a></td>"
                         else:
-                            indexhtml += "<tr><td><img src=\"" + tree["types"][item["type"]][
-                                "icon"] + "\" height=\"25\" width=\"25\" alt=\"" + item[
-                                             "type"] + "\"/><a  href=\"" + str(
-                                item["id"]) + "\" target=\"_blank\">" + str(item["text"]) + "</a></td>"
+                            indexhtml += f"<tr><td><img src=\"{tree['types'][item['type']]['icon']}\" height=\"25\" width=\"25\" alt=\"{item['type']}\"/><a  href=\"{item['id']}\" target=\"_blank\">{item['text']}</a></td>"
                         indexhtml += "<td property=\"http://rdfs.org/ns/void#classPartition\" typeof=\"http://rdfs.org/ns/void#Dataset\" resource=\"" + str(
                             voidds) + "_" + str(DocUtils.shortenURI(item["id"])) + "\"><span about=\"" + str(
                             voidds) + "_" + str(DocUtils.shortenURI(
@@ -158,8 +154,8 @@ class IndexViewPage:
                                                                 checkdepth) + "sparql.html?endpoint=" + str(
                                                                 pubconfig["deploypath"]) + "\">[SPARQL]</a>&nbsp;",
                                                             "<a href=\"" + relpath + "api/api.html\">[OGC API Features]</a>&nbsp;",
-                                                            "<a href=\"" +  relpath + "iiif/\">[IIIF]</a>&nbsp;",
-                                                            "<a href=\"" +  relpath + "api/3/\">[CKAN]</a>"
+                                                            "<a href=\"" + relpath + "iiif/\">[IIIF]</a>&nbsp;",
+                                                            "<a href=\"" + relpath + "api/3/\">[CKAN]</a>"
                                                         ], "{{apis}}")
             indexhtml += tempfoot
             # print(path)
