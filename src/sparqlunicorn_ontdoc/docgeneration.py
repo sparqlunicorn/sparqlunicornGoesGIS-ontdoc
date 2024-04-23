@@ -151,9 +151,9 @@ class OntDocGeneration:
             except Exception as e:
                 print("Exception occurred " + str(e))
         classidset = set()
-        res = ClassTreeUtils.getClassTree(self.graph, uritolabel, classidset, uritotreeitem,self.typeproperty,self.pubconfig["prefixes"],self.preparedclassquery)
-        tree=res[0]
-        uritotreeitem=res[1]
+        rescls = ClassTreeUtils.getClassTree(self.graph, uritolabel, classidset, uritotreeitem,self.typeproperty,self.pubconfig["prefixes"],self.preparedclassquery)
+        tree=rescls[0]
+        uritotreeitem=rescls[1]
         #print(str(tree))
         for tr in prevtree:
             if tr["id"] not in classidset:
