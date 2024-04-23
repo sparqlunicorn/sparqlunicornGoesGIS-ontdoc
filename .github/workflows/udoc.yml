@@ -14,6 +14,10 @@ on:
         required: false
         default: None
         type: string
+      rdffilebranch:
+        required: false
+        default: ${{ github.event.repository.default_branch }}
+        type: string
       docpath:
         required: false
         default: docs 
@@ -127,12 +131,12 @@ jobs:
     steps:
       - name: Checkout repo
         if: ${{ inputs.checkout }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          fetch-depth: '0'
+          ref: "${{inputs.rdffilebranch}}"
       - name: Checkout tools repo
         id: checkout_tools
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         continue-on-error: true
         with:
           repository: sparqlunicorn/sparqlunicornGoesGIS-ontdoc
@@ -140,7 +144,7 @@ jobs:
           path: ontdocscript
       - name: Checkout tools repo fallback
         if: steps.checkout_tools.outcome != 'success'
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: sparqlunicorn/sparqlunicornGoesGIS-ontdoc
           ref: "main"
