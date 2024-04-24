@@ -15,10 +15,10 @@ jobs:
          sudo apt-get install gcc libpq-dev -y
          sudo apt-get install doxygen graphviz -y
          sudo apt-get install python3-venv python3-wheel -y
-         sudo pip3 install pylode
+         sudo pip3 install wheel pylode==2.13.2
          cd docs
          doxygen Doxyfile
-         python3 -m pylode -o html/classtreevocab.html ../classtreevocab.ttl
+         pylode -o html/classtreevocab.html -i ../classtreevocab.ttl
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
