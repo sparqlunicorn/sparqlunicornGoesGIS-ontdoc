@@ -51,15 +51,10 @@ class ClassTreeUtils:
         result = []
         ress = {}
         for res in results:
-            # print(res)
+            #print(res)
             if "_:" not in str(res["subject"]) and str(res["subject"]).startswith("http"):
                 if "_:" not in str(res["supertype"]) and str(res["supertype"]).startswith("http"):
-                    if str(res["subject"]) in ress and ress[str(res["subject"])]["super"] is None:
-                        ress[str(res["subject"])]["super"]=res["supertype"]
-                    else:
-                        ress[str(res["subject"])] = {"super": res["supertype"], "label": res["label"]}
-                    if str(res["supertype"]) not in ress:
-                        ress[str(res["supertype"])] = {"super": None, "label": DocUtils.shortenURI(res["supertype"])}
+                    ress[str(res["subject"])] = {"super": res["supertype"], "label": res["label"]}
                 else:
                     ress[str(res["subject"])] = {"super": None, "label": res["label"]}
         # print(ress)
