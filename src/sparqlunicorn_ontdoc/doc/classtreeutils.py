@@ -1,12 +1,13 @@
 from doc.docconfig import DocConfig
 from doc.docutils import DocUtils
 from rdflib import URIRef
+import json
 
 class ClassTreeUtils:
 
 
     @staticmethod
-    def getClassTree(graph, uritolabel, classidset, uritotreeitem,typeproperty,prefixes,preparedclassquery):
+    def getClassTree(graph, uritolabel, classidset, uritotreeitem,typeproperty,prefixes,preparedclassquery,outpath,pubconfig):
         results = graph.query(preparedclassquery)
         ldcontext = {"@context": {
             "@version": 1.1,
@@ -120,6 +121,9 @@ class ClassTreeUtils:
                 classidset.add(str(ress[cls]["super"]))
             classidset.add(clsstr)
         tree["core"]["data"] = result
+        with open(outpath + pubconfig["corpusid"] + "_classtree_raw.js", 'w', encoding='utf-8') as f:
+            f.write("var tree=" + json.dumps(tree, indent=2))
+            f.close()
         return [tree,uritotreeitem,classidset]
 
     @staticmethod
