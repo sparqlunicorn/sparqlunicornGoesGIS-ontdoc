@@ -443,13 +443,14 @@ class DocConfig:
         ".wav":"audio"
     }
 #OPTIONAL { ?subject %%subclassproperty%% ?supertype } .\n
+    #UNION { ?subject %%typeproperty%% owl:Class . } UNION { ?subject %%typeproperty%% rdfs:Class . }
+    #UNION { ?instance %%subclassproperty%% ?subject }
     classtreequery="""PREFIX owl: <http://www.w3.org/2002/07/owl#>\n
             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n
             SELECT DISTINCT ?subject ?label ?supertype\n
             WHERE {\n
-               { ?individual %%typeproperty%% ?subject . } UNION { ?subject %%typeproperty%% owl:Class . } UNION { ?subject %%typeproperty%% rdfs:Class . } UNION { ?subject %%subclassproperty%% ?supertype } .\n
-               
+               { ?individual %%typeproperty%% ?subject . }  UNION { ?subject %%subclassproperty%% ?supertype } \n             
                OPTIONAL { ?subject rdfs:label ?label. filter(langMatches(lang(?label),\"en\")) }
                OPTIONAL { ?subject rdfs:label ?label }.\n
                 FILTER (\n
