@@ -155,6 +155,9 @@ class OntDocGeneration:
         tree=clsress[0]
         uritotreeitem=clsress[1]
         classidset=clsress[2]
+        with open(outpath + self.pubconfig["corpusid"] + "_classtree_raw.js", 'w', encoding='utf-8') as f:
+            f.write("var tree=" + json.dumps(tree, indent=2))
+            f.close()
         #print(str(tree))
         for tr in prevtree:
             if tr["id"] not in classidset:
@@ -167,9 +170,6 @@ class OntDocGeneration:
         self.voidstatshtml = VoidExporter.toHTML(res["voidstats"], self.pubconfig["deploypath"])
         self.graph += voidgraph["graph"]
         subjectstorender = voidgraph["subjects"]
-        with open(outpath + self.pubconfig["corpusid"] + "_classtree_raw.js", 'w', encoding='utf-8') as f:
-            f.write("var tree=" + json.dumps(tree, indent=2))
-            f.close()
         with open(outpath + "style.css", 'w', encoding='utf-8') as f:
             f.write(templates["style"])
             f.close()
