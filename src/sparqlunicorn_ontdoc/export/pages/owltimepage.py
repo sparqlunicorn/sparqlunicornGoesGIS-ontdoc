@@ -14,9 +14,7 @@ class OWLTimePage:
             for tobj2 in graph.predicate_objects(obj):
                 if str(tobj2[0]) in DocConfig.timeproperties:
                     timeobj["end"] = tobj2[1]
-        elif str(pred) == "http://www.w3.org/2006/time#hasTime" or str(
-                pred) == "http://www.w3.org/ns/sosa/phenomenonTime" or str(
-                pred) == "http://www.w3.org/ns/sosa/resultTime":
+        elif str(pred) == "http://www.w3.org/2006/time#hasTime" or str(pred) == "http://www.w3.org/ns/sosa/phenomenonTime" or str(pred) == "http://www.w3.org/ns/sosa/resultTime":
             for tobj2 in graph.predicate_objects(obj):
                 if str(tobj2[0]) in DocConfig.timeproperties:
                     timeobj["timepoint"] = tobj2[1]
@@ -55,13 +53,12 @@ class OWLTimePage:
     @staticmethod
     def resolveTimeLiterals(pred, obj, graph):
         timeobj = {}
-        if isinstance(obj, URIRef) and (str(pred) == "http://www.w3.org/2006/time#hasTime" or str(
-                pred) == "http://www.w3.org/ns/sosa/phenomenonTime" or str(
-                pred) == "http://www.w3.org/ns/sosa/resultTime"):
-            for tobj in graph.predicate_objects(obj):
-                timeobj = OWLTimePage.resolveTimeObject(tobj[0], tobj[1], graph, timeobj)
-        elif isinstance(obj, URIRef) and str(pred) in DocConfig.timepointerproperties:
-            timeobj = OWLTimePage.resolveTimeObject(pred, obj, graph, timeobj)
+        if isinstance(obj, URIRef):
+            if str(pred) in DocConfig.timepointerproperties:
+                timeobj = OWLTimePage.resolveTimeObject(pred, obj, graph, timeobj)
+            if str(pred) == "http://www.w3.org/2006/time#hasTime" or str(pred) == "http://www.w3.org/ns/sosa/phenomenonTime" or str(pred) == "http://www.w3.org/ns/sosa/resultTime":
+                for tobj in graph.predicate_objects(obj):
+                    timeobj = OWLTimePage.resolveTimeObject(tobj[0], tobj[1], graph, timeobj)
         elif isinstance(obj, Literal):
             timeobj = OWLTimePage.resolveTimeObject(pred, obj, graph, timeobj)
         return timeobj

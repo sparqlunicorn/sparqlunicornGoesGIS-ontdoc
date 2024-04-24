@@ -132,8 +132,7 @@ class IndexViewPage:
                                 item["text"]) + "</a></td>"
                         else:
                             indexhtml += f"<tr><td><img src=\"{tree['types'][item['type']]['icon']}\" height=\"25\" width=\"25\" alt=\"{item['type']}\"/><a  href=\"{item['id']}\" target=\"_blank\">{item['text']}</a></td>"
-                        indexhtml += "<td property=\"http://rdfs.org/ns/void#classPartition\" typeof=\"http://rdfs.org/ns/void#Dataset\" resource=\"" + str(
-                            voidds) + "_" + str(DocUtils.shortenURI(item["id"])) + "\"><span about=\"" + str(
+                        indexhtml += f"<td property=\"http://rdfs.org/ns/void#classPartition\" typeof=\"http://rdfs.org/ns/void#Dataset\" resource=\"{voidds}_{DocUtils.shortenURI(item['id'])}\"><span about=\"" + str(
                             voidds) + "_" + str(DocUtils.shortenURI(
                             item["id"])) + "\" property=\"http://rdfs.org/ns/void#class\" resource=\"" + str(
                             item["id"]) + "\"></span><span about=\"" + str(voidds) + "_" + str(DocUtils.shortenURI(

@@ -154,21 +154,20 @@ class PersonPage:
     def hcardToHTML(self,vcard,hcard):
         result="<table id=\"person\" class=\"h-card\" border=\"1\"><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>"
         for prop in hcard:
-            result+="<tr><td><a href=\""+str(hcard[prop]["prop"])+"\">"+str(DocUtils.shortenURI(hcard[prop]["prop"]))+"</a></td>"
+            result+=f"<tr><td><a href=\"{hcard[prop]['prop']}\">{DocUtils.shortenURI(hcard[prop]['prop'])}</a></td>"
             if "http" in hcard[prop]:
-                result+="<td><a href=\""+str(hcard[prop]["value"])+"\" class=\""+str(prop)+"\">"+str(DocUtils.shortenURI(hcard[prop]["value"]))+"</a></td></tr>"
+                result+=f"<td><a href=\"{hcard[prop]['value']}\" class=\"{prop}\">{DocUtils.shortenURI(hcard[prop]['value'])}</a></td></tr>"
             else:
                 if hcard[prop]["prop"] in self.vcardTohCard:
-                    result += "<td class=\"" + str(self.vcardTohCard[hcard[prop]["prop"]]) + "\">" + str(hcard[prop]["value"]) + "</td></tr>"
+                    result += f"<td class=\"{self.vcardTohCard[hcard[prop]['prop']]}\">{hcard[prop]['value']}</td></tr>"
                 else:
-                    result += "<td class=\""+str(prop)+"\">" + str(hcard[prop]["value"]) + "</td></tr>"
+                    result += f"<td class=\"{prop}\">{hcard[prop]['value']}</td></tr>"
         result += "</tbody></table><script>$('#person').DataTable();</script><button id=\"vcard\" onclick=\"saveTextAsFile(`" + str(PersonPage.vcardJSONToString(vcard)) + "`,'vcard')\">Download VCard</button>"
         return result
 
     @staticmethod
     def vcardJSONToString(vcard):
-        res="BEGIN:VCARD\nVERSION:4.0\n"
-        res+="PROFILE:VCARD\n"
+        res="BEGIN:VCARD\nVERSION:4.0\nPROFILE:VCARD\n"
         for key in vcard:
             res+=str(key).upper()+":"+str(vcard[key]["value"])+"\n"
         res+="END:VCARD\n"
@@ -184,7 +183,7 @@ class PersonPage:
 
     def generatePageWidget(self, graph, subject, templates, f=None, pageWidget=False):
         vcardres=self.extractPersonMetadata(subject,graph)
-        if pageWidget and f!=None:
+        if pageWidget and f is not None:
             f.write(self.hcardToHTML(vcardres["vcard"],vcardres["hcard"]))
         return vcardres["vcard"]
 

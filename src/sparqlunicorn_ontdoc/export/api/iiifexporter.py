@@ -132,7 +132,7 @@ class IIIFAPIExporter:
                         curiiifmanifest["metadata"].append(
                             {"label": {"en": [DocUtils.shortenURI(str(pred))]}, "value": {"en": [str(objs)]}})
             # print(curiiifmanifest["metadata"])
-            if summary != None and summary != "" and summary != {}:
+            if summary is not None and summary != "" and summary != {}:
                 curiiifmanifest["summary"] = {"en": [str(summary)]}
             os.makedirs(outpath + "/iiif/mf/" + DocUtils.shortenURI(curind))
             f = open(outpath + "/iiif/mf/" + DocUtils.shortenURI(curind) + "/manifest.json", "w", encoding="utf-8")

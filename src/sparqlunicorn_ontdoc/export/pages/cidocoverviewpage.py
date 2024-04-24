@@ -30,7 +30,7 @@ class CIDOCOverviewPage:
                 else:
                     resmap[str(predobj[0])]=str(predobj[1])
         for val in resmap:
-            if resmap[val]!=None:
+            if resmap[val] is not None:
                 widget+="<td>"+str(val)+"</td>"
             else:
                 widget+="<td></td>"

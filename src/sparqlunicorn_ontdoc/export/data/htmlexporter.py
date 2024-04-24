@@ -396,8 +396,8 @@ class HTMLExporter():
                     break
             elif len(foundmedia["mesh"]) == 0 and len(image3dannos) > 0:
                 for anno in image3dannos:
-                    if ("POINT" in anno["value"].upper() or "POLYGON" in anno["value"].upper() or "LINESTRING" in
-                            anno["value"].upper()):
+                    annoup=anno["value"].upper()
+                    if "POINT" in annoup or "POLYGON" in annoup or "LINESTRING" in annoup:
                         f.write(self.templates["threejstemplate"].replace("{{wktstring}}", anno["value"]).replace(
                             "{{meshurls}}", "[]").replace("{{relativepath}}",
                                                           DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
@@ -770,8 +770,7 @@ class HTMLExporter():
                 objstring = objstr.replace("<", "&lt").replace(">", "&gt;")
                 if str(object.datatype) == "http://www.w3.org/2001/XMLSchema#anyURI":
                     objstring = "<a href=\"" + objstr + "\">" + objstr + "</a>"
-                elif str(object.datatype) in DocConfig.timeliteraltypes and dateprops is not None and DocUtils.shortenURI(
-                        predstr, True) not in DocConfig.metadatanamespaces and str(pred) not in dateprops:
+                elif str(object.datatype) in DocConfig.timeliteraltypes and dateprops is not None and DocUtils.shortenURI(predstr, True) not in DocConfig.metadatanamespaces and str(pred) not in dateprops:
                     dateprops.append(predstr)
                 tablecontents += f"<span itemprop=\"{predstr}\" property=\"{predstr}\" content=\""+objstr.replace("<", "&lt").replace(">", "&gt;").replace("\"", "'")+f"\" datatype=\"{object.datatype}\">{HTMLExporter.truncateValue(objstring)} <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"" + str(
                     object.datatype) + "\">" + (res["uri"] if res is not None else DocUtils.shortenURI(
