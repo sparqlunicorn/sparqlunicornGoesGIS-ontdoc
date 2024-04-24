@@ -154,6 +154,7 @@ class OntDocGeneration:
         resclss = ClassTreeUtils.getClassTree(self.graph, uritolabel, classidset, uritotreeitem,self.typeproperty,self.pubconfig["prefixes"],self.preparedclassquery)
         tree=resclss[0]
         uritotreeitem=resclss[1]
+        classidset=resclss[2]
         #print(str(tree))
         for tr in prevtree:
             if tr["id"] not in classidset:

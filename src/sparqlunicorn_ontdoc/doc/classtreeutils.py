@@ -117,7 +117,7 @@ class ClassTreeUtils:
                 classidset.add(str(ress[cls]["super"]))
             classidset.add(clsstr)
         tree["core"]["data"] = result
-        return [tree,uritotreeitem]
+        return [tree,uritotreeitem,classidset]
 
     @staticmethod
     def assignGeoClassesToTree(tree):
