@@ -52,18 +52,19 @@ class ClassTreeUtils:
         ress = {}
         for res in results:
             # print(res)
-            if "_:" not in str(res["subject"]) and str(res["subject"]).startswith("http"):
-                if "_:" not in str(res["supertype"]) and str(res["supertype"]).startswith("http"):
-                    if str(res["subject"]) in ress and ress[str(res["subject"])]["super"] is None:
-                        ress[str(res["subject"])]["super"]=res["supertype"]
+            substr=str(res["subject"])
+            supstr = str(res["supertype"])
+            if "_:" not in substr and substr.startswith("http"):
+                if "_:" not in supstr and supstr.startswith("http"):
+                    if substr in ress and ress[substr]["super"] is None:
+                        ress[substr]["super"]=supstr
                     else:
-                        ress[str(res["subject"])] = {"super": res["supertype"], "label": res["label"]}
-                    if str(res["supertype"]) not in ress:
-                        ress[str(res["supertype"])] = {"super": None, "label": DocUtils.shortenURI(res["supertype"])}
+                        ress[substr] = {"super": supstr, "label": res["label"]}
+                    if supstr not in ress:
+                        ress[supstr] = {"super": None, "label": DocUtils.shortenURI(supstr)}
                 else:
-                    ress[str(res["subject"])] = {"super": None, "label": res["label"]}
-
-        # print(ress)
+                    ress[substr] = {"super": None, "label": res["label"]}
+        print(ress)
         for cls in ress:
             clsstr=str(cls)
             for obj in graph.subjects(URIRef(typeproperty), URIRef(cls), True):
