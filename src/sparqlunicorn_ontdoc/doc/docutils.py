@@ -134,7 +134,7 @@ class DocUtils:
     @staticmethod
     def createURILink(prefixes,uri):
         res = DocUtils.replaceNameSpacesInLabel(prefixes,uri)
-        if res != None:
+        if res is not None:
             return f" <a href=\"{uri}\" target=\"_blank\">{res['uri']}</a>"
         else:
             return f" <a href=\"{uri}\" target=\"_blank\">{DocUtils.shortenURI(uri)}</a>"
@@ -195,7 +195,7 @@ class DocUtils:
                     label = onelabel
             elif (onelabel is None or onelabel == "") and prefixes is not None:
                 res = DocUtils.replaceNameSpacesInLabel(prefixes, str(obj))
-                if res!=None:
+                if res is not None:
                     label=res["uri"]
         return label
 

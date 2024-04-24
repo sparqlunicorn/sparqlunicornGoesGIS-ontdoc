@@ -64,11 +64,11 @@ class ClassTreeUtils:
                 res = DocUtils.replaceNameSpacesInLabel(prefixes, objstr)
                 if objstr in uritolabel:
                     restext = uritolabel[objstr]["label"] + " (" + DocUtils.shortenURI(objstr) + ")"
-                    if res != None:
+                    if res is not None:
                         restext = uritolabel[objstr]["label"] + " (" + res["uri"] + ")"
                 else:
                     restext = DocUtils.shortenURI(objstr)
-                    if res != None:
+                    if res is not None:
                         restext += " (" + res["uri"] + ")"
                 if objstr not in DocConfig.collectionclasses:
                     result.append({"id": objstr, "parent": cls, "type": "instance", "text": restext, "data": {}})
@@ -79,7 +79,7 @@ class ClassTreeUtils:
                 uritotreeitem[objstr].append(result[-1])
                 # classidset.add(str(obj))
             res = DocUtils.replaceNameSpacesInLabel(prefixes, clsstr)
-            if ress[cls]["super"] == None:
+            if ress[cls]["super"] is None:
                 restext = DocUtils.shortenURI(clsstr)
                 if res is not None:
                     restext += " (" + res["uri"] + ")"
@@ -88,7 +88,7 @@ class ClassTreeUtils:
                     uritotreeitem[clsstr] = []
                     uritotreeitem[clsstr].append(result[-1])
             else:
-                if "label" in cls and ress[cls]["label"] != None:
+                if "label" in cls and ress[cls]["label"] is not None:
                     restext = f"{ress[cls]['label']} ({DocUtils.shortenURI(clsstr)})"
                     if res is not None:
                         restext = f"{ress[cls]['label']} ({res['uri']})"

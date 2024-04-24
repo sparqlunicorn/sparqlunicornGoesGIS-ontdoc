@@ -399,8 +399,7 @@ class HTMLExporter():
                     annoup=anno["value"].upper()
                     if "POINT" in annoup or "POLYGON" in annoup or "LINESTRING" in annoup:
                         f.write(self.templates["threejstemplate"].replace("{{wktstring}}", anno["value"]).replace(
-                            "{{meshurls}}", "[]").replace("{{relativepath}}",
-                                                          DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
+                            "{{meshurls}}", "[]").replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
             carousel = "image"
             if len(foundmedia["image"]) > 3:
                 carousel = "carousel-item active"
@@ -625,7 +624,7 @@ class HTMLExporter():
                 annosource = tupobjstr
                 #print("Found annosource " + tupobjstr + " from " + str(object) + " Imageannos: " + str(len(imageannos)))
             elif tuppredstr in DocConfig.valueproperties:
-                if tempvalprop == None and tuppredstr == "http://www.w3.org/ns/oa#hasSource":
+                if tempvalprop is None and tuppredstr == "http://www.w3.org/ns/oa#hasSource":
                     tempvalprop = tuppredstr
                     foundval = tupobjstr
                 elif tuppredstr != "http://www.w3.org/ns/oa#hasSource" and DocConfig.valueproperties[

@@ -83,6 +83,6 @@ class TemplateUtils:
                                 templates[filename.replace(".css", "")] = content
         print("Found templates.... "+str(len(templates)))
         for temp in templates:
-            if temp!="includes" and temp!="layouts" and temp!="js" and templates[temp]!=None:
+            if temp!="includes" and temp!="layouts" and temp!="js" and templates[temp] is not None:
                 templates[temp]=TemplateUtils.resolveIncludes(templates[temp],templates)
         return templates
