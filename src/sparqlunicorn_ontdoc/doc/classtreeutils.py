@@ -104,7 +104,7 @@ class ClassTreeUtils:
                 if str(ress[cls]["super"]) not in uritotreeitem:
                     uritotreeitem[str(ress[cls]["super"])] = []
                     clsres = DocUtils.replaceNameSpacesInLabel(prefixes, str(ress[cls]["super"]))
-                    if clsres != None:
+                    if clsres is not None:
                         theitem = {"id": str(ress[cls]["super"]), "parent": "#", "type": "class",
                                    "text": DocUtils.shortenURI(str(ress[cls]["super"])) + " (" + clsres["uri"] + ")",
                                    "data": {}}
@@ -156,7 +156,7 @@ class ClassTreeUtils:
             if len(uritotreeitem[uri]) > 1:
                 thetype = "instance"
                 counter = 0
-                if uritotreeitem[uri] != None:
+                if uritotreeitem[uri] is not None:
                     for item in uritotreeitem[uri]:
                         if item["type"] != "instance" or item["type"] != "class":
                             thetype = item["type"]
