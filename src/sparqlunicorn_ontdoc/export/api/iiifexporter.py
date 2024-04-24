@@ -128,10 +128,9 @@ class IIIFAPIExporter:
                         curiiifmanifest["metadata"].append({"label": {"en": [DocUtils.shortenURI(str(pred))]}, "value": {
                             "en": ["<a href=\"" + str(objs) + "\">" + str(objs) + "</a>"]}})
                     else:
-                        curiiifmanifest["metadata"].append(
-                            {"label": {"en": [DocUtils.shortenURI(str(pred))]}, "value": {"en": [str(objs)]}})
+                        curiiifmanifest["metadata"].append({"label": {"en": [DocUtils.shortenURI(str(pred))]}, "value": {"en": [str(objs)]}})
             # print(curiiifmanifest["metadata"])
-            if summary != None and summary != "" and summary != {}:
+            if summary is not None and summary != "" and summary != {}:
                 curiiifmanifest["summary"] = {"en": [str(summary)]}
             os.makedirs(outpath + "/iiif/mf/" + DocUtils.shortenURI(curind))
             f = open(outpath + "/iiif/mf/" + DocUtils.shortenURI(curind) + "/manifest.json", "w", encoding="utf-8")
@@ -165,7 +164,7 @@ class IIIFAPIExporter:
                    imghtml+=str(imgpath["label"])+"</a></figcaption></figure></li>"
                 else:
                    imghtml += DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", "")) + "</a></figcaption></figure></li>"
-        if targetfile!=None:
+        if targetfile is not None:
             f = open(targetfile, "w")
             f.write(headertemplate)
             f.write(imagegridtemplate.replace("{{imagecontainers}}",imghtml).replace("{{categories}}",str(categories).replace("{","").replace("}","")))
@@ -179,46 +178,28 @@ class IIIFAPIExporter:
 
     @staticmethod
     def generateIIIFCollections(outpath, deploypath, imagespaths, prefixnamespace):
-        apihtml = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><metaname=\"description\" content=\"SwaggerUI\"/><title>SwaggerUI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist/swagger-ui.css\" /></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js\" crossorigin></script><script>const swaggerUrl = \"" + str(deploypath) + "/iiif/api.json\"; const apiUrl = \"" + str(deploypath) + "/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
-        apijson = {"openapi": "3.0.1", "info": {"title": str(deploypath) + " IIIF", "description": "IIIF API of " + str(deploypath)},"servers": [{"url": str(deploypath)}], "paths": {}}
+        deploypath=str(deploypath)
+        apihtml = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><metaname=\"description\" content=\"SwaggerUI\"/><title>SwaggerUI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist/swagger-ui.css\" /></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js\" crossorigin></script><script>const swaggerUrl = \"" + deploypath + "/iiif/api.json\"; const apiUrl = \"" + deploypath + "/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
+        apijson = {"openapi": "3.0.1", "info": {"title": deploypath+ " IIIF", "description": "IIIF API of " + deploypath},"servers": [{"url": deploypath}], "paths": {}}
         apijson["paths"]["/iiif/collection/"] = {"get": {"tags": ["IIIF"],
-                                                                                "summary": "Retrieves IIIF Collections of "+str(deploypath),
+                                                                                "summary": "Retrieves IIIF Collections of "+deploypath,
                                                                                 "description": "Retrieves the IIIF Collections of this IIIF API",
-                                                                                "operationId": "iiif-collections",
-                                                                                "parameters": [],
+                                                                                "operationId": "iiif-collections","parameters": [],
                                                                                 "responses": {
-                                                                                    "200": {
-                                                                                        "description": "Success",
-                                                                                        "content": {
-                                                                                            "text/plain": {
-                                                                                                "example": None}},
-                                                                                        "application/json": {
-                                                                                            "schema": {
-                                                                                                "example": None},
-                                                                                            "example": None},
-                                                                                        "text/json": {
-                                                                                            "schema": {
-                                                                                                "example": None},
-                                                                                            "example": None}}}}}
+                                                                                    "200": {"description": "Success",
+                                                                                        "content": {"text/plain": {"example": None}},
+                                                                                        "application/json": {"schema": {"example": None},"example": None},
+                                                                                        "text/json": {"schema": {"example": None},"example": None}}}}}
         apijson["paths"]["/iiif/{id}/manifest"] = {"get": {"tags": ["IIIF"],
                                                                                 "summary": "Retrieves a IIIF manifest with a given ID",
                                                                                 "description": "Retrieves a IIIF manifest with a given ID",
-                                                                                "operationId": "iiif-manifest",
-                                                                                "parameters": [{"in":"path","name":"id","required":True,"schema": {"type": "string"}}],
+                                                                                "operationId": "iiif-manifest","parameters": [{"in":"path","name":"id","required":True,"schema": {"type": "string"}}],
                                                                                 "responses": {
                                                                                     "200": {
                                                                                         "description": "Success",
-                                                                                        "content": {
-                                                                                            "text/plain": {
-                                                                                                "example": None}},
-                                                                                        "application/json": {
-                                                                                            "schema": {
-                                                                                                "example": None},
-                                                                                            "example": None},
-                                                                                        "text/json": {
-                                                                                            "schema": {
-                                                                                                "example": None},
-                                                                                            "example": None}}}}}
+                                                                                        "content": {"text/plain": {"example": None}},
+                                                                                        "application/json": {"schema": {"example": None},"example": None},
+                                                                                        "text/json": {"schema": {"example": None},"example": None}}}}}
         if not os.path.exists(outpath + "/iiif/collection/"):
             os.makedirs(outpath + "/iiif/collection/")
         if os.path.exists(outpath + "/iiif/collection/iiifcoll.json"):
