@@ -58,8 +58,8 @@ class ClassTreeUtils:
                         ress[str(res["subject"])]["super"]=res["supertype"]
                     else:
                         ress[str(res["subject"])] = {"super": res["supertype"], "label": res["label"]}
-                        if str(res["supertype"]) not in ress:
-                            ress[str(res["supertype"])] = {"super": None, "label": DocUtils.shortenURI(res["supertype"])}
+                    if str(res["supertype"]) not in ress:
+                        ress[str(res["supertype"])] = {"super": None, "label": DocUtils.shortenURI(res["supertype"])}
                 else:
                     ress[str(res["subject"])] = {"super": None, "label": res["label"]}
 
