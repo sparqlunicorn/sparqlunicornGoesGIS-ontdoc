@@ -58,8 +58,11 @@ class ClassTreeUtils:
                         ress[str(res["subject"])]["super"]=res["supertype"]
                     else:
                         ress[str(res["subject"])] = {"super": res["supertype"], "label": res["label"]}
+                        if str(res["supertype"]) not in ress:
+                            ress[str(res["supertype"])] = {"super": None, "label": DocUtils.shortenURI(res["supertype"])}
                 else:
                     ress[str(res["subject"])] = {"super": None, "label": res["label"]}
+
         # print(ress)
         for cls in ress:
             clsstr=str(cls)
@@ -67,13 +70,13 @@ class ClassTreeUtils:
                 objstr=str(obj)
                 res = DocUtils.replaceNameSpacesInLabel(prefixes, objstr)
                 if objstr in uritolabel:
-                    restext = uritolabel[objstr]["label"] + " (" + DocUtils.shortenURI(objstr) + ")"
+                    restext = f"{uritolabel[objstr]['label']} ({DocUtils.shortenURI(objstr)})"
                     if res is not None:
                         restext = uritolabel[objstr]["label"] + " (" + res["uri"] + ")"
                 else:
                     restext = DocUtils.shortenURI(objstr)
                     if res is not None:
-                        restext += " (" + res["uri"] + ")"
+                        restext += f" ({res['uri']})"
                 if objstr not in DocConfig.collectionclasses:
                     result.append({"id": objstr, "parent": cls, "type": "instance", "text": restext, "data": {}})
                 else:
@@ -114,9 +117,7 @@ class ClassTreeUtils:
                     uritotreeitem[str(ress[cls]["super"])] = []
                     clsres = DocUtils.replaceNameSpacesInLabel(prefixes, str(ress[cls]["super"]))
                     if clsres is not None:
-                        theitem = {"id": str(ress[cls]["super"]), "parent": "#", "type": "class",
-                                   "text": DocUtils.shortenURI(str(ress[cls]["super"])) + " (" + clsres["uri"] + ")",
-                                   "data": {}}
+                        theitem = {"id": str(ress[cls]["super"]), "parent": "#", "type": "class","text": DocUtils.shortenURI(str(ress[cls]["super"])) + " (" + clsres["uri"] + ")","data": {}}
                     else:
                         theitem = {"id": str(ress[cls]["super"]), "parent": "#", "type": "class","text": DocUtils.shortenURI(str(ress[cls]["super"])), "data": {}}
                     uritotreeitem[str(ress[cls]["super"])].append(theitem)
