@@ -451,7 +451,7 @@ class DocConfig:
             SELECT DISTINCT ?subject ?label ?supertype\n
             WHERE {\n
                { ?individual %%typeproperty%% ?subject . } UNION { ?subject %%typeproperty%% owl:Class . } UNION { ?subject %%typeproperty%% rdfs:Class . } .\n
-               OPTIONAL { ?subject %%subclassproperty%%* ?supertype } .\n
+               OPTIONAL { ?subject %%subclassproperty%% ?supertype } .\n
                OPTIONAL { ?subject rdfs:label ?label. filter(langMatches(lang(?label),\"en\")) }
                OPTIONAL { ?subject rdfs:label ?label }.\n
                 FILTER (\n
