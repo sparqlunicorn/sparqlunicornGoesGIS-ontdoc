@@ -104,6 +104,7 @@ class ClassTreeUtils:
                 else:
                     uritotreeitem[cls][-1]["parent"] = ress[cls]["super"]
                 if str(ress[cls]["super"]) not in uritotreeitem:
+                    print("SUPER NOT IN URITOTREEITEM: "+str(ress[cls]["super"])+" ... adding with empty superclass statement...")
                     uritotreeitem[str(ress[cls]["super"])] = []
                     clsres = DocUtils.replaceNameSpacesInLabel(prefixes, str(ress[cls]["super"]))
                     if clsres is not None:
