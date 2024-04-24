@@ -84,6 +84,7 @@ class ClassTreeUtils:
                 if res is not None:
                     restext += " (" + res["uri"] + ")"
                 if cls not in uritotreeitem:
+                    print("SUPER NOT NONE: " + str({"id": cls, "parent": "#", "type": "class", "text": restext, "data": {}}))
                     result.append({"id": cls, "parent": "#", "type": "class", "text": restext, "data": {}})
                     uritotreeitem[clsstr] = []
                     uritotreeitem[clsstr].append(result[-1])
