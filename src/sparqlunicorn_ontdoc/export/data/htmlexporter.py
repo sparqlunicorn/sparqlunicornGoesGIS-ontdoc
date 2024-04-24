@@ -67,6 +67,7 @@ class HTMLExporter():
             "parent"].startswith("http"):
             parentclass = str(uritotreeitem[str(subject)][-1]["parent"])
             if parentclass not in uritotreeitem:
+                print("PARENTCLASS MISSING: "+str(parentclass))
                 uritotreeitem[parentclass] = [
                     {"id": parentclass, "parent": "#", "type": "class", "text": DocUtils.shortenURI(str(parentclass)),
                      "data": {}}]
