@@ -79,7 +79,7 @@ class ClassTreeUtils:
                     uritotreeitem[objstr] = []
                 uritotreeitem[objstr].append(result[-1])
                 # classidset.add(str(obj))
-            print(cls[ress])
+            print(ress[cls])
             res = DocUtils.replaceNameSpacesInLabel(prefixes, clsstr)
             if ress[cls]["super"] is None:
                 restext = DocUtils.shortenURI(clsstr)
