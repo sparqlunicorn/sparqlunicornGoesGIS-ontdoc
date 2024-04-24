@@ -342,8 +342,7 @@ class OGCAPIFeaturesExporter:
                                 targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.html", str(op + "/items/" + str(
                                     DocUtils.shortenURI(feat["id"])) + "/index.html").replace("//", "/"), outpath, True)
                                 f = open(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"]))) + "/index.html", "w")
-                                f.write(
-                                    "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + targetpath + "\" /></head></html>")
+                                f.write(f"<html><head><meta http-equiv=\"refresh\" content=\"0; url={targetpath}\" /></head></html>")
                                 f.close()
                             #print("symlinks created")
                         except Exception as e:

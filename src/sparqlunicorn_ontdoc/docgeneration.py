@@ -125,7 +125,8 @@ class OntDocGeneration:
         DocUtils.updateProgressBar(0, 1, "Creating classtree and search index")
         res=GraphUtils.analyzeGraph(self.graph, prefixnamespace, self.typeproperty, voidds, labeltouri, uritolabel, self.pubconfig["outpath"], self.pubconfig["createvowl"])
         subjectstorender=res["subjectstorender"]
-        self.pubconfig["apis"]["iiif"]=res["iiif"]
+        if not self.pubconfig["apis"]["iiif"]:
+            self.pubconfig["apis"]["iiif"]=res["iiif"]
         if os.path.exists(outpath + self.pubconfig["corpusid"] + '_search.js'):
             try:
                 with open(outpath + self.pubconfig["corpusid"] + '_search.js', 'r', encoding='utf-8') as f:
@@ -547,7 +548,7 @@ def main():
         #print(subfolders)
         for path in subfolders:
             indexhtml += "<tr><td><a href=\"" + path.replace(outpath[0] + "/", "") + "/index.html\">" + path.replace(
-        outpath[0] + "/", "") + "</a></td></tr>"
+                outpath[0] + "/", "") + "</a></td></tr>"
         indexhtml += "</tbody></table><script>$('#indextable').DataTable();</script>"
         indexhtml += DocUtils.replaceStandardVariables(templates["footer"], "", "0", "true",docgen.pubconfig).replace("{{license}}", curlicense).replace("{{exports}}",
                                                                                     templates["nongeoexports"]).replace(

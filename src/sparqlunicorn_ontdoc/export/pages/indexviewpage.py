@@ -113,7 +113,7 @@ class IndexViewPage:
                         if item2["parent"] == item["id"] and (
                                 item2["type"] == "instance" or item2["type"] == "geoinstance") and nslink in item2[
                             "id"]:
-                            checkdepth = DocUtils.checkDepthFromPath(path, pubconfig["prefixns"], item2["id"]) - 1
+                            #checkdepth = DocUtils.checkDepthFromPath(path, pubconfig["prefixns"], item2["id"]) - 1
                             exitem = "<td><img src=\"" + tree["types"][item2["type"]][
                                 "icon"] + "\" height=\"25\" width=\"25\" alt=\"" + item2[
                                          "type"] + "\"/><a property=\"http://rdfs.org/ns/void#exampleResource\" resource=\"" + str(
@@ -127,25 +127,19 @@ class IndexViewPage:
                             indexhtml += "<tr><td><img src=\"" + tree["types"][item["type"]][
                                 "icon"] + "\" height=\"25\" width=\"25\" alt=\"" + item[
                                              "type"] + "\"/><a property=\"http://rdfs.org/ns/void#exampleResource\" resource=\"" + str(
-                                DocUtils.shortenURI(
-                                    str(item["id"])) + "_collection/") + "\" href=\"" + DocUtils.shortenURI(
+                                DocUtils.shortenURI(str(item["id"])) + "_collection/") + "\" href=\"" + DocUtils.shortenURI(
                                 str(item["id"])) + "_collection/index.html\" target=\"_blank\">" + str(
                                 item["text"]) + "</a></td>"
                         else:
-                            indexhtml += "<tr><td><img src=\"" + tree["types"][item["type"]][
-                                "icon"] + "\" height=\"25\" width=\"25\" alt=\"" + item[
-                                             "type"] + "\"/><a  href=\"" + str(
-                                item["id"]) + "\" target=\"_blank\">" + str(item["text"]) + "</a></td>"
-                        indexhtml += "<td property=\"http://rdfs.org/ns/void#classPartition\" typeof=\"http://rdfs.org/ns/void#Dataset\" resource=\"" + str(
-                            voidds) + "_" + str(DocUtils.shortenURI(item["id"])) + "\"><span about=\"" + str(
+                            indexhtml += f"<tr><td><img src=\"{tree['types'][item['type']]['icon']}\" height=\"25\" width=\"25\" alt=\"{item['type']}\"/><a  href=\"{item['id']}\" target=\"_blank\">{item['text']}</a></td>"
+                        indexhtml += f"<td property=\"http://rdfs.org/ns/void#classPartition\" typeof=\"http://rdfs.org/ns/void#Dataset\" resource=\"{voidds}_{DocUtils.shortenURI(item['id'])}\"><span about=\"" + str(
                             voidds) + "_" + str(DocUtils.shortenURI(
                             item["id"])) + "\" property=\"http://rdfs.org/ns/void#class\" resource=\"" + str(
                             item["id"]) + "\"></span><span about=\"" + str(voidds) + "_" + str(DocUtils.shortenURI(
                             item["id"])) + "\" property=\"http://rdfs.org/ns/void#entities\" content=\"" + str(item[
                                                                                                                    "instancecount"]) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#integer\">" + str(
                             item["instancecount"]) + "</td>" + exitem + "</tr>"
-            indexhtml += "</tbody></table><script property=\"http://purl.org/dc/terms/modified\" content=\"" + str(
-                pubconfig["modtime"]) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#dateTime\">$('#indextable').DataTable();</script>"
+            indexhtml += f"</tbody></table><script property=\"http://purl.org/dc/terms/modified\" content=\"{pubconfig['modtime']}\" datatype=\"http://www.w3.org/2001/XMLSchema#dateTime\">$('#indextable').DataTable();</script>"
             tempfoot = DocUtils.replaceStandardVariables(templates["footer"], "", checkdepth,
                                                      str(nslink == pubconfig["prefixns"]).lower(),pubconfig).replace(
                 "{{license}}", curlicense).replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}",
@@ -154,12 +148,10 @@ class IndexViewPage:
             tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, apis["ogcapifeatures"], apis["iiif"],
                                                                    apis["ckan"]],
                                                         [
-                                                            "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
-                                                                checkdepth) + "/sparql.html?endpoint=" + str(
-                                                                pubconfig["deploypath"]) + "\">[SPARQL]</a>&nbsp;",
-                                                            "<a href=\"" + relpath + "/api/api.html\">[OGC API Features]</a>&nbsp;",
-                                                            "<a href=\"" +  relpath + "/iiif/\">[IIIF]</a>&nbsp;",
-                                                            "<a href=\"" +  relpath + "/api/3/\">[CKAN]</a>"
+                                                            f"<a href=\"{DocUtils.generateRelativePathFromGivenDepth(checkdepth)}sparql.html?endpoint={pubconfig['deploypath']}\">[SPARQL]</a>&nbsp;",
+                                                            f"<a href=\"{relpath}api/api.html\">[OGC API Features]</a>&nbsp;",
+                                                            f"<a href=\"{relpath}iiif/\">[IIIF]</a>&nbsp;",
+                                                            f"<a href=\"{relpath}api/3/\">[CKAN]</a>"
                                                         ], "{{apis}}")
             indexhtml += tempfoot
             # print(path)

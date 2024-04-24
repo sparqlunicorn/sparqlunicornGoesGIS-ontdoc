@@ -53,8 +53,7 @@ class DocUtils:
         files=[]
         for file in os.listdir(directory):
             filename = os.fsdecode(file)
-            if filename.endswith(".ttl") or filename.endswith(".owl") or filename.endswith(".ttl") or filename.endswith(
-                    "n3") or filename.endswith(".nt"):
+            if filename.endswith(".ttl") or filename.endswith(".owl") or filename.endswith("n3") or filename.endswith(".nt"):
                 files.append(filename)
         return files
 
@@ -88,8 +87,7 @@ class DocUtils:
             files = os.listdir(normpath)
             for file in files:
                 print(file)
-                if file.endswith(".ttl") or file.endswith(".owl") or file.endswith(".ttl") or file.endswith(
-                        "n3") or file.endswith(".nt"):
+                if file.endswith(".ttl") or file.endswith(".owl") or file.endswith("n3") or file.endswith(".nt"):
                     result.append(normpath + file)
         return result
 
@@ -118,31 +116,34 @@ class DocUtils:
 
     @staticmethod
     def shortenURI(uri,ns=False):
-        if uri!=None and "#" in uri and ns:
-            return uri[0:uri.rfind('#')+1]
-        if uri!=None and "/" in uri and ns:
-            return uri[0:uri.rfind('/')+1]
-        if uri!=None and uri.endswith("/"):
-            uri = uri[0:-1]
-        if uri!=None and "#" in uri and not ns:
-            return uri[uri.rfind('#')+1:]
-        if uri!=None and "/" in uri and not ns:
-            return uri[uri.rfind('/')+1:]
+        if uri is not None:
+            if ns:
+                if "#" in uri:
+                    return uri[0:uri.rfind('#')+1]
+                if "/" in uri:
+                    return uri[0:uri.rfind('/')+1]
+            if uri.endswith("/"):
+                uri = uri[0:-1]
+            if not ns:
+                if "#" in uri:
+                    return uri[uri.rfind('#') + 1:]
+                if "/" in uri:
+                    return uri[uri.rfind('/') + 1:]
         return uri
 
     @staticmethod
     def createURILink(prefixes,uri):
         res = DocUtils.replaceNameSpacesInLabel(prefixes,uri)
-        if res != None:
-            return " <a href=\"" + str(uri) + "\" target=\"_blank\">" + str(res["uri"]) + "</a>"
+        if res is not None:
+            return f" <a href=\"{uri}\" target=\"_blank\">{res['uri']}</a>"
         else:
-            return " <a href=\"" + str(uri) + "\" target=\"_blank\">" + DocUtils.shortenURI(uri) + "</a>"
+            return f" <a href=\"{uri}\" target=\"_blank\">{DocUtils.shortenURI(uri)}</a>"
 
     @staticmethod
     def generateRelativeLinkFromGivenDepth(baseurl,checkdepth,item,withindex):
-        rellink = str(item).replace(baseurl, "")
-        for i in range(0, checkdepth):
-            rellink = "../" + rellink
+        rellink = "../"*checkdepth+str(item).replace(baseurl, "")
+        #for i in range(0, checkdepth):
+        #    rellink = "../" + rellink
         if withindex:
             rellink += "/index.html"
         #QgsMessageLog.logMessage("Relative Link from Given Depth: " + rellink,"OntdocGeneration", Qgis.Info)
@@ -159,12 +160,13 @@ class DocUtils:
 
     @staticmethod
     def generateRelativeSymlink(linkpath, targetpath, outpath, items=False):
-        if "nonns" in targetpath and targetpath.count("/")<3:
-            checkdepthtarget= 1
-        elif "nonns" in targetpath and not items:
-            checkdepthtarget = 3
-        elif "nonns" in targetpath and items:
-            checkdepthtarget = 4
+        if "nonns" in targetpath:
+            if targetpath.count("/")<3:
+                checkdepthtarget= 1
+            elif not items:
+                checkdepthtarget = 3
+            elif items:
+                checkdepthtarget = 4
         else:
             checkdepthtarget = targetpath.count("/") - 1
         #print("Checkdepthtarget: " + str(checkdepthtarget))
@@ -184,16 +186,17 @@ class DocUtils:
                 if tup[1].language==labellang:
                     label=str(tup[1])
                 onelabel=str(tup[1])
-        if label=="" and onelabel!=None and onelabel!="":
-            if prefixes!=None:
+        if label=="":
+            if onelabel is not None and onelabel!= "":
+                if prefixes is not None:
+                    res = DocUtils.replaceNameSpacesInLabel(prefixes, str(obj))
+                    label=res["uri"]
+                else:
+                    label = onelabel
+            elif (onelabel is None or onelabel == "") and prefixes is not None:
                 res = DocUtils.replaceNameSpacesInLabel(prefixes, str(obj))
-                label=res["uri"]
-            else:
-                label = onelabel
-        elif label=="" and (onelabel==None or onelabel=="") and prefixes!=None:
-            res = DocUtils.replaceNameSpacesInLabel(prefixes, str(obj))
-            if res!=None:
-                label=res["uri"]
+                if res is not None:
+                    label=res["uri"]
         return label
 
     @staticmethod
@@ -240,9 +243,9 @@ class DocUtils:
 
     @staticmethod
     def generateRelativePathFromGivenDepth(checkdepth):
-        rellink = ""
-        for i in range(0, checkdepth):
-            rellink = "../" + rellink
+        rellink = "../"*checkdepth
+        #for i in range(0, checkdepth):
+        #    rellink = "../" + rellink
         return rellink
 
     @staticmethod
@@ -285,7 +288,7 @@ class DocUtils:
                 myhtmltemplate = myhtmltemplate.replace(match, "{{relativepath}}js/" + match[match.rfind("/") + 1:])
         matched = re.findall(r'href="(http.*.css)"', myhtmltemplate)
         for match in matched:
-            print(match.replace("\"", ""))
+            #print(match.replace("\"", ""))
             match = match.replace("\"", "").replace("/>", "")
             match = match.replace(">", "")
             try:

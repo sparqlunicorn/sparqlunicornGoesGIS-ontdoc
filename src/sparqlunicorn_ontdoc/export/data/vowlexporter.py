@@ -98,16 +98,18 @@ class OWL2VOWL():
             vowlresult["header"]["baseIris"].append(str(nstup[1]))
         for pred in g.subject_objects(URIRef(typeproperty)):
             #print(pred)
-            iriToProdId[str(pred[0])]=idcounter
-            if str(pred[1])=="http://www.w3.org/2002/07/owl#Class" or str(pred[1])=="http://www.w3.org/2000/01/rdf-schema#Class"  or str(pred[1])=="http://www.w3.org/2000/01/rdf-schema#Datatype":
-                classes.append({"id":idcounter,"type":str(pred[1])})
-                classiriToProdId[str(pred[0])]={"id":idcounter,"attid":len(classAttributes)-1}
-                classAttributes.append({"id":idcounter,"iri":str(pred[0]),"baseIRI":OWL2VOWL.getBaseIRI(str(pred[0])),"instances":0,"label":{"IRI-based":OWL2VOWL.getIRILabel(str(pred[0]))},"annotations":{},"subClasses":[],"superClasses":[]})
+            predsubstr = str(pred[0])
+            predobjstr = str(pred[1])
+            iriToProdId[predsubstr]=idcounter
+            if predobjstr=="http://www.w3.org/2002/07/owl#Class" or predobjstr=="http://www.w3.org/2000/01/rdf-schema#Class" or predobjstr=="http://www.w3.org/2000/01/rdf-schema#Datatype":
+                classes.append({"id":idcounter,"type":predobjstr})
+                classiriToProdId[predsubstr]={"id":idcounter,"attid":len(classAttributes)-1}
+                classAttributes.append({"id":idcounter,"iri":predsubstr,"baseIRI":OWL2VOWL.getBaseIRI(predsubstr),"instances":0,"label":{"IRI-based":OWL2VOWL.getIRILabel(predsubstr)},"annotations":{},"subClasses":[],"superClasses":[]})
                 idcounter+=1
             else:
-                props.append({"id":idcounter,"type":OWL2VOWL.getTypeForProperty(str(pred[0]),g,typeproperty)})
-                propiriToProdId[str(pred[0])]={"id":idcounter,"attid":len(propAttributes)-1}
-                propAttributes.append({"id":idcounter,"iri":str(pred[0]),"baseIRI":OWL2VOWL.getBaseIRI(str(pred[0])),"instances":0,"label":{"IRI-based":OWL2VOWL.getIRILabel(str(pred[0]))},"annotations":{},"range":[],"domain":[],"subProperties":[],"superProperties":[]})
+                props.append({"id":idcounter,"type":OWL2VOWL.getTypeForProperty(str(predsubstr),g,typeproperty)})
+                propiriToProdId[predsubstr]={"id":idcounter,"attid":len(propAttributes)-1}
+                propAttributes.append({"id":idcounter,"iri":str(predsubstr),"baseIRI":OWL2VOWL.getBaseIRI(predsubstr),"instances":0,"label":{"IRI-based":OWL2VOWL.getIRILabel(predsubstr)},"annotations":{},"range":[],"domain":[],"subProperties":[],"superProperties":[]})
                 idcounter+=1
 
         for pred in g.subject_objects(URIRef("http://www.w3.org/2000/01/rdf-schema#range")):
@@ -140,23 +142,25 @@ class OWL2VOWL():
             #print(iri)
             for propatt in g.predicate_objects(URIRef(iri)):
                 #print(propatt)
-                if propatt[0]!=URIRef(typeproperty):
-                    if propatt[0]==URIRef("http://www.w3.org/2000/01/rdf-schema#subPropertyOf"):
-                        if str(propatt[1]) in propiriToProdId:
-                            propAttributes[propiriToProdId[iri]["attid"]]["superProperties"].append(str(propiriToProdId[str(propatt[1])]["id"]))
-                            propAttributes[propiriToProdId[str(propatt[1])]["attid"]]["subProperties"].append(str(propiriToProdId[iri]["id"]))
-                    elif propatt[0]==URIRef("http://www.w3.org/2000/01/rdf-schema#range") and str(propatt[1]) in propiriToProdId:
-                        propAttributes[propiriToProdId[iri]["attid"]]["range"].append(str(classiriToProdId[str(propatt[1])]["id"]))
-                    elif propatt[0]==URIRef("http://www.w3.org/2000/01/rdf-schema#domain") and str(propatt[1]) in propiriToProdId:
-                        propAttributes[propiriToProdId[iri]["attid"]]["domain"].append(str(classiriToProdId[str(propatt[1])]["id"]))
-                    elif propatt[0]==URIRef(labelproperty):
-                        propAttributes[propiriToProdId[iri]["attid"]]["label"]=str(propatt[1])
+                propattpred = str(propatt[0])
+                propattobj=str(propatt[1])
+                if propattpred!=typeproperty:
+                    if propattpred=="http://www.w3.org/2000/01/rdf-schema#subPropertyOf":
+                        if propattobj in propiriToProdId:
+                            propAttributes[propiriToProdId[iri]["attid"]]["superProperties"].append(str(propiriToProdId[propattobj]["id"]))
+                            propAttributes[propiriToProdId[propattobj]["attid"]]["subProperties"].append(str(propiriToProdId[iri]["id"]))
+                    elif propattpred=="http://www.w3.org/2000/01/rdf-schema#range" and propattobj in propiriToProdId:
+                        propAttributes[propiriToProdId[iri]["attid"]]["range"].append(str(classiriToProdId[propattobj]["id"]))
+                    elif propattpred=="http://www.w3.org/2000/01/rdf-schema#domain" and str(propattobj) in propiriToProdId:
+                        propAttributes[propiriToProdId[iri]["attid"]]["domain"].append(str(classiriToProdId[propattobj]["id"]))
+                    elif propattpred==labelproperty:
+                        propAttributes[propiriToProdId[iri]["attid"]]["label"]=propattobj
                     else:
-                        propAttributes[propiriToProdId[iri]["attid"]]["annotations"][str(propatt[0])]=[]
-                        if str(propatt[1]).startswith("http"):
-                            propAttributes[propiriToProdId[iri]["attid"]]["annotations"][str(propatt[0])].append({"identifier":str(propatt[0]),"language":"undefined","value":str(propatt[1]),"type":"iri"})
+                        propAttributes[propiriToProdId[iri]["attid"]]["annotations"][propattpred]=[]
+                        if propattobj.startswith("http"):
+                            propAttributes[propiriToProdId[iri]["attid"]]["annotations"][propattpred].append({"identifier":propattpred,"language":"undefined","value":propattobj,"type":"iri"})
                         else:
-                            propAttributes[propiriToProdId[iri]["attid"]]["annotations"][str(propatt[0])].append({"identifier":str(propatt[0]),"language":"undefined","value":str(propatt[1]),"type":"label"})
+                            propAttributes[propiriToProdId[iri]["attid"]]["annotations"][propattpred].append({"identifier":propattpred,"language":"undefined","value":propattobj,"type":"label"})
 
         vowlresult["property"]=props
         vowlresult["propertyAttribute"]=propAttributes

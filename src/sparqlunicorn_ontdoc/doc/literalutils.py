@@ -42,7 +42,7 @@ class LiteralUtils:
                     literal = literal[literal.rfind('>') + 1:].strip()
                 shapelygeom = shapely.wkt.loads(literal)
                 thejson = json.loads(json.dumps(shapely.geometry.mapping(shapelygeom), indent=2))
-                if curcrs != None:
+                if curcrs is not None:
                     thejson["crs"] = curcrs
                 return thejson
             if "geojson" in literaltype.lower():

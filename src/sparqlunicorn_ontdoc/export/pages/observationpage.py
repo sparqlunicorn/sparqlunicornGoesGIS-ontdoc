@@ -25,7 +25,7 @@ class ObservationPage:
                     if str(val[0]) in DocConfig.valueproperties and val[1] is not None and str(val[1]) != "":
                         gotvalue = str(val[1])
                     if str(val[0]) in DocConfig.unitproperties and val[1] is not None and str(val[1]) != "":
-                        xLabel = "Value (" + str(val[1]) + ")"
+                        xLabel = f"Value ({val[1]})"
         if pageWidget:
             f.write(templates["chartviewtemplate"].replace("{{xValues}}", str([gotvalue]))
                     .replace("{{yValues}}",str([gottime])).replace("{{xLabel}}", "Value").replace("{{yLabel}}", "Time"))

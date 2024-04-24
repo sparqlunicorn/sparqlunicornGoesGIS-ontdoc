@@ -48,7 +48,7 @@ class HTMLExporter():
             checkdepth = DocUtils.checkDepthFromPath(savepath, baseurl, subject)
         logo = ""
         if self.pubconfig["logourl"] != None and self.pubconfig["logourl"] != "":
-            logo = "<img src=\"" + self.pubconfig["logourl"] + "\" alt=\"logo\" width=\"25\" height=\"25\"/>&nbsp;&nbsp;"
+            logo = f"<img src=\"{self.pubconfig['logourl']}\" alt=\"logo\" width=\"25\" height=\"25\"/>&nbsp;&nbsp;"
         textannos = []
         foundvals = set()
         imageannos = []
@@ -88,12 +88,13 @@ class HTMLExporter():
                 if tuppredstr not in predobjmap:
                     predobjmap[tuppredstr] = []
                 predobjmap[tuppredstr].append(tup[1])
-                if parentclass is not None and tuppredstr not in uritotreeitem[parentclass][-1]["data"]["to"]:
-                    uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr] = {}
-                    uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr]["instancecount"] = 0
                 if parentclass is not None:
-                    uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr]["instancecount"] += 1
-                    uritotreeitem[parentclass][-1]["instancecount"] += 1
+                    if tuppredstr not in uritotreeitem[parentclass][-1]["data"]["to"]:
+                        uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr] = {}
+                        uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr]["instancecount"] = 0
+                    else:
+                        uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr]["instancecount"] += 1
+                        uritotreeitem[parentclass][-1]["instancecount"] += 1
                 if isinstance(tup[1], URIRef):
                     for item in graph.objects(tup[1], URIRef(self.typeproperty)):
                         thetypes.add(str(item))
@@ -132,12 +133,9 @@ class HTMLExporter():
                         if tpstr in DocConfig.collectionclasses:
                             uritotreeitem[tpstr][-1]["instancecount"] += 1
                             collections.add(DocConfig.collectionclasses[tpstr])
-                        if tpstr in DocConfig.bibtextypemappings:
-                            itembibtex = "<details><summary>[BIBTEX]</summary><pre>" + str(
-                                BibPage.resolveBibtexReference(graph.predicate_objects(subject), subject,
-                                                               graph)) + "</pre></details>"
-                thetable = HTMLExporter.formatPredicate(tup, baseurl, checkdepth, thetable, graph, inverse,
-                                                        self.pubconfig["labellang"], self.pubconfig["prefixes"])
+                        elif tpstr in DocConfig.bibtextypemappings:
+                            itembibtex = f"<details><summary>[BIBTEX]</summary><pre>{BibPage.resolveBibtexReference(graph.predicate_objects(subject), subject,graph)}</pre></details>"
+                thetable = HTMLExporter.formatPredicate(tup, baseurl, checkdepth, thetable, graph, inverse, self.pubconfig["labellang"], self.pubconfig["prefixes"])
                 if tup in DocConfig.labelproperties:
                     for lab in predobjmap[tup]:
                         if lab.language == self.pubconfig["labellang"]:
@@ -149,7 +147,7 @@ class HTMLExporter():
                 if predobjtuplen > 0:
                     thetable += "<td class=\"wrapword\">"
                     if predobjtuplen > HTMLExporter.listthreshold:
-                        thetable += "<details><summary>" + str(predobjtuplen) + " values</summary>"
+                        thetable += f"<details><summary>{predobjtuplen} values</summary>"
                     if predobjtuplen > 1:
                         thetable += "<ul>"
                     labelmap = {}
@@ -158,8 +156,7 @@ class HTMLExporter():
                         if itemcounter >= HTMLExporter.maxlistthreshold:
                             break
                         if tup in DocConfig.valueproperties and ("POINT" in str(item).upper() or "POLYGON" in str(item).upper() or "LINESTRING" in str(
-                                item).upper()) and self.typeproperty in predobjmap and URIRef(
-                            "http://www.w3.org/ns/oa#WKTSelector") in predobjmap[self.typeproperty]:
+                                item).upper()) and self.typeproperty in predobjmap and URIRef("http://www.w3.org/ns/oa#WKTSelector") in predobjmap[self.typeproperty]:
                             image3dannos.append({"value": str(item)})
                         elif "<svg" in str(item):
                             foundmedia["image"][str(item)] = {}
@@ -193,9 +190,9 @@ class HTMLExporter():
                         if res["label"] not in labelmap:
                             labelmap[res["label"]] = ""
                         if predobjtuplen > 1:
-                            labelmap[res["label"]] += "<li>" + str(res["html"]) + "</li>"
+                            labelmap[res["label"]] += f"<li>{res['html']}</li>"
                         else:
-                            labelmap[res["label"]] += str(res["html"])
+                            labelmap[res["label"]] += f"{res['html']}"
                         itemcounter += 1
                     for lab in sorted(labelmap):
                         thetable += str(labelmap[lab])
@@ -242,7 +239,7 @@ class HTMLExporter():
                 if subpredtuplen > 0:
                     tablecontents += "<td class=\"wrapword\">"
                     if subpredtuplen > HTMLExporter.listthreshold:
-                        tablecontents += "<details><summary>" + str(subpredtuplen) + " values</summary>"
+                        tablecontents += f"<details><summary>{subpredtuplen} values</summary>"
                     if subpredtuplen > 1:
                         tablecontents += "<ul>"
                     labelmap = {}
@@ -271,9 +268,9 @@ class HTMLExporter():
                         if res["label"] not in labelmap:
                             labelmap[res["label"]] = ""
                         if subpredtuplen > 1:
-                            labelmap[res["label"]] += "<li>" + str(res["html"]) + "</li>"
+                            labelmap[res["label"]] += f"<li>{res['html']}</li>"
                         else:
-                            labelmap[res["label"]] += str(res["html"])
+                            labelmap[res["label"]] += f"{res['html']}"
                         itemcounter += 1
                     for lab in sorted(labelmap):
                         tablecontents += str(labelmap[lab])
@@ -297,14 +294,10 @@ class HTMLExporter():
         nonnslink = ""
         if nonns:
             if "http:" in savepath:
-                completesavepath = savepath[0:savepath.find("http:") - 1] + savepath[savepath.find("http:"):].replace(
-                    ":", "_").replace("/", "_")
+                completesavepath = savepath[0:savepath.find("http:") - 1] + savepath[savepath.find("http:"):].replace(":", "_").replace("/", "_")
             else:
                 completesavepath = savepath
-            nonnslink = "<div>This page describes linked instances to the concept  <a target=\"_blank\" href=\"" + str(
-                subject) + "\">" + str(foundlabel) + " (" + str(DocUtils.shortenURI(
-                subject)) + ") </a> in this knowledge graph. It is defined <a target=\"_blank\" href=\"" + str(
-                subject) + "\">here</a></div>"
+            nonnslink = f"<div>This page describes linked instances to the concept  <a target=\"_blank\" href=\"{subject}\">{foundlabel} ({DocUtils.shortenURI(subject)}) </a> in this knowledge graph. It is defined <a target=\"_blank\" href=\"{subject}\">here</a></div>"
         else:
             completesavepath = savepath + "/index.html"
             if os.path.exists(savepath):
@@ -403,11 +396,10 @@ class HTMLExporter():
                     break
             elif len(foundmedia["mesh"]) == 0 and len(image3dannos) > 0:
                 for anno in image3dannos:
-                    if ("POINT" in anno["value"].upper() or "POLYGON" in anno["value"].upper() or "LINESTRING" in
-                            anno["value"].upper()):
+                    annoup=anno["value"].upper()
+                    if "POINT" in annoup or "POLYGON" in annoup or "LINESTRING" in annoup:
                         f.write(self.templates["threejstemplate"].replace("{{wktstring}}", anno["value"]).replace(
-                            "{{meshurls}}", "[]").replace("{{relativepath}}",
-                                                          DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
+                            "{{meshurls}}", "[]").replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
             carousel = "image"
             if len(foundmedia["image"]) > 3:
                 carousel = "carousel-item active"
@@ -632,7 +624,7 @@ class HTMLExporter():
                 annosource = tupobjstr
                 #print("Found annosource " + tupobjstr + " from " + str(object) + " Imageannos: " + str(len(imageannos)))
             elif tuppredstr in DocConfig.valueproperties:
-                if tempvalprop == None and tuppredstr == "http://www.w3.org/ns/oa#hasSource":
+                if tempvalprop is None and tuppredstr == "http://www.w3.org/ns/oa#hasSource":
                     tempvalprop = tuppredstr
                     foundval = tupobjstr
                 elif tuppredstr != "http://www.w3.org/ns/oa#hasSource" and DocConfig.valueproperties[
@@ -676,16 +668,16 @@ class HTMLExporter():
             if foundunit is not None:
                 if "http" in foundunit:
                     thelabel = DocUtils.getLabelForObject(str(foundunit), graph, prefixes)
-                    unitlabel = str(foundval) + " <a href=\"" + str(foundunit) + "\" target=\"_blank\">" + thelabel + "</a>"
+                    unitlabel = f"{foundval} <a href=\"{foundunit}\" target=\"_blank\">{thelabel}</a>"
                 else:
-                    unitlabel = str(foundval) + " " + str(foundunit)
+                    unitlabel = f"{foundval} {foundunit}"
                 if pred == "http://www.w3.org/ns/oa#hasBody":
                     # print("ADD ANNO BODY: "+str({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"}))
                     annobodies.append({"value": foundval, "unit": foundunit, "type": "TextualBody", "format": "text/plain"})
-            if foundunit is None:
+            else:
                 if "http" in foundval:
                     thelabel = DocUtils.getLabelForObject(str(foundunit), graph, prefixes)
-                    unitlabel = "<a href=\"" + str(foundval) + "\" target=\"_blank\">" + thelabel + "</a>"
+                    unitlabel = f"<a href=\"{foundval}\" target=\"_blank\">{thelabel}</a>"
                 else:
                     unitlabel = str(foundval)
                 if pred == "http://www.w3.org/ns/oa#hasBody":
@@ -712,6 +704,8 @@ class HTMLExporter():
         label = ""
         bibtex = None
         timeobj = None
+        objstr=str(object)
+        predstr=str(pred)
         if isinstance(object, URIRef) or isinstance(object, BNode):
             if ttlf is not None:
                 ttlf.add((subject, URIRef(pred), object))
@@ -724,7 +718,7 @@ class HTMLExporter():
                                                                           typeproperty, prefixes)
             label = mydata["label"]
             if label == "":
-                label = str(DocUtils.shortenURI(str(object)))
+                label = str(DocUtils.shortenURI(objstr))
             geojsonrep = mydata["geojsonrep"]
             foundmedia = mydata["foundmedia"]
             imageannos = mydata["imageannos"]
@@ -735,69 +729,58 @@ class HTMLExporter():
             timeobj = mydata["timeobj"]
             annobodies = mydata["annobodies"]
             if inverse:
-                rdfares = " about=\"" + str(object) + "\" resource=\"" + str(subject) + "\""
-                microdatares = " itemref=\"" + str(object) + "\" "
+                rdfares = f" about=\"{objstr}\" resource=\"{subject}\""
+                microdatares = f" itemref=\"{objstr}\" "
             else:
-                rdfares = "resource=\"" + str(object) + "\""
+                rdfares = f"resource=\"{objstr}\""
                 microdatares = " "
-            if baseurl in str(object) or isinstance(object, BNode):
-                rellink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, str(object), True)
-                tablecontents += "<span><a itemprop=\"" + str(pred) + "\"" + microdatares + "property=\"" + str(
-                    pred) + "\" " + rdfares + " href=\"" + rellink + "\">" + label + " <span style=\"color: #666;\">(" + namespaceshort + ":" + str(
-                    DocUtils.shortenURI(str(object))) + ")</span></a>"
+            if baseurl in objstr or isinstance(object, BNode):
+                rellink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, objstr, True)
+                tablecontents += f"<span><a itemprop=\"{predstr}\"{microdatares}property=\"{pred}\" {rdfares} href=\"{rellink}\">{label} <span style=\"color: #666;\">({namespaceshort}:{DocUtils.shortenURI(objstr)})</span></a>"
                 if bibtex is not None:
-                    tablecontents += "<details><summary>[BIBTEX]</summary><pre>" + str(bibtex) + "</pre></details>"
+                    tablecontents += f"<details><summary>[BIBTEX]</summary><pre>{bibtex}</pre></details>"
             else:
-                res = DocUtils.replaceNameSpacesInLabel(prefixes, str(object))
+                res = DocUtils.replaceNameSpacesInLabel(prefixes, objstr)
                 if res is not None and res["uri"] != "":
-                    tablecontents += "<span><a itemprop=\"" + str(pred) + "\"" + microdatares + "property=\"" + str(
-                        pred) + "\" " + rdfares + " target=\"_blank\" href=\"" + str(
-                        object) + "\">" + label + " <span style=\"color: #666;\">(" + res["uri"] + ")</span></a>"
+                    tablecontents += f"<span><a itemprop=\"{predstr}\"{microdatares}property=\"{predstr}\" {rdfares} target=\"_blank\" href=\"{objstr}\">{label} <span style=\"color: #666;\">({res['uri']})</span></a>"
                 else:
-                    tablecontents += "<span><a itemprop=\"" + str(pred) + "\"" + microdatares + "property=\"" + str(
-                        pred) + "\" " + rdfares + " target=\"_blank\" href=\"" + str(object) + "\">" + label + "</a>"
+                    tablecontents += f"<span><a itemprop=\"{predstr}\"{microdatares}property=\"{predstr}\" {rdfares} target=\"_blank\" href=\"{objstr}\">{label}</a>"
                 if bibtex is not None:
-                    tablecontents += "<details><summary>[BIBTEX]</summary><pre>" + str(bibtex) + "</pre></details>"
+                    tablecontents += f"<details><summary>[BIBTEX]</summary><pre>{bibtex}</pre></details>"
                 if generatePagesForNonNS:
                     rellink = DocUtils.generateRelativeLinkFromGivenDepth(str(baseurl), checkdepth,
                                                                           str(baseurl) + "nonns_" + DocUtils.shortenURI(
-                                                                              str(object).replace(":", "_")), False)
-                    tablecontents += " <a href=\"" + rellink + ".html\">[x]</a>"
+                                                                              objstr.replace(":", "_")), False)
+                    tablecontents += f" <a href=\"{rellink}.html\">[x]</a>"
             if unitlabel != "":
-                tablecontents += " <span style=\"font-weight:bold\">[" + str(unitlabel) + "]</span>"
+                tablecontents += f" <span style=\"font-weight:bold\">[{unitlabel}]</span>"
             if timeobj is not None:
                 res = OWLTimePage.timeObjectToHTML(timeobj, prefixes)
                 if res != "":
-                    tablecontents += " <span style=\"font-weight:bold\">[" + str(res) + "]</span>"
+                    tablecontents += f" <span style=\"font-weight:bold\">[{res}]</span>"
                 dateprops = timeobj
             tablecontents += "</span>"
         else:
-            label = str(object)
+            label = objstr
             if ttlf is not None:
                 ttlf.add((subject, URIRef(pred), object))
             if isinstance(object, Literal) and object.datatype is not None:
                 res = DocUtils.replaceNameSpacesInLabel(prefixes, str(object.datatype))
-                objstring = str(object).replace("<", "&lt").replace(">", "&gt;")
+                objstring = objstr.replace("<", "&lt").replace(">", "&gt;")
                 if str(object.datatype) == "http://www.w3.org/2001/XMLSchema#anyURI":
-                    objstring = "<a href=\"" + str(object) + "\">" + str(object) + "</a>"
-                elif str(object.datatype) in DocConfig.timeliteraltypes and dateprops is not None and DocUtils.shortenURI(
-                        str(pred), True) not in DocConfig.metadatanamespaces and str(pred) not in dateprops:
-                    dateprops.append(str(pred))
-                tablecontents += "<span itemprop=\"" + str(pred) + "\" property=\"" + str(
-                    pred) + "\" content=\"" + str(
-                    object).replace("<", "&lt").replace(">", "&gt;").replace("\"", "'") + "\" datatype=\"" + str(
-                    object.datatype) + "\">" + HTMLExporter.truncateValue(
-                    objstring) + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"" + str(
+                    objstring = "<a href=\"" + objstr + "\">" + objstr + "</a>"
+                elif str(object.datatype) in DocConfig.timeliteraltypes and dateprops is not None and DocUtils.shortenURI(predstr, True) not in DocConfig.metadatanamespaces and str(pred) not in dateprops:
+                    dateprops.append(predstr)
+                tablecontents += f"<span itemprop=\"{predstr}\" property=\"{predstr}\" content=\""+objstr.replace("<", "&lt").replace(">", "&gt;").replace("\"", "'")+f"\" datatype=\"{object.datatype}\">{HTMLExporter.truncateValue(objstring)} <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"" + str(
                     object.datatype) + "\">" + (res["uri"] if res is not None else DocUtils.shortenURI(
                     str(object.datatype))) + "</a>)</small></span>"
                 geojsonrep = LiteralUtils.resolveGeoLiterals(URIRef(pred), object, graph, geojsonrep, nonns, subject)
             else:
                 if object.language is not None:
-                    tablecontents += "<span itemprop=\"" + str(pred) + "\" property=\"" + str(
-                        pred) + "\" content=\"" + str(object).replace("<", "&lt").replace(">", "&gt;").replace("\"",
+                    tablecontents += f"<span itemprop=\"{predstr}\" property=\"{predstr}\" content=\"" + objstr.replace("<", "&lt").replace(">", "&gt;").replace("\"",
                                                                                                                "'") + "\" datatype=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\" xml:lang=\"" + str(
                         object.language) + "\">" + HTMLExporter.truncateValue(
-                        str(object).replace("<", "&lt").replace(">",
+                        objstr.replace("<", "&lt").replace(">",
                                                                 "&gt;")) + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\">rdf:langString</a>) (<a href=\"http://www.lexvo.org/page/iso639-1/" + str(
                         object.language) + "\" target=\"_blank\">iso6391:" + str(
                         object.language) + "</a>)</small></span>"
@@ -830,11 +813,10 @@ class HTMLExporter():
             tablecontents += "Is "
         if baseurl in str(tup):
             rellink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, str(tup), True)
-            tablecontents += "<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"" + rellink + "\">" + label + "</a></span>"
+            tablecontents += f"<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"{rellink}\">{label}</a></span>"
         else:
             res = DocUtils.replaceNameSpacesInLabel(prefixes, tup)
-            tablecontents += "<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"" + str(
-                tup) + "\">" + label +(" <span style=\"color: #666;\">(" + res["uri"] + ")</span>" if res["uri"]!="" else "")+"</a> </span>"
+            tablecontents += f"<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"{tup}\">{label} "+("<span style=\"color: #666;\">(" + res["uri"] + ")</span>" if res["uri"]!="" else "")+"</a> </span>"
         if reverse:
             tablecontents += " of"
         tablecontents += "</td>"
@@ -843,34 +825,17 @@ class HTMLExporter():
     @staticmethod
     def truncateValue(value, limit=150):
         if len(value) > limit:
-            return "<details><summary style=\"list-style-type: none;\">" + value[0:limit] + " (...)</summary>" + str(
-                value[limit:]) + "</details>"
+            return f"<details><summary style=\"list-style-type: none;\">{value[0:limit]} (...)</summary>{value[limit:]}</details>"
         return value
 
     @staticmethod
     def detectStringLiteralContent(pred, object):
         if object.startswith("http://") or object.startswith("https://"):
-            return "<span><a itemprop=\"" + str(pred) + "\" property=\"" + str(
-                pred) + "\" target=\"_blank\" href=\"" + str(
-                object) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">" + str(
-                object) + "</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
+            return f"<span><a itemprop=\"{pred}\" property=\"{pred}\" target=\"_blank\" href=\"{object}\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">{object}</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
         elif object.startswith("www."):
-            return "<span><a itemprop=\"" + str(pred) + "\" property=\"" + str(
-                pred) + "\" target=\"_blank\" href=\"http://" + str(
-                object) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">http://" + str(
-                object) + "</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
+            return f"<span><a itemprop=\"{pred}\" property=\"{pred}\" target=\"_blank\" href=\"http://{object}\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">http://{object}</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
         elif re.search(r'(10[.][0-9]{2,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)', str(object)):
-            return "<span><a itemprop=\"" + str(pred) + "\" property=\"" + str(
-                pred) + "\" href=\"https://www.doi.org/" + str(
-                object) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#anyURI\">" + str(
-                object) + "</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#anyURI\">xsd:anyURI</a>)</small></span>"
+            return f"<span><a itemprop=\"{pred}\" property=\"{pred}\" href=\"https://www.doi.org/{object}\" datatype=\"http://www.w3.org/2001/XMLSchema#anyURI\">{object}</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#anyURI\">xsd:anyURI</a>)</small></span>"
         elif re.search(r'[\w.]+\@[\w.]+', object):
-            return "<span><a itemprop=\"" + str(pred) + "\" property=\"" + str(pred) + "\" href=\"mailto:" + str(
-                object) + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">mailto:" + str(
-                object) + "</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
-        return "<span property=\"" + str(pred) + "\" content=\"" + str(object).replace("<", "&lt").replace(">",
-                                                                                                           "&gt;").replace(
-            "\"", "'") + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">" + str(object).replace("<",
-                                                                                                          "&lt").replace(
-            ">",
-            "&gt;") + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
+            return f"<span><a itemprop=\"{pred}\" property=\"{pred}\" href=\"mailto:{object}\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">mailto:{object}</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
+        return f"<span property=\"{pred}\" content=\""+str(object).replace("<", "&lt").replace(">","&gt;").replace("\"", "'") + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">" + str(object).replace("<","&lt").replace(">","&gt;")+" <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"

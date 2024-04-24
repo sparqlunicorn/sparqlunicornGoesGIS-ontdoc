@@ -58,47 +58,49 @@ class ClassTreeUtils:
                     ress[str(res["subject"])] = {"super": None, "label": res["label"]}
         # print(ress)
         for cls in ress:
+            clsstr=str(cls)
             for obj in graph.subjects(URIRef(typeproperty), URIRef(cls), True):
-                res = DocUtils.replaceNameSpacesInLabel(prefixes, str(obj))
-                if str(obj) in uritolabel:
-                    restext = uritolabel[str(obj)]["label"] + " (" + DocUtils.shortenURI(str(obj)) + ")"
-                    if res != None:
-                        restext = uritolabel[str(obj)]["label"] + " (" + res["uri"] + ")"
+                objstr=str(obj)
+                res = DocUtils.replaceNameSpacesInLabel(prefixes, objstr)
+                if objstr in uritolabel:
+                    restext = uritolabel[objstr]["label"] + " (" + DocUtils.shortenURI(objstr) + ")"
+                    if res is not None:
+                        restext = uritolabel[objstr]["label"] + " (" + res["uri"] + ")"
                 else:
-                    restext = DocUtils.shortenURI(str(obj))
-                    if res != None:
+                    restext = DocUtils.shortenURI(objstr)
+                    if res is not None:
                         restext += " (" + res["uri"] + ")"
-                if str(obj) not in DocConfig.collectionclasses:
-                    result.append({"id": str(obj), "parent": cls, "type": "instance", "text": restext, "data": {}})
+                if objstr not in DocConfig.collectionclasses:
+                    result.append({"id": objstr, "parent": cls, "type": "instance", "text": restext, "data": {}})
                 else:
-                    result.append({"id": str(obj), "parent": cls, "type": "class", "text": restext, "data": {}})
-                if str(obj) not in uritotreeitem:
-                    uritotreeitem[str(obj)] = []
-                uritotreeitem[str(obj)].append(result[-1])
+                    result.append({"id": objstr, "parent": cls, "type": "class", "text": restext, "data": {}})
+                if objstr not in uritotreeitem:
+                    uritotreeitem[objstr] = []
+                uritotreeitem[objstr].append(result[-1])
                 # classidset.add(str(obj))
-            res = DocUtils.replaceNameSpacesInLabel(prefixes, str(cls))
-            if ress[cls]["super"] == None:
-                restext = DocUtils.shortenURI(str(cls))
-                if res != None:
+            res = DocUtils.replaceNameSpacesInLabel(prefixes, clsstr)
+            if ress[cls]["super"] is None:
+                restext = DocUtils.shortenURI(clsstr)
+                if res is not None:
                     restext += " (" + res["uri"] + ")"
                 if cls not in uritotreeitem:
                     result.append({"id": cls, "parent": "#", "type": "class", "text": restext, "data": {}})
-                    uritotreeitem[str(cls)] = []
-                    uritotreeitem[str(cls)].append(result[-1])
+                    uritotreeitem[clsstr] = []
+                    uritotreeitem[clsstr].append(result[-1])
             else:
-                if "label" in cls and ress[cls]["label"] != None:
-                    restext = ress[cls]["label"] + " (" + DocUtils.shortenURI(str(cls)) + ")"
-                    if res != None:
-                        restext = ress[cls]["label"] + " (" + res["uri"] + ")"
+                if "label" in cls and ress[cls]["label"] is not None:
+                    restext = f"{ress[cls]['label']} ({DocUtils.shortenURI(clsstr)})"
+                    if res is not None:
+                        restext = f"{ress[cls]['label']} ({res['uri']})"
                 else:
-                    restext = DocUtils.shortenURI(str(cls))
-                    if res != None:
+                    restext = DocUtils.shortenURI(clsstr)
+                    if res is not None:
                         restext += " (" + res["uri"] + ")"
                 if cls not in uritotreeitem:
                     result.append({"id": cls, "parent": ress[cls]["super"], "type": "class", "text": restext, "data": {}})
-                    if str(cls) not in uritotreeitem:
-                        uritotreeitem[str(cls)] = []
-                        uritotreeitem[str(cls)].append(result[-1])
+                    if clsstr not in uritotreeitem:
+                        uritotreeitem[clsstr] = []
+                        uritotreeitem[clsstr].append(result[-1])
                 else:
                     uritotreeitem[cls][-1]["parent"] = ress[cls]["super"]
                 if str(ress[cls]["super"]) not in uritotreeitem:
@@ -113,9 +115,9 @@ class ClassTreeUtils:
                     uritotreeitem[str(ress[cls]["super"])].append(theitem)
                     result.append(theitem)
                 classidset.add(str(ress[cls]["super"]))
-            classidset.add(str(cls))
+            classidset.add(clsstr)
         tree["core"]["data"] = result
-        return tree
+        return [tree,uritotreeitem,classidset]
 
     @staticmethod
     def assignGeoClassesToTree(tree):
