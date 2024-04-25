@@ -50,7 +50,7 @@ class OWL2VOWL():
             if str(pred[1]) not in nodeuriToId:
                 nodeuriToId[str(pred[1])]=nodecounter
                 nodecounter+=1
-                if pred[1]==OWL.CLass or pred[1]==RDFS.Class or str(pred[1])=="http://www.w3.org/2000/01/rdf-schema#Datatype":
+                if pred[1]==OWL.Class or pred[1]==RDFS.Class or str(pred[1])=="http://www.w3.org/2000/01/rdf-schema#Datatype":
                     nodes.append({"name":OWL2VOWL.getIRILabel(str(pred[1])),"type":"class","uri":str(pred[1])})
                 else:
                     nodes.append({"name": OWL2VOWL.getIRILabel(str(pred[1])), "type": "class", "uri": str(pred[1])})
