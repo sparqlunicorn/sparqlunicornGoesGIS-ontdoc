@@ -78,7 +78,7 @@ class OntDocGeneration:
         self.graph = graph
         self.htmlexporter=HTMLExporter(pubconfig,templates,self.typeproperty)
         for nstup in self.graph.namespaces():
-            prefixes["reserved"].setdefault(str(nstup[1]),str(nstup[0]))
+            prefixes["reversed"].setdefault(str(nstup[1]),str(nstup[0]))
         self.preparedclassquery = prepareQuery(DocConfig.classtreequery.replace("%%typeproperty%%","<"+self.typeproperty+">").replace("%%subclassproperty%%","<"+self.subclassproperty+">"))
         if self.pubconfig["prefixns"] is None or pubconfig["prefixnsshort"] is None or self.pubconfig["prefixns"] == "" or pubconfig["prefixnsshort"] == "":
             self.pubconfig["namespaceshort"] = "suni"
