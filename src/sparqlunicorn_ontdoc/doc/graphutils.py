@@ -124,15 +124,18 @@ class GraphUtils:
         predicatelength = 0
         predicateClasses = 0
         objects = set()
+        tpprop=URIRef(typeproperty)
         for pred in graph.predicates(None, None, True):
             predicates[pred] = {"from": set(), "to": set(), "triples": 0}
             for tup in graph.subject_objects(pred):
-                if str(tup[0]) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":
+                if tup[0] == tpprop:
                     predicateClasses += 1
-                for item in graph.objects(tup[0], URIRef(typeproperty), True):
-                    predicates[pred]["from"].add(item)
-                for item in graph.objects(tup[1], URIRef(typeproperty), True):
-                    predicates[pred]["to"].add(item)
+                predicates[pred]["from"].update(graph.objects(tup[0], tpprop, True))
+                predicates[pred]["to"].update(graph.objects(tup[1], tpprop, True))
+                #for item in graph.objects(tup[0], tpprop, True):
+                #    predicates[pred]["from"].add(item)
+                #for item in graph.objects(tup[1], tpprop, True):
+                #    predicates[pred]["to"].add(item)
                 objects.add(str(tup[1]))
                 predicates[pred]["triples"] += 1
             predicates[pred]["from"] = list(predicates[pred]["from"])
