@@ -44,14 +44,10 @@ class SPARQLPage():
         tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, pubconfig["apis"]["ogcapifeatures"], pubconfig["apis"]["iiif"],
                                                                pubconfig["apis"]["ckan"]],
                                                     [
-                                                        "APIs: <a href=\"" + str(
-                                                            pubconfig["deploypath"]) + "/sparql.html?endpoint=" + str(
-                                                            pubconfig["deploypath"]) + "\">[SPARQL]</a>&nbsp;",
-                                                        "<a href=\"" + str(
-                                                            pubconfig["deploypath"]) + "/api/api.html\">[OGC API Features]</a>&nbsp;",
-                                                        "<a href=\"" + str(
-                                                            pubconfig["deploypath"]) + "/iiif/\">[IIIF]</a>&nbsp;",
-                                                        "<a href=\"" + str(pubconfig["deploypath"]) + "/api/3/\">[CKAN]</a>"
+                                                        f"APIs: <a href=\"{pubconfig['deploypath']}/sparql.html?endpoint={pubconfig['deploypath']}\">[SPARQL]</a>&nbsp;",
+                                                        f"<a href=\"{pubconfig['deploypath']}/api/api.html\">[OGC API Features]</a>&nbsp;",
+                                                        f"<a href=\"{pubconfig['deploypath']}/iiif/\">[IIIF]</a>&nbsp;",
+                                                        f"<a href=\"{pubconfig['deploypath']}/api/3/\">[CKAN]</a>"
                                                     ], "{{apis}}")
         sparqlhtml += tempfoot
         f.write(sparqlhtml)

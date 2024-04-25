@@ -45,8 +45,7 @@ class ClassTreeUtils:
                 "instance": {"icon": "https://cdn.jsdelivr.net/gh/i3mainz/geopubby@master/public/icons/instance.png"},
                 "geoinstance": {
                     "icon": "https://cdn.jsdelivr.net/gh/i3mainz/geopubby@master/public/icons/geoinstance.png"}
-            },
-                "core": {"themes": {"responsive": True}, "check_callback": True, "data": []}}
+            },"core": {"themes": {"responsive": True}, "check_callback": True, "data": []}}
         tree["@context"] = ldcontext["@context"]
         result = []
         ress = {}
@@ -119,9 +118,6 @@ class ClassTreeUtils:
                 classidset.add(str(ress[cls]["super"]))
             classidset.add(clsstr)
         tree["core"]["data"] = result
-        with open(outpath + pubconfig["corpusid"] + "_classtree_raw.js", 'w', encoding='utf-8') as f:
-            f.write("var tree=" + json.dumps(tree, indent=2))
-            f.close()
         return [tree,uritotreeitem,classidset]
 
     @staticmethod

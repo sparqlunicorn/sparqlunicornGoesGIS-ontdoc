@@ -3,7 +3,7 @@ from doc.literalutils import LiteralUtils
 from doc.docutils import DocConfig
 from export.pages.bibpage import BibPage
 from export.pages.owltimepage import OWLTimePage
-from rdflib import URIRef, Graph, BNode, Literal
+from rdflib import URIRef, Graph, BNode, Literal, XSD
 import re
 import os
 import json
@@ -66,12 +66,9 @@ class HTMLExporter():
         if uritotreeitem is not None and str(subject) in uritotreeitem and uritotreeitem[str(subject)][-1][
             "parent"].startswith("http"):
             parentclass = str(uritotreeitem[str(subject)][-1]["parent"])
-            if parentclass not in uritotreeitem:
-                print("PARENTCLASS MISSING: "+str(parentclass))
-                uritotreeitem[parentclass] = [
+            uritotreeitem.setdefault(parentclass, [
                     {"id": parentclass, "parent": "#", "type": "class", "text": DocUtils.shortenURI(str(parentclass)),
-                     "data": {}}]
-            # print(uritotreeitem[parentclass])
+                     "data": {}}])
             uritotreeitem[parentclass][-1]["instancecount"] = 0
         ttlf = Graph(bind_namespaces="rdflib")
         # ttlf = open(savepath + "/index.ttl", "w", encoding="utf-8")
@@ -86,9 +83,7 @@ class HTMLExporter():
             for tup in sorted(predobjs, key=lambda tup: tup[0]):
                 tupobjstr = str(tup[1])
                 tuppredstr = str(tup[0])
-                if tuppredstr not in predobjmap:
-                    predobjmap[tuppredstr] = []
-                predobjmap[tuppredstr].append(tup[1])
+                predobjmap.setdefault(tuppredstr,[]).append(tup[1])
                 if parentclass is not None:
                     if tuppredstr not in uritotreeitem[parentclass][-1]["data"]["to"]:
                         uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr] = {}
@@ -100,8 +95,7 @@ class HTMLExporter():
                     for item in graph.objects(tup[1], URIRef(self.typeproperty)):
                         thetypes.add(str(item))
                         if parentclass is not None:
-                            if item not in uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr]:
-                                uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr][item] = 0
+                            uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr].setdefault(item,0)
                             uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr][item] += 1
                     if baseurl not in tupobjstr and tuppredstr != self.typeproperty:
                         hasnonns.add(tupobjstr)
@@ -188,8 +182,7 @@ class HTMLExporter():
                         if res["timeobj"] is not None and res["timeobj"] != []:
                             # print("RESTIMEOBJ: "+str(timeobj))
                             timeobj = res["timeobj"]
-                        if res["label"] not in labelmap:
-                            labelmap[res["label"]] = ""
+                        labelmap.setdefault(res["label"],"")
                         if predobjtuplen > 1:
                             labelmap[res["label"]] += f"<li>{res['html']}</li>"
                         else:
@@ -216,9 +209,7 @@ class HTMLExporter():
         if subpreds is not None:
             for tup in sorted(subpreds, key=lambda tup: tup[1]):
                 tupobjstr=str(tup[1])
-                if tupobjstr not in subpredsmap:
-                    subpredsmap[tupobjstr] = []
-                subpredsmap[tupobjstr].append(tup[0])
+                subpredsmap.setdefault(tupobjstr,[]).append(tup[0])
                 if parentclass is not None and tupobjstr not in uritotreeitem[parentclass][-1]["data"]["from"]:
                     uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr] = {}
                     uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr]["instancecount"] = 0
@@ -266,8 +257,7 @@ class HTMLExporter():
                             hasnonns.add(str(item))
                         if nonns:
                             geojsonrep = res["geojson"]
-                        if res["label"] not in labelmap:
-                            labelmap[res["label"]] = ""
+                        labelmap.setdefault(res["label"],"")
                         if subpredtuplen > 1:
                             labelmap[res["label"]] += f"<li>{res['html']}</li>"
                         else:
@@ -769,7 +759,7 @@ class HTMLExporter():
                 res = DocUtils.replaceNameSpacesInLabel(prefixes, str(object.datatype))
                 objstring = objstr.replace("<", "&lt").replace(">", "&gt;")
                 if str(object.datatype) == "http://www.w3.org/2001/XMLSchema#anyURI":
-                    objstring = "<a href=\"" + objstr + "\">" + objstr + "</a>"
+                    objstring = f"<a href=\"{objstr}\">{objstr}</a>"
                 elif str(object.datatype) in DocConfig.timeliteraltypes and dateprops is not None and DocUtils.shortenURI(predstr, True) not in DocConfig.metadatanamespaces and str(pred) not in dateprops:
                     dateprops.append(predstr)
                 tablecontents += f"<span itemprop=\"{predstr}\" property=\"{predstr}\" content=\""+objstr.replace("<", "&lt").replace(">", "&gt;").replace("\"", "'")+f"\" datatype=\"{object.datatype}\">{HTMLExporter.truncateValue(objstring)} <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"" + str(

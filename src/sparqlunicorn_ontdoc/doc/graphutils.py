@@ -1,4 +1,5 @@
 from rdflib import URIRef, BNode, Literal
+from rdflib.namespace import RDF, RDFS, OWL
 from doc.docutils import DocUtils
 from doc.docconfig import DocConfig
 import json
@@ -16,10 +17,11 @@ class GraphUtils:
         subclassofprops=[]
         typeprops=[]
         for pred in graph.predicates(None,None,True):
-            if str(pred) in GraphUtils.subclassofproperties and str(pred) not in subclassofprops:
-                subclassofprops.append(str(pred))
-            if str(pred) in GraphUtils.typeproperties and str(pred) not in typeprops:
-                typeprops.append(str(pred))
+            predstr=str(pred)
+            if predstr in GraphUtils.subclassofproperties and predstr not in subclassofprops:
+                subclassofprops.append(predstr)
+            if predstr in GraphUtils.typeproperties and predstr not in typeprops:
+                typeprops.append(predstr)
         res["typeproperty"]=typeprops
         res["subclassproperty"]=subclassofprops
         return res
@@ -31,55 +33,57 @@ class GraphUtils:
         classToGeoColl = {}
         classToFColl = {}
         for tup in graph.subject_objects(URIRef(typeproperty)):
-            if namespace in str(tup[0]):
-                if str(tup[1]) not in classToInstances:
-                    classToInstances[str(tup[1])] = set()
-                    classToFColl[str(tup[1])] = 0
-                    classToGeoColl[str(tup[1])] = 0
-                classToInstances[str(tup[1])].add(str(tup[0]))
+            tuppredstr=str(tup[0])
+            tupobjstr=str(tup[1])
+            if namespace in tuppredstr:
+                if tupobjstr not in classToInstances:
+                    classToInstances[tupobjstr] = set()
+                    classToFColl[tupobjstr] = 0
+                    classToGeoColl[tupobjstr] = 0
+                classToInstances[tupobjstr].add(tuppredstr)
                 isgeo = False
                 isfeature = False
-                for geotup in graph.predicate_objects(tup[0]):
+                for geotup in graph.predicate_objects(tuppredstr):
                     if str(geotup[0]) in DocConfig.geopointerproperties:
                         isfeature = True
                     elif str(geotup[0]) in DocConfig.geoproperties:
                         isgeo = True
                 if isgeo:
-                    classToGeoColl[str(tup[1])] += 1
+                    classToGeoColl[tupobjstr] += 1
                 if isfeature:
-                    classToFColl[str(tup[1])] += 1
+                    classToFColl[tupobjstr] += 1
         for cls in classToInstances:
             colluri = namespace + DocUtils.shortenURI(cls) + "_collection"
             collrelprop = "http://www.w3.org/2000/01/rdf-schema#member"
             if classToFColl[cls] == len(classToInstances[cls]):
                 graph.add((URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection"),
-                           URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
+                           RDFS.subClassOf,
                            URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
                 graph.add((URIRef("http://www.opengis.net/ont/geosparql#FeatureCollection"),
-                           URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
+                           RDFS.subClassOf,
                            URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection")))
                 graph.add((URIRef(colluri), URIRef(typeproperty),
                            URIRef("http://www.opengis.net/ont/geosparql#FeatureCollection")))
             elif classToGeoColl[cls] == len(classToInstances[cls]):
                 graph.add((URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection"),
-                           URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
+                           RDFS.subClassOf,
                            URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
                 graph.add((URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection"),
-                           URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
+                           RDFS.subClassOf,
                            URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection")))
                 graph.add((URIRef(colluri), URIRef(typeproperty),
                            URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection")))
             elif cls in DocConfig.classToCollectionClass:
                 if "super" in DocConfig.classToCollectionClass[cls]:
                     graph.add((URIRef(DocConfig.classToCollectionClass[cls]["class"]),
-                               URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
+                               RDFS.subClassOf,
                                URIRef(DocConfig.classToCollectionClass[cls]["super"])))
                     graph.add((URIRef(DocConfig.classToCollectionClass[cls]["super"]),
-                               URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
+                               RDFS.subClassOf,
                                URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
                 else:
                     graph.add((URIRef(DocConfig.classToCollectionClass[cls]["class"]),
-                               URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"),
+                               RDFS.subClassOf,
                                URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
                 graph.add((URIRef(colluri), URIRef(typeproperty),
                            URIRef(DocConfig.classToCollectionClass[cls]["class"])))
@@ -87,7 +91,7 @@ class GraphUtils:
             else:
                 graph.add((URIRef(colluri), URIRef(typeproperty),
                            URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
-            graph.add((URIRef(colluri), URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
+            graph.add((URIRef(colluri), RDFS.label,
                        Literal(str(DocUtils.shortenURI(cls)) + " Instances Collection", lang="en")))
             for instance in classToInstances[cls]:
                 graph.add((URIRef(colluri), URIRef(collrelprop), URIRef(instance)))
@@ -99,10 +103,10 @@ class GraphUtils:
             if "value" in tobeaddedPerInd[prop] and "uri" in tobeaddedPerInd[prop]:
                 graph.add((ind, URIRef(prop), URIRef(str(tobeaddedPerInd[prop]["value"]))))
                 graph.add((URIRef(str(tobeaddedPerInd[prop]["value"])),
-                           URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                           RDF.type,
                            URIRef(str(tobeaddedPerInd[prop]["uri"]))))
                 graph.add((URIRef(str(tobeaddedPerInd[prop]["value"]).replace(" ", "_")),
-                           URIRef("http://www.w3.org/2000/01/rdf-schema#label"),
+                           RDFS.label,
                            URIRef(str(tobeaddedPerInd[prop]["value"]))))
             elif "value" in tobeaddedPerInd[prop] and not tobeaddedPerInd[prop]["value"].startswith("http"):
                 if "type" in tobeaddedPerInd[prop]:
@@ -179,8 +183,7 @@ class GraphUtils:
                 label = DocUtils.shortenURI(str(sub))
                 restriction = False
                 ns = DocUtils.shortenURI(str(sub), True)
-                if ns not in nscount:
-                    nscount[ns] = 0
+                nscount.setdefault(ns,0)
                 nscount[ns] += 1
                 graph.add((sub, URIRef("http://rdfs.org/ns/void#inDataset"),URIRef(voidds)))
                 if isinstance(sub, BNode):
@@ -193,9 +196,7 @@ class GraphUtils:
                     tupobjstr = str(tup[1])
                     if isinstance(tupobjstr, Literal):
                         if tup[1].datatype is not None:
-                            if str(tup[1].datatype) not in literaltypes:
-                                literaltypes[str(tup[1].datatype)] = set()
-                            literaltypes[str(tup[1].datatype)].add(tuppredstr)
+                            literaltypes.setdefault(str(tup[1].datatype),set()).add(tuppredstr)
                             if str(tup[1].datatype) in DocConfig.geoliteraltypes or tuppredstr in DocConfig.geoproperties:
                                 geocounter+=1
                         if tup[1].language is not None:
@@ -213,16 +214,14 @@ class GraphUtils:
                         objectcounter += 1
                         irirefs += 1
                         ns = DocUtils.shortenURI(tupobjstr, True)
-                        if ns not in nscount:
-                            nscount[ns] = 0
+                        nscount.setdefault(ns, 0)
                         nscount[ns] += 1
                     if tuppredstr in DocConfig.labelproperties:
                         labeltouri[tupobjstr] = str(sub)
                         uritolabel[str(sub)] = {"label": tupobjstr}
                         label = tupobjstr
                     elif tuppredstr == typeproperty:
-                        if tupobjstr not in instancecount:
-                            instancecount[tupobjstr] = 0
+                        instancecount.setdefault(tupobjstr, 0)
                         instancecount[tupobjstr] += 1
                     elif tupobjstr == "http://www.w3.org/2002/07/owl#Restriction":
                         restriction = True
@@ -230,13 +229,10 @@ class GraphUtils:
                         ressubcls =tupobjstr
                     if isinstance(tup[1], URIRef) and prefixnamespace not in tupobjstr:
                         ns = DocUtils.shortenURI(tupobjstr, True)
-                        if ns not in nscount:
-                            nscount[ns] = 0
+                        nscount.setdefault(ns, 0)
                         nscount[ns] += 1
-                        if tuppredstr not in nonnscount:
-                            nonnscount[tuppredstr] = {}
-                        if ns not in nonnscount[tuppredstr]:
-                            nonnscount[tuppredstr][ns] = 0
+                        nonnscount.setdefault(tuppredstr,{})
+                        nonnscount[tuppredstr].setdefault(ns,0)
                         nonnscount[tuppredstr][ns] += 1
                 if isinstance(sub, BNode) and restriction:
                     graph.add((sub, URIRef("http://www.w3.org/2000/01/rdf-schema#label"),Literal(label + " [Restriction]", lang="en")))
