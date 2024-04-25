@@ -1,7 +1,7 @@
 import os
 
 from rdflib import URIRef, Literal, Graph
-from rdflib.namespace import RDF, RDFS, OWL
+from rdflib.namespace import RDF, RDFS, OWL, FOAF
 from doc.docutils import DocUtils
 
 
@@ -21,7 +21,7 @@ class SolidExporter:
         if not publisher.startswith("http"):
             publisheruri=deploypath+"/profile/card#"+str(publisher)
         webidprofilegraph.add((URIRef(outpath + "/profile/card"), URIRef("http://xmlns.com/foaf/0.1/primaryTopic"), URIRef(str(publisheruri))))
-        webidprofilegraph.add((URIRef(str(publisheruri)), URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://xmlns.com/foaf/0.1/Person")))
+        webidprofilegraph.add((URIRef(str(publisheruri)), RDF.type, FOAF.Person))
         webidprofilegraph.add((URIRef(str(publisheruri)), URIRef("http://www.w3.org/ns/pim/space#storage"), URIRef(str(deploypath) + str(datasetname))))
         webidprofilegraph.add((URIRef(str(publisheruri)), URIRef("http://www.w3.org/ns/solid/terms#publicTypeIndex"), URIRef(deploypath + "/settings/publicTypeIndex.ttl")))
         webidprofilegraph.add((URIRef(str(publisheruri)), URIRef("http://www.w3.org/ns/solid/terms#privateTypeIndex"), URIRef(deploypath + "/settings/privateTypeIndex.ttl")))

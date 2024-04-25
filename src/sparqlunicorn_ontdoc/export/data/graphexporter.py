@@ -30,8 +30,7 @@ class GraphExporter:
                         DocUtils.shortenURI(str(tup[1]))) + "' })\n")
                     uriToNodeId[str(tup[1])] = nodecounter
                     nodecounter += 1
-                tgfresedges += "(" + str(uriToNodeId[str(sub)]) + ")-[:" + str(
-                    DocUtils.shortenURI(str(tup[1]))) + "]->(" + str(DocUtils.shortenURI(tup[0])) + "),\n"
+                tgfresedges += f"({uriToNodeId[str(sub)]})-[:{DocUtils.shortenURI(str(tup[1]))}]->({DocUtils.shortenURI(str(tup[0]))}),\n"
         file.write("\n\nCREATE ")
         file.write(tgfresedges[0:-2] + "\n")
         return None
@@ -168,7 +167,7 @@ class GraphExporter:
                     file.write(str(nodecounter)+" ")
                     uriToNodeId[str(tup[1])] = nodecounter
                     nodecounter += 1
-                tgfresedges += "(edge "+str(edgecounter)+" "+str(uriToNodeId[str(sub)]) + " " + str(uriToNodeId[str(tup[1])])+")\n"
+                tgfresedges += f"(edge {edgecounter} {uriToNodeId[str(sub)]} {uriToNodeId[str(tup[1])]})\n"
                 edgecounter+=1
         file.write(")\n")
         file.write(tgfresedges)
@@ -269,7 +268,7 @@ class GraphExporter:
                         file.write("</node>")
                         uriToNodeId[str(tup[1])] = nodecounter
                         nodecounter += 1
-                    edges += "<edge value=\""+str(tup[0])+"\" id=\""+str(edgecounter)+"\" source=\""+str(uriToNodeId[str(sub)])+"\" target=\""+str(uriToNodeId[str(tup[1])])+"\" label=\""+str(DocUtils.shortenURI(str(tup[0]))) + "\"/>\n"
+                    edges += f"<edge value=\"{tup[0]}\" id=\"{edgecounter}\" source=\"{uriToNodeId[str(sub)]}\" target=\"{uriToNodeId[str(tup[1])]}\" label=\"{DocUtils.shortenURI(str(tup[0]))}\"/>\n"
                 else:
                     if str(tup[1]) not in uriToNodeId:
                         file.write("<node id=\"" + str(nodecounter) + "\" value=\""+str(tup[1])+"\" label=\"" + str(DocUtils.shortenURI(str(tup[1])) + "\">\n"))
@@ -280,7 +279,7 @@ class GraphExporter:
                         file.write("</node>")
                         uriToNodeId[str(tup[1])] = nodecounter
                         nodecounter += 1
-                    edges += "<edge value=\""+str(tup[0])+"\" id=\""+str(edgecounter)+"\" source=\""+str(uriToNodeId[str(sub)])+"\" target=\""+str(uriToNodeId[str(tup[1])])+"\" label=\""+str(DocUtils.shortenURI(str(tup[0]))) + "\"/>\n"
+                    edges += f"<edge value=\"{tup[0]}\" id=\"{edgecounter}\" source=\"{uriToNodeId[str(sub)]}\" target=\"{uriToNodeId[str(tup[1])]}\" label=\"{DocUtils.shortenURI(str(tup[0]))}\"/>\n"
                 edgecounter+=1
         file.write("</nodes>\n")
         file.write(edges)

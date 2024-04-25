@@ -216,8 +216,7 @@ class IIIFAPIExporter:
         seenurls = set()
         for imgpath in sorted(imagespaths, key=lambda k: k['label'], reverse=False):
             curclass = "main"
-            if "main" not in collections:
-                collections["main"]={"items":[]}
+            collections.setdefault("main",{"items":[]})
             if "class" in imgpath and imgpath["class"] != "":
                 curclass = imgpath["class"]
                 if curclass not in collections:

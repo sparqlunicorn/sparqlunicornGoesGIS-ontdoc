@@ -85,10 +85,8 @@ class GeoExporter:
         res=GeoExporter.detectSubjectType(g,subjectstorender,geoclasslist)
         subjectsToType = res[0]
         typeToFields = res[1]
-        typeToRes = {}
+        typeToRes = dict((el,[]) for el in typeToFields)
         typeToGeo={}
-        for type in typeToFields:
-            typeToRes[type] = []
         for sub in subjectstorender:
             if str(sub) not in subjectsToType:
                 continue

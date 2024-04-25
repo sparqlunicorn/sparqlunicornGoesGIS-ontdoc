@@ -1,4 +1,5 @@
 from rdflib import Graph, URIRef
+from rdflib.namespace import RDFS,OWL
 import json
 
 class OWL2VOWL():
@@ -49,11 +50,11 @@ class OWL2VOWL():
             if str(pred[1]) not in nodeuriToId:
                 nodeuriToId[str(pred[1])]=nodecounter
                 nodecounter+=1
-                if str(pred[1])=="http://www.w3.org/2002/07/owl#Class" or str(pred[1])=="http://www.w3.org/2000/01/rdf-schema#Class" or str(pred[1])=="http://www.w3.org/2000/01/rdf-schema#Datatype":
+                if pred[1]==OWL.CLass or pred[1]==RDFS.Class or str(pred[1])=="http://www.w3.org/2000/01/rdf-schema#Datatype":
                     nodes.append({"name":OWL2VOWL.getIRILabel(str(pred[1])),"type":"class","uri":str(pred[1])})
                 else:
                     nodes.append({"name": OWL2VOWL.getIRILabel(str(pred[1])), "type": "class", "uri": str(pred[1])})
-        if predicates!=[]:
+        if predicates:
             for pred in predicates:
                 if "from" in predicates[pred] and "to" in predicates[pred]:
                     for fromsub in predicates[pred]["from"]:
@@ -112,7 +113,7 @@ class OWL2VOWL():
                 propAttributes.append({"id":idcounter,"iri":str(predsubstr),"baseIRI":OWL2VOWL.getBaseIRI(predsubstr),"instances":0,"label":{"IRI-based":OWL2VOWL.getIRILabel(predsubstr)},"annotations":{},"range":[],"domain":[],"subProperties":[],"superProperties":[]})
                 idcounter+=1
 
-        for pred in g.subject_objects(URIRef("http://www.w3.org/2000/01/rdf-schema#range")):
+        for pred in g.subject_objects(RDFS.range):
             print(pred)
             if str(pred[1]) not in classiriToProdId:
                 classes.append({"id":idcounter,"type":"http://www.w3.org/2000/01/rdf-schema#Datatype"})

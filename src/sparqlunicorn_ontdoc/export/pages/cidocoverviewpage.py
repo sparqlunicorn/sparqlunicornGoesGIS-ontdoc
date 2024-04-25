@@ -26,7 +26,7 @@ class CIDOCOverviewPage:
         for predobj in graph.predicate_objects(subject):
             if str(predobj[0]) in resmap:
                 if isinstance(predobj[1],URIRef):
-                    resmap[str(predobj[0])] = "<a href=\""+str(predobj[0])+"\">"+DocUtils.shortenURI(str(predobj[0]))+"</a>"
+                    resmap[str(predobj[0])] = f"<a href=\"{predobj[0]}\">{DocUtils.shortenURI(str(predobj[0]))}</a>"
                 else:
                     resmap[str(predobj[0])]=str(predobj[1])
         for val in resmap:

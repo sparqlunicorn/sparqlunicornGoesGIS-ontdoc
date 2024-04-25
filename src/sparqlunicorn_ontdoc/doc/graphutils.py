@@ -1,5 +1,5 @@
 from rdflib import URIRef, BNode, Literal
-from rdflib.namespace import RDF, RDFS, OWL
+from rdflib.namespace import RDF, RDFS, OWL, SKOS
 from doc.docutils import DocUtils
 from doc.docconfig import DocConfig
 import json
@@ -58,7 +58,7 @@ class GraphUtils:
             if classToFColl[cls] == len(classToInstances[cls]):
                 graph.add((URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection"),
                            RDFS.subClassOf,
-                           URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
+                           SKOS.Collection))
                 graph.add((URIRef("http://www.opengis.net/ont/geosparql#FeatureCollection"),
                            RDFS.subClassOf,
                            URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection")))
@@ -67,7 +67,7 @@ class GraphUtils:
             elif classToGeoColl[cls] == len(classToInstances[cls]):
                 graph.add((URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection"),
                            RDFS.subClassOf,
-                           URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
+                           SKOS.Collection))
                 graph.add((URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection"),
                            RDFS.subClassOf,
                            URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection")))
@@ -80,17 +80,17 @@ class GraphUtils:
                                URIRef(DocConfig.classToCollectionClass[cls]["super"])))
                     graph.add((URIRef(DocConfig.classToCollectionClass[cls]["super"]),
                                RDFS.subClassOf,
-                               URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
+                               SKOS.Collection))
                 else:
                     graph.add((URIRef(DocConfig.classToCollectionClass[cls]["class"]),
                                RDFS.subClassOf,
-                               URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
+                               SKOS.Collection))
                 graph.add((URIRef(colluri), URIRef(typeproperty),
                            URIRef(DocConfig.classToCollectionClass[cls]["class"])))
                 collrelprop = DocConfig.classToCollectionClass[cls]["prop"]
             else:
                 graph.add((URIRef(colluri), URIRef(typeproperty),
-                           URIRef("http://www.w3.org/2004/02/skos/core#Collection")))
+                           SKOS.Collection))
             graph.add((URIRef(colluri), RDFS.label,
                        Literal(str(DocUtils.shortenURI(cls)) + " Instances Collection", lang="en")))
             for instance in classToInstances[cls]:
@@ -238,7 +238,7 @@ class GraphUtils:
                         nonnscount[tuppredstr].setdefault(ns,0)
                         nonnscount[tuppredstr][ns] += 1
                 if isinstance(sub, BNode) and restriction:
-                    graph.add((sub, URIRef("http://www.w3.org/2000/01/rdf-schema#label"),Literal(label + " [Restriction]", lang="en")))
+                    graph.add((sub, RDFS.label,Literal(label + " [Restriction]", lang="en")))
             voidstats["http://rdfs.org/ns/void#distinctSubjects"] += 1
         voidstats["http://rdfs.org/ns/void#entities"] = len(subjectstorender)
         voidstats["http://ldf.fi/void-ext#languages"] = len(literallangs)

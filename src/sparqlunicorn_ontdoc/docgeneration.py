@@ -37,6 +37,7 @@ from export.api.solidexporter import SolidExporter
 import argparse
 import shutil
 import json
+import time
 
 templatepath = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
 resourcepath = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/"))
@@ -77,8 +78,7 @@ class OntDocGeneration:
         self.graph = graph
         self.htmlexporter=HTMLExporter(pubconfig,templates,self.typeproperty)
         for nstup in self.graph.namespaces():
-            if str(nstup[1]) not in prefixes["reversed"]:
-                prefixes["reversed"][str(nstup[1])] = str(nstup[0])
+            prefixes["reserved"].setdefault(str(nstup[1]),str(nstup[0]))
         self.preparedclassquery = prepareQuery(DocConfig.classtreequery.replace("%%typeproperty%%","<"+self.typeproperty+">").replace("%%subclassproperty%%","<"+self.subclassproperty+">"))
         if self.pubconfig["prefixns"] is None or pubconfig["prefixnsshort"] is None or self.pubconfig["prefixns"] == "" or pubconfig["prefixnsshort"] == "":
             self.pubconfig["namespaceshort"] = "suni"
@@ -151,7 +151,10 @@ class OntDocGeneration:
             except Exception as e:
                 print("Exception occurred " + str(e))
         classidset = set()
+        start=time.time()
         clsress = ClassTreeUtils.getClassTree(self.graph, uritolabel, classidset, uritotreeitem,self.typeproperty,self.pubconfig["prefixes"],self.preparedclassquery,self.pubconfig["outpath"],self.pubconfig)
+        end=time.time()
+        print(f"Class Tree Generation time for {len(clsress[2])} classes: {end-start} seconds")
         tree=clsress[0]
         uritotreeitem=clsress[1]
         classidset=clsress[2]
@@ -161,12 +164,15 @@ class OntDocGeneration:
                 tree["core"]["data"].append(tr)
         res["voidstats"]["http://rdfs.org/ns/void#classes"] = len(classidset)
         res["voidstats"]["http://rdfs.org/ns/void#triples"] = len(self.graph)
+        start=time.time()
         voidgraph = VoidExporter.createVoidDataset(self.pubconfig, self.pubconfig["licenseuri"],
                                                    res["voidstats"], subjectstorender,
                                                    tree, res["predmap"], res["nonnscount"], res["nscount"], res["instancecount"])
         self.voidstatshtml = VoidExporter.toHTML(res["voidstats"], self.pubconfig["deploypath"])
         self.graph += voidgraph["graph"]
         subjectstorender = voidgraph["subjects"]
+        end=time.time()
+        print(f"Void stats generation time for {len(classidset)} classes: {end-start} seconds")
         with open(outpath + "style.css", 'w', encoding='utf-8') as f:
             f.write(templates["style"])
             f.close()
@@ -180,6 +186,7 @@ class OntDocGeneration:
         nonnsmap = {}
         postprocessing = Graph()
         subtorencounter = 0
+        start=time.time()
         for subj in subjectstorender:
             path = subj.replace(prefixnamespace, "")
             # try:
@@ -203,6 +210,8 @@ class OntDocGeneration:
             # except Exception as e:
             #    print("Create HTML Exception: "+str(e))
             #    print(traceback.format_exc())
+        end=time.time()
+        print(f"HTML generation time for {len(subjectstorender)} pages: {end-start} seconds")
         print("Postprocessing " + str(len(postprocessing)))
         subtorenderlen = len(subjectstorender) + len(postprocessing)
         for subj in postprocessing.subjects(None, None, True):

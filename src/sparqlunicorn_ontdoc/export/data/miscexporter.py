@@ -71,9 +71,7 @@ class MiscExporter:
         res = MiscExporter.detectSubjectType(g, subjectstorender)
         subjectsToType = res[0]
         typeToFields = res[1]
-        typeToRes = {}
-        for type in typeToFields:
-            typeToRes[type] = []
+        typeToRes = dict((el,[]) for el in typeToFields)
         for sub in subjectstorender:
             if str(sub) not in subjectsToType:
                 continue

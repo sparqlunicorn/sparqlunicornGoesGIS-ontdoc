@@ -4,6 +4,7 @@ from doc.docutils import DocConfig
 from export.pages.bibpage import BibPage
 from export.pages.owltimepage import OWLTimePage
 from rdflib import URIRef, Graph, BNode, Literal, XSD
+from rdflib.namespace import RDF
 import re
 import os
 import json
@@ -100,9 +101,7 @@ class HTMLExporter():
                     if baseurl not in tupobjstr and tuppredstr != self.typeproperty:
                         hasnonns.add(tupobjstr)
                         if nonnsmap is not None:
-                            if tupobjstr not in nonnsmap:
-                                nonnsmap[tupobjstr] = set()
-                            nonnsmap[tupobjstr].add(subject)
+                            nonnsmap.setdefault(tupobjstr,set()).add(subject)
             for tup in sorted(predobjmap):
                 predobjtuplen=len(predobjmap[tup])
                 if self.pubconfig["metadatatable"] and tup not in DocConfig.labelproperties and DocUtils.shortenURI(tup,
@@ -216,8 +215,7 @@ class HTMLExporter():
                 if isinstance(tup[0], URIRef):
                     for item in graph.objects(tup[0], URIRef(self.typeproperty)):
                         if parentclass is not None:
-                            if item not in uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr]:
-                                uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr][item] = 0
+                            uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr].setdefault(item, 0)
                             uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr][item] += 1
             for tup in subpredsmap:
                 subpredtuplen=len(subpredsmap[tup])
@@ -263,7 +261,7 @@ class HTMLExporter():
                         else:
                             labelmap[res["label"]] += f"{res['html']}"
                         itemcounter += 1
-                    for lab in sorted(labelmap):
+                    for lab in sorted(labelmap) :
                         tablecontents += str(labelmap[lab])
                     if subpredtuplen >= HTMLExporter.maxlistthreshold:
                         tablecontents += "<li>(...)</li>"
@@ -278,9 +276,9 @@ class HTMLExporter():
         if self.pubconfig["licenseuri"] is not None:
             ttlf.add((subject, URIRef("http://purl.org/dc/elements/1.1/license"), URIRef(self.pubconfig["licenseuri"])))
         if self.pubconfig["apis"]["solidexport"] is not None:
-            ttlf.add((subject, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            ttlf.add((subject, RDF.type,
                       URIRef("http://www.w3.org/ns/ldp#Resource")))
-            ttlf.add((subject, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+            ttlf.add((subject, RDF.type,
                       URIRef("https://www.iana.org/assignments/media-types/text/turtle#Resource")))
         nonnslink = ""
         if nonns:

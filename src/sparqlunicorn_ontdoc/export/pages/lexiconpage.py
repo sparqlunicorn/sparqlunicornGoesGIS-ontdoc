@@ -33,17 +33,17 @@ class LexiconPage(Page):
                     if str(senseprop[0])=="http://www.w3.org/ns/lemon/ontolex#reference":
                         senseref=senseprop[1]
                 senses.append({"uri":lexobjstr,"label":label,"reference":str(senseref)})
-            if lexpredstr == "http://www.w3.org/ns/lemon/ontolex#lexicalForm" or lexpredstr == "http://www.w3.org/ns/lemon/ontolex#form":
+            elif lexpredstr == "http://www.w3.org/ns/lemon/ontolex#lexicalForm" or lexpredstr == "http://www.w3.org/ns/lemon/ontolex#form":
                 label=None
                 for formprop in graph.predicate_objects(lexprop[1], True):
                     if str(formprop[0]) in DocUtils.labelproperties and isinstance(formprop[1], Literal):
                         label = formprop[1]
                 forms.append({"uri": lexobjstr, "label": label})
-            if lexpredstr == "http://www.w3.org/ns/lemon/ontolex#lemma" or lexpredstr == "http://www.w3.org/ns/lemon/ontolex#canonicalForm":
+            elif lexpredstr == "http://www.w3.org/ns/lemon/ontolex#lemma" or lexpredstr == "http://www.w3.org/ns/lemon/ontolex#canonicalForm":
                 lemma = lexobjstr
-            if lexpredstr == "http://purl.org/dc/terms/" or lexpredstr == "http://www.w3.org/ns/lemon/lime#language":
+            elif lexpredstr == "http://purl.org/dc/terms/" or lexpredstr == "http://www.w3.org/ns/lemon/lime#language":
                 language = lexobjstr
-            if lexpredstr == "http://www.w3.org/ns/lemon/ontolex#lexicalCategory":
+            elif lexpredstr == "http://www.w3.org/ns/lemon/ontolex#lexicalCategory":
                 lexcat = lexobjstr
         return {"lemma":lemma,"lexcat":lexcat,"language":language,"forms":forms,"senses":senses}
 

@@ -65,7 +65,7 @@ class ClassTreeUtils:
                 if objstr in uritolabel:
                     restext = f"{uritolabel[objstr]['label']} ({DocUtils.shortenURI(objstr)})"
                     if res is not None:
-                        restext = uritolabel[objstr]["label"] + " (" + res["uri"] + ")"
+                        restext = f"{uritolabel[objstr]['label']} ({res['uri']})"
                 else:
                     restext = DocUtils.shortenURI(objstr)
                     if res is not None:
@@ -83,7 +83,7 @@ class ClassTreeUtils:
             if ress[cls]["super"] is None:
                 restext = DocUtils.shortenURI(clsstr)
                 if res is not None:
-                    restext += " (" + res["uri"] + ")"
+                    restext += f" ({res['uri']})"
                 if cls not in uritotreeitem:
                     #print("SUPER NOT NONE: " + str({"id": cls, "parent": "#", "type": "class", "text": restext, "data": {}}))
                     result.append({"id": cls, "parent": "#", "type": "class", "text": restext, "data": {}})
@@ -97,7 +97,7 @@ class ClassTreeUtils:
                 else:
                     restext = DocUtils.shortenURI(clsstr)
                     if res is not None:
-                        restext += " (" + res["uri"] + ")"
+                        restext += f" ({res['uri']})"
                 if cls not in uritotreeitem:
                     result.append({"id": cls, "parent": ress[cls]["super"], "type": "class", "text": restext, "data": {}})
                     if clsstr not in uritotreeitem:
