@@ -85,7 +85,7 @@ class IndexViewPage:
             if pubconfig["startconcept"] is not None and path == pubconfig["outpath"] and pubconfig["startconcept"] in uritotreeitem:
                 startconcept=pubconfig["startconcept"]
                 if pubconfig["createCollections"]:
-                    indexhtml += f"<p>Start exploring the graph here: <img src=\"{tree["types"][uritotreeitem[startconcept][-1]["type"]]["icon"]}\" height=\"25\" width=\"25\" alt=\"" + \
+                    indexhtml += f"<p>Start exploring the graph here: <img src=\"{tree['types'][uritotreeitem[startconcept][-1]['type']]['icon']}\" height=\"25\" width=\"25\" alt=\"" + \
                                  uritotreeitem[startconcept][-1][
                                      "type"] + "\"/><a property=\"http://rdfs.org/ns/void#rootResource\" resource=\"" + str(
                         startconcept) + "\" href=\"" + DocUtils.generateRelativeLinkFromGivenDepth(
