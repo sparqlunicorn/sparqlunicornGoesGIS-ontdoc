@@ -68,7 +68,7 @@ class OntDocGeneration:
         self.licenseuri = None
         self.licensehtml = None
         self.typeproperty = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-        self.subclassproperty = "http://www.w3.org/2000/01/rdf-schema#subClassO"
+        self.subclassproperty = "http://www.w3.org/2000/01/rdf-schema#subClassOf"
         keyprops=GraphUtils.determineKeyProperties(graph)
         if len(keyprops["typeproperty"])>0:
             self.typeproperty=keyprops["typeproperty"][0]
