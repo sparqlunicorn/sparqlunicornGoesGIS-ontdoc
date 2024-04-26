@@ -499,7 +499,7 @@ class HTMLExporter():
                 if type in PersonPage.pageWidgetConstraint():
                     PersonPage().generatePageWidget(graph, subject, self.templates, f, True)
             for coll in collections:
-                if coll in DocConfig.collectionclassToFunction:
+                if coll in DocDefaults.collectionclassToFunction:
                     DocDefaults.collectionclassToFunction(graph, subject, self.templates, f)
             if geojsonrep is not None and "geocollection" not in collections:
                 self.geocache = GeometryViewPage().generatePageWidget(graph, self.templates, subject, f, uritotreeitem,
