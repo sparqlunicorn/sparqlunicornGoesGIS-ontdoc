@@ -1,6 +1,7 @@
 from doc.docconfig import DocConfig
 from doc.docutils import DocUtils
 from rdflib import URIRef
+from rdflib.namespace import RDFS
 
 class BibPage:
 
@@ -80,10 +81,13 @@ class BibPage:
         return res
 
     def generatePageWidget(self,graph,memberid,templates,f,pageWidget=False):
-        BibPage.resolveBibtexReference(memberid,graph)
+        return BibPage.resolveBibtexReference(graph.predicateobjects(memberid),memberid,graph)
 
     def generateCollectionWidget(self, graph,templates, subject, f):
-        for bibentry in graph.objects(subject, URIRef("http://www.w3.org/ns/lemon/lime#entry"), True):
-            self.generatePageWidget(graph,bibentry,f,True)
+        f.write("<details><summary>[BIBTEX]</summary><pre>")
+        for bibentry in graph.objects(subject, RDFS.member, True):
+            f.write(self.generatePageWidget(graph,bibentry,templates,f,True))
+            f.write("\n")
+        f.write("</pre></details>")
 
 
