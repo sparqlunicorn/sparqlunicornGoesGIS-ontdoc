@@ -83,7 +83,7 @@ class BibPage:
         return res
 
     def generatePageWidget(self,graph,memberid,templates,f,pageWidget=False):
-        return BibPage.resolveBibtexReference(graph.predicateobjects(memberid),memberid,graph)
+        return BibPage.resolveBibtexReference(graph.predicate_objects(memberid),memberid,graph)
 
     def generateCollectionWidget(self, graph,templates, subject, f):
         f.write("<details><summary>[BIBTEX]</summary><pre>")
