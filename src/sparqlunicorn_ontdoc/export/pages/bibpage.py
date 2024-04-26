@@ -6,7 +6,7 @@ from rdflib.namespace import RDFS
 class BibPage:
 
     @staticmethod
-    def pageWidgetConstraint(self):
+    def pageWidgetConstraint():
         return DocConfig.bibtextypemappings
 
     @staticmethod
