@@ -187,7 +187,7 @@ class PersonPage:
             f.write(self.hcardToHTML(vcardres["vcard"],vcardres["hcard"]))
         return vcardres["vcard"]
 
-    def generateCollectionWidget(self, graph,  subject,templates, f=None):
+    def generateCollectionWidget(self, graph, subject,templates, f=None):
         vcards=[]
         for person in graph.predicate_objects(subject):
             if str(person[0]) in DocConfig.collectionrelationproperties:

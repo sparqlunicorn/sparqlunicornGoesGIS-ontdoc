@@ -1,20 +1,21 @@
 from doc.docconfig import DocConfig
 from doc.docutils import DocUtils
 from rdflib import URIRef, Literal
+from rdflib.namespace import TIME
 
 class OWLTimePage:
 
     @staticmethod
     def resolveTimeObject(pred, obj, graph, timeobj):
-        if str(pred) == "http://www.w3.org/2006/time#hasBeginning":
+        if pred == TIME.hasBeginning:
             for tobj2 in graph.predicate_objects(obj):
                 if str(tobj2[0]) in DocConfig.timeproperties:
                     timeobj["begin"] = tobj2[1]
-        elif str(pred) == "http://www.w3.org/2006/time#hasEnd":
+        elif pred == TIME.hasEnd:
             for tobj2 in graph.predicate_objects(obj):
                 if str(tobj2[0]) in DocConfig.timeproperties:
                     timeobj["end"] = tobj2[1]
-        elif str(pred) == "http://www.w3.org/2006/time#hasTime" or str(pred) == "http://www.w3.org/ns/sosa/phenomenonTime" or str(pred) == "http://www.w3.org/ns/sosa/resultTime":
+        elif pred == TIME.hasTime or str(pred) == "http://www.w3.org/ns/sosa/phenomenonTime" or str(pred) == "http://www.w3.org/ns/sosa/resultTime":
             for tobj2 in graph.predicate_objects(obj):
                 if str(tobj2[0]) in DocConfig.timeproperties:
                     timeobj["timepoint"] = tobj2[1]
@@ -56,7 +57,7 @@ class OWLTimePage:
         if isinstance(obj, URIRef):
             if str(pred) in DocConfig.timepointerproperties:
                 timeobj = OWLTimePage.resolveTimeObject(pred, obj, graph, timeobj)
-            if str(pred) == "http://www.w3.org/2006/time#hasTime" or str(pred) == "http://www.w3.org/ns/sosa/phenomenonTime" or str(pred) == "http://www.w3.org/ns/sosa/resultTime":
+            if pred == TIME.hasTime or str(pred) == "http://www.w3.org/ns/sosa/phenomenonTime" or str(pred) == "http://www.w3.org/ns/sosa/resultTime":
                 for tobj in graph.predicate_objects(obj):
                     timeobj = OWLTimePage.resolveTimeObject(tobj[0], tobj[1], graph, timeobj)
         elif isinstance(obj, Literal):
