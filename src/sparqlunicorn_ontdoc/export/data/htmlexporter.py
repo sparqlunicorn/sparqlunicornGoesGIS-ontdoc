@@ -652,7 +652,7 @@ class HTMLExporter():
                         foundmedia[DocConfig.fileextensionmap[ext]][tupobjstr] = {}
             if pred in DocConfig.timepointerproperties:
                 timeobj = OWLTimePage.resolveTimeLiterals(pred, object, graph)
-            elif isinstance(tup[1],Literal) and not nonns:
+            elif not nonns:
                 geojsonrep = LiteralUtils.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep, nonns)
         if foundval is not None:
             if foundunit is not None:
@@ -816,7 +816,7 @@ class HTMLExporter():
 
     @staticmethod
     def detectStringLiteralContent(pred, object):
-        if object.startswith("http://") or object.startswith("https://"):
+        if object.startswith("http"):
             return f"<span><a itemprop=\"{pred}\" property=\"{pred}\" target=\"_blank\" href=\"{object}\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">{object}</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
         elif object.startswith("www."):
             return f"<span><a itemprop=\"{pred}\" property=\"{pred}\" target=\"_blank\" href=\"http://{object}\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">http://{object}</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
