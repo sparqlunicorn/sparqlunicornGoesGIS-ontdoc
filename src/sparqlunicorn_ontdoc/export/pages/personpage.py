@@ -181,15 +181,17 @@ class PersonPage:
     def pageWidgetConstraint():
         return ["http://xmlns.com/foaf/0.1/Person","http://www.w3.org/2006/vcard/ns#Individual","http://schema.org/Person","http://dbpedia.org/ontology/Person","http://www.wikidata.org/entity/Q5"]
 
-    def generatePageWidget(self, graph, subject, templates, f=None, pageWidget=False):
-        vcardres=self.extractPersonMetadata(subject,graph)
+    @staticmethod
+    def generatePageWidget(graph, subject, templates, f=None, pageWidget=False):
+        vcardres=PersonPage.extractPersonMetadata(subject,graph)
         if pageWidget and f is not None:
-            f.write(self.hcardToHTML(vcardres["vcard"],vcardres["hcard"]))
+            f.write(PersonPage.hcardToHTML(vcardres["vcard"],vcardres["hcard"]))
         return vcardres["vcard"]
 
-    def generateCollectionWidget(self, graph, subject,templates, f=None):
+    @staticmethod
+    def generateCollectionWidget(graph, subject,templates, f=None):
         vcards=[]
         for person in graph.predicate_objects(subject):
             if str(person[0]) in DocConfig.collectionrelationproperties:
-                vcards.append(self.generatePageWidget(graph,person[1],templates,f,True))
+                vcards.append(PersonPage.generatePageWidget(graph,person[1],templates,f,True))
         return vcards

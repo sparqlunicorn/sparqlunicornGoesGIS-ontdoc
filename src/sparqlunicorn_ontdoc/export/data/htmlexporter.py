@@ -495,9 +495,9 @@ class HTMLExporter():
                 f.write(self.templates["videotemplate"].replace("{{video}}", str(video)))
             for type in curtypes:
                 if type in DocConfig.lexicontypes:
-                    LexiconPage().generatePageWidget(graph, subject, f, {}, False)
+                    LexiconPage.generatePageWidget(graph, subject, f, {}, False)
                 if type in PersonPage.pageWidgetConstraint():
-                    PersonPage().generatePageWidget(graph, subject, self.templates, f, True)
+                    PersonPage.generatePageWidget(graph, subject, self.templates, f, True)
             for coll in collections:
                 if coll in DocDefaults.collectionclassToFunction:
                     DocDefaults.collectionclassToFunction[coll](graph, subject, self.templates, f)

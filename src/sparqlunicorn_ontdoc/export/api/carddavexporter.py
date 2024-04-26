@@ -17,7 +17,7 @@ class CardDAVExporter:
     def generateCardDAVCollection(self, outpath, deploypath, graph,subject,license="",version="3"):
         if not os.path.exists(outpath + "/addressbook/"):
             os.makedirs(outpath + "/addressbook/")
-        vcards=PersonPage().generateCollectionWidget(graph,  subject,None, None)
+        vcards=PersonPage.generateCollectionWidget(graph,  subject,None, None)
         counter=1
         for vcard in vcards:
             if "fn" in vcard:
