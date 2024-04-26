@@ -35,7 +35,7 @@ class ObservationPage:
         return {"xValue":gotvalue,"timeValue":gottime,"xLabel":xLabel}
 
     @staticmethod
-    def generateCollectionWidget(graph,templates, subject, f):
+    def generateCollectionWidget(graph, subject,templates, f):
         memberpred = URIRef("http://www.w3.org/2000/01/rdf-schema#member")
         xValues = []
         xLabel = "Value"

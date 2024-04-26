@@ -69,7 +69,7 @@ class LexiconPage(Page):
             f.write("</tbody></table><script>$('#lexicon').DataTable();</script>")
 
     @staticmethod
-    def generateCollectionWidget(graph,templates,subject,f):
+    def generateCollectionWidget(graph,subject,templates,f):
         f.write(f"<table id=\"lexicon\">{LexiconPage.tableheader}<tbody>")
         for lexentry in graph.objects(subject, URIRef("http://www.w3.org/ns/lemon/lexicog#entry"), True):
             LexiconPage.generatePageWidget(graph,lexentry,f,True)

@@ -37,7 +37,7 @@ class CIDOCOverviewPage:
         widget+="</tr></tbody></table>"
 
 
-    def generateCollectionWidget(self,graph,templates,subject,f):
+    def generateCollectionWidget(self,graph,subject,templates,f):
         print("CollectionWidget")
 
     def generatePageView(self,templates,g,f):
