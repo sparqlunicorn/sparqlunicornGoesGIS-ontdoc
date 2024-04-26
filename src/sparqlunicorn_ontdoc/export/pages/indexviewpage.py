@@ -1,4 +1,5 @@
 from rdflib import Graph, URIRef
+from rdflib.namespace import RDF
 
 from doc.docutils import DocUtils
 
@@ -45,13 +46,13 @@ class IndexViewPage:
                         subgraph.add((sub, tup[0], tup[1]))
                         if apis["solidexport"]:
                             subgraph.add((URIRef(sub.replace("nslink", "")),
-                                          URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                                          RDF.type,
                                           URIRef("http://www.w3.org/ns/ldp#Container")))
                             subgraph.add((URIRef(sub.replace("nslink", "")),
-                                          URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                                          RDF.type,
                                           URIRef("http://www.w3.org/ns/ldp#BasicContainer")))
                             subgraph.add((URIRef(sub.replace("nslink", "")),
-                                          URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                                          RDF.type,
                                           URIRef("http://www.w3.org/ns/ldp#Resource")))
             for ex in pubconfig["exports"]:
                 if ex in ExporterUtils.exportToFunction:

@@ -74,7 +74,7 @@ class OntDocGeneration:
         if len(keyprops["typeproperty"])>0:
             self.typeproperty=keyprops["typeproperty"][0]
         if len(keyprops["subclassproperty"])>0:
-            self.suclassproperty=keyprops["subclassproperty"][0]
+            self.subclassproperty=keyprops["subclassproperty"][0]
         self.graph = graph
         self.htmlexporter=HTMLExporter(pubconfig,templates,self.typeproperty)
         for nstup in self.graph.namespaces():
@@ -123,8 +123,11 @@ class OntDocGeneration:
             shutil.copy(logoname, outpath + "/logo/logo." + logoname[logoname.rfind("."):])
             self.pubconfig["logourl"] = outpath + "/logo/logo." + logoname[logoname.rfind("."):]
         DocUtils.updateProgressBar(0, 1, "Creating classtree and search index")
+        start=time.time()
         res=GraphUtils.analyzeGraph(self.graph, prefixnamespace, self.typeproperty, voidds, labeltouri, uritolabel, self.pubconfig["outpath"], self.pubconfig["createvowl"])
         subjectstorender=res["subjectstorender"]
+        end=time.time()
+        print("Graph Analysis completed in "+str(end-start)+" seconds")
         if not self.pubconfig["apis"]["iiif"]:
             self.pubconfig["apis"]["iiif"]=res["iiif"]
         if os.path.exists(outpath + self.pubconfig["corpusid"] + '_search.js'):
@@ -230,11 +233,17 @@ class OntDocGeneration:
             subtorencounter += 1
             if subtorencounter % 250 == 0:
                 DocUtils.updateProgressBar(subtorencounter, subtorenderlen, "Processing Subject URIs")
+        start=time.time()
         ClassTreeUtils.checkGeoInstanceAssignment(uritotreeitem)
         classlist = ClassTreeUtils.assignGeoClassesToTree(tree)
+        end=time.time()
+        print("Finalizing class tree done in "+str(end-start)+" seconds")
+        start=time.time()
         if self.pubconfig["nonnspages"]:
             labeltouri = self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, self.pubconfig["corpusid"], outpath,
                                                              self.pubconfig["license"], prefixnamespace, uritotreeitem, labeltouri)
+        end=time.time()
+        print("NonNS Page Generation time "+str(end-start)+" seconds")
         with open(outpath + self.pubconfig["corpusid"] + "_classtree.js", 'w', encoding='utf-8') as f:
             f.write("var tree=" + json.dumps(tree, indent=2))
             f.close()
@@ -310,8 +319,7 @@ class OntDocGeneration:
                 "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "")
             OGCAPIFeaturesExporter.generateOGCAPIFeaturesPages(outpath, self.pubconfig["deploypath"], self.htmlexporter.featurecollectionspaths,
                                                                self.pubconfig["prefixns"], self.pubconfig["apis"]["ogcapifeatures"], True)
-            indexhtml += "<p>This page shows feature collections present in the linked open data export</p>"
-            indexhtml += "<script src=\"features.js\"></script>"
+            indexhtml += "<p>This page shows feature collections present in the linked open data export</p><script src=\"features.js\"></script>"
             indexhtml += templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace(
                 "var featurecolls = {{myfeature}}", "").replace("{{relativepath}}",
                                                                 DocUtils.generateRelativePathFromGivenDepth(0)).replace(
@@ -445,7 +453,7 @@ def main():
     args, unknown = parser.parse_known_args()
     #print(args)
     print("The following arguments were not recognized: " + str(unknown))
-    if args.input == None or args.input[0] == "None" or args.input == "":
+    if args.input is None or args.input[0] == "None" or args.input == "":
         print("No input files specified... trying to find files in the script folder")
         args.input = DocUtils.getLDFilesFromFolder(".")
         print("Found " + str(args.input))
@@ -521,7 +529,7 @@ def main():
             print(traceback.format_exc())
         fcounter += 1
     curlicense = license
-    if docgen != None:
+    if docgen is not None:
         curlicense = docgen.licensehtml
     print("Path exists? " + outpath[0] + '/index.html ' + str(os.path.exists(outpath[0] + '/index.html')))
     if not os.path.exists(outpath[0] + '/index.ttl') and subrend != None:

@@ -142,8 +142,7 @@ class GraphUtils:
             predicates[pred]["to"] = list(predicates[pred]["to"])
             predicatecounter += 1
             predicatelength += len(str(pred))
-        if createVOWL:
-            OWL2VOWL.convertOWL2MiniVOWL(graph, outpath, "minivowl_result.js", predicates)
+        OWL2VOWL.convertOWL2MiniVOWL(graph, outpath, "minivowl_result.js", predicates)
         with open(outpath + "proprelations.js", 'w', encoding='utf-8') as f:
             f.write("var proprelations=" + json.dumps(predicates))
             f.close()

@@ -572,6 +572,7 @@ class HTMLExporter():
         onelabel = None
         bibtex = None
         timeobj = None
+        typeprop=URIRef(typeproperty)
         for tup in graph.predicate_objects(object):
             tuppredstr=str(tup[0])
             tupobjstr=str(tup[1])
@@ -582,7 +583,7 @@ class HTMLExporter():
             elif tuppredstr==typeproperty:
                 if pred == "http://www.w3.org/ns/oa#hasSelector":
                     if tupobjstr == "http://www.w3.org/ns/oa#SvgSelector" or tupobjstr == "http://www.w3.org/ns/oa#WKTSelector":
-                        for svglit in graph.objects(object, URIRef(typeproperty)):
+                        for svglit in graph.objects(object, typeprop):
                             svglitstr=str(svglit)
                             if "<svg" in svglitstr:
                                 imageannos.append({"value": svglitstr, "bodies": []})
@@ -603,7 +604,7 @@ class HTMLExporter():
                 elif (pred == "http://purl.org/dc/terms/isReferencedBy" or pred == "http://purl.org/spar/cito/hasCitingEntity") and ("http://purl.org/ontology/bibo/" in tupobjstr):
                     bibtex = BibPage.resolveBibtexReference(graph.predicate_objects(object), object, graph)
             elif tuppredstr == "http://www.w3.org/2000/01/rdf-schema#member":
-                if not inverse and (object, URIRef(typeproperty),URIRef("http://www.w3.org/ns/sosa/ObservationCollection")) in graph:
+                if not inverse and (object, typeprop,URIRef("http://www.w3.org/ns/sosa/ObservationCollection")) in graph:
                     for valtup in graph.predicate_objects(tup[1]):
                         if str(valtup[0]) in DocConfig.unitproperties:
                             foundunit = str(valtup[1])
@@ -651,24 +652,20 @@ class HTMLExporter():
                         foundmedia[DocConfig.fileextensionmap[ext]][tupobjstr] = {}
             if pred in DocConfig.timepointerproperties:
                 timeobj = OWLTimePage.resolveTimeLiterals(pred, object, graph)
-            if not nonns:
+            elif isinstance(tup[1],Literal) and not nonns:
                 geojsonrep = LiteralUtils.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep, nonns)
         if foundval is not None:
             if foundunit is not None:
+                unitlabel = f"{foundval} {foundunit}"
                 if "http" in foundunit:
-                    thelabel = DocUtils.getLabelForObject(str(foundunit), graph, prefixes)
-                    unitlabel = f"{foundval} <a href=\"{foundunit}\" target=\"_blank\">{thelabel}</a>"
-                else:
-                    unitlabel = f"{foundval} {foundunit}"
+                    unitlabel = f"{foundval} <a href=\"{foundunit}\" target=\"_blank\">{DocUtils.getLabelForObject(str(foundunit), graph, prefixes)}</a>"
                 if pred == "http://www.w3.org/ns/oa#hasBody":
                     # print("ADD ANNO BODY: "+str({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"}))
                     annobodies.append({"value": foundval, "unit": foundunit, "type": "TextualBody", "format": "text/plain"})
             else:
+                unitlabel = str(foundval)
                 if "http" in foundval:
-                    thelabel = DocUtils.getLabelForObject(str(foundunit), graph, prefixes)
-                    unitlabel = f"<a href=\"{foundval}\" target=\"_blank\">{thelabel}</a>"
-                else:
-                    unitlabel = str(foundval)
+                    unitlabel = f"<a href=\"{foundval}\" target=\"_blank\">{DocUtils.getLabelForObject(str(foundunit), graph, prefixes)}</a>"
                 if pred == "http://www.w3.org/ns/oa#hasBody":
                     # print("ADD ANNO BODY: "+str({"value":foundval,"type":"TextualBody","format":"text/plain"}))
                     annobodies.append({"value": foundval, "type": "TextualBody", "format": "text/plain"})

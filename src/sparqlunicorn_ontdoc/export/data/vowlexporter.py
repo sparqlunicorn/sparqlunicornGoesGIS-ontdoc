@@ -47,13 +47,14 @@ class OWL2VOWL():
         links=[]
         nodecounter=0
         for pred in g.subject_objects(URIRef(typeproperty)):
-            if str(pred[1]) not in nodeuriToId:
-                nodeuriToId[str(pred[1])]=nodecounter
+            predstr=str(pred[1])
+            if predstr not in nodeuriToId:
+                nodeuriToId[predstr]=nodecounter
                 nodecounter+=1
-                if pred[1]==OWL.Class or pred[1]==RDFS.Class or str(pred[1])=="http://www.w3.org/2000/01/rdf-schema#Datatype":
-                    nodes.append({"name":OWL2VOWL.getIRILabel(str(pred[1])),"type":"class","uri":str(pred[1])})
+                if pred[1]==OWL.Class or pred[1]==RDFS.Class or pred[1]==RDFS.Datatype:
+                    nodes.append({"name":OWL2VOWL.getIRILabel(predstr),"type":"class","uri":predstr})
                 else:
-                    nodes.append({"name": OWL2VOWL.getIRILabel(str(pred[1])), "type": "class", "uri": str(pred[1])})
+                    nodes.append({"name": OWL2VOWL.getIRILabel(predstr), "type": "class", "uri": predstr})
         if predicates:
             for pred in predicates:
                 if "from" in predicates[pred] and "to" in predicates[pred]:
@@ -126,7 +127,7 @@ class OWL2VOWL():
             for clsatt in g.predicate_objects(URIRef(iri)):
                 #print(clsatt)
                 if clsatt[0]!=URIRef(typeproperty):
-                    if clsatt[0]==URIRef("http://www.w3.org/2000/01/rdf-schema#subClassOf"):
+                    if clsatt[0]==RDFS.subClassOf:
                         if str(clsatt[1]) in classiriToProdId:
                             classAttributes[classiriToProdId[iri]["attid"]]["superClasses"].append(str(classiriToProdId[str(clsatt[1])]["id"]))
                             classAttributes[classiriToProdId[str(clsatt[1])]["attid"]]["subClasses"].append(str(classiriToProdId[iri]["id"]))

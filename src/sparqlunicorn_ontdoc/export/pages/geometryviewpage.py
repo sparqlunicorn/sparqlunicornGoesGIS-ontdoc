@@ -23,12 +23,12 @@ class GeometryViewPage:
 
 
     def generatePageWidget(self,graph,templates,subject,f,uritotreeitem,geojsonrep,predobjmap,geocache,parameters={},onlybody=False):
-        if uritotreeitem != None and str(subject) in uritotreeitem:
+        if uritotreeitem is not None and str(subject) in uritotreeitem:
             uritotreeitem[str(subject)][-1]["type"] = "geoinstance"
         props = predobjmap
         dateprops=parameters.get("dateprops",[])
         epsgcode=parameters.get("epsgcode","")
-        if parameters.get("timeobj") != None:
+        if parameters.get("timeobj") is not None:
             for item in parameters.get("timeobj"):
                 dateprops.append(item)
                 props[item] = str(parameters.get("timeobj")[item])

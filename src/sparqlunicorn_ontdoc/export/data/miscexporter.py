@@ -66,7 +66,7 @@ class MiscExporter:
 
     @staticmethod
     def convertTTLToJSON(g, file, subjectstorender=None,classlist=None, formatt="json"):
-        if subjectstorender == None:
+        if subjectstorender is None:
             subjectstorender = g.subjects(None, None, True)
         res = MiscExporter.detectSubjectType(g, subjectstorender)
         subjectsToType = res[0]

@@ -1,5 +1,5 @@
 from rdflib import URIRef, Literal, Graph, XSD
-from rdflib.namespace import RDF, RDFS, VOID, VANN, FOAF
+from rdflib.namespace import RDF, RDFS, VOID, VANN, FOAF, DCAT
 from doc.docconfig import DocConfig
 
 from doc.docutils import DocUtils
@@ -23,9 +23,9 @@ class VoidExporter:
         if pubconfig["repository"] is not None and pubconfig["repository"]!= "" and pubconfig["repository"].startswith("http"):
             g.add((URIRef(pubconfig["repository"]), RDF.type,
                    URIRef("http://www.w3.org/ns/adms#AssetRepository")))
-            g.add((URIRef(pubconfig["repository"]), URIRef("http://www.w3.org/ns/dcat#accessURL"),
+            g.add((URIRef(pubconfig["repository"]), DCAT.accessURL,
                    Literal(str(pubconfig["repository"]),datatype=XSD.anyURI)))
-            g.add((URIRef(pubconfig["repository"]), URIRef("http://www.w3.org/ns/dcat#dataset"),
+            g.add((URIRef(pubconfig["repository"]), DCAT.dataset,
                    URIRef(voidds)))
             g.add((URIRef(pubconfig["repository"]), RDFS.label,
                    Literal("Repository for "+str(dsname), lang="en")))
@@ -47,20 +47,20 @@ class VoidExporter:
               URIRef(pubconfig["deploypath"]+"/index.ttl")))
         g.add((URIRef(voidds), FOAF.homepage,
               URIRef(pubconfig["deploypath"])))
-        g.add((URIRef(voidds), URIRef("http://www.w3.org/ns/dcat#landingPage"),
+        g.add((URIRef(voidds), DCAT.landingPage,
               URIRef(pubconfig["deploypath"])))
         g.add((URIRef(voidds), FOAF.page,
               URIRef(pubconfig["deploypath"]+"/index.html")))
         g.add((URIRef(voidds), VOID.dataDump,
               URIRef(pubconfig["deploypath"]+"/index.ttl")))
-        g.add((URIRef(voidds), URIRef("http://www.w3.org/ns/dcat#distribution"),
+        g.add((URIRef(voidds), DCAT.distribution,
                URIRef(voidds+"_dist_ttl")))
         g.add((URIRef(voidds + "_dist_ttl"), RDF.type, URIRef("http://www.w3.org/ns/adms#AssetDistribution")))
         g.add((URIRef(voidds+"_dist_ttl"), RDFS.label,
                Literal(dsname+" TTL Distribution",lang="en")))
-        g.add((URIRef(voidds+"_dist_ttl"), URIRef("http://www.w3.org/ns/dcat#downloadURL"),
-               Literal(pubconfig["deploypath"]+"/index.ttl",datatype="http://www.w3.org/2001/XMLSchema#anyURI")))
-        g.add((URIRef(voidds+"_dist_ttl"), URIRef("http://www.w3.org/ns/dcat#mediaType"),
+        g.add((URIRef(voidds+"_dist_ttl"), DCAT.downloadURL,
+               Literal(pubconfig["deploypath"]+"/index.ttl",datatype=XSD.anyURI)))
+        g.add((URIRef(voidds+"_dist_ttl"), DCAT.mediaType,
                URIRef("http://www.w3.org/ns/formats/Turtle")))
         g.add((URIRef(voidds), VOID.feature,
               URIRef("http://www.w3.org/ns/formats/Turtle")))
@@ -101,7 +101,7 @@ class VoidExporter:
             g.add((URIRef(pubconfig["prefixns"]+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://purl.org/vocommons/voaf#inDataset"), URIRef(voidds)))
             if str(namespace) in DocConfig.namespaceToTopic:
                 for entry in DocConfig.namespaceToTopic[str(namespace)]:
-                    g.add((URIRef(voidds), URIRef("http://www.w3.org/ns/dcat#keyword"), Literal(DocUtils.shortenURI(entry["uri"]).replace("_"," "),lang="en")))
+                    g.add((URIRef(voidds), DCAT.keyword, Literal(DocUtils.shortenURI(entry["uri"]).replace("_"," "),lang="en")))
                     g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/subject"),URIRef(entry["uri"])))
                     g.add((URIRef(entry["uri"]),RDFS.label,Literal(entry["label"],lang="en")))
         for pred in propstats:
