@@ -1047,7 +1047,8 @@ function fitCameraToSelection(camera, controls, selection, fitOffset = 1.2) {
 
 function addFloatingButtonToMap(mapObject, textForButton, onClickFunction, elementID='mapButton1') {
         // Create the button element with basic dom manipulation
-        let buttonElement = document.createElement(elementID);
+        let buttonElement = document.createElement("button");
+        buttonElement.id=elementID
 
         // Set the innertext and class of the button
         buttonElement.innerHTML = textForButton;
