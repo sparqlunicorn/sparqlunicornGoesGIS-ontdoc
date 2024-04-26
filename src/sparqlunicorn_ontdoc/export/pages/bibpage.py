@@ -5,10 +5,12 @@ from rdflib.namespace import RDFS
 
 class BibPage:
 
+    @staticmethod
     def pageWidgetConstraint(self):
         return DocConfig.bibtextypemappings
 
-    def collectionConstraint(self):
+    @staticmethod
+    def collectionConstraint():
         return ["http://purl.org/ontology/bibo/Collection"]
 
     @staticmethod
