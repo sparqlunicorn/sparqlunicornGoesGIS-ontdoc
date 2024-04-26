@@ -3,13 +3,16 @@ from doc.docconfig import DocConfig
 
 class ObservationPage:
 
-    def collectionConstraint(self):
+    @staticmethod
+    def collectionConstraint():
         return ["http://www.w3.org/ns/sosa/ObservationCollection"]
 
-    def pageWidgetConstraint(self):
+    @staticmethod
+    def pageWidgetConstraint():
         return ["http://www.w3.org/ns/sosa/Observation"]
 
-    def generatePageWidget(self,graph,memberid,templates,f,pageWidget=False):
+    @staticmethod
+    def generatePageWidget(graph,memberid,templates,f,pageWidget=False):
         gottime = None
         gotvalue = None
         xLabel=None
@@ -31,14 +34,15 @@ class ObservationPage:
                     .replace("{{yValues}}",str([gottime])).replace("{{xLabel}}", "Value").replace("{{yLabel}}", "Time"))
         return {"xValue":gotvalue,"timeValue":gottime,"xLabel":xLabel}
 
-    def generateCollectionWidget(self, graph,templates, subject, f):
+    @staticmethod
+    def generateCollectionWidget(graph,templates, subject, f):
         memberpred = URIRef("http://www.w3.org/2000/01/rdf-schema#member")
         xValues = []
         xLabel = "Value"
         timeValues = []
         yLabel = "Time"
         for memberid in graph.objects(subject, memberpred, True):
-            res=self.generatePageWidget(graph,memberid,templates,f,False)
+            res=ObservationPage.generatePageWidget(graph,memberid,templates,f,False)
             if res["timeValue"] is not None and res["xValue"] is not None:
                 xValues.append(res["xValue"])
                 timeValues.append(res["timeValue"])

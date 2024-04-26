@@ -8,14 +8,17 @@ class LexiconPage(Page):
 
     tableheader="<thead><th>Lemma</th><th>Lexical Category</th><th>Language</th><th>Forms</th><th>Senses</th></thead>"
 
-    def collectionConstraint(self):
+    @staticmethod
+    def collectionConstraint():
         return ["http://www.w3.org/ns/lemon/lime#Lexicon"]
 
-    def pageWidgetConstraint(self):
+    @staticmethod
+    def pageWidgetConstraint():
         return DocConfig.lexicontypes
 
 
-    def extractLexEntry(self,graph,subject):
+    @staticmethod
+    def extractLexEntry(graph,subject):
         forms = []
         senses = []
         lemma = DocUtils.shortenURI(subject)
@@ -47,10 +50,11 @@ class LexiconPage(Page):
                 lexcat = lexobjstr
         return {"lemma":lemma,"lexcat":lexcat,"language":language,"forms":forms,"senses":senses}
 
-    def generatePageWidget(self,graph,subject,f,onlybody=False):
-        lexentry=self.extractLexEntry(graph,subject)
+    @staticmethod
+    def generatePageWidget(graph,subject,f,onlybody=False):
+        lexentry=LexiconPage.extractLexEntry(graph,subject)
         if not onlybody:
-            f.write(f"<table id=\"lexicon\">{self.tableheader}<tbody>")
+            f.write(f"<table id=\"lexicon\">{LexiconPage.tableheader}<tbody>")
         f.write("<tr><td><a href=\""+str(subject)+"\" target=\"_blank\">"+str(lexentry["lemma"])+"</a></td><td>"+str(lexentry["lexcat"])+"</td><td>"+str(lexentry["language"])+"</td><td>")
         for form in lexentry["forms"]:
             f.write(f"<a href=\"{form['uri']}\" target=\"_blank\">{form['label']}</a> ")
@@ -64,10 +68,11 @@ class LexiconPage(Page):
         if not onlybody:
             f.write("</tbody></table><script>$('#lexicon').DataTable();</script>")
 
-    def generateCollectionWidget(self,graph,templates,subject,f):
-        f.write(f"<table id=\"lexicon\">{self.tableheader}<tbody>")
+    @staticmethod
+    def generateCollectionWidget(graph,templates,subject,f):
+        f.write(f"<table id=\"lexicon\">{LexiconPage.tableheader}<tbody>")
         for lexentry in graph.objects(subject, URIRef("http://www.w3.org/ns/lemon/lexicog#entry"), True):
-            self.generatePageWidget(graph,lexentry,f,True)
+            LexiconPage.generatePageWidget(graph,lexentry,f,True)
         f.write("</tbody></table>")
 
     def generatePageView(self,templates,g,f):

@@ -1,4 +1,11 @@
 
+from export.pages.observationpage import ObservationPage
+from export.pages.bibpage import BibPage
+from export.pages.lexiconpage import LexiconPage
+
+from src.sparqlunicorn_ontdoc.export.pages.personpage import PersonPage
+
+
 class DocConfig:
 
     rdfformats = ["ttl", "trix", "trig", "n3", "nquads", "nt", "xml"]
@@ -41,6 +48,14 @@ class DocConfig:
                          "https://www.w3.org/ns/activitystreams#Collection": "collection",
                          "https://www.w3.org/ns/activitystreams#OrderedCollection": "collection"
     }
+
+    collectionclassToFunction={
+        "bibcollection":BibPage.generateCollectionWidget,
+        "lexicon":LexiconPage.generateCollectionWidget,
+        "observationcollection":ObservationPage.generateCollectionWidget,
+        "personcollection":PersonPage.generateCollectionWidget
+    }
+
 
     classToCollectionClass = {
         "http://www.opengis.net/ont/geosparql#SpatialObject": {
