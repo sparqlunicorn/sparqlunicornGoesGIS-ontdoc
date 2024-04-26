@@ -500,7 +500,7 @@ class HTMLExporter():
                     PersonPage().generatePageWidget(graph, subject, self.templates, f, True)
             for coll in collections:
                 if coll in DocDefaults.collectionclassToFunction:
-                    DocDefaults.collectionclassToFunction(graph, subject, self.templates, f)
+                    DocDefaults.collectionclassToFunction[coll](graph, subject, self.templates, f)
             if geojsonrep is not None and "geocollection" not in collections:
                 self.geocache = GeometryViewPage().generatePageWidget(graph, self.templates, subject, f, uritotreeitem,
                                                                       geojsonrep, predobjmap, self.geocache,
@@ -553,16 +553,6 @@ class HTMLExporter():
         #    print(inst)
         #    print(traceback.format_exc())
         return [postprocessing, nonnsmap]
-
-    @staticmethod
-    def processCollectionPages(pagesmap, graph, subject, templates, f):
-
-        if "observationcollection" in pagesmap:
-            ObservationPage().generateCollectionWidget(graph, templates, subject, f)
-        if "lexicon" in pagesmap:
-            LexiconPage().generateCollectionWidget(graph, templates, subject, f)
-        if "bibcollection" in pagesmap:
-            BibPage().generateCollectionWidget(graph, templates, subject, f)
 
 
     @staticmethod
