@@ -87,7 +87,7 @@ class BibPage:
         return BibPage.resolveBibtexReference(graph.predicate_objects(memberid),memberid,graph)
 
     @staticmethod
-    def generateCollectionWidget(graph,templates, subject, f):
+    def generateCollectionWidget(graph,subject,templates, f):
         f.write("<details><summary>[BIBTEX]</summary><pre>")
         for bibentry in graph.objects(subject, RDFS.member, True):
             f.write(BibPage.generatePageWidget(graph,bibentry,templates,f,True))
