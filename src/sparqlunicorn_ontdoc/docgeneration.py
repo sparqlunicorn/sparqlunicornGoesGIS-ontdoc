@@ -214,7 +214,7 @@ class OntDocGeneration:
             #    print("Create HTML Exception: "+str(e))
             #    print(traceback.format_exc())
         end=time.time()
-        print(f"HTML generation time for {len(subjectstorender)} pages: {end-start} seconds")
+        print(f"HTML generation time for {len(subjectstorender)} pages: {end-start} seconds, about {(end-start)/len(subjectstorender)} seconds per page")
         print("Postprocessing " + str(len(postprocessing)))
         subtorenderlen = len(subjectstorender) + len(postprocessing)
         for subj in postprocessing.subjects(None, None, True):
