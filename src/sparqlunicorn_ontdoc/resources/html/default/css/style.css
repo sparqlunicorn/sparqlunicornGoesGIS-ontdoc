@@ -44,6 +44,17 @@ details > pre {
     right: 5px;
     bottom: 5px;
 }
+.leaflet-floating-button{
+  position : absolute;
+  bottom : 20px;
+  right : 20px;
+  padding : 10px 20px;
+  background-color : #f0efeb;
+  color : #000000;
+  border : 1px solid #000;
+  border-radius : 5px;
+  cursor : pointer;
+}
 table.description { border-collapse: collapse; clear: left; font-size: 100%; margin: 0 0 1em; width: 100%; }
 table.description th { background: white; text-align: left; }
 table.description td, table.description th { line-height: 1.2em; padding: 0.3em 0.5em; vertical-align: top; }

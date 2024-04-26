@@ -1045,6 +1045,35 @@ function fitCameraToSelection(camera, controls, selection, fitOffset = 1.2) {
   controls.update();
 }
 
+function addFloatingButton(mapObject, textForButton, onClickFunction, elementID='mapButton1') {
+        // Create the button element with basic dom manipulation
+        let buttonElement = document.createElement(elementID);
+
+        // Set the innertext and class of the button
+        buttonElement.innerHTML = textForButton;
+        buttonElement.className = 'leaflet-floating-button';
+
+        // Add this leaflet control
+        var buttonControl = L.Control.extend({
+          options: {
+            // if you wish to edit the position of the button, change the position here and also make the corresponding changes in the css attached below
+            position: 'bottomright'
+          },
+
+          onAdd: function () {
+            var container = L.DomUtil.create('div');
+            container.appendChild(buttonElement);
+            return container;
+          }
+        });
+
+        // Add the control to the mapObject
+        mapObject.addControl(new buttonControl());
+
+        // The user defined on click action added to the button
+        buttonElement.onclick = onClickFunction;
+}
+
 function initThreeJS(domelement,verts,meshurls) {
     scene = new THREE.Scene();
     minz=Number.MAX_VALUE
@@ -1708,6 +1737,7 @@ function fetchLayersFromList(thelist){
 }
 
 var centerpoints=[]
+var clustersfrozen=false
 
 function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,dateatt="",ajax=true){
 	if(ajax){
@@ -1782,7 +1812,15 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,date
         }
         centerpoints.push(layerr.getBounds().getCenter());
     }
-	layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map)
+    addFloatingButtonToMap(map, 'Toggle Clusters', ()=>{
+        if(clustersfrozen){
+            markercluster.enableClustering()
+        }else{
+            markercluster.disableClustering()
+        }
+        clustersfrozen=!clustersfrozen
+    }, 'toggleClusters')
+    layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map)
 	if(dateatt!=null && dateatt!=""){
 		var sliderControl = L.control.sliderControl({
 			position: "bottomleft",

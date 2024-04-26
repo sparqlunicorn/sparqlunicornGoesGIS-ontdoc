@@ -262,7 +262,10 @@ class OntDocGeneration:
         if self.pubconfig["apis"]["iiif"]:
             IIIFAPIExporter.generateIIIFAnnotations(outpath, self.htmlexporter.imagetoURI)
         if self.pubconfig["createIndexPages"]:
+            start = time.time()
             IndexViewPage.createIndexPages(self.pubconfig,templates,self.pubconfig["apis"],paths,subjectstorender,uritotreeitem,voidds,tree,classlist,self.graph,self.voidstatshtml,curlicense)
+            end=time.time()
+            print("Index Page Creation time: "+str(end-start)+" seconds")
         if "layouts" in templates:
             for template in templates["layouts"]:
                 if template!="main":
@@ -273,6 +276,7 @@ class OntDocGeneration:
                 f.close()
         relpath = DocUtils.generateRelativePathFromGivenDepth(0)
         if len(self.htmlexporter.iiifmanifestpaths["default"]) > 0:
+            start=time.time()
             IIIFAPIExporter.generateIIIFCollections(self.pubconfig["outpath"], self.pubconfig["deploypath"], self.htmlexporter.iiifmanifestpaths["default"],
                                                     prefixnamespace)
             indexhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], "", "0", "true",self.pubconfig)
@@ -297,6 +301,8 @@ class OntDocGeneration:
                                                                              templates["nongeoexports"]).replace(
                                                   "{{bibtex}}", "").replace("{{stats}}", self.voidstatshtml),
                                               outpath + "imagegrid.html")
+            end=time.time()
+            print("IIIF Collection Generation time: "+str(end-start)+" seconds")
         if len(self.htmlexporter.featurecollectionspaths) > 0 and self.pubconfig["apis"]["ckan"]:
             CKANExporter.generateCKANCollection(outpath, self.pubconfig["deploypath"], self.htmlexporter.featurecollectionspaths, tree["core"]["data"],
                                                 self.pubconfig["license"])
