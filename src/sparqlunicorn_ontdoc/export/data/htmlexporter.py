@@ -493,6 +493,7 @@ class HTMLExporter():
                 self.imagetoURI[video] = {"uri": str(subject)}
                 f.write(self.templates["videotemplate"].replace("{{video}}", str(video)))
             for type in curtypes:
+                print("CURTYPES: "+str(curtypes))
                 if type in DocConfig.lexicontypes:
                     LexiconPage().generatePageWidget(graph, subject, f, {}, False)
                 if type in PersonPage.pageWidgetConstraint():
