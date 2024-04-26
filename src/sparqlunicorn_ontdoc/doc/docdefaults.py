@@ -1,5 +1,16 @@
+from export.pages.observationpage import ObservationPage
+from export.pages.bibpage import BibPage
+from export.pages.lexiconpage import LexiconPage
+from export.pages.personpage import PersonPage
 
 class DocDefaults:
+
+    collectionclassToFunction={
+        "bibcollection":BibPage.generateCollectionWidget,
+        "lexicon":LexiconPage.generateCollectionWidget,
+        "observationcollection":ObservationPage.generateCollectionWidget,
+        "personcollection":PersonPage.generateCollectionWidget
+    }
 
     templates={
     "epsgdefs": "var epsgdefs={}",

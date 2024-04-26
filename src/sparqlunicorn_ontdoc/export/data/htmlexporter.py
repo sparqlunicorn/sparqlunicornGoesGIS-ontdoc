@@ -1,6 +1,7 @@
 from doc.docutils import DocUtils
 from doc.literalutils import LiteralUtils
 from doc.docutils import DocConfig
+from doc.docdefaults import DocDefaults
 from export.pages.bibpage import BibPage
 from export.pages.owltimepage import OWLTimePage
 from rdflib import URIRef, Graph, BNode, Literal, XSD
@@ -499,7 +500,7 @@ class HTMLExporter():
                     PersonPage().generatePageWidget(graph, subject, self.templates, f, True)
             for coll in collections:
                 if coll in DocConfig.collectionclassToFunction:
-                    DocConfig.collectionclassToFunction(graph, subject, self.templates, f)
+                    DocDefaults.collectionclassToFunction(graph, subject, self.templates, f)
             if geojsonrep is not None and "geocollection" not in collections:
                 self.geocache = GeometryViewPage().generatePageWidget(graph, self.templates, subject, f, uritotreeitem,
                                                                       geojsonrep, predobjmap, self.geocache,
