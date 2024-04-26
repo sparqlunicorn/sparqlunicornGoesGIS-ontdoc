@@ -497,6 +497,8 @@ class HTMLExporter():
                     LexiconPage().generatePageWidget(graph, subject, f, {}, False)
                 if type in PersonPage.pageWidgetConstraint():
                     PersonPage().generatePageWidget(graph, subject, self.templates, f, True)
+                if type in BibPage.pageWidgetConstraint():
+                    BibPage().generatePageWidget(graph, subject, self.templates, f, True)
             HTMLExporter.processCollectionPages(collections, graph, subject, self.templates, f)
             if geojsonrep is not None and "geocollection" not in collections:
                 self.geocache = GeometryViewPage().generatePageWidget(graph, self.templates, subject, f, uritotreeitem,
