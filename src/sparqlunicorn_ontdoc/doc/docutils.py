@@ -117,7 +117,7 @@ class DocUtils:
     @staticmethod
     def printExecutionStats(timeexec):
         for entry in timeexec:
-            print(f"{entry}: {timeexec[entry]['time']} seconds")
+            print(f"{entry}: {timeexec[entry]['time']} seconds", end='')
             if "items" in timeexec[entry]:
                 print(f" for {timeexec[entry]['items']} items, about {timeexec[entry]['items']/timeexec[entry]['time']} per item")
             print("\n")

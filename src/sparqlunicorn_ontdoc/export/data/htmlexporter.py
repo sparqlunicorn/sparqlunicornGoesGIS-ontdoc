@@ -750,7 +750,7 @@ class HTMLExporter():
             if isinstance(object, Literal) and object.datatype is not None:
                 res = DocUtils.replaceNameSpacesInLabel(prefixes, str(object.datatype))
                 objstring = objstr.replace("<", "&lt").replace(">", "&gt;")
-                if str(object.datatype) == "http://www.w3.org/2001/XMLSchema#anyURI":
+                if object.datatype == XSD.anyURI:
                     objstring = f"<a href=\"{objstr}\">{objstr}</a>"
                 elif str(object.datatype) in DocConfig.timeliteraltypes and dateprops is not None and DocUtils.shortenURI(predstr, True) not in DocConfig.metadatanamespaces and str(pred) not in dateprops:
                     dateprops.append(predstr)
