@@ -116,11 +116,15 @@ class DocUtils:
 
     @staticmethod
     def printExecutionStats(timeexec):
+        print(f"Selected Execution Statistics in order of execution:")
+        totaltime=0
         for entry in timeexec:
             print(f"{entry}: {timeexec[entry]['time']} seconds", end='')
+            totaltime+=timeexec[entry]['time']
             if "items" in timeexec[entry]:
-                print(f" for {timeexec[entry]['items']} items, about {timeexec[entry]['items']/timeexec[entry]['time']} per item")
+                print(f" for {timeexec[entry]['items']} items, about {timeexec[entry]['time']/timeexec[entry]['items']} per item", end='')
             print("\n")
+        print(f"Total measured execution time: {totaltime} seconds")
 
 
     @staticmethod
