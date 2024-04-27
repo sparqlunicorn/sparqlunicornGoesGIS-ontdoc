@@ -502,15 +502,16 @@ class HTMLExporter():
                 if coll in DocDefaults.collectionclassToFunction:
                     DocDefaults.collectionclassToFunction[coll](graph, subject, self.templates, f)
             if geojsonrep is not None and "geocollection" not in collections:
-                self.geocache = GeometryViewPage().generatePageWidget(graph, self.templates, subject, f, uritotreeitem,
+                self.geocache = GeometryViewPage().generatePageWidget(graph, subject,self.templates,  f, uritotreeitem,
                                                                       geojsonrep, predobjmap, self.geocache,
-                                                                      {"dateprops": dateprops, "timeobj": timeobj,
+                                                                      {"dateprops": dateprops,
+                                                                       "timeobj": timeobj,
                                                                        "epsgcode": epsgcode,
                                                                        "epsgdefslink": epsgdefslink,
                                                                        "checkdepth": checkdepth,
                                                                        "hasnonnslen": len(hasnonns)})
             elif "geocollection" in collections or nonns:
-                self.geocache = GeometryViewPage().generateCollectionWidget(graph, self.templates, subject, f,
+                self.geocache = GeometryViewPage().generateCollectionWidget(graph,  subject,self.templates, f,
                                                                             uritotreeitem,
                                                                             self.featurecollectionspaths,
                                                                             {"completesavepath": completesavepath,
@@ -555,14 +556,13 @@ class HTMLExporter():
         return [postprocessing, nonnsmap]
 
 
+
+
     @staticmethod
     def searchObjectConnectionsForAggregateData(graph, object, pred, geojsonrep, foundmedia, imageannos,
                                                 textannos, image3dannos, annobodies, label, unitlabel, nonns, inverse,
                                                 labellang, typeproperty, prefixes):
         annosource = None
-        incollection = False
-        if pred in DocConfig.collectionrelationproperties:
-            incollection = True
         foundval = None
         foundunit = None
         tempvalprop = None
@@ -640,14 +640,14 @@ class HTMLExporter():
                             foundval = str(valtup[1])
             elif tuppredstr in DocConfig.unitproperties:
                 foundunit = tup[1]
-            if incollection:
+            if pred in DocConfig.collectionrelationproperties:
                 if "<svg" in tupobjstr:
                     foundmedia["image"][tupobjstr] = {}
                 elif "http" in tupobjstr:
                     ext = "." + ''.join(filter(str.isalpha, tupobjstr.split(".")[-1]))
                     if ext in DocConfig.fileextensionmap:
                         foundmedia[DocConfig.fileextensionmap[ext]][tupobjstr] = {}
-            if pred in DocConfig.timepointerproperties:
+            elif pred in DocConfig.timepointerproperties:
                 timeobj = OWLTimePage.resolveTimeLiterals(pred, object, graph)
             elif not nonns:
                 geojsonrep = LiteralUtils.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep, nonns)

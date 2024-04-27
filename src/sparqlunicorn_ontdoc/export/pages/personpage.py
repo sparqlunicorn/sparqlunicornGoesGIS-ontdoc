@@ -138,28 +138,30 @@ class PersonPage:
         print("create the name from differently mapped N values")
 
 
-    def extractPersonMetadata(self,subject,graph):
+    @staticmethod
+    def extractPersonMetadata(subject,graph):
         thevcard={}
         thehcard={}
         for pprop in graph.predicate_objects(subject, True):
-            if str(pprop[0]) in self.vcardTohCard:
-                thehcard[str(self.vcardTohCard[str(pprop[0])])]={"value":str(pprop[1]),"prop":str(pprop[0])}
-            if str(pprop[0]) in self.vcardprops:
-                if self.vcardprops[str(pprop[0])] in thevcard:
-                    thevcard[self.vcardprops[str(pprop[0])]]["value"]+=" "+str(pprop[1])
+            if str(pprop[0]) in PersonPage.vcardTohCard:
+                thehcard[str(PersonPage.vcardTohCard[str(pprop[0])])]={"value":str(pprop[1]),"prop":str(pprop[0])}
+            if str(pprop[0]) in PersonPage.vcardprops:
+                if PersonPage.vcardprops[str(pprop[0])] in thevcard:
+                    thevcard[PersonPage.vcardprops[str(pprop[0])]]["value"]+=" "+str(pprop[1])
                 else:
-                    thevcard[self.vcardprops[str(pprop[0])]]={"value":str(pprop[1]),"prop":str(pprop[0])}
+                    thevcard[PersonPage.vcardprops[str(pprop[0])]]={"value":str(pprop[1]),"prop":str(pprop[0])}
         return {"vcard":thevcard,"hcard":thehcard}
 
-    def hcardToHTML(self,vcard,hcard):
+    @staticmethod
+    def hcardToHTML(vcard,hcard):
         result="<table id=\"person\" class=\"h-card\" border=\"1\"><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>"
         for prop in hcard:
             result+=f"<tr><td><a href=\"{hcard[prop]['prop']}\">{DocUtils.shortenURI(hcard[prop]['prop'])}</a></td>"
             if "http" in hcard[prop]:
                 result+=f"<td><a href=\"{hcard[prop]['value']}\" class=\"{prop}\">{DocUtils.shortenURI(hcard[prop]['value'])}</a></td></tr>"
             else:
-                if hcard[prop]["prop"] in self.vcardTohCard:
-                    result += f"<td class=\"{self.vcardTohCard[hcard[prop]['prop']]}\">{hcard[prop]['value']}</td></tr>"
+                if hcard[prop]["prop"] in PersonPage.vcardTohCard:
+                    result += f"<td class=\"{PersonPage.vcardTohCard[hcard[prop]['prop']]}\">{hcard[prop]['value']}</td></tr>"
                 else:
                     result += f"<td class=\"{prop}\">{hcard[prop]['value']}</td></tr>"
         result += "</tbody></table><script>$('#person').DataTable();</script><button id=\"vcard\" onclick=\"saveTextAsFile(`" + str(PersonPage.vcardJSONToString(vcard)) + "`,'vcard')\">Download VCard</button>"

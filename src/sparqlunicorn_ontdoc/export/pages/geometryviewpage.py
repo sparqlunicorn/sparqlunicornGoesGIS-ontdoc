@@ -22,7 +22,7 @@ class GeometryViewPage:
         f.write(templates["imagestemplatesvg"].replace("{{carousel}}","image").replace("{{image}}", str(thepath.replace("<svg>","<svg class=\"svgview\">"))))
 
 
-    def generatePageWidget(self,graph,templates,subject,f,uritotreeitem,geojsonrep,predobjmap,geocache,parameters={},onlybody=False):
+    def generatePageWidget(self,graph,subject,templates,f,uritotreeitem,geojsonrep,predobjmap,geocache,parameters={},onlybody=False):
         if uritotreeitem is not None and str(subject) in uritotreeitem:
             uritotreeitem[str(subject)][-1]["type"] = "geoinstance"
         props = predobjmap
@@ -52,7 +52,7 @@ class GeometryViewPage:
                 "{{dateatt}}", ""))
         return geocache
 
-    def generateCollectionWidget(self,graph,templates,subject,f,uritotreeitem,featurecollectionspaths,parameters={"foundlabel":""}):
+    def generateCollectionWidget(self,graph,subject,templates,f,uritotreeitem,featurecollectionspaths,parameters={"foundlabel":""}):
         if parameters.get("foundlabel") is not None and parameters.get("foundlabel") != "":
             featcoll = {"type": "FeatureCollection", "id": subject, "name": str(parameters["foundlabel"]),
                         "features": []}

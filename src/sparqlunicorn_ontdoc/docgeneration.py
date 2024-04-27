@@ -38,6 +38,7 @@ import argparse
 import shutil
 import json
 import time
+from collections import OrderedDict
 
 templatepath = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
 resourcepath = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/"))
@@ -47,7 +48,7 @@ templates = DocDefaults.templates
 class OntDocGeneration:
 
     def __init__(self, prefixes, modtime, outpath, apis, graph, pubconfig, exports=["json", "ttl"]):
-
+        self.exectimes=OrderedDict()
         self.pubconfig=pubconfig
         self.pubconfig["namespaceshort"]=pubconfig["prefixnsshort"].replace("/","")
         self.pubconfig["outpath"]=outpath
@@ -115,7 +116,10 @@ class OntDocGeneration:
         self.pubconfig["licenseuri"]=tmp[1]
         voidds = prefixnamespace + self.pubconfig["datasettitle"].replace(" ","_")
         if self.pubconfig["createCollections"]:
+            start=time.time()
             self.graph = GraphUtils.createCollections(self.graph, prefixnamespace,self.typeproperty)
+            end=time.time()
+            self.exectimes["Create Collections"] = {"time": end - start}
         if self.pubconfig["logourl"] is not None and self.pubconfig["logourl"] != "" and not self.pubconfig["logourl"].startswith("http"):
             logoname=self.pubconfig["logourl"]
             if not os.path.isdir(outpath + "/logo/"):
@@ -127,7 +131,7 @@ class OntDocGeneration:
         res=GraphUtils.analyzeGraph(self.graph, prefixnamespace, self.typeproperty, voidds, labeltouri, uritolabel, self.pubconfig["outpath"], self.pubconfig["createvowl"])
         subjectstorender=res["subjectstorender"]
         end=time.time()
-        print("Graph Analysis completed in "+str(end-start)+" seconds")
+        self.exectimes["Graph Analysis"]={"time":end-start}
         if not self.pubconfig["apis"]["iiif"]:
             self.pubconfig["apis"]["iiif"]=res["iiif"]
         if os.path.exists(outpath + self.pubconfig["corpusid"] + '_search.js'):
@@ -157,6 +161,7 @@ class OntDocGeneration:
         start=time.time()
         clsress = ClassTreeUtils.getClassTree(self.graph, uritolabel, classidset, uritotreeitem,self.typeproperty,self.pubconfig["prefixes"],self.preparedclassquery,self.pubconfig["outpath"],self.pubconfig)
         end=time.time()
+        self.exectimes["Class Tree Generation"]={"time":end-start,"items":len(clsress[2])}
         print(f"Class Tree Generation time for {len(clsress[2])} classes: {end-start} seconds")
         tree=clsress[0]
         uritotreeitem=clsress[1]
@@ -175,6 +180,7 @@ class OntDocGeneration:
         self.graph += voidgraph["graph"]
         subjectstorender = voidgraph["subjects"]
         end=time.time()
+        self.exectimes["Void stats generation"]={"time":end-start,"items":len(classidset)}
         print(f"Void stats generation time for {len(classidset)} classes: {end-start} seconds")
         with open(outpath + "style.css", 'w', encoding='utf-8') as f:
             f.write(templates["style"])
@@ -214,6 +220,7 @@ class OntDocGeneration:
             #    print("Create HTML Exception: "+str(e))
             #    print(traceback.format_exc())
         end=time.time()
+        self.exectimes["HTML Generation"]={"time":end-start,"items":len(subjectstorender)}
         print(f"HTML generation time for {len(subjectstorender)} pages: {end-start} seconds, about {(end-start)/len(subjectstorender)} seconds per page")
         print("Postprocessing " + str(len(postprocessing)))
         subtorenderlen = len(subjectstorender) + len(postprocessing)
@@ -237,13 +244,15 @@ class OntDocGeneration:
         ClassTreeUtils.checkGeoInstanceAssignment(uritotreeitem)
         classlist = ClassTreeUtils.assignGeoClassesToTree(tree)
         end=time.time()
+        self.exectimes["Finalize Classtree"]={"time":end-start}
         print("Finalizing class tree done in "+str(end-start)+" seconds")
-        start=time.time()
         if self.pubconfig["nonnspages"]:
+            start = time.time()
             labeltouri = self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, self.pubconfig["corpusid"], outpath,
                                                              self.pubconfig["license"], prefixnamespace, uritotreeitem, labeltouri)
-        end=time.time()
-        print("NonNS Page Generation time "+str(end-start)+" seconds")
+            end=time.time()
+            self.exectimes["NonNS Pages"] = {"time": end - start,"items":len(nonnsmap)}
+            print("NonNS Page Generation time "+str(end-start)+" seconds")
         with open(outpath + self.pubconfig["corpusid"] + "_classtree.js", 'w', encoding='utf-8') as f:
             f.write("var tree=" + json.dumps(tree, indent=2))
             f.close()
@@ -266,6 +275,7 @@ class OntDocGeneration:
             IndexViewPage.createIndexPages(self.pubconfig,templates,self.pubconfig["apis"],paths,subjectstorender,uritotreeitem,voidds,tree,classlist,self.graph,self.voidstatshtml,curlicense)
             end=time.time()
             print("Index Page Creation time: "+str(end-start)+" seconds")
+            self.exectimes["Index Page Creation"] = {"time": end - start}
         if "layouts" in templates:
             for template in templates["layouts"]:
                 if template!="main":
@@ -303,6 +313,7 @@ class OntDocGeneration:
                                               outpath + "imagegrid.html")
             end=time.time()
             print("IIIF Collection Generation time: "+str(end-start)+" seconds")
+            self.exectimes["IIIF Collection Generation"] = {"time": end - start}
         if len(self.htmlexporter.featurecollectionspaths) > 0 and self.pubconfig["apis"]["ckan"]:
             CKANExporter.generateCKANCollection(outpath, self.pubconfig["deploypath"], self.htmlexporter.featurecollectionspaths, tree["core"]["data"],
                                                 self.pubconfig["license"])
@@ -529,6 +540,7 @@ def main():
             else:
                 docgen = OntDocGeneration(prefixes, modtime, outpath[-1],apis, g, vars(args),dataexports)
             subrend = docgen.generateOntDocForNameSpace(args.prefixns, dataformat="HTML")
+            DocUtils.printExecutionStats(docgen.exectimes)
         except Exception as inst:
             print("Could not parse " + str(fp))
             print(inst)

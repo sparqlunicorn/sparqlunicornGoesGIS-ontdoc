@@ -115,6 +115,15 @@ class DocUtils:
         return checkdepth
 
     @staticmethod
+    def printExecutionStats(timeexec):
+        for entry in timeexec:
+            print(f"{entry}: {timeexec[entry]['time']} seconds")
+            if "items" in timeexec[entry]:
+                print(f" for {timeexec[entry]['items']} items, about {timeexec[entry]['items']/timeexec[entry]['time']} per item")
+            print("\n")
+
+
+    @staticmethod
     def shortenURI(uri,ns=False):
         if uri is not None:
             if ns:
