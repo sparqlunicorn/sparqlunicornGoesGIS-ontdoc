@@ -43,10 +43,10 @@ class GraphUtils:
                 classToInstances[tupobjstr].add(tuppredstr)
                 isgeo = False
                 isfeature = False
-                for geotup in graph.predicate_objects(tuppredstr):
+                for geotup in graph.predicate_objects(tup[0]):
                     if str(geotup[0]) in DocConfig.geopointerproperties:
                         isfeature = True
-                    elif str(geotup[0]) in DocConfig.geoproperties:
+                    if str(geotup[0]) in DocConfig.geoproperties:
                         isgeo = True
                 if isgeo:
                     classToGeoColl[tupobjstr] += 1
