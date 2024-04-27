@@ -122,7 +122,7 @@ class DocUtils:
             print(f"{entry}: {timeexec[entry]['time']} seconds", end='')
             totaltime+=timeexec[entry]['time']
             if "items" in timeexec[entry]:
-                print(f" for {timeexec[entry]['items']} items, about {timeexec[entry]['time']/timeexec[entry]['items']} per item", end='')
+                print(f" for {timeexec[entry]['items']} items, about {timeexec[entry]['time']/timeexec[entry]['items']} seconds per item", end='')
             print("\n")
         print(f"Total measured execution time: {totaltime} seconds")
 
