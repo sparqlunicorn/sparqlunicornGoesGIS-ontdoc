@@ -69,6 +69,7 @@ class GeometryViewPage:
             for memberid in graph.objects(subject, memberpred, True):
                 for geoinstance in graph.predicate_objects(memberid, True):
                     geojsonrep = None
+                    properties={}
                     if isinstance(geoinstance[1], Literal) and (
                             str(geoinstance[0]) in DocConfig.geoproperties or str(
                         geoinstance[1].datatype) in DocConfig.geoliteraltypes):
@@ -80,18 +81,20 @@ class GeometryViewPage:
                             if isinstance(geotup[1], Literal) and (str(geotup[0]) in DocConfig.geoproperties or str(
                                     geotup[1].datatype) in DocConfig.geoliteraltypes):
                                 geojsonrep = LiteralUtils.processLiteral(str(geotup[1]), str(geotup[1].datatype), "")
+                            else:
+                                properties[str(geotup[0])]=str(geotup[1])
                     #print(geojsonrep)
                     if geojsonrep is not None and geojsonrep!= "" and isinstance(geojsonrep,dict) and "coordinates" in geojsonrep and len(geojsonrep["coordinates"]) > 0:
                         if uritotreeitem is not None and str(memberid) in uritotreeitem:
                             featcoll["features"].append({"type": "Feature", 'id': str(memberid),
                                                          'name': uritotreeitem[str(memberid)][-1]["text"],
-                                                         'dateprops': parameters.get("dateprops", {}), 'properties': {},
+                                                         'dateprops': parameters.get("dateprops", {}), 'properties': properties,
                                                          "geometry": geojsonrep})
                         else:
                             featcoll["features"].append(
                                 {"type": "Feature", 'id': str(memberid), 'name': str(memberid),
                                  'dateprops': parameters.get("dateprops", {}),
-                                 'properties': {}, "geometry": geojsonrep})
+                                 'properties': properties, "geometry": geojsonrep})
                         if len(featcoll["features"][-1]["dateprops"]) > 0:
                             dateatt = featcoll["features"][-1]["dateprops"][0]
                         if "crs" in geojsonrep:

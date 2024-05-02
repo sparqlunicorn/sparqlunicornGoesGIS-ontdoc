@@ -35,9 +35,19 @@ class ObservationPage:
         return {"xValue":gotvalue,"timeValue":gottime,"xLabel":xLabel}
 
     @staticmethod
+    def aggregateSingleValues(values):
+        resmap={}
+        for val in values:
+            resmap.setdefault(val,1)
+            resmap[val]+=1
+        sdict=dict(sorted(resmap.items()))
+        return [list(sdict.keys()),list(sdict.values())]
+
+    @staticmethod
     def generateCollectionWidget(graph, subject,templates, f):
         memberpred = URIRef("http://www.w3.org/2000/01/rdf-schema#member")
         xValues = []
+        xValueAlt=[]
         xLabel = "Value"
         timeValues = []
         yLabel = "Time"
@@ -46,9 +56,19 @@ class ObservationPage:
             if res["timeValue"] is not None and res["xValue"] is not None:
                 xValues.append(res["xValue"])
                 timeValues.append(res["timeValue"])
+            elif res["timeValue"] is None and res["xValue"] is not None:
+                xValueAlt.append(res["xValue"])
             if "xLabel" in res:
                 xLabel=res["xLabel"]
-        f.write(templates["chartviewtemplate"].replace("{{xValues}}", str(xValues))
+        if len(timeValues)==0:
+            yLabel="Occurrence"
+            res=ObservationPage.aggregateSingleValues(xValueAlt)
+            xValues=res[0]
+            timeValues=res[1]
+            f.write(templates["chartviewtemplate"].replace("{{xValues}}", str(xValues))
+                    .replace("{{yValues}}", str(timeValues)).replace("{{xLabel}}", str(xLabel)).replace("{{yLabel}}",                                                                                                   str(yLabel)))
+        else:
+            f.write(templates["chartviewtemplate"].replace("{{xValues}}", str(xValues))
                 .replace("{{yValues}}",str(timeValues)).replace("{{xLabel}}", str(xLabel)).replace("{{yLabel}}", str(yLabel)))
 
     def generatePageView(self,graph, subject, f):

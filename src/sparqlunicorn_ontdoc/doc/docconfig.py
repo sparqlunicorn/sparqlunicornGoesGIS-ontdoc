@@ -192,6 +192,8 @@ class DocConfig:
                                               "prop": "http://www.w3.org/ns/dcat#dataset"},
         "http://www.w3.org/ns/sosa/Observation": {"class": "http://www.w3.org/ns/sosa/ObservationCollection",
                                                   "prop": "http://www.w3.org/2000/01/rdf-schema#member"},
+        "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure": {"class": "http://www.w3.org/ns/sosa/ObservationCollection",
+                                                  "prop": "http://www.w3.org/2000/01/rdf-schema#member"},
         "http://purl.org/ontology/bibo/Document": {"class": "http://purl.org/ontology/bibo/Collection",
                                                    "prop": "http://www.w3.org/2000/01/rdf-schema#member"},
         "http://xmlns.com/foaf/0.1/Document": {"class": "http://purl.org/ontology/bibo/Collection",
