@@ -219,14 +219,14 @@ class DocUtils:
     @staticmethod
     def processSubjectPath(outpath,paths,path,graph):
         if "/" in path:
-            #addpath = ""
+            addpath = ""
             try:
-                os.makedirs(outpath+path,True)
-                #for pathelem in path.split("/"):
-                #    addpath += pathelem + "/"
-                #    if not os.path.exists(outpath + addpath):
-                #        os.mkdir(outpath + addpath)
-                paths.setdefault(outpath + path[0:path.rfind('/')] + "/",[]).append(path[0:path.rfind('/')])
+                #os.makedirs(outpath+path,True)
+                for pathelem in path.split("/"):
+                    addpath += pathelem + "/"
+                    if not os.path.exists(outpath + addpath):
+                        os.mkdir(outpath + addpath)
+                paths.setdefault(outpath + path[0:path.rfind('/')] + "/",[]).append(addpath[0:addpath.rfind('/')])
                 #if outpath + path[0:path.rfind('/')] + "/" not in paths:
                 #    paths[outpath + path[0:path.rfind('/')] + "/"] = []
                 #paths[outpath + path[0:path.rfind('/')] + "/"].append(addpath[0:addpath.rfind('/')])
@@ -234,9 +234,9 @@ class DocUtils:
                 print(e)
         else:
             try:
-                os.makedirs(outpath+path,True)
-                #if not os.path.exists(outpath + path):
-                #    os.mkdir(outpath + path)
+                #os.makedirs(outpath+path,True)
+                if not os.path.exists(outpath + path):
+                    os.mkdir(outpath + path)
                 paths.setdefault(outpath,[]).append(path + "/index.html")
                 #if outpath not in paths:
                 #    paths[outpath] = []
