@@ -692,7 +692,6 @@ class HTMLExporter():
         if isinstance(object, URIRef) or isinstance(object, BNode):
             if ttlf is not None:
                 ttlf.add((subject, URIRef(pred), object))
-            label = ""
             unitlabel = ""
             mydata = HTMLExporter.searchObjectConnectionsForAggregateData(graph, object, pred, geojsonrep, foundmedia,
                                                                           imageannos, textannos, image3dannos,
@@ -735,11 +734,11 @@ class HTMLExporter():
                                                                           str(baseurl) + "nonns_" + DocUtils.shortenURI(
                                                                               objstr.replace(":", "_")), False)
                     tablecontents += f" <a href=\"{rellink}.html\">[x]</a>"
-            if unitlabel != "":
+            if unitlabel:
                 tablecontents += f" <span style=\"font-weight:bold\">[{unitlabel}]</span>"
             if timeobj is not None:
                 res = OWLTimePage.timeObjectToHTML(timeobj, prefixes)
-                if res != "":
+                if res:
                     tablecontents += f" <span style=\"font-weight:bold\">[{res}]</span>"
                 dateprops = timeobj
             tablecontents += "</span>"

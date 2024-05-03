@@ -120,13 +120,12 @@ class GeometryViewPage:
                 self.createSVGFromWKT(templates,featcoll,f)
             else:
                 firstcrs = "4326"
+                featcoll["crs"] = "http://www.opengis.net/def/crs/EPSG/0/4326"
                 if len(thecrs) > 0:
                     firstcrs = str(next(iter(thecrs)))
                     featcoll["crs"] = "http://www.opengis.net/def/crs/EPSG/0/" + firstcrs
-                else:
-                    featcoll["crs"] = "http://www.opengis.net/def/crs/EPSG/0/4326"
                 epsgcode = "EPSG:" + firstcrs
-                if dateatt != "":
+                if len(dateatt)>0:
                     for feat in featcoll["features"]:
                         if dateatt not in feat["properties"]:
                             feat["properties"][dateatt] = ""
