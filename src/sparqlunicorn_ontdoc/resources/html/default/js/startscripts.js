@@ -1694,7 +1694,11 @@ function generateLeafletPopup(feature, layer){
     for(prop in feature.properties){
         popup+="<li>"
         if(prop.startsWith("http")){
-            popup+="<a href=\""+prop+"\" target=\"_blank\">"+prop.substring(prop.lastIndexOf('/')+1)+"</a>"
+            if(prop.includes("#")){
+               popup+="<a href=\""+prop+"\" target=\"_blank\">"+prop.substring(prop.lastIndexOf('#')+1)+"</a>"
+            }else{
+               popup+="<a href=\""+prop+"\" target=\"_blank\">"+prop.substring(prop.lastIndexOf('/')+1)+"</a>"
+            }
         }else{
             popup+=prop
         }
@@ -1704,7 +1708,11 @@ function generateLeafletPopup(feature, layer){
             for(item of feature.properties[prop]){
                 popup+="<li>"
                 if((item+"").startsWith("http")){
-                    popup+="<a href=\""+item+"\" target=\"_blank\">"+item.substring(item.lastIndexOf('/')+1)+"</a>"
+                    if((item+"").includes("#")){
+                        popup+="<a href=\""+item+"\" target=\"_blank\">"+item.substring(item.lastIndexOf('#')+1)+"</a>"
+                    }else{
+                        popup+="<a href=\""+item+"\" target=\"_blank\">"+item.substring(item.lastIndexOf('/')+1)+"</a>"
+                    }
                 }else{
                     popup+=item
                 }
@@ -1712,9 +1720,21 @@ function generateLeafletPopup(feature, layer){
             }
             popup+="</ul>"
         }else if(Array.isArray(feature.properties[prop]) && (feature.properties[prop][0]+"").startsWith("http")){
-            popup+="<a href=\""+rewriteLink(feature.properties[prop][0])+"\" target=\"_blank\">"+feature.properties[prop][0].substring(feature.properties[prop][0].lastIndexOf('/')+1)+"</a>"
+            if(feature.properties[prop][0].includes("#")){
+              popup+="<a href=\""+rewriteLink(feature.properties[prop][0])+"\" target=\"_blank\">"+feature.properties[prop][0].substring(feature.properties[prop][0].lastIndexOf('#')+1)+"</a>"
+            }else{
+              popup+="<a href=\""+rewriteLink(feature.properties[prop][0])+"\" target=\"_blank\">"+feature.properties[prop][0].substring(feature.properties[prop][0].lastIndexOf('/')+1)+"</a>"
+            }
         }else{
-            popup+=feature.properties[prop]+""
+            if((feature.properties[prop]+"").startsWith("http")){
+                    if((feature.properties[prop]+"").includes("#")){
+                        popup+="<a href=\""+item+"\" target=\"_blank\">"+item.substring(item.lastIndexOf('#')+1)+"</a>"
+                    }else{
+                        popup+="<a href=\""+item+"\" target=\"_blank\">"+item.substring(item.lastIndexOf('/')+1)+"</a>"
+                    }
+            }else{
+                popup+=feature.properties[prop]+""
+            }
         }
         popup+="</li>"
     }

@@ -1683,43 +1683,63 @@ class DocDefaults:
         }
     }
     
-    function generateLeafletPopup(feature, layer){
-        var popup="<b>"
-        if("name" in feature && feature.name!=""){
-            popup+="<a href=\\""+rewriteLink(feature.id)+"\\" class=\\"footeruri\\" target=\\"_blank\\">"+feature.name+"</a></b><br/><ul>"
-        }else{
-            popup+="<a href=\\""+rewriteLink(feature.id)+"\\" class=\\"footeruri\\" target=\\"_blank\\">"+feature.id.substring(feature.id.lastIndexOf('/')+1)+"</a></b><br/><ul>"
-        }
-        for(prop in feature.properties){
-            popup+="<li>"
-            if(prop.startsWith("http")){
-                popup+="<a href=\\""+prop+"\\" target=\\"_blank\\">"+prop.substring(prop.lastIndexOf('/')+1)+"</a>"
+function generateLeafletPopup(feature, layer){
+    var popup="<b>"
+    if("name" in feature && feature.name!=""){
+        popup+="<a href=\""+rewriteLink(feature.id)+"\" class=\"footeruri\" target=\"_blank\">"+feature.name+"</a></b><br/><ul>"
+    }else{
+        popup+="<a href=\""+rewriteLink(feature.id)+"\" class=\"footeruri\" target=\"_blank\">"+feature.id.substring(feature.id.lastIndexOf('/')+1)+"</a></b><br/><ul>"
+    }
+    for(prop in feature.properties){
+        popup+="<li>"
+        if(prop.startsWith("http")){
+            if(prop.includes("#")){
+               popup+="<a href=\""+prop+"\" target=\"_blank\">"+prop.substring(prop.lastIndexOf('#')+1)+"</a>"
             }else{
-                popup+=prop
+               popup+="<a href=\""+prop+"\" target=\"_blank\">"+prop.substring(prop.lastIndexOf('/')+1)+"</a>" 
             }
-            popup+=" : "
-            if(Array.isArray(feature.properties[prop]) && feature.properties[prop].length>1){
-                popup+="<ul>"
-                for(item of feature.properties[prop]){
-                    popup+="<li>"
-                    if((item+"").startsWith("http")){
-                        popup+="<a href=\\""+item+"\\" target=\\"_blank\\">"+item.substring(item.lastIndexOf('/')+1)+"</a>"
+        }else{
+            popup+=prop
+        }
+        popup+=" : "
+        if(Array.isArray(feature.properties[prop]) && feature.properties[prop].length>1){
+            popup+="<ul>"
+            for(item of feature.properties[prop]){
+                popup+="<li>"
+                if((item+"").startsWith("http")){
+                    if((item+"").includes("#")){
+                        popup+="<a href=\""+item+"\" target=\"_blank\">"+item.substring(item.lastIndexOf('#')+1)+"</a>"
                     }else{
-                        popup+=item
+                        popup+="<a href=\""+item+"\" target=\"_blank\">"+item.substring(item.lastIndexOf('/')+1)+"</a>"
                     }
-                    popup+="</li>"
+                }else{
+                    popup+=item
                 }
-                popup+="</ul>"
-            }else if(Array.isArray(feature.properties[prop]) && (feature.properties[prop][0]+"").startsWith("http")){
-                popup+="<a href=\\""+rewriteLink(feature.properties[prop][0])+"\\" target=\\"_blank\\">"+feature.properties[prop][0].substring(feature.properties[prop][0].lastIndexOf('/')+1)+"</a>"
+                popup+="</li>"
+            }
+            popup+="</ul>"
+        }else if(Array.isArray(feature.properties[prop]) && (feature.properties[prop][0]+"").startsWith("http")){
+            if(feature.properties[prop][0].includes("#")){
+              popup+="<a href=\""+rewriteLink(feature.properties[prop][0])+"\" target=\"_blank\">"+feature.properties[prop][0].substring(feature.properties[prop][0].lastIndexOf('#')+1)+"</a>"                
+            }else{
+              popup+="<a href=\""+rewriteLink(feature.properties[prop][0])+"\" target=\"_blank\">"+feature.properties[prop][0].substring(feature.properties[prop][0].lastIndexOf('/')+1)+"</a>"
+            }
+        }else{
+            if((feature.properties[prop]+"").startsWith("http")){
+                    if((feature.properties[prop]+"").includes("#")){
+                        popup+="<a href=\""+item+"\" target=\"_blank\">"+item.substring(item.lastIndexOf('#')+1)+"</a>"
+                    }else{
+                        popup+="<a href=\""+item+"\" target=\"_blank\">"+item.substring(item.lastIndexOf('/')+1)+"</a>"
+                    }
             }else{
                 popup+=feature.properties[prop]+""
             }
-            popup+="</li>"
         }
-        popup+="</ul>"
-        return popup
+        popup+="</li>"
     }
+    popup+="</ul>"
+    return popup
+}
     
     function fetchLayersFromList(thelist){
         fcolls=[]
