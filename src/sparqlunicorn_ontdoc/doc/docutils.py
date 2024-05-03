@@ -219,14 +219,14 @@ class DocUtils:
     @staticmethod
     def processSubjectPath(outpath,paths,path,graph):
         if "/" in path:
-            addpath = ""
+            #addpath = ""
             try:
                 os.makedirs(path,True)
                 #for pathelem in path.split("/"):
                 #    addpath += pathelem + "/"
                 #    if not os.path.exists(outpath + addpath):
                 #        os.mkdir(outpath + addpath)
-                paths.setdefault(outpath + path[0:path.rfind('/')] + "/",[]).append(addpath[0:addpath.rfind('/')])
+                paths.setdefault(outpath + path[0:path.rfind('/')] + "/",[]).append(path[0:path.rfind('/')])
                 #if outpath + path[0:path.rfind('/')] + "/" not in paths:
                 #    paths[outpath + path[0:path.rfind('/')] + "/"] = []
                 #paths[outpath + path[0:path.rfind('/')] + "/"].append(addpath[0:addpath.rfind('/')])
