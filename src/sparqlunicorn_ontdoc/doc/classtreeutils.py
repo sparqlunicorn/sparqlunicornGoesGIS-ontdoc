@@ -51,8 +51,8 @@ class ClassTreeUtils:
         ress = {}
         for res in results:
             #print(res)
-            if(isinstance(res["subject"],URIRef)):
-                if(isinstance(res["supertype"],URIRef)):
+            if isinstance(res["subject"], URIRef):
+                if isinstance(res["supertype"], URIRef):
                     ress[str(res["subject"])] = {"super": res["supertype"], "label": res["label"]}
                 else:
                     ress[str(res["subject"])] = {"super": None, "label": res["label"]}
@@ -79,9 +79,10 @@ class ClassTreeUtils:
                     result.append({"id": objstr, "parent": cls, "type": "instance", "text": restext, "data": {}})
                 else:
                     result.append({"id": objstr, "parent": cls, "type": "class", "text": restext, "data": {}})
-                if objstr not in uritotreeitem:
-                    uritotreeitem[objstr] = []
-                uritotreeitem[objstr].append(result[-1])
+                uritotreeitem.setdefault(objstr,[]).append(result[-1])
+                #if objstr not in uritotreeitem:
+                #    uritotreeitem[objstr] = []
+                #uritotreeitem[objstr].append(result[-1])
                 # classidset.add(str(obj))
             #print(ress[cls])
             res = DocUtils.replaceNameSpacesInLabel(prefixes, clsstr)
@@ -105,9 +106,10 @@ class ClassTreeUtils:
                         restext += f" ({res['uri']})"
                 if cls not in uritotreeitem:
                     result.append({"id": cls, "parent": ress[cls]["super"], "type": "class", "text": restext, "data": {}})
-                    if clsstr not in uritotreeitem:
-                        uritotreeitem[clsstr] = []
-                        uritotreeitem[clsstr].append(result[-1])
+                    uritotreeitem.setdefault(clsstr,[]).append(result[-1])
+                    #if clsstr not in uritotreeitem:
+                    #    uritotreeitem[clsstr] = []
+                    #    uritotreeitem[clsstr].append(result[-1])
                 else:
                     uritotreeitem[cls][-1]["parent"] = ress[cls]["super"]
                 if str(ress[cls]["super"]) not in uritotreeitem:
