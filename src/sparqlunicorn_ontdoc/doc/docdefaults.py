@@ -1696,7 +1696,7 @@ function generateLeafletPopup(feature, layer){
             if(prop.includes("#")){
                popup+="<a href=\""+prop+"\" target=\"_blank\">"+prop.substring(prop.lastIndexOf('#')+1)+"</a>"
             }else{
-               popup+="<a href=\""+prop+"\" target=\"_blank\">"+prop.substring(prop.lastIndexOf('/')+1)+"</a>" 
+               popup+="<a href=\""+prop+"\" target=\"_blank\">"+prop.substring(prop.lastIndexOf('/')+1)+"</a>"
             }
         }else{
             popup+=prop
@@ -1720,16 +1720,16 @@ function generateLeafletPopup(feature, layer){
             popup+="</ul>"
         }else if(Array.isArray(feature.properties[prop]) && (feature.properties[prop][0]+"").startsWith("http")){
             if(feature.properties[prop][0].includes("#")){
-              popup+="<a href=\""+rewriteLink(feature.properties[prop][0])+"\" target=\"_blank\">"+feature.properties[prop][0].substring(feature.properties[prop][0].lastIndexOf('#')+1)+"</a>"                
+              popup+="<a href=\""+rewriteLink(feature.properties[prop][0])+"\" target=\"_blank\">"+feature.properties[prop][0].substring(feature.properties[prop][0].lastIndexOf('#')+1)+"</a>"
             }else{
               popup+="<a href=\""+rewriteLink(feature.properties[prop][0])+"\" target=\"_blank\">"+feature.properties[prop][0].substring(feature.properties[prop][0].lastIndexOf('/')+1)+"</a>"
             }
         }else{
             if((feature.properties[prop]+"").startsWith("http")){
                     if((feature.properties[prop]+"").includes("#")){
-                        popup+="<a href=\""+item+"\" target=\"_blank\">"+item.substring(item.lastIndexOf('#')+1)+"</a>"
+                        popup+="<a href=\""+(feature.properties[prop]+"")+"\" target=\"_blank\">"+(feature.properties[prop]+"").substring((feature.properties[prop]+"").lastIndexOf('#')+1)+"</a>"
                     }else{
-                        popup+="<a href=\""+item+"\" target=\"_blank\">"+item.substring(item.lastIndexOf('/')+1)+"</a>"
+                        popup+="<a href=\""+(feature.properties[prop]+"")+"\" target=\"_blank\">"+(feature.properties[prop]+"").substring((feature.properties[prop]+"").lastIndexOf('/')+1)+"</a>"
                     }
             }else{
                 popup+=feature.properties[prop]+""

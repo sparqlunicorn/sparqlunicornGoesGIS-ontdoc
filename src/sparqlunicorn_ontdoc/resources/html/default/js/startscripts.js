@@ -1728,9 +1728,9 @@ function generateLeafletPopup(feature, layer){
         }else{
             if((feature.properties[prop]+"").startsWith("http")){
                     if((feature.properties[prop]+"").includes("#")){
-                        popup+="<a href=\""+item+"\" target=\"_blank\">"+item.substring(item.lastIndexOf('#')+1)+"</a>"
+                        popup+="<a href=\""+(feature.properties[prop]+"")+"\" target=\"_blank\">"+(feature.properties[prop]+"").substring((feature.properties[prop]+"").lastIndexOf('#')+1)+"</a>"
                     }else{
-                        popup+="<a href=\""+item+"\" target=\"_blank\">"+item.substring(item.lastIndexOf('/')+1)+"</a>"
+                        popup+="<a href=\""+(feature.properties[prop]+"")+"\" target=\"_blank\">"+(feature.properties[prop]+"").substring((feature.properties[prop]+"").lastIndexOf('/')+1)+"</a>"
                     }
             }else{
                 popup+=feature.properties[prop]+""
