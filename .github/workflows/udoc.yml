@@ -162,7 +162,7 @@ jobs:
           sudo add-apt-repository ppa:deadsnakes/ppa
           sudo apt update
           sudo apt install python3.12
-          sudo pip3 install rdflib shapely pillow
+          sudo python3.12 -m pip install rdflib shapely pillow
       - name: Generate Ontology Documentation
         run: |
           ls
