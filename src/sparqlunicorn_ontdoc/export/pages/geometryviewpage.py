@@ -81,8 +81,8 @@ class GeometryViewPage:
                             if isinstance(geotup[1], Literal) and (str(geotup[0]) in DocConfig.geoproperties or str(
                                     geotup[1].datatype) in DocConfig.geoliteraltypes):
                                 geojsonrep = LiteralUtils.processLiteral(str(geotup[1]), str(geotup[1].datatype), "")
-                            else:
-                                properties[str(geotup[0])]=str(geotup[1])
+                    else:
+                        properties[str(geoinstance[0])]=str(geoinstance[1])
                     #print(geojsonrep)
                     if geojsonrep is not None and geojsonrep!= "" and isinstance(geojsonrep,dict) and "coordinates" in geojsonrep and len(geojsonrep["coordinates"]) > 0:
                         if uritotreeitem is not None and str(memberid) in uritotreeitem:
