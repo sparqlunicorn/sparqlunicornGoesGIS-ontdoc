@@ -68,9 +68,9 @@ class GeometryViewPage:
         if not nonns:
             for memberid in graph.objects(subject, memberpred, True):
                 memberidstr=str(memberid)
+                geojsonrep = None
+                properties = {}
                 for geoinstance in graph.predicate_objects(memberid, True):
-                    geojsonrep = None
-                    properties={}
                     if isinstance(geoinstance[1], Literal) and (
                             str(geoinstance[0]) in DocConfig.geoproperties or str(
                         geoinstance[1].datatype) in DocConfig.geoliteraltypes):
