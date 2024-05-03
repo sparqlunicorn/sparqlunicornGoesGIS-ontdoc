@@ -1,5 +1,5 @@
 from rdflib import URIRef, BNode, Literal
-from rdflib.namespace import RDF, RDFS, OWL, SKOS
+from rdflib.namespace import RDF, RDFS, OWL, SKOS, VOID
 from doc.docutils import DocUtils
 from doc.docconfig import DocConfig
 import json
@@ -37,10 +37,6 @@ class GraphUtils:
             tuppredstr=str(tup[0])
             tupobjstr=str(tup[1])
             if namespace in tuppredstr:
-                #if tupobjstr not in classToInstances:
-                #    classToInstances[tupobjstr] = set()
-                #    classToFColl[tupobjstr] = 0
-                #    classToGeoColl[tupobjstr] = 0
                 classToInstances[tupobjstr].add(tuppredstr)
                 isgeo = False
                 isfeature = False
@@ -164,10 +160,10 @@ class GraphUtils:
         voidstats["http://ldf.fi/void-ext#propertyClasses"] = res["predclasses"]
         voidstats["http://ldf.fi/void-ext#averagePropertyIRILength"] = res["avgpredlen"]
         voidstats["http://rdfs.org/ns/void#distinctObjects"] = res["objs"]
-        nonnscount = {}
-        nscount = {}
-        instancecount = {}
-        literaltypes = {}
+        nonnscount = defaultdict(dict)
+        nscount = defaultdict(int)
+        instancecount = defaultdict(int)
+        literaltypes = defaultdict(set)
         blanknodes = set()
         literallangs = set()
         literals = set()
@@ -186,9 +182,9 @@ class GraphUtils:
                 label = DocUtils.shortenURI(str(sub))
                 restriction = False
                 ns = DocUtils.shortenURI(str(sub), True)
-                nscount.setdefault(ns,0)
+                #nscount.setdefault(ns,0)
                 nscount[ns] += 1
-                graph.add((sub, URIRef("http://rdfs.org/ns/void#inDataset"),URIRef(voidds)))
+                graph.add((sub, VOID.inDataset,URIRef(voidds)))
                 if isinstance(sub, BNode):
                     blanknodes.add(str(sub))
                 irirefs += 1
@@ -217,14 +213,14 @@ class GraphUtils:
                         objectcounter += 1
                         irirefs += 1
                         ns = DocUtils.shortenURI(tupobjstr, True)
-                        nscount.setdefault(ns, 0)
+                        #nscount.setdefault(ns, 0)
                         nscount[ns] += 1
                     if tuppredstr in DocConfig.labelproperties:
                         labeltouri[tupobjstr] = str(sub)
                         uritolabel[str(sub)] = {"label": tupobjstr}
                         label = tupobjstr
                     elif tuppredstr == typeproperty:
-                        instancecount.setdefault(tupobjstr, 0)
+                        #instancecount.setdefault(tupobjstr, 0)
                         instancecount[tupobjstr] += 1
                     elif tupobjstr == "http://www.w3.org/2002/07/owl#Restriction":
                         restriction = True
@@ -232,9 +228,9 @@ class GraphUtils:
                         ressubcls =tupobjstr
                     if isinstance(tup[1], URIRef) and prefixnamespace not in tupobjstr:
                         ns = DocUtils.shortenURI(tupobjstr, True)
-                        nscount.setdefault(ns, 0)
+                        #nscount.setdefault(ns, 0)
                         nscount[ns] += 1
-                        nonnscount.setdefault(tuppredstr,{})
+                        #nonnscount.setdefault(tuppredstr,{})
                         nonnscount[tuppredstr].setdefault(ns,0)
                         nonnscount[tuppredstr][ns] += 1
                 if isinstance(sub, BNode) and restriction:
