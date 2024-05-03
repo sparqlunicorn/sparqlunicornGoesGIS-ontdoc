@@ -159,13 +159,16 @@ jobs:
           path: ontdocscript    
       - name: Install dependencies
         run: |
+          sudo add-apt-repository ppa:deadsnakes/ppa
+          sudo apt update
+          sudo apt install python3.12
           sudo pip3 install rdflib shapely pillow
       - name: Generate Ontology Documentation
         run: |
           ls
           pwd
           sleep "${{inputs.sleepbefore}}"
-          python3 ontdocscript/src/sparqlunicorn_ontdoc/docgeneration.py --input "${{inputs.rdffilepath}}" --output "${{inputs.docpath}}" --prefixns "${{inputs.prefixns}}" --prefixnsshort "${{inputs.prefixnsshort}}" --createIndexPages "${{inputs.indexpages}}" --createCollections "${{inputs.createcollections}}" --labellang "${{inputs.preferredlang}}" --license "${{inputs.license}}" --logourl "${{inputs.logourl}}" --metadatatable "${{inputs.metadatatable}}" --nonnspages "${{inputs.createnonNSPages}}" --createvowl "${{inputs.createVOWL}}" --ogcapifeatures "${{inputs.ogcapifeatures}}" --iiif "${{inputs.iiif}}" --ckan "${{inputs.ckan}}" --startconcept "${{inputs.startconcept}}" --repository "${{ github.server_url }}/${{ github.repository }}" --deploypath "https://${{github.repository_owner}}.github.io/${{ github.event.repository.name }}/${{ inputs.ghpagesfolder }}" --templatepath "${{inputs.templatedir}}" --offlinecompat "${{inputs.offlinecompat}}" --publishingorg "${{inputs.publishingorg}}" --publisher "${{inputs.publisher}}" --exports "${{inputs.exports}}" --datasettitle "${{inputs.datasettitle}}"    
+          python3.12 ontdocscript/src/sparqlunicorn_ontdoc/docgeneration.py --input "${{inputs.rdffilepath}}" --output "${{inputs.docpath}}" --prefixns "${{inputs.prefixns}}" --prefixnsshort "${{inputs.prefixnsshort}}" --createIndexPages "${{inputs.indexpages}}" --createCollections "${{inputs.createcollections}}" --labellang "${{inputs.preferredlang}}" --license "${{inputs.license}}" --logourl "${{inputs.logourl}}" --metadatatable "${{inputs.metadatatable}}" --nonnspages "${{inputs.createnonNSPages}}" --createvowl "${{inputs.createVOWL}}" --ogcapifeatures "${{inputs.ogcapifeatures}}" --iiif "${{inputs.iiif}}" --ckan "${{inputs.ckan}}" --startconcept "${{inputs.startconcept}}" --repository "${{ github.server_url }}/${{ github.repository }}" --deploypath "https://${{github.repository_owner}}.github.io/${{ github.event.repository.name }}/${{ inputs.ghpagesfolder }}" --templatepath "${{inputs.templatedir}}" --offlinecompat "${{inputs.offlinecompat}}" --publishingorg "${{inputs.publishingorg}}" --publisher "${{inputs.publisher}}" --exports "${{inputs.exports}}" --datasettitle "${{inputs.datasettitle}}"    
           sleep "${{inputs.sleepafter}}"
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
