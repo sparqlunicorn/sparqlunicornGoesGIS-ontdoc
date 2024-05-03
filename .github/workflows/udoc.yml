@@ -166,6 +166,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
+          python -c "import sys; print(sys.version)"
           python -m pip install --upgrade pip
           pip install rdflib pillow shapely requests
       - name: Generate Ontology Documentation
