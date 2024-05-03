@@ -160,8 +160,8 @@ jobs:
       - name: Install dependencies
         run: |
           sudo add-apt-repository ppa:deadsnakes/ppa
-          sudo apt update
-          sudo apt install python3.12
+          sudo apt-get update
+          sudo apt-get install python3.12 -y
           sudo python3.12 -m pip install rdflib shapely pillow
       - name: Generate Ontology Documentation
         run: |
