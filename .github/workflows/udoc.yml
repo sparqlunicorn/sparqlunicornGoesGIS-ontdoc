@@ -167,7 +167,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install rdflib pillow shapely
+          pip install rdflib pillow shapely requests
       - name: Generate Ontology Documentation
         run: |
           python -c "import sys; print(sys.version)"
