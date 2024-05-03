@@ -67,6 +67,7 @@ class GeometryViewPage:
         memberpred = URIRef("http://www.w3.org/2000/01/rdf-schema#member")
         if not nonns:
             for memberid in graph.objects(subject, memberpred, True):
+                memberidstr=str(memberid)
                 for geoinstance in graph.predicate_objects(memberid, True):
                     geojsonrep = None
                     properties={}
@@ -81,18 +82,19 @@ class GeometryViewPage:
                             if isinstance(geotup[1], Literal) and (str(geotup[0]) in DocConfig.geoproperties or str(
                                     geotup[1].datatype) in DocConfig.geoliteraltypes):
                                 geojsonrep = LiteralUtils.processLiteral(str(geotup[1]), str(geotup[1].datatype), "")
+                                break
                     else:
                         properties[str(geoinstance[0])]=str(geoinstance[1])
                     #print(geojsonrep)
                     if geojsonrep is not None and geojsonrep!= "" and isinstance(geojsonrep,dict) and "coordinates" in geojsonrep and len(geojsonrep["coordinates"]) > 0:
-                        if uritotreeitem is not None and str(memberid) in uritotreeitem:
-                            featcoll["features"].append({"type": "Feature", 'id': str(memberid),
-                                                         'name': uritotreeitem[str(memberid)][-1]["text"],
+                        if uritotreeitem is not None and memberidstr in uritotreeitem:
+                            featcoll["features"].append({"type": "Feature", 'id': memberidstr,
+                                                         'name': uritotreeitem[memberidstr][-1]["text"],
                                                          'dateprops': parameters.get("dateprops", {}), 'properties': properties,
                                                          "geometry": geojsonrep})
                         else:
                             featcoll["features"].append(
-                                {"type": "Feature", 'id': str(memberid), 'name': str(memberid),
+                                {"type": "Feature", 'id': memberidstr, 'name': memberidstr,
                                  'dateprops': parameters.get("dateprops", {}),
                                  'properties': properties, "geometry": geojsonrep})
                         if len(featcoll["features"][-1]["dateprops"]) > 0:

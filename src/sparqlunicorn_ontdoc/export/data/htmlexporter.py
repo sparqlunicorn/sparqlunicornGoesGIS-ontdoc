@@ -316,7 +316,7 @@ class HTMLExporter():
             else:
                 myexports = self.templates["nongeoexports"]
             relpath = DocUtils.generateRelativePathFromGivenDepth(checkdepth)
-            if foundlabel is None or foundlabel == "":
+            if not foundlabel:
                 foundlabel = DocUtils.shortenURI(str(subject))
             f.write(DocUtils.replaceStandardVariables(self.templates["htmltemplate"], subject, checkdepth, "false",self.pubconfig).replace(
                 "{{iconprefixx}}", (relpath + "icons/" if self.pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",
@@ -655,14 +655,14 @@ class HTMLExporter():
             if foundunit is not None:
                 unitlabel = f"{foundval} {foundunit}"
                 if "http" in foundunit:
-                    unitlabel = f"{foundval} <a href=\"{foundunit}\" target=\"_blank\">{DocUtils.getLabelForObject(str(foundunit), graph, prefixes)}</a>"
+                    unitlabel = f"{foundval} <a href=\"{foundunit}\" target=\"_blank\">{DocUtils.getLabelForObject(foundunit, graph, prefixes)}</a>"
                 if pred == "http://www.w3.org/ns/oa#hasBody":
                     # print("ADD ANNO BODY: "+str({"value":foundval,"unit":foundunit,"type":"TextualBody","format":"text/plain"}))
                     annobodies.append({"value": foundval, "unit": foundunit, "type": "TextualBody", "format": "text/plain"})
             else:
                 unitlabel = str(foundval)
                 if "http" in foundval:
-                    unitlabel = f"<a href=\"{foundval}\" target=\"_blank\">{DocUtils.getLabelForObject(str(foundunit), graph, prefixes)}</a>"
+                    unitlabel = f"<a href=\"{foundval}\" target=\"_blank\">{DocUtils.getLabelForObject(foundunit, graph, prefixes)}</a>"
                 if pred == "http://www.w3.org/ns/oa#hasBody":
                     # print("ADD ANNO BODY: "+str({"value":foundval,"type":"TextualBody","format":"text/plain"}))
                     annobodies.append({"value": foundval, "type": "TextualBody", "format": "text/plain"})
@@ -723,7 +723,7 @@ class HTMLExporter():
                     tablecontents += f"<details><summary>[BIBTEX]</summary><pre>{bibtex}</pre></details>"
             else:
                 res = DocUtils.replaceNameSpacesInLabel(prefixes, objstr)
-                if res is not None and res["uri"] != "":
+                if res["uri"] != "":
                     tablecontents += f"<span><a itemprop=\"{predstr}\"{microdatares}property=\"{predstr}\" {rdfares} target=\"_blank\" href=\"{objstr}\">{label} <span style=\"color: #666;\">({res['uri']})</span></a>"
                 else:
                     tablecontents += f"<span><a itemprop=\"{predstr}\"{microdatares}property=\"{predstr}\" {rdfares} target=\"_blank\" href=\"{objstr}\">{label}</a>"
@@ -801,8 +801,8 @@ class HTMLExporter():
             tablecontents += f"<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"{tup}\">{label} "+("<span style=\"color: #666;\">(" + res["uri"] + ")</span>" if res["uri"]!="" else "")+"</a> </span>"
         if reverse:
             tablecontents += " of"
-        tablecontents += "</td>"
-        return tablecontents
+        #tablecontents += "</td>"
+        return tablecontents+"</td>"
 
     @staticmethod
     def truncateValue(value, limit=150):

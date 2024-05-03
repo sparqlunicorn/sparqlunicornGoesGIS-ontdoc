@@ -3,6 +3,7 @@ from rdflib.namespace import RDF, RDFS, OWL, SKOS
 from doc.docutils import DocUtils
 from doc.docconfig import DocConfig
 import json
+from collections import defaultdict
 from export.data.vowlexporter import OWL2VOWL
 
 class GraphUtils:
@@ -29,17 +30,17 @@ class GraphUtils:
 
     @staticmethod
     def createCollections(graph, namespace,typeproperty):
-        classToInstances = {}
-        classToGeoColl = {}
-        classToFColl = {}
+        classToInstances = defaultdict(set)
+        classToGeoColl = defaultdict(int)
+        classToFColl = defaultdict(int)
         for tup in graph.subject_objects(URIRef(typeproperty)):
             tuppredstr=str(tup[0])
             tupobjstr=str(tup[1])
             if namespace in tuppredstr:
-                if tupobjstr not in classToInstances:
-                    classToInstances[tupobjstr] = set()
-                    classToFColl[tupobjstr] = 0
-                    classToGeoColl[tupobjstr] = 0
+                #if tupobjstr not in classToInstances:
+                #    classToInstances[tupobjstr] = set()
+                #    classToFColl[tupobjstr] = 0
+                #    classToGeoColl[tupobjstr] = 0
                 classToInstances[tupobjstr].add(tuppredstr)
                 isgeo = False
                 isfeature = False

@@ -111,9 +111,9 @@ class DocUtils:
         else:
             checkdepth = subject.replace(baseurl, "").count("/")
         #QgsMessageLog.logMessage("Checkdepth: " + str(checkdepth), "OntdocGeneration", Qgis.Info)
-        checkdepth+=1
+        #checkdepth+=1
         #QgsMessageLog.logMessage("Checkdepth: " + str(checkdepth))
-        return checkdepth
+        return checkdepth+1
 
     @staticmethod
     def printExecutionStats(timeexec):
@@ -221,10 +221,11 @@ class DocUtils:
         if "/" in path:
             addpath = ""
             try:
-                for pathelem in path.split("/"):
-                    addpath += pathelem + "/"
-                    if not os.path.exists(outpath + addpath):
-                        os.mkdir(outpath + addpath)
+                os.makedirs(path,True)
+                #for pathelem in path.split("/"):
+                #    addpath += pathelem + "/"
+                #    if not os.path.exists(outpath + addpath):
+                #        os.mkdir(outpath + addpath)
                 paths.setdefault(outpath + path[0:path.rfind('/')] + "/",[]).append(addpath[0:addpath.rfind('/')])
                 #if outpath + path[0:path.rfind('/')] + "/" not in paths:
                 #    paths[outpath + path[0:path.rfind('/')] + "/"] = []
@@ -233,8 +234,9 @@ class DocUtils:
                 print(e)
         else:
             try:
-                if not os.path.exists(outpath + path):
-                    os.mkdir(outpath + path)
+                os.makedirs(outpath+path,True)
+                #if not os.path.exists(outpath + path):
+                #    os.mkdir(outpath + path)
                 paths.setdefault(outpath,[]).append(path + "/index.html")
                 #if outpath not in paths:
                 #    paths[outpath] = []
