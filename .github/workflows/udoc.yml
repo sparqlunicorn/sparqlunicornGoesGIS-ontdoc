@@ -166,10 +166,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          python -m "pip install -r requirements.txt"
-          python -c "import sys; print(sys.version)"
+          python -m "pip install -r 'requirements.txt'"
       - name: Generate Ontology Documentation
         run: |
+          python -c "import sys; print(sys.version)"
           ls
           pwd
           sleep "${{inputs.sleepbefore}}"
