@@ -51,11 +51,16 @@ class ClassTreeUtils:
         ress = {}
         for res in results:
             #print(res)
-            if "_:" not in str(res["subject"]) and str(res["subject"]).startswith("http"):
-                if "_:" not in str(res["supertype"]) and str(res["supertype"]).startswith("http"):
+            if(isinstance(res["subject"],URIRef)):
+                if(isinstance(res["supertype"],URIRef)):
                     ress[str(res["subject"])] = {"super": res["supertype"], "label": res["label"]}
                 else:
                     ress[str(res["subject"])] = {"super": None, "label": res["label"]}
+            #if "_:" not in str(res["subject"]) and str(res["subject"]).startswith("http"):
+            #    if "_:" not in str(res["supertype"]) and str(res["supertype"]).startswith("http"):
+            #        ress[str(res["subject"])] = {"super": res["supertype"], "label": res["label"]}
+            #    else:
+            #        ress[str(res["subject"])] = {"super": None, "label": res["label"]}
         # print(ress)
         for cls in ress:
             clsstr=str(cls)
