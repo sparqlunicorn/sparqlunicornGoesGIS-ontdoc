@@ -86,22 +86,22 @@ class GeometryViewPage:
                     else:
                         properties[str(geoinstance[0])]=str(geoinstance[1])
                     #print(geojsonrep)
-                    if geojsonrep is not None and geojsonrep!= "" and isinstance(geojsonrep,dict) and "coordinates" in geojsonrep and len(geojsonrep["coordinates"]) > 0:
-                        if uritotreeitem is not None and memberidstr in uritotreeitem:
-                            featcoll["features"].append({"type": "Feature", 'id': memberidstr,
-                                                         'name': uritotreeitem[memberidstr][-1]["text"],
-                                                         'dateprops': parameters.get("dateprops", {}), 'properties': properties,
-                                                         "geometry": geojsonrep})
-                        else:
-                            featcoll["features"].append(
-                                {"type": "Feature", 'id': memberidstr, 'name': memberidstr,
-                                 'dateprops': parameters.get("dateprops", {}),
-                                 'properties': properties, "geometry": geojsonrep})
-                        if len(featcoll["features"][-1]["dateprops"]) > 0:
-                            dateatt = featcoll["features"][-1]["dateprops"][0]
-                        if "crs" in geojsonrep:
-                            thecrs.add(geojsonrep["crs"])
-                        break
+                if geojsonrep is not None and geojsonrep!= "" and isinstance(geojsonrep,dict) and "coordinates" in geojsonrep and len(geojsonrep["coordinates"]) > 0:
+                    if uritotreeitem is not None and memberidstr in uritotreeitem:
+                        featcoll["features"].append({"type": "Feature", 'id': memberidstr,
+                                                     'name': uritotreeitem[memberidstr][-1]["text"],
+                                                     'dateprops': parameters.get("dateprops", {}), 'properties': properties,
+                                                     "geometry": geojsonrep})
+                    else:
+                        featcoll["features"].append(
+                            {"type": "Feature", 'id': memberidstr, 'name': memberidstr,
+                             'dateprops': parameters.get("dateprops", {}),
+                             'properties': properties, "geometry": geojsonrep})
+                    if len(featcoll["features"][-1]["dateprops"]) > 0:
+                        dateatt = featcoll["features"][-1]["dateprops"][0]
+                    if "crs" in geojsonrep:
+                        thecrs.add(geojsonrep["crs"])
+                        #break
             if parameters.get("hasnonnslen", 0) > 0:
                 geocache[str(subject)] = featcoll
         else:
