@@ -79,7 +79,7 @@ class GeoExporter:
 
     @staticmethod
     def preprocessGeometryData(g,file,subjectstorender,classlist,formatt):
-        if subjectstorender == None:
+        if subjectstorender is None:
             subjectstorender = g.subjects(None, None, True)
         geoclasslist=GeoExporter.filterGeoClasses(classlist)
         res=GeoExporter.detectSubjectType(g,subjectstorender,geoclasslist)

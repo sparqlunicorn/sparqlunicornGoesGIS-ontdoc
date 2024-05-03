@@ -1,5 +1,5 @@
 from rdflib import URIRef, Literal, Graph, XSD
-from rdflib.namespace import RDF, RDFS, VOID, VANN, FOAF, DCAT
+from rdflib.namespace import RDF, RDFS, VOID, VANN, FOAF, DCAT, DC
 from doc.docconfig import DocConfig
 
 from doc.docutils import DocUtils
@@ -29,14 +29,14 @@ class VoidExporter:
                    URIRef(voidds)))
             g.add((URIRef(pubconfig["repository"]), RDFS.label,
                    Literal("Repository for "+str(dsname), lang="en")))
-        g.add((URIRef(voidds),RDF.type,URIRef("http://rdfs.org/ns/void#Dataset")))
+        g.add((URIRef(voidds),RDF.type,VOID.Dataset))
         g.add((URIRef(voidds), RDF.type, URIRef("http://www.w3.org/ns/adms#Asset")))
         g.add((URIRef(voidds), RDFS.label,
               Literal(dsname,lang="en")))
         g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/title"),
               Literal(dsname,lang="en")))
         if pubconfig["labellang"] is not None and pubconfig["labellang"]!= "":
-            g.add((URIRef(voidds), URIRef("http://purl.org/dc/elements/1.1/language"),
+            g.add((URIRef(voidds), DC.language,
                   URIRef("http://www.lexvo.org/page/iso639-1/"+str(pubconfig["labellang"]))))
         g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/modified"),
               Literal(pubconfig["modtime"],datatype=XSD.dateTime)))
