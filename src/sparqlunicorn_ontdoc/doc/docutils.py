@@ -63,9 +63,10 @@ class DocUtils:
         namespacetosub = {}
         for sub in g.subjects(None, None, True):
             ns = DocUtils.instanceToNS(sub)
-            if ns not in namespacetosub:
-                namespacetosub[ns] = set()
-            namespacetosub[ns].add(sub)
+            namespacetosub.setdefault(ns,set()).add(sub)
+            #if ns not in namespacetosub:
+            #    namespacetosub[ns] = set()
+            #namespacetosub[ns].add(sub)
         maxns=None
         maxnsnum=-1
         for ns in namespacetosub:
@@ -142,7 +143,9 @@ class DocUtils:
                     return uri[uri.rfind('#') + 1:]
                 if "/" in uri:
                     return uri[uri.rfind('/') + 1:]
-        return uri
+            return uri
+        else:
+            return ""
 
     @staticmethod
     def createURILink(prefixes,uri):
@@ -192,22 +195,23 @@ class DocUtils:
     @staticmethod
     def getLabelForObject(obj,graph,prefixes=None,labellang=None):
         label=""
-        onelabel=DocUtils.shortenURI(str(obj))
+        objstr=str(obj)
+        onelabel=DocUtils.shortenURI(objstr)
         for tup in graph.predicate_objects(obj):
             if str(tup[0]) in DocConfig.labelproperties:
                 # Check for label property
                 if tup[1].language==labellang:
                     label=str(tup[1])
                 onelabel=str(tup[1])
-        if label=="":
-            if onelabel is not None and onelabel!= "":
+        if label:
+            if onelabel!= "":
                 if prefixes is not None:
-                    res = DocUtils.replaceNameSpacesInLabel(prefixes, str(obj))
+                    res = DocUtils.replaceNameSpacesInLabel(prefixes, objstr)
                     label=res["uri"]
                 else:
                     label = onelabel
             elif (onelabel is None or onelabel == "") and prefixes is not None:
-                res = DocUtils.replaceNameSpacesInLabel(prefixes, str(obj))
+                res = DocUtils.replaceNameSpacesInLabel(prefixes, objstr)
                 if res is not None:
                     label=res["uri"]
         return label
@@ -221,18 +225,20 @@ class DocUtils:
                     addpath += pathelem + "/"
                     if not os.path.exists(outpath + addpath):
                         os.mkdir(outpath + addpath)
-                if outpath + path[0:path.rfind('/')] + "/" not in paths:
-                    paths[outpath + path[0:path.rfind('/')] + "/"] = []
-                paths[outpath + path[0:path.rfind('/')] + "/"].append(addpath[0:addpath.rfind('/')])
+                paths.setdefault(outpath + path[0:path.rfind('/')] + "/",[]).append(addpath[0:addpath.rfind('/')])
+                #if outpath + path[0:path.rfind('/')] + "/" not in paths:
+                #    paths[outpath + path[0:path.rfind('/')] + "/"] = []
+                #paths[outpath + path[0:path.rfind('/')] + "/"].append(addpath[0:addpath.rfind('/')])
             except Exception as e:
                 print(e)
         else:
             try:
                 if not os.path.exists(outpath + path):
                     os.mkdir(outpath + path)
-                if outpath not in paths:
-                    paths[outpath] = []
-                paths[outpath].append(path + "/index.html")
+                paths.setdefault(outpath,[]).append(path + "/index.html")
+                #if outpath not in paths:
+                #    paths[outpath] = []
+                #paths[outpath].append(path + "/index.html")
             except Exception as e:
                 print(e)
         if os.path.exists(outpath + path + "/index.ttl"):
@@ -319,12 +325,13 @@ class DocUtils:
 
     @staticmethod
     def conditionalArrayReplace(string,conds,replace,what):
-        counter=0
-        result=""
-        for cond in conds:
-            if cond:
-                result+=replace[counter]
-            counter+=1
+        #counter=0
+        #result=""
+        result="".join([replace[counter] for counter, cond in enumerate(conds) if cond])
+        #for cond in conds:
+        #    if cond:
+        #        result+=replace[counter]
+        #    counter+=1
         return string.replace(what,result)
 
     @staticmethod
