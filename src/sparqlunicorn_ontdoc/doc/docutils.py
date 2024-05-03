@@ -203,17 +203,16 @@ class DocUtils:
                 if tup[1].language==labellang:
                     label=str(tup[1])
                 onelabel=str(tup[1])
-        if label:
-            if onelabel!= "":
+        if label=="":
+            if onelabel is not None and onelabel!="":
                 if prefixes is not None:
                     res = DocUtils.replaceNameSpacesInLabel(prefixes, objstr)
                     label=res["uri"]
                 else:
                     label = onelabel
-            elif (onelabel is None or onelabel == "") and prefixes is not None:
+            elif prefixes is not None:
                 res = DocUtils.replaceNameSpacesInLabel(prefixes, objstr)
-                if res is not None:
-                    label=res["uri"]
+                label=res["uri"]
         return label
 
     @staticmethod
@@ -264,10 +263,10 @@ class DocUtils:
 
     @staticmethod
     def generateRelativePathFromGivenDepth(checkdepth):
-        rellink = "../"*checkdepth
+        #rellink =
         #for i in range(0, checkdepth):
         #    rellink = "../" + rellink
-        return rellink
+        return "../"*checkdepth
 
     @staticmethod
     def createOfflineCompatibleVersion(outpath, myhtmltemplate, templatepath, templatename):
