@@ -1,7 +1,7 @@
 from doc.docconfig import DocConfig
 from doc.docutils import DocUtils
 from rdflib import URIRef, Literal
-from rdflib.namespace import TIME
+from rdflib.namespace import TIME, SOSA
 
 class OWLTimePage:
 
@@ -15,7 +15,7 @@ class OWLTimePage:
             for tobj2 in graph.predicate_objects(obj):
                 if str(tobj2[0]) in DocConfig.timeproperties:
                     timeobj["end"] = tobj2[1]
-        elif pred == TIME.hasTime or str(pred) == "http://www.w3.org/ns/sosa/phenomenonTime" or str(pred) == "http://www.w3.org/ns/sosa/resultTime":
+        elif pred == TIME.hasTime or pred == SOSA.phenomenonTime or pred == SOSA.resultTime:
             for tobj2 in graph.predicate_objects(obj):
                 if str(tobj2[0]) in DocConfig.timeproperties:
                     timeobj["timepoint"] = tobj2[1]
@@ -54,12 +54,14 @@ class OWLTimePage:
     @staticmethod
     def resolveTimeLiterals(pred, obj, graph):
         timeobj = {}
+        print("TIMEOBJECT???")
         if isinstance(obj, URIRef):
             if str(pred) in DocConfig.timepointerproperties:
                 timeobj = OWLTimePage.resolveTimeObject(pred, obj, graph, timeobj)
-            if pred == TIME.hasTime or str(pred) == "http://www.w3.org/ns/sosa/phenomenonTime" or str(pred) == "http://www.w3.org/ns/sosa/resultTime":
+            if pred == TIME.hasTime or pred == SOSA.phenomenonTime or pred == SOSA.resultTime:
                 for tobj in graph.predicate_objects(obj):
                     timeobj = OWLTimePage.resolveTimeObject(tobj[0], tobj[1], graph, timeobj)
         elif isinstance(obj, Literal):
             timeobj = OWLTimePage.resolveTimeObject(pred, obj, graph, timeobj)
+        print("TIME OBJECT FOUND? "+str(timeobj))
         return timeobj
