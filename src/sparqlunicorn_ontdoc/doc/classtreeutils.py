@@ -112,17 +112,18 @@ class ClassTreeUtils:
                     #    uritotreeitem[clsstr].append(result[-1])
                 else:
                     uritotreeitem[cls][-1]["parent"] = ress[cls]["super"]
-                if str(ress[cls]["super"]) not in uritotreeitem:
+                ressuperstr=str(ress[cls]["super"])
+                if ressuperstr not in uritotreeitem:
                     #print("SUPER NOT IN URITOTREEITEM: "+str(ress[cls]["super"])+" ... adding with empty superclass statement...")
-                    uritotreeitem[str(ress[cls]["super"])] = []
-                    clsres = DocUtils.replaceNameSpacesInLabel(prefixes, str(ress[cls]["super"]))
+                    uritotreeitem[ressuperstr] = []
+                    clsres = DocUtils.replaceNameSpacesInLabel(prefixes, ressuperstr)
                     if clsres is not None:
-                        theitem = {"id": str(ress[cls]["super"]), "parent": "#", "type": "class","text": DocUtils.shortenURI(str(ress[cls]["super"])) + " (" + clsres["uri"] + ")","data": {}}
+                        theitem = {"id": ressuperstr, "parent": "#", "type": "class","text": DocUtils.shortenURI(ressuperstr) + " (" + clsres["uri"] + ")","data": {}}
                     else:
-                        theitem = {"id": str(ress[cls]["super"]), "parent": "#", "type": "class","text": DocUtils.shortenURI(str(ress[cls]["super"])), "data": {}}
-                    uritotreeitem[str(ress[cls]["super"])].append(theitem)
+                        theitem = {"id": ressuperstr, "parent": "#", "type": "class","text": DocUtils.shortenURI(ressuperstr), "data": {}}
+                    uritotreeitem[ressuperstr].append(theitem)
                     result.append(theitem)
-                classidset.add(str(ress[cls]["super"]))
+                classidset.add(ressuperstr)
             classidset.add(clsstr)
         tree["core"]["data"] = result
         return [tree,uritotreeitem,classidset]

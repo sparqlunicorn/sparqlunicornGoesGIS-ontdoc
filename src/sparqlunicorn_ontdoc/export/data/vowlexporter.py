@@ -116,10 +116,11 @@ class OWL2VOWL():
 
         for pred in g.subject_objects(RDFS.range):
             print(pred)
-            if str(pred[1]) not in classiriToProdId:
+            predstr=str(pred[1])
+            if predstr not in classiriToProdId:
                 classes.append({"id":idcounter,"type":"http://www.w3.org/2000/01/rdf-schema#Datatype"})
-                classiriToProdId[str(pred[1])]={"id":idcounter,"attid":len(classAttributes)-1}
-                classAttributes.append({"id":idcounter,"iri":str(pred[1]),"baseIRI":OWL2VOWL.getBaseIRI(str(pred)),"instances":0,"label":{"IRI-based":OWL2VOWL.getIRILabel(str(pred[1]))},"annotations":{},"subClasses":[],"superClasses":[]})
+                classiriToProdId[predstr]={"id":idcounter,"attid":len(classAttributes)-1}
+                classAttributes.append({"id":idcounter,"iri":predstr,"baseIRI":OWL2VOWL.getBaseIRI(str(pred)),"instances":0,"label":{"IRI-based":OWL2VOWL.getIRILabel(predstr)},"annotations":{},"subClasses":[],"superClasses":[]})
                 idcounter+=1
 
         for iri in classiriToProdId:
