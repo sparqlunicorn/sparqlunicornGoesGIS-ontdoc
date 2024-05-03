@@ -136,6 +136,9 @@ jobs:
   ontdoc-action:
     name: Ontology Documentation
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12"]
     steps:
       - name: Checkout repo
         if: ${{ inputs.checkout }}
@@ -157,19 +160,20 @@ jobs:
           repository: sparqlunicorn/sparqlunicornGoesGIS-ontdoc
           ref: "main"
           path: ontdocscript    
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          sudo add-apt-repository ppa:deadsnakes/ppa
-          sudo apt-get update
-          sudo apt-get upgrade
-          sudo apt-get install python3.12 -y
-          sudo python3.12 -m pip install rdflib shapely pillow
+          sudo pip3 install rdflib shapely pillow
+          python -c "import sys; print(sys.version)"
       - name: Generate Ontology Documentation
         run: |
           ls
           pwd
           sleep "${{inputs.sleepbefore}}"
-          python3.12 ontdocscript/src/sparqlunicorn_ontdoc/docgeneration.py --input "${{inputs.rdffilepath}}" --output "${{inputs.docpath}}" --prefixns "${{inputs.prefixns}}" --prefixnsshort "${{inputs.prefixnsshort}}" --createIndexPages "${{inputs.indexpages}}" --createCollections "${{inputs.createcollections}}" --labellang "${{inputs.preferredlang}}" --license "${{inputs.license}}" --logourl "${{inputs.logourl}}" --metadatatable "${{inputs.metadatatable}}" --nonnspages "${{inputs.createnonNSPages}}" --createvowl "${{inputs.createVOWL}}" --ogcapifeatures "${{inputs.ogcapifeatures}}" --iiif "${{inputs.iiif}}" --ckan "${{inputs.ckan}}" --startconcept "${{inputs.startconcept}}" --repository "${{ github.server_url }}/${{ github.repository }}" --deploypath "https://${{github.repository_owner}}.github.io/${{ github.event.repository.name }}/${{ inputs.ghpagesfolder }}" --templatepath "${{inputs.templatedir}}" --offlinecompat "${{inputs.offlinecompat}}" --publishingorg "${{inputs.publishingorg}}" --publisher "${{inputs.publisher}}" --exports "${{inputs.exports}}" --datasettitle "${{inputs.datasettitle}}"    
+          python ontdocscript/src/sparqlunicorn_ontdoc/docgeneration.py --input "${{inputs.rdffilepath}}" --output "${{inputs.docpath}}" --prefixns "${{inputs.prefixns}}" --prefixnsshort "${{inputs.prefixnsshort}}" --createIndexPages "${{inputs.indexpages}}" --createCollections "${{inputs.createcollections}}" --labellang "${{inputs.preferredlang}}" --license "${{inputs.license}}" --logourl "${{inputs.logourl}}" --metadatatable "${{inputs.metadatatable}}" --nonnspages "${{inputs.createnonNSPages}}" --createvowl "${{inputs.createVOWL}}" --ogcapifeatures "${{inputs.ogcapifeatures}}" --iiif "${{inputs.iiif}}" --ckan "${{inputs.ckan}}" --startconcept "${{inputs.startconcept}}" --repository "${{ github.server_url }}/${{ github.repository }}" --deploypath "https://${{github.repository_owner}}.github.io/${{ github.event.repository.name }}/${{ inputs.ghpagesfolder }}" --templatepath "${{inputs.templatedir}}" --offlinecompat "${{inputs.offlinecompat}}" --publishingorg "${{inputs.publishingorg}}" --publisher "${{inputs.publisher}}" --exports "${{inputs.exports}}" --datasettitle "${{inputs.datasettitle}}"    
           sleep "${{inputs.sleepafter}}"
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
