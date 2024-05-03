@@ -170,7 +170,6 @@ jobs:
           pip install rdflib pillow shapely requests
       - name: Generate Ontology Documentation
         run: |
-          python -c "import sys; print(sys.version)"
           ls
           pwd
           sleep "${{inputs.sleepbefore}}"
