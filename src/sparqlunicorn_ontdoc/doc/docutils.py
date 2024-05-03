@@ -221,7 +221,7 @@ class DocUtils:
         if "/" in path:
             #addpath = ""
             try:
-                os.makedirs(path,True)
+                os.makedirs(outpath+path,True)
                 #for pathelem in path.split("/"):
                 #    addpath += pathelem + "/"
                 #    if not os.path.exists(outpath + addpath):
