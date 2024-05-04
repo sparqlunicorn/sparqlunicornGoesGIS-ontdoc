@@ -1758,11 +1758,17 @@ function fetchLayersFromList(thelist){
 }
 
 function createDropdownOptions(featurecolls){
-    result=Set()
-    for(coll in featurecolls){
-        for(feat in coll["features"]){
-            for(prop in feat["properties"]){
-                result.add(prop)
+    result=new Set()
+    for(coll in featurecolls) {
+        if ("features" in coll) {
+            for (feat in coll["features"]) {
+                for (prop in feat["properties"]) {
+                    result.add(prop)
+                }
+            }
+        }else if("properties" in coll){
+            for (prop in coll["properties"]) {
+                 result.add(prop)
             }
         }
     }
