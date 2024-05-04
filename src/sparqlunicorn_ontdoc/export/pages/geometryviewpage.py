@@ -150,7 +150,7 @@ class GeometryViewPage:
                                                                                     parameters.get("epsgdefslink",
                                                                                                    "")).replace(
                         "{{dateatt}}",
-                        dateatt))
+                        str(dateatt)))
                 else:
                     f.write(templates["maptemplate"].replace("{{myfeature}}", "[\"" + DocUtils.shortenURI(
                         str(parameters.get("completesavepath", "").replace(".html", ".geojson"))) + "\"]").replace(
@@ -163,7 +163,7 @@ class GeometryViewPage:
                                                                                                           "epsgdefslink",
                                                                                                           "")).replace(
                         "{{dateatt}}",
-                        dateatt))
+                        str(dateatt)))
                 with open(parameters.get("completesavepath", "").replace(".html", ".geojson"), 'w',
                           encoding='utf-8') as fgeo:
                     featurecollectionspaths[parameters.get("completesavepath", "").replace(".html", ".geojson")] = {
