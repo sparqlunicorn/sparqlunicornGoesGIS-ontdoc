@@ -1852,7 +1852,7 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,date
 			timeAttribute: dateatt
 		});
         console.log(sliderControl.options)
-        sliderControl.options.markers.sort(function (a, b) {
+        sliderControl.options.layer.sort(function (a, b) {
             return (a.properties[dateatt] > b.properties[dateatt]);
         });
 		map.addControl(sliderControl);
