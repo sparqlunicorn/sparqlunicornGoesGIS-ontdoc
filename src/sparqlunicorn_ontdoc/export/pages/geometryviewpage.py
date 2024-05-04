@@ -51,7 +51,7 @@ class GeometryViewPage:
                 "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(parameters.get("checkdepth",0))).replace("{{epsg}}",
                                                                                                      epsgcode).replace(
                 "{{baselayers}}", json.dumps(DocConfig.baselayers)).replace("{{epsgdefspath}}", parameters.get("epsgdefslink","")).replace(
-                "{{dateatt}}", str(dateprops[0])))
+                "{{dateatt}}", str(dateprops)))
         return geocache
 
     def generateCollectionWidget(self,graph,subject,templates,f,uritotreeitem,featurecollectionspaths,parameters={"foundlabel":""}):
