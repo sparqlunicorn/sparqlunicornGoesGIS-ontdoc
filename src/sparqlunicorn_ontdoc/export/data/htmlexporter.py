@@ -647,7 +647,7 @@ class HTMLExporter():
                     ext = "." + ''.join(filter(str.isalpha, tupobjstr.split(".")[-1]))
                     if ext in DocConfig.fileextensionmap:
                         foundmedia[DocConfig.fileextensionmap[ext]][tupobjstr] = {}
-            elif pred in DocConfig.timepointerproperties:
+            if pred in DocConfig.timepointerproperties:
                 timeobj = OWLTimePage.resolveTimeLiterals(pred, object, graph)
             elif not nonns:
                 geojsonrep = LiteralUtils.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep, nonns)
@@ -693,7 +693,7 @@ class HTMLExporter():
             if ttlf is not None:
                 ttlf.add((subject, URIRef(pred), object))
             unitlabel = ""
-            mydata = HTMLExporter.searchObjectConnectionsForAggregateData(graph, object, pred, geojsonrep, foundmedia,
+            mydata = HTMLExporter.searchObjectConnectionsForAggregateData(graph, object, predstr, geojsonrep, foundmedia,
                                                                           imageannos, textannos, image3dannos,
                                                                           annobodies,
                                                                           label, unitlabel, nonns, inverse, labellang,
