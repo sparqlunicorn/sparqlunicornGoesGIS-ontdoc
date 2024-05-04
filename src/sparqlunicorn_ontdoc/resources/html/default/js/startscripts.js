@@ -1853,7 +1853,7 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,date
 		});
         //console.log(sliderControl.options)
 		map.addControl(sliderControl);
-        sliderControl.options.layer.sort(function (a, b) {
+        sliderControl.options.markers.sort(function (a, b) {
             return (a.properties[dateatt] > b.properties[dateatt]);
         });
 		sliderControl.startSlider();
