@@ -195,7 +195,8 @@ class GraphUtils:
                     tupobjstr = str(tup[1])
                     if isinstance(tupobjstr, Literal):
                         if tup[1].datatype is not None:
-                            literaltypes.setdefault(str(tup[1].datatype),set()).add(tuppredstr)
+                            literaltypes[str(tup[1].datatype)].add(tuppredstr)
+                            #literaltypes.setdefault(str(tup[1].datatype),set()).add(tuppredstr)
                             if str(tup[1].datatype) in DocConfig.geoliteraltypes or tuppredstr in DocConfig.geoproperties:
                                 geocounter+=1
                         if tup[1].language is not None:

@@ -7,6 +7,8 @@ import shapely.wkt
 import shapely.geometry
 import json
 
+from export.pages.owltimepage import OWLTimePage
+
 
 class GeometryViewPage:
 
@@ -49,7 +51,7 @@ class GeometryViewPage:
                 "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(parameters.get("checkdepth",0))).replace("{{epsg}}",
                                                                                                      epsgcode).replace(
                 "{{baselayers}}", json.dumps(DocConfig.baselayers)).replace("{{epsgdefspath}}", parameters.get("epsgdefslink","")).replace(
-                "{{dateatt}}", ""))
+                "{{dateatt}}", str(dateprops[0])))
         return geocache
 
     def generateCollectionWidget(self,graph,subject,templates,f,uritotreeitem,featurecollectionspaths,parameters={"foundlabel":""}):
@@ -69,6 +71,7 @@ class GeometryViewPage:
             for memberid in graph.objects(subject, memberpred, True):
                 memberidstr=str(memberid)
                 geojsonrep = None
+                timeobj={}
                 properties = {}
                 for geoinstance in graph.predicate_objects(memberid, True):
                     if isinstance(geoinstance[1], Literal) and (
@@ -84,18 +87,20 @@ class GeometryViewPage:
                                 geojsonrep = LiteralUtils.processLiteral(str(geotup[1]), str(geotup[1].datatype), "")
                                 break
                     else:
+                        if str(geoinstance[0]) in DocConfig.timepointerproperties:
+                            timeobj=OWLTimePage.resolveTimeLiterals(geoinstance[0],geoinstance[1],graph)
                         properties[str(geoinstance[0])]=str(geoinstance[1])
                     #print(geojsonrep)
                 if geojsonrep is not None and geojsonrep!= "" and isinstance(geojsonrep,dict) and "coordinates" in geojsonrep and len(geojsonrep["coordinates"]) > 0:
                     if uritotreeitem is not None and memberidstr in uritotreeitem:
                         featcoll["features"].append({"type": "Feature", 'id': memberidstr,
                                                      'name': uritotreeitem[memberidstr][-1]["text"],
-                                                     'dateprops': parameters.get("dateprops", {}), 'properties': properties,
+                                                     'dateprops': parameters.get("dateprops", timeobj), 'properties': properties,
                                                      "geometry": geojsonrep})
                     else:
                         featcoll["features"].append(
                             {"type": "Feature", 'id': memberidstr, 'name': memberidstr,
-                             'dateprops': parameters.get("dateprops", {}),
+                             'dateprops': parameters.get("dateprops", timeobj),
                              'properties': properties, "geometry": geojsonrep})
                     if len(featcoll["features"][-1]["dateprops"]) > 0:
                         dateatt = featcoll["features"][-1]["dateprops"][0]

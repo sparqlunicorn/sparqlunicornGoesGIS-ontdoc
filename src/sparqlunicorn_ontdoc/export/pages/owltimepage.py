@@ -11,10 +11,12 @@ class OWLTimePage:
             for tobj2 in graph.predicate_objects(obj):
                 if str(tobj2[0]) in DocConfig.timeproperties:
                     timeobj["begin"] = tobj2[1]
+                    break
         elif pred == TIME.hasEnd:
             for tobj2 in graph.predicate_objects(obj):
                 if str(tobj2[0]) in DocConfig.timeproperties:
                     timeobj["end"] = tobj2[1]
+                    break
         elif pred == TIME.hasTime or pred == SOSA.phenomenonTime or pred == SOSA.resultTime:
             for tobj2 in graph.predicate_objects(obj):
                 if str(tobj2[0]) in DocConfig.timeproperties:
