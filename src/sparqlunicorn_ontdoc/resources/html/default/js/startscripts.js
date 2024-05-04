@@ -1851,6 +1851,9 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,date
 			showAllOnStart: true,
 			timeAttribute: dateatt
 		});
+        sliderControl.options.markers.sort(function (a, b) {
+            return (a.properties[dateatt] > b.properties[dateatt]);
+        });
 		map.addControl(sliderControl);
 		sliderControl.startSlider();
 	}
