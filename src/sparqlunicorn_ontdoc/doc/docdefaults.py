@@ -1832,7 +1832,7 @@ function generateLeafletPopup(feature, layer){
             centerpoints.push(layerr.getBounds().getCenter());
         }
         layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map)
-        if(dateatt!=null && dateatt!=""){
+        if(dateatt!=null && dateatt!="" && dateatt!="[]" && dateatt!=[]){
             var sliderControl = L.control.sliderControl({
                 position: "bottomleft",
                 layer: layerr,
