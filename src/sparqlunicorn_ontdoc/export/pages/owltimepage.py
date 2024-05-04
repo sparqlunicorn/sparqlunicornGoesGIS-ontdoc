@@ -54,7 +54,7 @@ class OWLTimePage:
     @staticmethod
     def resolveTimeLiterals(pred, obj, graph):
         timeobj = {}
-        print("TIMEOBJECT???")
+        #print("TIMEOBJECT???")
         if isinstance(obj, URIRef):
             if str(pred) in DocConfig.timepointerproperties:
                 timeobj = OWLTimePage.resolveTimeObject(pred, obj, graph, timeobj)
@@ -63,5 +63,6 @@ class OWLTimePage:
                     timeobj = OWLTimePage.resolveTimeObject(tobj[0], tobj[1], graph, timeobj)
         elif isinstance(obj, Literal):
             timeobj = OWLTimePage.resolveTimeObject(pred, obj, graph, timeobj)
-        print("TIME OBJECT FOUND? "+str(timeobj))
+        if timeobj!={}:
+            print("TIME OBJECT FOUND? "+str(timeobj))
         return timeobj
