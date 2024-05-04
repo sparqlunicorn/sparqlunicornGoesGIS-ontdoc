@@ -1760,8 +1760,8 @@ function fetchLayersFromList(thelist){
 function createDropdownOptions(featurecolls){
     result=new Set()
     for(coll in featurecolls) {
-        if ("features" in coll) {
-            for (feat in coll["features"]) {
+        if ("features" in featurecolls[coll]) {
+            for (feat in featurecolls[coll]["features"]) {
                 for (prop in feat["properties"]) {
                     result.add(prop)
                 }
