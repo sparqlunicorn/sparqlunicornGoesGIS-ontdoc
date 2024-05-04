@@ -95,12 +95,12 @@ class GeometryViewPage:
                     if uritotreeitem is not None and memberidstr in uritotreeitem:
                         featcoll["features"].append({"type": "Feature", 'id': memberidstr,
                                                      'name': uritotreeitem[memberidstr][-1]["text"],
-                                                     'dateprops': parameters.get("dateprops", timeobj), 'properties': properties,
+                                                     'dateprops': timeobj, 'properties': properties,
                                                      "geometry": geojsonrep})
                     else:
                         featcoll["features"].append(
                             {"type": "Feature", 'id': memberidstr, 'name': memberidstr,
-                             'dateprops': parameters.get("dateprops", timeobj),
+                             'dateprops': timeobj,
                              'properties': properties, "geometry": geojsonrep})
                     if len(featcoll["features"][-1]["dateprops"]) > 0:
                         dateatt = featcoll["features"][-1]["dateprops"][0]
