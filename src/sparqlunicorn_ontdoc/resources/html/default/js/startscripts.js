@@ -1757,6 +1757,30 @@ function fetchLayersFromList(thelist){
 	return fcolls
 }
 
+function createDropdownOptions(featurecolls){
+    result=Set()
+    for(coll in featurecolls){
+        for(feat in coll["features"]){
+            for(prop in feat["properties"]){
+                result.add(prop)
+            }
+        }
+    }
+    selectstr="<select>"
+    for(item in result){
+        selectstr+="<option value=\""+item+"\">"+item+"</option>"
+    }
+    selectstr+="</select>"
+    var legend = L.control({position: 'topright'});
+    legend.onAdd = function (map) {
+        var div = L.DomUtil.create('div', 'info legend');
+        div.innerHTML = selectstr;
+        div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation;
+        return div;
+    };
+    legend.addTo(map);
+}
+
 var centerpoints=[]
 var clustersfrozen=false
 
@@ -1839,6 +1863,7 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,date
         }
         centerpoints.push(layerr.getBounds().getCenter());
     }
+    createDropdownOptions(featurecolls)
     addFloatingButtonToMap(map, 'Toggle Clusters', ()=>{
         if(clustersfrozen){
             markercluster.enableClustering()
