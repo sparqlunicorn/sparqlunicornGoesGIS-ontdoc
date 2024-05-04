@@ -1851,7 +1851,7 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,date
                 return text;
             }
         });
-        new textbox({ position: 'bootomleft' }).addTo(map);
+        new textbox({ position: 'bottomleft' }).addTo(map);
 		var sliderControl = L.control.sliderControl({
 			position: "bottomleft",
 			layer: layerr,
