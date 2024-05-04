@@ -72,6 +72,7 @@ class GeometryViewPage:
                 memberidstr=str(memberid)
                 geojsonrep = None
                 timeobj={}
+                dateatt=[]
                 properties = {}
                 for geoinstance in graph.predicate_objects(memberid, True):
                     if isinstance(geoinstance[1], Literal) and (
@@ -89,18 +90,20 @@ class GeometryViewPage:
                     else:
                         if str(geoinstance[0]) in DocConfig.timepointerproperties:
                             timeobj=OWLTimePage.resolveTimeLiterals(geoinstance[0],geoinstance[1],graph)
+                            for key in timeobj:
+                                dateatt.append(key)
                         properties[str(geoinstance[0])]=str(geoinstance[1])
                     #print(geojsonrep)
                 if geojsonrep is not None and geojsonrep!= "" and isinstance(geojsonrep,dict) and "coordinates" in geojsonrep and len(geojsonrep["coordinates"]) > 0:
                     if uritotreeitem is not None and memberidstr in uritotreeitem:
                         featcoll["features"].append({"type": "Feature", 'id': memberidstr,
                                                      'name': uritotreeitem[memberidstr][-1]["text"],
-                                                     'dateprops': timeobj, 'properties': properties,
+                                                     'dateprops': list(timeobj.keys()), 'properties': properties,
                                                      "geometry": geojsonrep})
                     else:
                         featcoll["features"].append(
                             {"type": "Feature", 'id': memberidstr, 'name': memberidstr,
-                             'dateprops': timeobj,
+                             'dateprops': list(timeobj.keys()),
                              'properties': properties, "geometry": geojsonrep})
                     if len(featcoll["features"][-1]["dateprops"]) > 0:
                         dateatt = featcoll["features"][-1]["dateprops"][0]
