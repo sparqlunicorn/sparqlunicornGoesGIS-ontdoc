@@ -93,15 +93,15 @@ function parseWKTStringToJSON(wktstring){
     for(coordset of wktstring.split(",")){
         curobject={}
         coords=coordset.trim().split(" ")
-        console.log(coordset)
-        console.log(coords)
+        //console.log(coordset)
+        //console.log(coords)
         if(coords.length==3){
             resjson.push({"x":parseFloat(coords[0]),"y":parseFloat(coords[1]),"z":parseFloat(coords[2])})
         }else{
             resjson.push({"x":parseFloat(coords[0]),"y":parseFloat(coords[1])})
         }
     }
-    console.log(resjson)
+    //console.log(resjson)
     return resjson
 }
 
@@ -568,8 +568,8 @@ function exportTGFGDF(sepchar,format){
 
 function setSVGDimensions(){
     $('svg').each(function(i, obj) {
-        console.log(obj)
-        console.log($(obj).children().first()[0])
+        //console.log(obj)
+        //console.log($(obj).children().first()[0])
         if($(obj).attr("viewBox") || $(obj).attr("width") || $(obj).attr("height")){
             return
         }
@@ -579,7 +579,7 @@ function setSVGDimensions(){
         miny=Number.MAX_VALUE
         $(obj).children().each(function(i){
             svgbbox=$(this)[0].getBBox()
-            console.log(svgbbox)
+            //console.log(svgbbox)
             if(svgbbox.x+svgbbox.width>maxx){
                 maxx=svgbbox.x+svgbbox.width
             }
@@ -770,7 +770,7 @@ function rewriteLink(thelink){
     if(!indexpage){
         count=rest.split("/").length-1
     }
-    console.log(count)
+    //console.log(count)
     counter=0
     if (typeof relativedepth !== 'undefined'){
         while(counter<relativedepth){
@@ -788,7 +788,7 @@ function rewriteLink(thelink){
 	if(!rest.includes("nonns_") && !rest.endsWith(".html")){
 		rest+="index.html"
 	}
-    console.log(rest)
+    //console.log(rest)
     return rest
 }
 
@@ -1863,7 +1863,12 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,date
         //console.log(sliderControl.options)
 		map.addControl(sliderControl);
         sliderControl.options.markers.sort(function (a, b) {
-            return (new Date(a.feature.properties[dateatt]) > new Date(b.feature.properties[dateatt]));
+            try{
+                return (parseFloat(a.feature.properties[dateatt]) > parseFloat(b.feature.properties[dateatt]));
+            }catch(e){
+                return (new Date(a.feature.properties[dateatt]) > new Date(b.feature.properties[dateatt]));
+            }
+
         });
 		sliderControl.startSlider();
 	}
