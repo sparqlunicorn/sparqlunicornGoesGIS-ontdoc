@@ -1841,10 +1841,10 @@ function generateLeafletPopup(feature, layer){
                 showAllOnStart: true,
                 timeAttribute: dateatt
             });
+            map.addControl(sliderControl);
             sliderControl.options.markers.sort(function (a, b) {
                 return (a.properties[dateatt] > b.properties[dateatt]);
             });
-            map.addControl(sliderControl);
             sliderControl.startSlider();
         }
         markercluster.addTo(map)

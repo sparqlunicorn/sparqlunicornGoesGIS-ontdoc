@@ -1851,11 +1851,11 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,date
 			showAllOnStart: true,
 			timeAttribute: dateatt
 		});
-        console.log(sliderControl.options)
+        //console.log(sliderControl.options)
+		map.addControl(sliderControl);
         sliderControl.options.layer.sort(function (a, b) {
             return (a.properties[dateatt] > b.properties[dateatt]);
         });
-		map.addControl(sliderControl);
 		sliderControl.startSlider();
 	}
     markercluster.addTo(map)
