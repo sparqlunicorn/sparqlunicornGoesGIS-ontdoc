@@ -1843,6 +1843,15 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,date
     }, 'toggleClusters')
     layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map)
 	if(dateatt!=null && dateatt!="" && dateatt!="[]" && dateatt!=[]){
+        let textbox   = L.Control.extend({
+            onAdd: function() {
+                var text = L.DomUtil.create('div');
+                text.id = "info_text";
+                text.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                return text;
+            }
+        });
+        new textbox({ position: 'bootomleft' }).addTo(map);
 		var sliderControl = L.control.sliderControl({
 			position: "bottomleft",
 			layer: layerr,
