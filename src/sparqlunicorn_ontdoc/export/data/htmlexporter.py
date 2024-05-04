@@ -6,6 +6,7 @@ from export.pages.bibpage import BibPage
 from export.pages.owltimepage import OWLTimePage
 from rdflib import URIRef, Graph, BNode, Literal, XSD
 from rdflib.namespace import RDF
+from collections import defaultdict
 import re
 import os
 import json
@@ -56,7 +57,7 @@ class HTMLExporter():
         imageannos = []
         annobodies = []
         image3dannos = []
-        predobjmap = {}
+        predobjmap = defaultdict(list)
         curtypes = set()
         comment = {}
         parentclass = None
@@ -85,7 +86,7 @@ class HTMLExporter():
             for tup in sorted(predobjs, key=lambda tup: tup[0]):
                 tupobjstr = str(tup[1])
                 tuppredstr = str(tup[0])
-                predobjmap.setdefault(tuppredstr,[]).append(tup[1])
+                predobjmap[tuppredstr].append(tup[1])
                 if parentclass is not None:
                     if tuppredstr not in uritotreeitem[parentclass][-1]["data"]["to"]:
                         uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr] = {}
@@ -650,7 +651,7 @@ class HTMLExporter():
                     if ext in DocConfig.fileextensionmap:
                         foundmedia[DocConfig.fileextensionmap[ext]][tupobjstr] = {}
             if pred in DocConfig.timepointerproperties:
-                timeobj = OWLTimePage.resolveTimeLiterals(pred, object, graph)
+                timeobj = OWLTimePage.resolveTimeLiterals(URIRef(pred), object, graph)
             elif not nonns:
                 geojsonrep = LiteralUtils.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep, nonns)
         if foundval is not None:
