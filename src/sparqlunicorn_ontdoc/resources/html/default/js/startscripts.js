@@ -1802,6 +1802,7 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,date
 	var bounds = L.latLngBounds([]);
     first=true
     counter=1
+    featcounter=0
     for(feature of featurecolls){
         var markercluster = L.markerClusterGroup.layerSupport({})
         if(epsg!="" && epsg!="EPSG:4326" && epsg in epsgdefs){
@@ -1822,6 +1823,7 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,date
         }else {
             counter += 1
         }
+        featcounter+=1
 		markercluster.checkIn(layerr);
         overlayMaps[layername]=L.featureGroup.subGroup(markercluster,[layerr])
         if(first) {
@@ -1842,7 +1844,7 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,date
         clustersfrozen=!clustersfrozen
     }, 'toggleClusters')
     layercontrol=L.control.layers(baseMaps,overlayMaps).addTo(map)
-	if(counter>2 && dateatt!=null && dateatt!="" && dateatt!="[]" && dateatt!=[]){
+	if(featcounter>1 && dateatt!=null && dateatt!="" && dateatt!="[]" && dateatt!=[]){
         let textbox   = L.Control.extend({
             onAdd: function() {
                 var text = L.DomUtil.create('div');
