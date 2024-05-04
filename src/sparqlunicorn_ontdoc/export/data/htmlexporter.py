@@ -188,8 +188,9 @@ class HTMLExporter():
                         else:
                             labelmap[res["label"]] += f"{res['html']}"
                         itemcounter += 1
-                    for lab in sorted(labelmap):
-                        thetable += str(labelmap[lab])
+                    thetable+="".join(labelmap[lab] for lab in sorted(labelmap))
+                    #for lab in sorted(labelmap):
+                    #    thetable += str(labelmap[lab])
                     if predobjtuplen >= HTMLExporter.maxlistthreshold:
                         tablecontents += "<li>(...)</li>"
                     if predobjtuplen > 1:
@@ -262,8 +263,9 @@ class HTMLExporter():
                         else:
                             labelmap[res["label"]] += f"{res['html']}"
                         itemcounter += 1
-                    for lab in sorted(labelmap) :
-                        tablecontents += str(labelmap[lab])
+                    tablecontents += "".join(labelmap[lab] for lab in sorted(labelmap))
+                    #for lab in sorted(labelmap) :
+                    #    tablecontents += str(labelmap[lab])
                     if subpredtuplen >= HTMLExporter.maxlistthreshold:
                         tablecontents += "<li>(...)</li>"
                     if subpredtuplen > 1:
