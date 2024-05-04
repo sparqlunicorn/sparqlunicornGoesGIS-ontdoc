@@ -1808,6 +1808,7 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,date
         if(epsg!="" && epsg!="EPSG:4326" && epsg in epsgdefs){
             feature=convertGeoJSON(feature,epsgdefs[epsg],null)
         }
+        featcounter+=feature["features"].length
         layerr=L.geoJSON.css(feature,{
         pointToLayer: function(feature, latlng){
                       var greenIcon = new L.Icon({
@@ -1823,7 +1824,6 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,date
         }else {
             counter += 1
         }
-        featcounter+=1
 		markercluster.checkIn(layerr);
         overlayMaps[layername]=L.featureGroup.subGroup(markercluster,[layerr])
         if(first) {
