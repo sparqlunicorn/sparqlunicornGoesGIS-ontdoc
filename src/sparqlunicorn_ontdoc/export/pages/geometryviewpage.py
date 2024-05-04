@@ -92,6 +92,7 @@ class GeometryViewPage:
                             timeobj=OWLTimePage.resolveTimeLiterals(geoinstance[0],geoinstance[1],graph)
                             for key in timeobj:
                                 dateatt.append(key)
+                                properties[key] = str(timeobj[key])
                         properties[str(geoinstance[0])]=str(geoinstance[1])
                     #print(geojsonrep)
                 if geojsonrep is not None and geojsonrep!= "" and isinstance(geojsonrep,dict) and "coordinates" in geojsonrep and len(geojsonrep["coordinates"]) > 0:
