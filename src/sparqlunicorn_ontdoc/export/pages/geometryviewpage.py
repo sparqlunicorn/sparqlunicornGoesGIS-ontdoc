@@ -93,7 +93,20 @@ class GeometryViewPage:
                             for key in timeobj:
                                 dateatt.append(key)
                                 properties[key] = str(timeobj[key])
-                        properties[str(geoinstance[0])]=str(geoinstance[1])
+                        elif str(geoinstance[0]) in DocConfig.valueproperties and isinstance(geoinstance[1],URIRef):
+                            foundunit=None
+                            foundval=None
+                            for valtup in graph.predicate_objects(geoinstance[1]):
+                                if str(valtup[0]) in DocConfig.unitproperties:
+                                    foundunit = str(valtup[1])
+                                elif str(valtup[0]) in DocConfig.valueproperties and isinstance(valtup[1], Literal):
+                                    foundval = str(valtup[1])
+                            if foundval is not None:
+                                properties[str(geoinstance[0])+".value"]=foundval
+                            if foundunit is not None:
+                                properties[str(geoinstance[0]) + ".unit"] = foundunit
+                        else:
+                            properties[str(geoinstance[0])]=str(geoinstance[1])
                     #print(geojsonrep)
                 if geojsonrep is not None and geojsonrep!= "" and isinstance(geojsonrep,dict) and "coordinates" in geojsonrep and len(geojsonrep["coordinates"]) > 0:
                     if uritotreeitem is not None and memberidstr in uritotreeitem:
