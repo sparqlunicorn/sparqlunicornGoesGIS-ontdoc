@@ -18,10 +18,13 @@ from export.pages.geometryviewpage import GeometryViewPage
 from export.pages.lexiconpage import LexiconPage
 from export.pages.observationpage import ObservationPage
 from export.pages.personpage import PersonPage
+from export.pages.model3dpage import Model3DPage
 
 from export.pages.mediapage import MediaPage
 
 from export.pages.textannopage import TextAnnoPage
+
+
 
 
 class HTMLExporter():
@@ -324,30 +327,21 @@ class HTMLExporter():
             if not foundlabel:
                 foundlabel = DocUtils.shortenURI(str(subject))
             f.write(DocUtils.replaceStandardVariables(self.templates["htmltemplate"], subject, checkdepth, "false",self.pubconfig).replace(
-                "{{iconprefixx}}", (relpath + "icons/" if self.pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",
-                                                                                               baseurl).replace(
+                "{{iconprefixx}}", (relpath + "icons/" if self.pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",baseurl).replace(
                 "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace(
                 "{{relativedepth}}", str(checkdepth)).replace("{{prefixpath}}", self.pubconfig["prefixns"]).replace(
-                "{{toptitle}}", foundlabel).replace(
-                "{{startscriptpath}}", startscriptlink).replace("{{epsgdefspath}}", epsgdefslink).replace(
-                "{{bibtex}}", itembibtex).replace("{{vowlpath}}", vowlresultlink).replace("{{proprelationpath}}",
-                                                                                          proprelationslink).replace(
-                "{{stylepath}}", csslink).replace("{{title}}",
-                                                  "<a href=\"" + str(subject) + "\">" + str(
-                                                      foundlabel) + "</a>").replace(
-                "{{baseurl}}", baseurl).replace("{{tablecontent}}", tablecontents).replace("{{description}}",
-                                                                                           "").replace(
+                "{{toptitle}}", foundlabel).replace("{{startscriptpath}}", startscriptlink).replace("{{epsgdefspath}}", epsgdefslink).replace(
+                "{{bibtex}}", itembibtex).replace("{{vowlpath}}", vowlresultlink).replace("{{proprelationpath}}",proprelationslink).replace(
+                "{{stylepath}}", csslink).replace("{{title}}", "<a href=\"" + str(subject) + "\">" + str(foundlabel) + "</a>").replace(
+                "{{baseurl}}", baseurl).replace("{{tablecontent}}", tablecontents).replace("{{description}}","").replace(
                 "{{scriptfolderpath}}", searchfilelink).replace("{{classtreefolderpath}}", classtreelink).replace(
-                "{{exports}}", myexports).replace("{{nonnslink}}", str(nonnslink)).replace("{{subjectencoded}}",
-                                                                                           urllib.parse.quote(
-                                                                                               str(subject))))
+                "{{exports}}", myexports).replace("{{nonnslink}}", str(nonnslink)).replace("{{subjectencoded}}",urllib.parse.quote(str(subject))))
             for comm in comment:
-                f.write(self.templates["htmlcommenttemplate"].replace("{{comment}}",
-                                                                      DocUtils.shortenURI(comm) + ":" + comment[comm]))
+                f.write(self.templates["htmlcommenttemplate"].replace("{{comment}}",DocUtils.shortenURI(comm) + ":" + comment[comm]))
             # for fval in foundvals:
             #    f.write(templates["htmlcommenttemplate"].replace("{{comment}}", "<b>Value "+ DocUtils.shortenURI(str(fval[0]))+": <mark>" + str(fval[1]) + "</mark></b>"))
-
-
+            Model3DPage.generatePageWidget(graph,foundmedia,annobodies,self.templates,subject,self.iiifmanifestpaths,image3dannos,self.pubconfig,self.imagetoURI,foundlabel,comment,thetypes,predobjmap,f)
+            """
             if len(foundmedia["mesh"]) > 0 and len(image3dannos) > 0:
                 if self.pubconfig["apis"]["iiif"]:
                     self.iiifmanifestpaths["default"].append(
@@ -395,6 +389,7 @@ class HTMLExporter():
                     if "POINT" in annoup or "POLYGON" in annoup or "LINESTRING" in annoup:
                         f.write(self.templates["threejstemplate"].replace("{{wktstring}}", anno["value"]).replace(
                             "{{meshurls}}", "[]").replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
+            """
             carousel = "image"
             if len(foundmedia["image"]) > 3:
                 carousel = "carousel-item active"

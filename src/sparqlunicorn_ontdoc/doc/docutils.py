@@ -328,7 +328,7 @@ class DocUtils:
     def conditionalArrayReplace(string,conds,replace,what):
         #counter=0
         #result=""
-        result="".join([replace[counter] for counter, cond in enumerate(conds) if cond])
+        result="".join(replace[counter] for counter, cond in enumerate(conds) if cond)
         #for cond in conds:
         #    if cond:
         #        result+=replace[counter]

@@ -93,7 +93,7 @@ class GeometryViewPage:
                             for key in timeobj:
                                 dateatt.append(key)
                                 properties[key] = str(timeobj[key])
-                        elif str(geoinstance[0]) in DocConfig.valueproperties and isinstance(geoinstance[1],URIRef):
+                        elif isinstance(geoinstance[1],URIRef):
                             foundunit=None
                             foundval=None
                             for valtup in graph.predicate_objects(geoinstance[1]):

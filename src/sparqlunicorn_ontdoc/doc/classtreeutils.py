@@ -93,8 +93,9 @@ class ClassTreeUtils:
                 if cls not in uritotreeitem:
                     #print("SUPER NOT NONE: " + str({"id": cls, "parent": "#", "type": "class", "text": restext, "data": {}}))
                     result.append({"id": cls, "parent": "#", "type": "class", "text": restext, "data": {}})
-                    uritotreeitem[clsstr] = []
-                    uritotreeitem[clsstr].append(result[-1])
+                    uritotreeitem[clsstr].setdefault(clsstr,[]).append(result[-1])\
+                    #    = []
+                    #uritotreeitem[clsstr].append(result[-1])
             else:
                 if "label" in cls and ress[cls]["label"] is not None:
                     restext = f"{ress[cls]['label']} ({DocUtils.shortenURI(clsstr)})"

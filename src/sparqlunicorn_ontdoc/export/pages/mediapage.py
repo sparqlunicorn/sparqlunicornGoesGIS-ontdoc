@@ -12,13 +12,6 @@ class MediaPage:
         if len(foundmedia["image"]) > 3:
             carousel = "carousel-item active"
             f.write(templates["imagecarouselheader"])
-        # if self.iiif and len(annobodies)>0:
-        #    if target not in imagetoURI:
-        #        imagetoURI[target]={"uri":{str(subject):{"bodies":[]}}}
-        #    if str(subject) not in imagetoURI[target]:
-        #        imagetoURI[target]["uri"][str(subject)]={"bodies":[]}
-        #    if str(subject) not in imagetoURI[target]:
-        #        imagetoURI[target]["uri"][str(subject)]["bodies"]+=annobodies
         if len(imageannos) > 0 and len(foundmedia["image"]) > 0:
             if pubconfig["apis"]["iiif"]:
                 iiifmanifestpaths["default"].append(
@@ -37,10 +30,7 @@ class MediaPage:
                                                         "<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
                 f.write(templates["imageswithannotemplate"].replace("{{carousel}}",
                                                                     carousel + "\" style=\"position: relative;display: inline-block;").replace(
-                    "{{image}}", str(image)).replace("{{svganno}}", annostring).replace("{{imagetitle}}", str(image)[
-                                                                                                          0:str(
-                                                                                                              image).rfind(
-                                                                                                              '.')]))
+                    "{{image}}", str(image)).replace("{{svganno}}", annostring).replace("{{imagetitle}}", str(image)[0:str(image).rfind('.')]))
                 if len(foundmedia["image"]) > 3:
                     carousel = "carousel-item"
         elif len(foundmedia["image"]) > 0:
@@ -59,16 +49,11 @@ class MediaPage:
                     continue
                 if "<svg" in image:
                     if "<svg>" in image:
-                        f.write(templates["imagestemplatesvg"].replace("{{carousel}}", carousel).replace("{{image}}",
-                                                                                                         str(image.replace(
-                                                                                                             "<svg>",
-                                                                                                             "<svg class=\"svgview\">"))))
+                        f.write(templates["imagestemplatesvg"].replace("{{carousel}}", carousel).replace("{{image}}",str(image.replace("<svg>","<svg class=\"svgview\">"))))
                     else:
-                        f.write(templates["imagestemplatesvg"].replace("{{carousel}}", carousel).replace("{{image}}",
-                                                                                                         str(image)))
+                        f.write(templates["imagestemplatesvg"].replace("{{carousel}}", carousel).replace("{{image}}",str(image)))
                 else:
-                    f.write(templates["imagestemplate"].replace("{{carousel}}", carousel).replace("{{image}}",
-                                                                                                  str(image)).replace(
+                    f.write(templates["imagestemplate"].replace("{{carousel}}", carousel).replace("{{image}}",str(image)).replace(
                         "{{imagetitle}}", str(image)[0:str(image).rfind('.')]))
                 if len(foundmedia["image"]) > 3:
                     carousel = "carousel-item"

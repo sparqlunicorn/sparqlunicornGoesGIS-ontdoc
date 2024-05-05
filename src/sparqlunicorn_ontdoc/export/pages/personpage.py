@@ -187,8 +187,7 @@ class PersonPage:
         res="BEGIN:VCARD\nVERSION:4.0\nPROFILE:VCARD\n"
         for key in vcard:
             res+=str(key).upper()+":"+str(vcard[key]["value"])+"\n"
-        res+="END:VCARD\n"
-        return res
+        return res+"END:VCARD\n"
 
     @staticmethod
     def collectionConstraint():
