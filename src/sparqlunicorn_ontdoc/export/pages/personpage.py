@@ -204,7 +204,7 @@ class PersonPage:
         if pageWidget and f is not None:
             f.write(PersonPage.hcardToHTMLTable(vcardres["vcard"],vcardres["hcard"]))
         elif not pageWidget and f is not None:
-            f.write(PersonPage.hcardToHTMLTableRow(subject,vcardres["vcard"],vcardres["hcard"],counter))
+            f.write(PersonPage.hcardToHTMLTableRow(subject,graph,vcardres["vcard"],vcardres["hcard"],counter))
         return vcardres["vcard"]
 
     @staticmethod
