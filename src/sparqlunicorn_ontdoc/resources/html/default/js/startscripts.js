@@ -1776,7 +1776,11 @@ function createDropdownOptions(featurecolls){
     }
     selectstr="<select>"
     for(item of result){
-        selectstr+="<option value=\""+item+"\">"+item+"</option>"
+        if((item+"").includes("#")) {
+            selectstr += "<option value=\"" + item + "\">" + item.substring(item.lastIndexOf('#')+1) + "</option>"
+        }else{
+            selectstr += "<option value=\"" + item + "\">" + item.substring(item.lastIndexOf('/')+1) + "</option>"
+        }
     }
     selectstr+="</select>"
     var legend = L.control({position: 'topright'});
