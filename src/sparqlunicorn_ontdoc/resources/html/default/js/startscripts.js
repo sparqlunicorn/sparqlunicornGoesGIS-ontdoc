@@ -1775,7 +1775,7 @@ function createDropdownOptions(featurecolls){
         }
     }
     selectstr="<select>"
-    for(item in result){
+    for(item of result){
         selectstr+="<option value=\""+item+"\">"+item+"</option>"
     }
     selectstr+="</select>"
