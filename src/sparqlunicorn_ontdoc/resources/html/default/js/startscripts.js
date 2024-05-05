@@ -1704,14 +1704,14 @@ function createColorRangeByAttribute(propertyName,geojsonlayer){
         stepcounter=0
         while(curstep<maxamount){
             curstepstr=(curstep+"")
-            rangesByAttribute[propertyName].append({"min":curstep,"max":curstep+myrangesteps,"label":"["+curstep+"-"+curstep+myrangesteps+"]","color":colors[stepcounter%12]})
+            rangesByAttribute[propertyName].push({"min":curstep,"max":curstep+myrangesteps,"label":"["+curstep+"-"+curstep+myrangesteps+"]","color":colors[stepcounter%12]})
             curstep+=myrangesteps
             stepcounter+=1
         }
     }else if(stringitems<amountofrelevantitems){
         stepcounter=0
         for(item of valueset){
-            rangesByAttribute[propertyName].append({"label":item,"color":colors[stepcounter%12]})
+            rangesByAttribute[propertyName].push({"label":item,"color":colors[stepcounter%12]})
             stepcounter+=1
         }
     }
