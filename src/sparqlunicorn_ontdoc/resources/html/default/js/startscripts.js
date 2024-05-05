@@ -1620,7 +1620,7 @@ function toggleFullScreen(elementid,threejs=false) {
 
 function restyleLayer(propertyName,geojsonLayer) {
     //geojsonLayer.eachLayer(function(featureInstanceLayer) {
-    propertyValue = featureInstanceLayer.feature.properties[propertyName];
+    propertyValue = geojsonLayer["features"][0]["properties"][propertyName];
     rangesByAttribute=createColorRangeByAttribute(propertyName,geojsonLayer)
     // Your function that determines a fill color for a particular
     // property name and value.
