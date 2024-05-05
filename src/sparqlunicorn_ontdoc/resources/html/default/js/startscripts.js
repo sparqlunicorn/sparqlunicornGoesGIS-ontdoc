@@ -1764,6 +1764,7 @@ function createDropdownOptions(featurecolls){
             for (feat in featurecolls[coll]["features"]) {
                 console.log(featurecolls[coll]["features"][feat])
                 for (prop in featurecolls[coll]["features"][feat]["properties"]) {
+                    console.log(prop)
                     result.add(prop)
                 }
             }
