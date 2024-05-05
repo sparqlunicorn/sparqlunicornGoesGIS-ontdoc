@@ -1624,7 +1624,7 @@ function restyleLayer(propertyName,geojsonLayer) {
     rangesByAttribute=createColorRangeByAttribute(propertyName,geojsonLayer)
     // Your function that determines a fill color for a particular
     // property name and value.
-    geojsonLayer.onEachFeature(function (feature, layer) {
+    layerr.onEachFeature(function (feature, layer) {
         feature.setStyle({
             fillColor: getColor(feature,propertyName, propertyValue,rangesByAttribute),
             fillOpacity: 0.8,
@@ -1832,6 +1832,7 @@ function createDropdownOptions(featurecolls){
 
 var centerpoints=[]
 var clustersfrozen=false
+var layerr;
 
 function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,dateatt="",ajax=true){
 	if(ajax){
