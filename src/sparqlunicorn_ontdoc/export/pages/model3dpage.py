@@ -12,7 +12,7 @@ class Model3DPage:
             if pubconfig["apis"]["iiif"]:
                 iiifmanifestpaths["default"].append(
                     IIIFAPIExporter.generateIIIFManifest(graph, pubconfig["outpath"], pubconfig["deploypath"], foundmedia["mesh"],
-                                                         image3dannos, annobodies, str(subject), pubconfig["prefixnamespace"],
+                                                         image3dannos, annobodies, str(subject), pubconfig["prefixns"],
                                                          imagetoURI, pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
                                                          foundlabel, comment, thetypes, predobjmap, "Model"))
             for anno in image3dannos:
@@ -23,7 +23,7 @@ class Model3DPage:
             if pubconfig["apis"]["iiif"]:
                 iiifmanifestpaths["default"].append(
                     IIIFAPIExporter.generateIIIFManifest(graph, pubconfig["outpath"], pubconfig["deploypath"], foundmedia["mesh"],
-                                                         image3dannos, annobodies, str(subject), pubconfig["prefixnamespace"],
+                                                         image3dannos, annobodies, str(subject), pubconfig["prefixns"],
                                                          imagetoURI, pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
                                                          foundlabel, comment, thetypes, predobjmap, "Model"))
             for curitem in foundmedia["mesh"]:
