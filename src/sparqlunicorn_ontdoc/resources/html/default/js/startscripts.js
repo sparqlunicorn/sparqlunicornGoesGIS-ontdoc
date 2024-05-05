@@ -1806,24 +1806,28 @@ function createDropdownOptions(featurecolls){
             }
         }
     }
-    selectstr="<select id=\"filterdropdown\"><option value=\"\">None</option>"
-    for(item of Array.from(result).sort()){
-        if((item+"").includes("#")) {
-            selectstr += "<option value=\"" + item + "\">" + item.substring(item.lastIndexOf('#')+1) + "</option>"
-        }else{
-            selectstr += "<option value=\"" + item + "\">" + item.substring(item.lastIndexOf('/')+1) + "</option>"
+    if(result.size()>0) {
+        selectstr = "<select id=\"filterdropdown\"><option value=\"\">None</option>"
+        for (item of Array.from(result).sort()) {
+            if ((item + "").includes("#")) {
+                selectstr += "<option value=\"" + item + "\">" + item.substring(item.lastIndexOf('#') + 1) + "</option>"
+            } else {
+                selectstr += "<option value=\"" + item + "\">" + item.substring(item.lastIndexOf('/') + 1) + "</option>"
+            }
+        }
+        selectstr += "</select>"
+        var legend = L.control({position: 'topright'});
+        legend.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'info legend');
+            div.innerHTML = selectstr;
+            div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation;
+            return div;
+        };
+        legend.addTo(map);
+        document.getElementById("filterdropdown").onchange = function () {
+            restyleLayer(document.getElementById("filterdropdown").value, featurecolls[coll])
         }
     }
-    selectstr+="</select>"
-    var legend = L.control({position: 'topright'});
-    legend.onAdd = function (map) {
-        var div = L.DomUtil.create('div', 'info legend');
-        div.innerHTML = selectstr;
-        div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation;
-        return div;
-    };
-    legend.addTo(map);
-    document.getElementById("filterdropdown").onchange=function(){restyleLayer(document.getElementById("filterdropdown").value,featurecolls[coll])}
 }
 
 var centerpoints=[]
