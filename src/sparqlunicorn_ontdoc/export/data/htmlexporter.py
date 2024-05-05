@@ -21,6 +21,8 @@ from export.pages.personpage import PersonPage
 
 from export.pages.mediapage import MediaPage
 
+from export.pages.textannopage import TextAnnoPage
+
 
 class HTMLExporter():
     listthreshold = 5
@@ -465,17 +467,7 @@ class HTMLExporter():
             if len(foundmedia["image"]) > 3:
                 f.write(self.templates["imagecarouselfooter"])
             if len(textannos) > 0:
-                for textanno in textannos:
-                    if isinstance(textanno, dict):
-                        if "src" in textanno:
-                            f.write("<span style=\"font-weight:bold\" class=\"textanno\" start=\"" + str(
-                                textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
-                                textanno["exact"]) + "\" src=\"" + str(textanno["src"]) + "\"><mark>" + str(
-                                textanno["exact"]) + "</mark></span>")
-                        else:
-                            f.write("<span style=\"font-weight:bold\" class=\"textanno\" start=\"" + str(
-                                textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
-                                textanno["exact"]) + "\"><mark>" + str(textanno["exact"]) + "</mark></span>")
+                TextAnnoPage.generatePageWidget(graph,textannos,self.templates,f)
             if len(foundmedia["audio"]) > 0 and self.pubconfig["apis"]["iiif"]:
                 self.iiifmanifestpaths["default"].append(
                     IIIFAPIExporter.generateIIIFManifest(graph, self.pubconfig["outpath"], self.pubconfig["deploypath"], foundmedia["audio"],

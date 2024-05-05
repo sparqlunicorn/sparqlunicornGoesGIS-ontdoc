@@ -7,7 +7,8 @@ class TextAnnoPage:
 
     tableheader="<thead><th>Annotation</th><th>Type</th><th>Position</th><th>Annotation Body</th></thead>"
 
-    def generatePageWidget(self, textannos, f, onlybody=False):
+    @staticmethod
+    def generatePageWidget(graph, textannos, templates, f, pageWidget=False):
         for textanno in textannos:
             if isinstance(textanno, dict):
                 if "src" in textanno:
@@ -21,9 +22,10 @@ class TextAnnoPage:
                         textanno["exact"]) + "\"><mark>" + str(textanno["exact"]) + "</mark></span>")
 
 
-    def generateCollectionWidget(self, graph, templates, subject,prefixnamespace,outpath, f):
+    @staticmethod
+    def generateCollectionWidget(graph, templates, subject,prefixnamespace,outpath, f):
         print("CollectionWidget")
-        f.write("<table id=\"lexicon\">"+self.tableheader+"<tbody>")
+        f.write("<table id=\"lexicon\">"+TextAnnoPage.tableheader+"<tbody>")
         for anno in graph.subjects_objects("http://www.w3.org/ns/oa#hasSelector"):
             thetype=None
             start=None
