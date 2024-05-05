@@ -1640,16 +1640,23 @@ function getColor(feature,propertyName,propertyValue,rangesByAttribute){
     if(propertyName=="None"){
         return "#000000"
     }
-    colorcounter=0
-    hasseen=new Set()
-    if(propertyName in feature){
-        if(!(feature[propertyName] in hasseen)){
-            hasseen.add(feature[propertyName])
-            colorcounter+=1
-            return
+    if(!isNaN(propertyValue)){
+        propNum=Number(propertyValue)
+        for(rang of rangesByAttribute){
+            if("min" in rang && "max" in rang){
+                if(propNum>=rang["min"] && propNum<=rang["max"]){
+                    return rang["color"];
+                }
+            }
         }
-
+    }else{
+        for(rang of propertyValue){
+            if(rang["label"]==propertyValue){
+                return rang["color"]
+            }
+        }
     }
+    return "#000000"
 }
 
 
@@ -1693,17 +1700,20 @@ function createColorRangeByAttribute(propertyName,geojsonlayer){
         myrange=maxamount-minamount
         myrangesteps=myrange/maxColors
         curstep=minamount
+        rangesByAttribute[propertyName]=[]
+        stepcounter=0
         while(curstep<maxamount){
             curstepstr=(curstep+"")
-            rangesByAttribute[propertyName]={cursteps:{"min":curstep,"max":curstep+myrangesteps,"label":"["+curstep+"-"+curstep+myrangesteps+"]"}}
+            rangesByAttribute[propertyName].append({"min":curstep,"max":curstep+myrangesteps,"label":"["+curstep+"-"+curstep+myrangesteps+"]","color":colors[stepcounter%12]})
             curstep+=myrangesteps
+            stepcounter+=1
         }
     }else if(stringitems<amountofrelevantitems){
+        stepcounter=0
         for(item of valueset){
-            rangesByAttribute[propertyName]={"label":item}
+            rangesByAttribute[propertyName].append({"label":item,"color":colors[stepcounter%12]})
+            stepcounter+=1
         }
-    }else if(stringitems===amountofrelevantitems){
-
     }
     return rangesByAttribute
 }
@@ -1796,7 +1806,7 @@ function createDropdownOptions(featurecolls){
             }
         }
     }
-    selectstr="<select><option value=\"\">None</option>"
+    selectstr="<select id=\"filterdropdown\"><option value=\"\">None</option>"
     for(item of Array.from(result).sort()){
         if((item+"").includes("#")) {
             selectstr += "<option value=\"" + item + "\">" + item.substring(item.lastIndexOf('#')+1) + "</option>"
@@ -1813,6 +1823,7 @@ function createDropdownOptions(featurecolls){
         return div;
     };
     legend.addTo(map);
+    document.getElementById("filterdropdown").onchange=restyleLayer(document.getElementById("filterdropdown").value,featurecolls[coll])
 }
 
 var centerpoints=[]

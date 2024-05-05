@@ -340,56 +340,13 @@ class HTMLExporter():
                 f.write(self.templates["htmlcommenttemplate"].replace("{{comment}}",DocUtils.shortenURI(comm) + ":" + comment[comm]))
             # for fval in foundvals:
             #    f.write(templates["htmlcommenttemplate"].replace("{{comment}}", "<b>Value "+ DocUtils.shortenURI(str(fval[0]))+": <mark>" + str(fval[1]) + "</mark></b>"))
-            Model3DPage.generatePageWidget(graph,foundmedia,annobodies,self.templates,subject,self.iiifmanifestpaths,image3dannos,self.pubconfig,self.imagetoURI,foundlabel,comment,thetypes,predobjmap,f)
-            """
-            if len(foundmedia["mesh"]) > 0 and len(image3dannos) > 0:
-                if self.pubconfig["apis"]["iiif"]:
-                    self.iiifmanifestpaths["default"].append(
-                        IIIFAPIExporter.generateIIIFManifest(graph, self.pubconfig["outpath"], self.pubconfig["deploypath"],
-                                                             foundmedia["mesh"], image3dannos, annobodies,
-                                                             str(subject), self.pubconfig["prefixns"], self.imagetoURI,
-                                                             self.pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
-                                                             foundlabel, comment, thetypes, predobjmap, "Model"))
-                for anno in image3dannos:
-                    if ("POINT" in anno["value"].upper() or "POLYGON" in anno["value"].upper() or "LINESTRING" in
-                            anno["value"].upper()):
-                        f.write(self.templates["threejstemplate"].replace("{{wktstring}}", anno["value"]).replace(
-                            "{{meshurls}}", str(list(foundmedia["mesh"]))).replace("{{relativepath}}",
-                                                                                   DocUtils.generateRelativePathFromGivenDepth(
-                                                                                       checkdepth)))
-            elif len(foundmedia["mesh"]) > 0 and len(image3dannos) == 0:
-                #print("Found 3D Model: " + str(foundmedia["mesh"]))
-                if self.pubconfig["apis"]["iiif"]:
-                    self.iiifmanifestpaths["default"].append(
-                        IIIFAPIExporter.generateIIIFManifest(graph, self.pubconfig["outpath"], self.pubconfig["deploypath"],
-                                                             foundmedia["mesh"], image3dannos, annobodies,
-                                                             str(subject), self.pubconfig["prefixns"], self.imagetoURI,
-                                                             self.pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
-                                                             foundlabel, comment, thetypes, predobjmap, "Model"))
-                for curitem in foundmedia["mesh"]:
-                    format = "ply"
-                    if ".nxs" in curitem or ".nxz" in curitem:
-                        format = "nexus"
-                        self.has3d = True
-                    elif format == "gltf":
-                        f.write(self.templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",
-                                                                                                       str(list(
-                                                                                                           foundmedia[
-                                                                                                               "mesh"]))).replace(
-                            "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
-                    f.write(self.templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",
-                                                                                                   str(list(foundmedia[
-                                                                                                                "mesh"]))).replace(
-                        "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
-                    # f.write(templates["3dtemplate"].replace("{{meshurl}}",curitem).replace("{{meshformat}}",format))
-                    break
-            elif len(foundmedia["mesh"]) == 0 and len(image3dannos) > 0:
-                for anno in image3dannos:
-                    annoup=anno["value"].upper()
-                    if "POINT" in annoup or "POLYGON" in annoup or "LINESTRING" in annoup:
-                        f.write(self.templates["threejstemplate"].replace("{{wktstring}}", anno["value"]).replace(
-                            "{{meshurls}}", "[]").replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
-            """
+            if len(foundmedia["mesh"]) > 0:
+                self.has3d=Model3DPage.generatePageWidget(graph,foundmedia,annobodies,self.templates,subject,self.iiifmanifestpaths,image3dannos,self.pubconfig,self.imagetoURI,foundlabel,comment,thetypes,predobjmap,f,checkdepth)
+            if len(foundmedia["image"])> 0:
+                print("found media")
+                #MediaPage.generatePageWidget(foundmedia, self.iiifmanifestpaths, graph, imageannos, self.imagetoURI,
+                #                             annobodies, foundlabel, comment, thetypes, predobjmap, self.templates,
+                #                             subject, self.pubconfig, f)
             carousel = "image"
             if len(foundmedia["image"]) > 3:
                 carousel = "carousel-item active"
@@ -403,10 +360,6 @@ class HTMLExporter():
             #        imagetoURI[target]["uri"][str(subject)]["bodies"]+=annobodies
 
             if len(imageannos) > 0 and len(foundmedia["image"]) > 0:
-                #MediaPage.generatePageWidget(foundmedia, self.iiifmanifestpaths, graph, imageannos, self.imagetoURI,
-                #                             annobodies, foundlabel, comment, thetypes, predobjmap, self.templates,
-                #                             subject, self.pubconfig, f)
-
                 if self.pubconfig["apis"]["iiif"]:
                     self.iiifmanifestpaths["default"].append(
                         IIIFAPIExporter.generateIIIFManifest(graph, self.pubconfig["outpath"], self.pubconfig["deploypath"],
@@ -421,14 +374,9 @@ class HTMLExporter():
                         self.imagetoURI[image]["uri"][str(subject)] = {"bodies": []}
                     annostring = ""
                     for anno in imageannos:
-                        annostring += anno["value"].replace("<svg>",
-                                                            "<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
-                    f.write(self.templates["imageswithannotemplate"].replace("{{carousel}}",
-                                                                             carousel + "\" style=\"position: relative;display: inline-block;").replace(
-                        "{{image}}", str(image)).replace("{{svganno}}", annostring).replace("{{imagetitle}}",
-                                                                                            str(image)[
-                                                                                            0:str(image).rfind(
-                                                                                                '.')]))
+                        annostring += anno["value"].replace("<svg>","<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
+                    f.write(self.templates["imageswithannotemplate"].replace("{{carousel}}",carousel + "\" style=\"position: relative;display: inline-block;").replace(
+                        "{{image}}", str(image)).replace("{{svganno}}", annostring).replace("{{imagetitle}}",str(image)[0:str(image).rfind('.')]))
                     if len(foundmedia["image"]) > 3:
                         carousel = "carousel-item"
             elif len(foundmedia["image"]) > 0:
@@ -555,7 +503,6 @@ class HTMLExporter():
         annosource = None
         foundval = None
         foundunit = None
-        tempvalprop = None
         onelabel = None
         bibtex = None
         timeobj = None
@@ -601,6 +548,8 @@ class HTMLExporter():
                 annosource = tupobjstr
                 #print("Found annosource " + tupobjstr + " from " + str(object) + " Imageannos: " + str(len(imageannos)))
             elif tuppredstr in DocConfig.valueproperties:
+                DocUtils.resolveUnitValue(graph,tup[1],tuppredstr,tupobjstr,foundval,foundunit)
+                """
                 if tempvalprop is None and tuppredstr == "http://www.w3.org/ns/oa#hasSource":
                     tempvalprop = tuppredstr
                     foundval = tupobjstr
@@ -628,16 +577,17 @@ class HTMLExporter():
                             foundunit = str(valtup[1])
                         elif str(valtup[0]) in DocConfig.valueproperties and isinstance(valtup[1], Literal):
                             foundval = str(valtup[1])
+                """
             elif tuppredstr in DocConfig.unitproperties:
                 foundunit = tup[1]
-            if pred in DocConfig.collectionrelationproperties:
+            elif pred in DocConfig.collectionrelationproperties:
                 if "<svg" in tupobjstr:
                     foundmedia["image"][tupobjstr] = {}
                 elif "http" in tupobjstr:
                     ext = "." + ''.join(filter(str.isalpha, tupobjstr.split(".")[-1]))
                     if ext in DocConfig.fileextensionmap:
                         foundmedia[DocConfig.fileextensionmap[ext]][tupobjstr] = {}
-            if pred in DocConfig.timepointerproperties:
+            elif pred in DocConfig.timepointerproperties:
                 timeobj = OWLTimePage.resolveTimeLiterals(URIRef(pred), object, graph)
             elif not nonns:
                 geojsonrep = LiteralUtils.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep, nonns)

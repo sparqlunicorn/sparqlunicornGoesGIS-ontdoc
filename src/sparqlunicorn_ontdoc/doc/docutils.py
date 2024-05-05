@@ -166,6 +166,34 @@ class DocUtils:
         return rellink
 
     @staticmethod
+    def resolveUnitValue(graph,obj,tuppredstr,tupobjstr,foundval,foundunit):
+        if tuppredstr == "http://www.w3.org/ns/oa#hasSource":
+            foundval = tupobjstr
+        elif tuppredstr != "http://www.w3.org/ns/oa#hasSource" and DocConfig.valueproperties[
+            tuppredstr] == "DatatypeProperty" and (isinstance(obj, Literal) or isinstance(obj, URIRef)):
+            foundval = tupobjstr
+        elif tuppredstr == "http://www.w3.org/ns/oa#hasTarget":
+            for inttup in graph.predicate_objects(obj):
+                if str(inttup[0]) == "http://www.w3.org/ns/oa#hasSelector":
+                    for valtup in graph.predicate_objects(inttup[1]):
+                        if str(valtup[0]) in DocConfig.unitproperties:
+                            foundunit = str(valtup[1])
+                        elif str(valtup[0]) in DocConfig.valueproperties and (
+                                isinstance(valtup[1], Literal) or isinstance(valtup[1], URIRef)):
+                            foundval = str(valtup[1])
+        elif DocConfig.valueproperties[tuppredstr] == "DatatypeProperty":
+            if tuppredstr in DocConfig.valueproperties and isinstance(obj, Literal):
+                foundval = tupobjstr
+        else:
+            for valtup in graph.predicate_objects(obj):
+                if str(valtup[0]) in DocConfig.unitproperties:
+                    foundunit = str(valtup[1])
+                elif str(valtup[0]) in DocConfig.valueproperties and isinstance(valtup[1], Literal):
+                    foundval = str(valtup[1])
+        return [foundval,foundunit]
+
+
+    @staticmethod
     def checkImgMetadataRDF(g,uri):
         res={}
         for obj in g.objects(URIRef(uri),URIRef("http://www.w3.org/2003/12/exif/ns#width")):
