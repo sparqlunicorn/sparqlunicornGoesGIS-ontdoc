@@ -4816,20 +4816,24 @@ function geometryToGeoJSON(geomtype,coordinates){
             case "linearring":
             case "polygon":
                 res["geometry"]["type"]="Polygon"
-		res["geometry"]["coordinates"]="[["
-		break;
+				res["geometry"]["coordinates"]="[["
+			break;
             case "envelope":
-            res["geometry"]["type"]="Envelope"
-		res["geometry"]["coordinates"]="["
-		break;
+            	res["geometry"]["type"]="Envelope"
+				res["geometry"]["coordinates"]="["
+			break;
+			case "multipoint":
+				res["geometry"]["type"]="MultiPoint"
+				res["geometry"]["coordinates"]="["
+			break;
             case "linestring":
                 res["geometry"]["type"]="LineString"
-		res["geometry"]["coordinates"]="["
-		break;
+				res["geometry"]["coordinates"]="["
+			break;
             case "point":
                 res["geometry"]["type"]="Point"
-		res["geometry"]["coordinates"]=""
-		break;
+				res["geometry"]["coordinates"]=""
+			break;
 	}
 	splstr=coordinates.toString().split(",")
 	console.log(res)
