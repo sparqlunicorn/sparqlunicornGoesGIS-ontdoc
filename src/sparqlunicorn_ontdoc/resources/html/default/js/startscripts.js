@@ -1806,7 +1806,7 @@ function createDropdownOptions(featurecolls){
             }
         }
     }
-    if(result.size()>0) {
+    if(result.size>0) {
         selectstr = "<select id=\"filterdropdown\"><option value=\"\">None</option>"
         for (item of Array.from(result).sort()) {
             if ((item + "").includes("#")) {
