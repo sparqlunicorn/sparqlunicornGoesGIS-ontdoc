@@ -1619,19 +1619,19 @@ function toggleFullScreen(elementid,threejs=false) {
 }
 
 function restyleLayer(propertyName,geojsonLayer) {
-    geojsonLayer.eachLayer(function(featureInstanceLayer) {
-        propertyValue = featureInstanceLayer.feature.properties[propertyName];
-        rangesByAttribute=createColorRangeByAttribute(propertyName,geojsonLayer)
-        // Your function that determines a fill color for a particular
-        // property name and value.
-        featureInstanceLayer.onEachFeature(function (feature, layer) {
-            feature.setStyle({
-                fillColor: getColor(feature,propertyName, propertyValue,rangesByAttribute),
-                fillOpacity: 0.8,
-                weight: 0.5
-            });
+    //geojsonLayer.eachLayer(function(featureInstanceLayer) {
+    propertyValue = featureInstanceLayer.feature.properties[propertyName];
+    rangesByAttribute=createColorRangeByAttribute(propertyName,geojsonLayer)
+    // Your function that determines a fill color for a particular
+    // property name and value.
+    geojsonLayer.onEachFeature(function (feature, layer) {
+        feature.setStyle({
+            fillColor: getColor(feature,propertyName, propertyValue,rangesByAttribute),
+            fillOpacity: 0.8,
+            weight: 0.5
         });
     });
+    //});
 }
 
 colors=["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00","#cab2d6","#6a3d9a","#ffff99","#b15928"]
@@ -1823,7 +1823,7 @@ function createDropdownOptions(featurecolls){
         return div;
     };
     legend.addTo(map);
-    document.getElementById("filterdropdown").onchange=restyleLayer(document.getElementById("filterdropdown").value,featurecolls[coll])
+    document.getElementById("filterdropdown").onchange=function(){restyleLayer(document.getElementById("filterdropdown").value,featurecolls[coll])}
 }
 
 var centerpoints=[]
