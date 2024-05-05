@@ -4845,7 +4845,7 @@ function geometryToGeoJSON(geomtype,coordinates){
 	res["geometry"]["coordinates"]=res["geometry"]["coordinates"].substring(0,res["geometry"]["coordinates"].length-2)
 	if(geomtype=="linearring" || geomtype=="polygon"){
 		res["geometry"]["coordinates"]+="]]"
-	}else if(geomtype=="linestring" || geometype=="envelope"){
+	}else if(geomtype=="linestring" || geomtype=="envelope" || geomtype=="multipoint"){
 		res["geometry"]["coordinates"]+="]"
 	}else{
 		res["geometry"]["coordinates"]+=""
