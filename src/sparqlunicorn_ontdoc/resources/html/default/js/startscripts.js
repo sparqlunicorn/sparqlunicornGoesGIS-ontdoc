@@ -1762,9 +1762,7 @@ function createDropdownOptions(featurecolls){
     for(coll in featurecolls) {
         if ("features" in featurecolls[coll]) {
             for (feat in featurecolls[coll]["features"]) {
-                console.log(featurecolls[coll]["features"][feat])
                 for (prop in featurecolls[coll]["features"][feat]["properties"]) {
-                    console.log(prop)
                     result.add(prop)
                 }
             }
@@ -1775,7 +1773,7 @@ function createDropdownOptions(featurecolls){
         }
     }
     selectstr="<select>"
-    for(item of result){
+    for(item of Array.from(result).sort()){
         if((item+"").includes("#")) {
             selectstr += "<option value=\"" + item + "\">" + item.substring(item.lastIndexOf('#')+1) + "</option>"
         }else{
