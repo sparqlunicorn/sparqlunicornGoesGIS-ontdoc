@@ -168,8 +168,9 @@ class PersonPage:
         return result
 
     @staticmethod
-    def hcardToHTMLTableRow(vcard,hcard,counter):
-        result="<tr><td>Person "+str(counter)+"</td><td><ul>"
+    def hcardToHTMLTableRow(subject,graph,vcard,hcard,counter):
+        label=DocUtils.getLabelForObject(subject,graph)
+        result=f"<tr><td><a href=\"{subject}\" target=\"_blank\">{label}</a></td><td><ul>"
         for prop in hcard:
             result+=f"<li><a href=\"{hcard[prop]['prop']}\">{DocUtils.shortenURI(hcard[prop]['prop'])}</a> - "
             if "http" in hcard[prop]:
@@ -203,7 +204,7 @@ class PersonPage:
         if pageWidget and f is not None:
             f.write(PersonPage.hcardToHTMLTable(vcardres["vcard"],vcardres["hcard"]))
         elif not pageWidget and f is not None:
-            f.write(PersonPage.hcardToHTMLTableRow(vcardres["vcard"],vcardres["hcard"],counter))
+            f.write(PersonPage.hcardToHTMLTableRow(subject,vcardres["vcard"],vcardres["hcard"],counter))
         return vcardres["vcard"]
 
     @staticmethod
