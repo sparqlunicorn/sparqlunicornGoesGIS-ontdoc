@@ -153,7 +153,7 @@ class PersonPage:
         return {"vcard":thevcard,"hcard":thehcard}
 
     @staticmethod
-    def hcardToHTML(vcard,hcard):
+    def hcardToHTMLTable(vcard,hcard):
         result="<table id=\"person\" class=\"h-card\" border=\"1\"><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>"
         for prop in hcard:
             result+=f"<tr><td><a href=\"{hcard[prop]['prop']}\">{DocUtils.shortenURI(hcard[prop]['prop'])}</a></td>"
@@ -166,6 +166,20 @@ class PersonPage:
                     result += f"<td class=\"{prop}\">{hcard[prop]['value']}</td></tr>"
         result += "</tbody></table><script>$('#person').DataTable();</script><button id=\"vcard\" onclick=\"saveTextAsFile(`" + str(PersonPage.vcardJSONToString(vcard)) + "`,'vcard')\">Download VCard</button>"
         return result
+
+    @staticmethod
+    def hcardToHTMLTableRow(vcard,hcard,counter):
+        result="<tr><td>Person "+str(counter)+"</td><td><ul>"
+        for prop in hcard:
+            result+=f"<li><a href=\"{hcard[prop]['prop']}\">{DocUtils.shortenURI(hcard[prop]['prop'])}</a> - "
+            if "http" in hcard[prop]:
+                result+=f"<a href=\"{hcard[prop]['value']}\" class=\"{prop}\">{DocUtils.shortenURI(hcard[prop]['value'])}</a></li>"
+            else:
+                if hcard[prop]["prop"] in PersonPage.vcardTohCard:
+                    result += f"<span class=\"{PersonPage.vcardTohCard[hcard[prop]['prop']]}\">{hcard[prop]['value']}</span></li>"
+                else:
+                    result += f"<span class=\"{prop}\">{hcard[prop]['value']}</span></li>"
+        return result+"</ul></td></tr>"
 
     @staticmethod
     def vcardJSONToString(vcard):
@@ -184,16 +198,22 @@ class PersonPage:
         return ["http://xmlns.com/foaf/0.1/Person","http://www.w3.org/2006/vcard/ns#Individual","http://schema.org/Person","http://dbpedia.org/ontology/Person","http://www.wikidata.org/entity/Q5"]
 
     @staticmethod
-    def generatePageWidget(graph, subject, templates, f=None, pageWidget=False):
+    def generatePageWidget(graph, subject, templates, f=None, pageWidget=False,counter=0):
         vcardres=PersonPage.extractPersonMetadata(subject,graph)
         if pageWidget and f is not None:
-            f.write(PersonPage.hcardToHTML(vcardres["vcard"],vcardres["hcard"]))
+            f.write(PersonPage.hcardToHTMLTable(vcardres["vcard"],vcardres["hcard"]))
+        elif not pageWidget and f is not None:
+            f.write(PersonPage.hcardToHTMLTableRow(vcardres["vcard"],vcardres["hcard"],counter))
         return vcardres["vcard"]
 
     @staticmethod
     def generateCollectionWidget(graph, subject,templates, f=None):
-        vcards=[]
+        vcards=""
+        counter=0
+        f.write("<table id=\"person\" class=\"h-card\" border=\"1\"><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>")
         for person in graph.predicate_objects(subject):
             if str(person[0]) in DocConfig.collectionrelationproperties:
-                vcards.append(PersonPage.generatePageWidget(graph,person[1],templates,f,True))
+                vcards+=PersonPage.vcardJSONToString(PersonPage.generatePageWidget(graph,person[1],templates,f,True,counter))
+                counter+=1
+        f.write("</tbody></table><script>$('#person').DataTable();</script><button id=\"vcard\" onclick=\"saveTextAsFile(`" + str(vcards) + "`,'vcard')\">Download VCards</button>")
         return vcards
