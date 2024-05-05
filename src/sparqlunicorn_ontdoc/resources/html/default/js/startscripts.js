@@ -1668,7 +1668,7 @@ function createColorRangeByAttribute(propertyName,geojsonlayer){
     var amountofrelevantitems=0
     var stringitems=0
     var numberitems=0
-    var amountofitems=geojsonlayer.size()
+    //var amountofitems=geojsonlayer.size()
     var maxColors=8
     for(feat of geojsonlayer){
         if(propertyName in feat["properties"]){
