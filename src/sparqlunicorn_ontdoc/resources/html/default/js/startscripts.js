@@ -1629,7 +1629,7 @@ function restyleLayer(propertyName,geojsonLayer) {
     console.log(layerr)
     layerr.eachLayer(function(layer) {
         console.log(layer)
-        thecolor=getColor(layer.feature, propertyName, propertyValue, rangesByAttribute)
+        thecolor=getColor(layer.feature, propertyName, layer.feature.properties[propertyName], rangesByAttribute)
         console.log(thecolor)
         if( layer instanceof L.Marker ) {
             console.log("Is Marker")
