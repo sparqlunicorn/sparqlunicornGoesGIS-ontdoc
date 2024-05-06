@@ -1739,6 +1739,12 @@ function createColorRangeByAttribute(propertyName,geojsonlayer){
             rangesByAttribute[propertyName].push({"label":item,"color":colors[stepcounter%12]})
             stepcounter+=1
         }
+    }else{
+        stepcounter=0
+        for(item of valueset){
+            rangesByAttribute[propertyName].push({"label":item,"color":colors[stepcounter%12]})
+            stepcounter+=1
+        }
     }
     console.log(rangesByAttribute)
     return rangesByAttribute
