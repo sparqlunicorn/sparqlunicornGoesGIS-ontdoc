@@ -1735,13 +1735,13 @@ function createColorRangeByAttribute(propertyName,geojsonlayer){
         }
     }else if(stringitems<amountofrelevantitems){
         stepcounter=0
-        for(item of valueset){
+        for(item in valueset){
             rangesByAttribute[propertyName].push({"label":item,"color":colors[stepcounter%12]})
             stepcounter+=1
         }
     }else{
         stepcounter=0
-        for(item of valueset){
+        for(item in valueset){
             rangesByAttribute[propertyName].push({"label":item,"color":colors[stepcounter%12]})
             stepcounter+=1
         }
