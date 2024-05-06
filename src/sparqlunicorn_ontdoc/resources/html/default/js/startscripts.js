@@ -1650,7 +1650,7 @@ function getColor(feature,propertyName,propertyValue,rangesByAttribute){
             }
         }
     }else{
-        for(rang of propertyValue){
+        for(rang of rangesByAttribute){
             if(rang["label"]==propertyValue){
                 return rang["color"]
             }
