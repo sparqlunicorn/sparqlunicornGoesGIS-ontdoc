@@ -1716,6 +1716,7 @@ function createColorRangeByAttribute(propertyName,geojsonlayer){
             stepcounter+=1
         }
     }
+    console.log(rangesByAttribute)
     return rangesByAttribute
 }
 
