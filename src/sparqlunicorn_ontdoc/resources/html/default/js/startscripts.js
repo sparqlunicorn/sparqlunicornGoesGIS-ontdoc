@@ -1624,13 +1624,19 @@ function restyleLayer(propertyName,geojsonLayer) {
     rangesByAttribute=createColorRangeByAttribute(propertyName,geojsonLayer)
     // Your function that determines a fill color for a particular
     // property name and value.
-    layerr.eachLayer(function (layer) {
+    console.log(layerr)
+    layerr.setStyle({
+            fillColor: getColor(layer.feature,propertyName, propertyValue,rangesByAttribute),
+            fillOpacity: 0.8,
+            weight: 0.5
+    });
+    /*layerr.eachLayer(function (layer) {
         layer.setStyle({
             fillColor: getColor(layer.feature,propertyName, propertyValue,rangesByAttribute),
             fillOpacity: 0.8,
             weight: 0.5
         });
-    });
+    });*/
     //});
 }
 
