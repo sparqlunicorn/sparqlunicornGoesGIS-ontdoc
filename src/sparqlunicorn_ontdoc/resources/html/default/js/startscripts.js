@@ -1643,7 +1643,7 @@ function rangestoLegendHTML(rangesByAttribute){
     for(rang in rangesByAttribute){
         console.log(rang)
         result+="<tr><td><span style=\"width: 20px;height: 20px;border: 1px solid rgba(0, 0, 0, .2);background-color:"+rangesByAttribute[rang]["color"]+"\"></span>"
-        for(therange in rangesByAttribute[rang]){
+        for(therange of rangesByAttribute[rang]){
             if("min" in therange && "max" in therange){
                 result+=therange["min"]+" - "+therange["max"]
             }else{
