@@ -1630,6 +1630,7 @@ function restyleLayer(propertyName,geojsonLayer) {
     layerr.setStyle(function(layer) {
         thecolor=getColor(layer.feature, propertyName, propertyValue, rangesByAttribute)
         if( layer instanceof L.Marker ) {
+            console.log("Update marker with color "+thecolor)
             layer.setIcon(L.divIcon({
                 className: "my-custom-pin",
                 iconAnchor: [0, 24],
