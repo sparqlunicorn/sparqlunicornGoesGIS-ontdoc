@@ -1758,11 +1758,11 @@ function createColorRangeByAttribute(propertyName,geojsonlayer){
             valueset["undefined"]+=1
         }
     }
+    rangesByAttribute[propertyName]=[]
     if(numberitems===amountofrelevantitems){
         myrange=maxamount-minamount
         myrangesteps=myrange/maxColors
         curstep=minamount
-        rangesByAttribute[propertyName]=[]
         stepcounter=0
         while(curstep<maxamount){
             curstepstr=(curstep+"")
