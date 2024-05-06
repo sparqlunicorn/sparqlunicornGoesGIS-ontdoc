@@ -1631,7 +1631,10 @@ function restyleLayer(propertyName,geojsonLayer) {
         thecolor=getColor(layer.feature, propertyName, propertyValue, rangesByAttribute)
         if( layer instanceof L.Marker ) {
             layer.setIcon(L.divIcon({
-                iconSize: "auto",
+                className: "my-custom-pin",
+                iconAnchor: [0, 24],
+                labelAnchor: [-6, 0],
+                popupAnchor: [0, -36],
                 html: "<span id=\"feature\" style=\"background-color: "+thecolor+";width: 3rem;height: 3rem;display: block;left: -1.5rem;top: -1.5rem;position: relative;border-radius: 3rem 3rem 0;transform: rotate(45deg);border: 1px solid #FFFFFF`\"></span>"
             }))
         }
@@ -1931,7 +1934,10 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,date
         layerr=L.geoJSON.css(feature,{
         pointToLayer: function(feature, latlng){
             greenIcon=L.divIcon({
-                iconSize: "auto",
+                className: "my-custom-pin",
+                iconAnchor: [0, 24],
+                labelAnchor: [-6, 0],
+                popupAnchor: [0, -36],
                 html: "<span id=\"feature\" style=\"background-color: black;width: 3rem;height: 3rem;display: block;left: -1.5rem;top: -1.5rem;position: relative;border-radius: 3rem 3rem 0;transform: rotate(45deg);border: 1px solid #FFFFFF`\"></span>"
             })
             /*          var greenIcon = new L.Icon({
