@@ -1643,11 +1643,12 @@ function rangestoLegendHTML(rangesByAttribute){
     for(rang in rangesByAttribute){
         console.log(rang)
         result+="<tr><td><span style=\"width: 20px;height: 20px;border: 1px solid rgba(0, 0, 0, .2);background-color:"+rangesByAttribute[rang]["color"]+"\"></span>"
-        console.log(rangesByAttribute[rang])
-        if("min" in rangesByAttribute[rang] && "max" in rangesByAttribute[rang]){
-            result+=rangesByAttribute[rang]["min"]+" - "+rangesByAttribute[rang]["max"]
-        }else{
-            result+=rangesByAttribute[rang]["label"]
+        for(therange in rangesByAttribute[rang]){
+            if("min" in therange && "max" in therange){
+                result+=therange["min"]+" - "+therange["max"]
+            }else{
+                result+=therange["label"]
+            }
         }
         result+="</td>"
     }
