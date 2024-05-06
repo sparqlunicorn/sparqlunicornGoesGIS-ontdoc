@@ -1635,7 +1635,7 @@ function restyleLayer(propertyName,geojsonLayer) {
                 iconAnchor: [0, 24],
                 labelAnchor: [-6, 0],
                 popupAnchor: [0, -36],
-                html: "<span id=\"feature\" style=\"background-color: "+thecolor+";width: 3rem;height: 3rem;display: block;left: -1.5rem;top: -1.5rem;position: relative;border-radius: 3rem 3rem 0;transform: rotate(45deg);border: 1px solid #FFFFFF`\"></span>"
+                html: "<span id=\"feature\" style=\"background-color: "+thecolor+";width: 1.5rem;height: 1.5rem;display: block;left: -1rem;top: 0rem;position: relative;border-radius: 3rem 3rem 0;transform: rotate(45deg);border: 1px solid #FFFFFF;\"></span>"
             }))
         }
         return {
@@ -1938,13 +1938,8 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,date
                 iconAnchor: [0, 24],
                 labelAnchor: [-6, 0],
                 popupAnchor: [0, -36],
-                html: "<span id=\"feature\" style=\"background-color: black;width: 2rem;height: 2rem;display: block;left: -1.5rem;top: -1.5rem;position: relative;border-radius: 3rem 3rem 0;transform: rotate(45deg);border: 1px solid #FFFFFF`\"></span>"
+                html: "<span style=\"background-color: black;width: 1.5rem;height: 1.5rem;display: block;left: -1rem;top: 0rem;position: relative;border-radius: 3rem 3rem 0;transform: rotate(45deg);border: 1px solid #FFFFFF;\"></span>"
             })
-            /*          var greenIcon = new L.Icon({
-                        iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png',
-                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-                        iconSize: [25, 41],iconAnchor: [12, 41], popupAnchor: [1, -34],shadowSize: [41, 41]
-                    });*/
             themarker=L.marker(latlng, {icon: greenIcon});
             markerlist.push(themarker);
             return themarker
