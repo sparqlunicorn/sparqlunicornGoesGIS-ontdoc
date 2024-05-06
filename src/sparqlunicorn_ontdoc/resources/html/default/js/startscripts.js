@@ -1622,6 +1622,7 @@ function restyleLayer(propertyName,geojsonLayer) {
     //geojsonLayer.eachLayer(function(featureInstanceLayer) {
     propertyValue = geojsonLayer["features"][0]["properties"][propertyName];
     rangesByAttribute=createColorRangeByAttribute(propertyName,geojsonLayer)
+    rangestoLegendHTML(rangesByAttribute)
     // Your function that determines a fill color for a particular
     // property name and value.
     console.log(layerr)
@@ -1632,14 +1633,22 @@ function restyleLayer(propertyName,geojsonLayer) {
             weight:0.5
         }
     });
-    /*layerr.eachLayer(function (layer) {
-        layer.setStyle({
-            fillColor: getColor(layer.feature,propertyName, propertyValue,rangesByAttribute),
-            fillOpacity: 0.8,
-            weight: 0.5
-        });
-    });*/
-    //});
+}
+
+
+function rangestoLegendHTML(rangesByAttribute){
+    result="<table>"
+    for(rang in rangesByAttribute){
+        result+="<tr><td><span style=\"width: 20px;height: 20px;border: 1px solid rgba(0, 0, 0, .2);background-color:"+rangesByAttribute[rang]["color"]+"\"></span>"
+        if("min" in rangesByAttribute[rang] && "max" in rangesByAttribute[rang]){
+            result+=rangesByAttribute[rang]["min"]+" - "+rangesByAttribute[rang]["min"]
+        }else{
+            result+=rangesByAttribute[rang]["label"]
+        }
+        result+="</td>"
+    }
+    result+="</table>"
+    return result
 }
 
 colors=["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00","#cab2d6","#6a3d9a","#ffff99","#b15928"]
@@ -1817,6 +1826,7 @@ function createDropdownOptions(featurecolls){
         }
     }
     if(result.size>0) {
+        legendstr="<table>"
         selectstr = "<select id=\"filterdropdown\"><option value=\"\">None</option>"
         for (item of Array.from(result).sort()) {
             if ((item + "").includes("#")) {
@@ -1825,7 +1835,7 @@ function createDropdownOptions(featurecolls){
                 selectstr += "<option value=\"" + item + "\">" + item.substring(item.lastIndexOf('/') + 1) + "</option>"
             }
         }
-        selectstr += "</select>"
+        selectstr += "</select><div id=\"legend\"></div>"
         var legend = L.control({position: 'topright'});
         legend.onAdd = function (map) {
             var div = L.DomUtil.create('div', 'info legend');
