@@ -1628,8 +1628,11 @@ function restyleLayer(propertyName,geojsonLayer) {
     // property name and value.
     console.log(layerr)
     layerr.eachLayer(function(layer) {
+        console.log(layer)
         thecolor=getColor(layer.feature, propertyName, propertyValue, rangesByAttribute)
+        console.log(thecolor)
         if( layer instanceof L.Marker ) {
+            console.log("Is Marker")
             layer.setIcon(L.divIcon({
                 className: "my-custom-pin",
                 iconAnchor: [0, 24],
@@ -1638,6 +1641,7 @@ function restyleLayer(propertyName,geojsonLayer) {
                 html: "<span id=\"feature\" style=\"background-color: "+thecolor+";width: 1.5rem;height: 1.5rem;display: block;left: -1rem;top: 0rem;position: relative;border-radius: 3rem 3rem 0;transform: rotate(45deg);border: 1px solid #FFFFFF;\"></span>"
             }))
         }else{
+            console.log("No Marker")
             layer.setStyle({
                 fillColor: thecolor,
                 fillOpacity:0.8,
