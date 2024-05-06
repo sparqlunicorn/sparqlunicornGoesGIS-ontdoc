@@ -1651,6 +1651,7 @@ function rangestoLegendHTML(rangesByAttribute){
         }
         result+="</td>"
     }
+    console.log(result)
     result+="</table>"
     return result
 }
