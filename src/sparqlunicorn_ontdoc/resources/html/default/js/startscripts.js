@@ -1639,8 +1639,11 @@ function restyleLayer(propertyName,geojsonLayer) {
 
 function rangestoLegendHTML(rangesByAttribute){
     result="<table>"
+    console.log(rangesByAttribute)
     for(rang in rangesByAttribute){
+        console.log(rang)
         result+="<tr><td><span style=\"width: 20px;height: 20px;border: 1px solid rgba(0, 0, 0, .2);background-color:"+rangesByAttribute[rang]["color"]+"\"></span>"
+        console.log(rangesByAttribute[rang])
         if("min" in rangesByAttribute[rang] && "max" in rangesByAttribute[rang]){
             result+=rangesByAttribute[rang]["min"]+" - "+rangesByAttribute[rang]["max"]
         }else{
@@ -1723,7 +1726,7 @@ function createColorRangeByAttribute(propertyName,geojsonlayer){
         stepcounter=0
         while(curstep<maxamount){
             curstepstr=(curstep+"")
-            rangesByAttribute[propertyName].push({"min":curstep,"max":curstep+myrangesteps,"label":"["+curstep+"-"+(curstep+myrangesteps)+"]","color":colors[stepcounter%12]})
+            rangesByAttribute[propertyName].push({"min":curstep,"max":curstep+myrangesteps,"label":"["+curstep+" - "+(curstep+myrangesteps)+"]","color":colors[stepcounter%12]})
             curstep+=myrangesteps
             stepcounter+=1
         }
