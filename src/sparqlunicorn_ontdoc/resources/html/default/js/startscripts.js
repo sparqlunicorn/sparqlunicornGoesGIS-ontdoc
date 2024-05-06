@@ -1642,17 +1642,17 @@ function getColor(feature,propertyName,propertyValue,rangesByAttribute){
     }
     if(!isNaN(propertyValue)){
         propNum=Number(propertyValue)
-        for(rang of rangesByAttribute){
-            if("min" in rang && "max" in rang){
-                if(propNum>=rang["min"] && propNum<=rang["max"]){
-                    return rang["color"];
+        for(rang in rangesByAttribute){
+            if("min" in rangesByAttribute[rang] && "max" in rangesByAttribute[rang]){
+                if(propNum>=rangesByAttribute[rang]["min"] && propNum<=rangesByAttribute[rang]["max"]){
+                    return rangesByAttribute[rang]["color"];
                 }
             }
         }
     }else{
-        for(rang of rangesByAttribute){
-            if(rang["label"]==propertyValue){
-                return rang["color"]
+        for(rang in rangesByAttribute){
+            if(rangesByAttribute[rang]["label"]==propertyValue){
+                return rangesByAttribute[rang]["color"]
             }
         }
     }
