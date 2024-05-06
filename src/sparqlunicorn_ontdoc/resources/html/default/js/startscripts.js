@@ -1622,7 +1622,7 @@ function restyleLayer(propertyName,geojsonLayer) {
     //geojsonLayer.eachLayer(function(featureInstanceLayer) {
     propertyValue = geojsonLayer["features"][0]["properties"][propertyName];
     rangesByAttribute=createColorRangeByAttribute(propertyName,geojsonLayer)
-    rangestoLegendHTML(rangesByAttribute)
+    document.getElementById("legend").innerHTML=rangestoLegendHTML(rangesByAttribute)
     // Your function that determines a fill color for a particular
     // property name and value.
     console.log(layerr)
