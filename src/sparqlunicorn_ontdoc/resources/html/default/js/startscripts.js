@@ -1629,6 +1629,7 @@ function restyleLayer(propertyName,geojsonLayer) {
     console.log(layerr)
     layerr.setStyle(function(layer) {
         thecolor=getColor(layer.feature, propertyName, propertyValue, rangesByAttribute)
+        console.log(layer)
         if( layer.options.alt=="Marker" ) {
             console.log("Update marker with color "+thecolor)
             layer.setIcon(L.divIcon({
