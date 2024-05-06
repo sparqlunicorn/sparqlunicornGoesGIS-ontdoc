@@ -1624,9 +1624,9 @@ function restyleLayer(propertyName,geojsonLayer) {
     rangesByAttribute=createColorRangeByAttribute(propertyName,geojsonLayer)
     // Your function that determines a fill color for a particular
     // property name and value.
-    layerr.onEachFeature(function (feature, layer) {
-        feature.setStyle({
-            fillColor: getColor(feature,propertyName, propertyValue,rangesByAttribute),
+    layerr.eachLayer(function (layer) {
+        layer.feature.setStyle({
+            fillColor: getColor(layer.feature,propertyName, propertyValue,rangesByAttribute),
             fillOpacity: 0.8,
             weight: 0.5
         });
