@@ -1627,8 +1627,26 @@ function restyleLayer(propertyName,geojsonLayer) {
     // Your function that determines a fill color for a particular
     // property name and value.
     console.log(layerr)
-    layerr.setStyle(function(layer) {
+    layerr.eachLayer(function(layer) {
         thecolor=getColor(layer.feature, propertyName, propertyValue, rangesByAttribute)
+        if( layer instanceof L.Marker ) {
+            layer.setIcon(L.divIcon({
+                className: "my-custom-pin",
+                iconAnchor: [0, 24],
+                labelAnchor: [-6, 0],
+                popupAnchor: [0, -36],
+                html: "<span id=\"feature\" style=\"background-color: "+thecolor+";width: 1.5rem;height: 1.5rem;display: block;left: -1rem;top: 0rem;position: relative;border-radius: 3rem 3rem 0;transform: rotate(45deg);border: 1px solid #FFFFFF;\"></span>"
+            }))
+        }else{
+            layer.setStyle({
+                fillColor: thecolor,
+                fillOpacity:0.8,
+                weight:0.5
+            })
+        }
+    });
+    /*layerr.setStyle(function(layer) {
+
         console.log(layer)
         if( layer.options.alt=="Marker" ) {
             console.log("Update marker with color "+thecolor)
@@ -1645,7 +1663,7 @@ function restyleLayer(propertyName,geojsonLayer) {
             fillOpacity:0.8,
             weight:0.5
         }
-    });
+    });*/
 }
 
 
