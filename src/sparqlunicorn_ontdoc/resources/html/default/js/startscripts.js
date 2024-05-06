@@ -1713,7 +1713,7 @@ function createColorRangeByAttribute(propertyName,geojsonlayer){
         stepcounter=0
         while(curstep<maxamount){
             curstepstr=(curstep+"")
-            rangesByAttribute[propertyName].push({"min":curstep,"max":curstep+myrangesteps,"label":"["+curstep+"-"+curstep+myrangesteps+"]","color":colors[stepcounter%12]})
+            rangesByAttribute[propertyName].push({"min":curstep,"max":curstep+myrangesteps,"label":"["+curstep+"-"+(curstep+myrangesteps)+"]","color":colors[stepcounter%12]})
             curstep+=myrangesteps
             stepcounter+=1
         }
