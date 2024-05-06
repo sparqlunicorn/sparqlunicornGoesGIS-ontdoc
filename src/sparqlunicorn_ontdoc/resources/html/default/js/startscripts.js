@@ -1628,8 +1628,15 @@ function restyleLayer(propertyName,geojsonLayer) {
     // property name and value.
     console.log(layerr)
     layerr.setStyle(function(layer) {
+        thecolor=getColor(layer.feature, propertyName, propertyValue, rangesByAttribute)
+        if( layer instanceof L.Marker ) {
+            layer.setIcon(L.divIcon({
+                iconSize: "auto",
+                html: "<span id=\"feature\" style=\"background-color: "+thecolor+";width: 3rem;height: 3rem;display: block;left: -1.5rem;top: -1.5rem;position: relative;border-radius: 3rem 3rem 0;transform: rotate(45deg);border: 1px solid #FFFFFF`\"></span>"
+            }))
+        }
         return {
-            fillColor: getColor(layer.feature, propertyName, propertyValue, rangesByAttribute),
+            fillColor: thecolor,
             fillOpacity:0.8,
             weight:0.5
         }
@@ -1638,14 +1645,14 @@ function restyleLayer(propertyName,geojsonLayer) {
 
 
 function rangestoLegendHTML(rangesByAttribute){
-    result="<table style=\"border: 1px solid\">"
+    result="<table style=\"border: 1px solid;background-color:grey\">"
     console.log(rangesByAttribute)
     for(rang in rangesByAttribute){
         console.log(rang)
         for(therange of rangesByAttribute[rang]){
              result+="<tr><td><span style=\"width: 20px;height: 20px;border: 5px solid rgba(0, 0, 0, .2);background-color:"+therange["color"]+"\"></span>"
             if("min" in therange && "max" in therange){
-                result+=therange["min"]+" - "+therange["max"]
+                result+=therange["min"]+" <b>-</b> "+therange["max"]
             }else{
                 result+=therange["label"]
             }
@@ -1866,6 +1873,7 @@ function createDropdownOptions(featurecolls){
 var centerpoints=[]
 var clustersfrozen=false
 var layerr;
+var markerlist=[]
 
 function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,dateatt="",ajax=true){
 	if(ajax){
@@ -1922,12 +1930,18 @@ function setupLeaflet(baselayers,epsg,baseMaps,overlayMaps,map,featurecolls,date
         }
         layerr=L.geoJSON.css(feature,{
         pointToLayer: function(feature, latlng){
-                      var greenIcon = new L.Icon({
+            greenIcon=L.divIcon({
+                iconSize: "auto",
+                html: "<span id=\"feature\" style=\"background-color: black;width: 3rem;height: 3rem;display: block;left: -1.5rem;top: -1.5rem;position: relative;border-radius: 3rem 3rem 0;transform: rotate(45deg);border: 1px solid #FFFFFF`\"></span>"
+            })
+            /*          var greenIcon = new L.Icon({
                         iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png',
                         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
                         iconSize: [25, 41],iconAnchor: [12, 41], popupAnchor: [1, -34],shadowSize: [41, 41]
-                    });
-                    return L.marker(latlng, {icon: greenIcon});
+                    });*/
+            themarker=L.marker(latlng, {icon: greenIcon});
+            markerlist.push(themarker);
+            return themarker
         },onEachFeature: function (feature, layer) {layer.bindPopup(generateLeafletPopup(feature, layer))}})
         layername="Content "+counter
         if("name" in feature) {
