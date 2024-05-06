@@ -593,23 +593,23 @@ function setSVGDimensions(){
                 minx=svgbbox.x
             }
         });
-        console.log(""+(minx)+" "+(miny-(maxy-miny))+" "+((maxx-minx)+25)+" "+((maxy-miny)+25))
+        //console.log(""+(minx)+" "+(miny-(maxy-miny))+" "+((maxx-minx)+25)+" "+((maxy-miny)+25))
         newviewport=""+((minx))+" "+(miny)+" "+((maxx-minx)+25)+" "+((maxy-miny)+25)
         $(obj).attr("viewBox",newviewport)
         $(obj).attr("width",((maxx-minx))+10)
         $(obj).attr("height",((maxy-miny)+10))
-        console.log($(obj).hasClass("svgoverlay"))
+        //console.log($(obj).hasClass("svgoverlay"))
         if($(obj).hasClass("svgoverlay")){
             naturalWidth=$(obj).prev().children('img')[0].naturalWidth
             naturalHeight=$(obj).prev().children('img')[0].naturalHeight
             currentWidth=$(obj).prev().children('img')[0].width
             currentHeight=$(obj).prev().children('img')[0].height
-            console.log(naturalWidth+" - "+naturalHeight+" - "+currentWidth+" - "+currentHeight)
+            //console.log(naturalWidth+" - "+naturalHeight+" - "+currentWidth+" - "+currentHeight)
             overlayposX = (currentWidth/naturalWidth) * minx;
             overlayposY = (currentHeight/naturalHeight) * miny;
             overlayposWidth = ((currentWidth/naturalWidth) * maxx)-overlayposX;
             overlayposHeight = ((currentHeight/naturalHeight) * maxy)-overlayposY;
-            console.log(overlayposX+" - "+overlayposY+" - "+overlayposHeight+" - "+overlayposWidth)
+            //console.log(overlayposX+" - "+overlayposY+" - "+overlayposHeight+" - "+overlayposWidth)
             $(obj).css({top: overlayposY+"px", left:overlayposX+"px", position:"absolute"})
             $(obj).attr("height",overlayposHeight)
             $(obj).attr("width",overlayposWidth)
@@ -1261,7 +1261,7 @@ function labelFromURI(uri,label){
 
 function formatHTMLTableForPropertyRelations(propuri,result,propicon){
     dialogcontent="<h3><img src=\""+propicon+"\" height=\"25\" width=\"25\" alt=\"Instance\"/><a href=\""+propuri.replace('/index.json','/index.html')+"\" target=\"_blank\"> "+shortenURI(propuri)+"</a></h3><table border=1 id=classrelationstable><thead><tr><th>Incoming Concept</th><th>Relation</th><th>Outgoing Concept</th></tr></thead><tbody>"
-    console.log(result)
+    //console.log(result)
     if("from" in result) {
         for (instance in result["from"]) {
 //
@@ -1362,9 +1362,9 @@ function formatHTMLTableForResult(result,nodeicon,nodetype){
     dialogcontent=""
     dialogcontent="<h3><img src=\""+nodeicon+"\" height=\"25\" width=\"25\" alt=\"Instance\"/><a href=\""+nodeid.replace('/index.json','/index.html')+"\" target=\"_blank\"> "+nodelabel+"</a></h3><table border=1 id=dataschematable><thead><tr><th>Type</th><th>Relation</th><th>Value</th></tr></thead><tbody>"
     for(res in result){
-        console.log(result)
+        /*console.log(result)
         console.log(result[res])
-        console.log(result[res].size)
+        console.log(result[res].size)*/
         dialogcontent+="<tr>"
         detpropicon=""
         if(res in geoproperties && geoproperties[res]=="ObjectProperty"){
@@ -1563,9 +1563,9 @@ function setupJSTree(){
                 "icon": iconprefix+node.type+"schema.png",
                 "label": "Load dataschema for "+node.type,
                 "action": function (obj) {
-                    console.log(node)
+                    /*console.log(node)
                     console.log(node.id)
-                    console.log(baseurl)
+                    console.log(baseurl)*/
                     if(node.id.includes(baseurl)){
                         getDataSchemaDialog(node)
                     }else if(node.type=="class" || node.type=="halfgeoclass" || node.type=="geoclass" || node.type=="collectionclass"){
@@ -1581,8 +1581,8 @@ function setupJSTree(){
         var node = $(event.target).closest("li");
         var data = node[0].id
         if(data.includes(baseurl)){
-            console.log(node[0].id)
-            console.log(normalizeNodeId(node[0]))
+            //console.log(node[0].id)
+            //console.log(normalizeNodeId(node[0]))
             followLink(normalizeNodeId(node[0]))
         }else{
             window.open(data, '_blank');
@@ -1622,17 +1622,17 @@ function restyleLayer(propertyName,geojsonLayer) {
     //geojsonLayer.eachLayer(function(featureInstanceLayer) {
     propertyValue = geojsonLayer["features"][0]["properties"][propertyName];
     rangesByAttribute=createColorRangeByAttribute(propertyName,geojsonLayer)
-    console.log(rangesByAttribute)
+    //console.log(rangesByAttribute)
     document.getElementById("legend").innerHTML=rangestoLegendHTML(rangesByAttribute)
     // Your function that determines a fill color for a particular
     // property name and value.
-    console.log(layerr)
+    //console.log(layerr)
     layerr.eachLayer(function(layer) {
-        console.log(layer)
+        //console.log(layer)
         thecolor=getColor(layer.feature, propertyName, layer.feature.properties[propertyName], rangesByAttribute)
-        console.log(thecolor)
+        //console.log(thecolor)
         if( layer instanceof L.Marker ) {
-            console.log("Is Marker")
+            //console.log("Is Marker")
             layer.setIcon(L.divIcon({
                 className: "my-custom-pin",
                 iconAnchor: [0, 24],
@@ -1641,7 +1641,7 @@ function restyleLayer(propertyName,geojsonLayer) {
                 html: "<span id=\"feature\" style=\"background-color: "+thecolor+";width: 1.5rem;height: 1.5rem;display: block;left: -1rem;top: 0rem;position: relative;border-radius: 3rem 3rem 0;transform: rotate(45deg);border: 1px solid #FFFFFF;\"></span>"
             }))
         }else{
-            console.log("No Marker")
+            //console.log("No Marker")
             layer.setStyle({
                 fillColor: thecolor,
                 fillOpacity:0.8,
@@ -1649,33 +1649,14 @@ function restyleLayer(propertyName,geojsonLayer) {
             })
         }
     });
-    /*layerr.setStyle(function(layer) {
-
-        console.log(layer)
-        if( layer.options.alt=="Marker" ) {
-            console.log("Update marker with color "+thecolor)
-            layer.setIcon(L.divIcon({
-                className: "my-custom-pin",
-                iconAnchor: [0, 24],
-                labelAnchor: [-6, 0],
-                popupAnchor: [0, -36],
-                html: "<span id=\"feature\" style=\"background-color: "+thecolor+";width: 1.5rem;height: 1.5rem;display: block;left: -1rem;top: 0rem;position: relative;border-radius: 3rem 3rem 0;transform: rotate(45deg);border: 1px solid #FFFFFF;\"></span>"
-            }))
-        }
-        return {
-            fillColor: thecolor,
-            fillOpacity:0.8,
-            weight:0.5
-        }
-    });*/
 }
 
 
 function rangestoLegendHTML(rangesByAttribute){
     result="<table style=\"border: 1px solid;background-color:grey\">"
-    console.log(rangesByAttribute)
+    //console.log(rangesByAttribute)
     for(rang in rangesByAttribute){
-        console.log(rang)
+        //console.log(rang)
         for(therange of rangesByAttribute[rang]){
              result+="<tr><td><span style=\"width: 20px;height: 20px;border: 5px solid rgba(0, 0, 0, .2);background-color:"+therange["color"]+"\"></span>"
             if("min" in therange && "max" in therange){
@@ -1687,7 +1668,7 @@ function rangestoLegendHTML(rangesByAttribute){
         }
 
     }
-    console.log(result)
+    //console.log(result)
     result+="</table>"
     return result
 }
@@ -1703,7 +1684,7 @@ function getColor(feature,propertyName,propertyValue,rangesByAttribute){
         for(therange of rangesByAttribute[propertyName]){
             if("min" in therange && "max" in therange){
                 if(propNum>=therange["min"] && propNum<=therange["max"]){
-                    console.log("COLOR FOUND: "+propertyValue+" ["+therange["min"]+","+therange["max"]+"]: "+therange["color"])
+                    //console.log("COLOR FOUND: "+propertyValue+" ["+therange["min"]+","+therange["max"]+"]: "+therange["color"])
                     return therange["color"];
                 }
             }
@@ -1783,7 +1764,7 @@ function createColorRangeByAttribute(propertyName,geojsonlayer){
             stepcounter+=1
         }
     }
-    console.log(rangesByAttribute)
+    //console.log(rangesByAttribute)
     return rangesByAttribute
 }
 
