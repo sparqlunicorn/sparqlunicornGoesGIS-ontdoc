@@ -1703,6 +1703,7 @@ function getColor(feature,propertyName,propertyValue,rangesByAttribute){
         for(therange of rangesByAttribute[propertyName]){
             if("min" in therange && "max" in therange){
                 if(propNum>=therange["min"] && propNum<=therange["max"]){
+                    console.log("COLOR FOUND: "+propertyValue+" ["+therange["min"]+","+therange["max"]+"]: "+therange["color"])
                     return therange["color"];
                 }
             }
