@@ -96,6 +96,7 @@ class GeometryViewPage:
                         elif isinstance(geoinstance[1],URIRef):
                             foundunit=None
                             foundval=None
+                            print("RESOLVE UNIT FROM: "+str(geoinstance[1]))
                             DocUtils.resolveUnitValue(graph,geoinstance[1],None,str(geoinstance[1]),foundunit,foundval)
                             print("FOUNDVAL: "+str(foundval)+" FOUNDUNIT: "+str(foundunit))
                             if foundval is not None:
