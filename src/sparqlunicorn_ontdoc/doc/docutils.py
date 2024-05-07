@@ -189,8 +189,15 @@ class DocUtils:
             for valtup in graph.predicate_objects(obj):
                 if str(valtup[0]) in DocConfig.unitproperties:
                     foundunit = str(valtup[1])
-                elif str(valtup[0]) in DocConfig.valueproperties and isinstance(valtup[1], Literal):
-                    foundval = str(valtup[1])
+                elif str(valtup[0]) in DocConfig.valueproperties:
+                    if isinstance(valtup[1], Literal):
+                        foundval = str(valtup[1])
+                    elif isinstance(valtup[1], URIRef):
+                        for tup2 in graph.predicate_objects(valtup[1]):
+                            if str(tup2[0]) in DocConfig.unitproperties:
+                                foundunit = str(tup2[1])
+                            elif str(tup2[0]) in DocConfig.valueproperties:
+                                foundval=str(tup2[1])
         return [foundval,foundunit]
 
 
