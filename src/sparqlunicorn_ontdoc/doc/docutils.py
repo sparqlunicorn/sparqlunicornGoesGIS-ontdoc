@@ -181,7 +181,7 @@ class DocUtils:
                         elif str(valtup[0]) in DocConfig.valueproperties and (
                                 isinstance(valtup[1], Literal) or isinstance(valtup[1], URIRef)):
                             foundval = str(valtup[1])
-        elif DocConfig.valueproperties[tuppredstr] == "DatatypeProperty":
+        elif tuppredstr is not None and DocConfig.valueproperties[tuppredstr] == "DatatypeProperty":
             if tuppredstr in DocConfig.valueproperties and isinstance(obj, Literal):
                 foundval = tupobjstr
         else:
