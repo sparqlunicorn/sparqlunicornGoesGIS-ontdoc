@@ -169,7 +169,7 @@ class DocUtils:
     def resolveUnitValue(graph,obj,tuppredstr,tupobjstr,foundval,foundunit):
         if tuppredstr == "http://www.w3.org/ns/oa#hasSource":
             foundval = tupobjstr
-        elif tuppredstr != "http://www.w3.org/ns/oa#hasSource" and DocConfig.valueproperties[
+        elif tuppredstr is not None and tuppredstr != "http://www.w3.org/ns/oa#hasSource" and DocConfig.valueproperties[
             tuppredstr] == "DatatypeProperty" and (isinstance(obj, Literal) or isinstance(obj, URIRef)):
             foundval = tupobjstr
         elif tuppredstr == "http://www.w3.org/ns/oa#hasTarget":
