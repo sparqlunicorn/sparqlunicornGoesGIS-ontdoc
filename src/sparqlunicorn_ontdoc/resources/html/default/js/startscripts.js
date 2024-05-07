@@ -1646,7 +1646,7 @@ function restyleLayer(propertyName,geojsonLayer) {
                 fillColor: thecolor,
                 color: thecolor,
                 fillOpacity:0.8,
-                weight:1
+                weight:2
             })
         }
     });
