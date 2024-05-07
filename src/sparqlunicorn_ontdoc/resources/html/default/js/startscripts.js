@@ -1654,7 +1654,7 @@ function restyleLayer(propertyName,geojsonLayer) {
 
 
 function rangestoLegendHTML(rangesByAttribute){
-    result="<table style=\"border: 1px solid;background-color:grey\">"
+    result="<table style=\"border: 1px solid;background-color:#d3d3d3\">"
     //console.log(rangesByAttribute)
     for(rang in rangesByAttribute){
         //console.log(rang)
