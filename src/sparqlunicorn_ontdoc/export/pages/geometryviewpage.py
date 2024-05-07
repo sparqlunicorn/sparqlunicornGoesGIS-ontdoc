@@ -96,11 +96,7 @@ class GeometryViewPage:
                         elif isinstance(geoinstance[1],URIRef):
                             foundunit=None
                             foundval=None
-                            for valtup in graph.predicate_objects(geoinstance[1]):
-                                if str(valtup[0]) in DocConfig.unitproperties:
-                                    foundunit = str(valtup[1])
-                                elif str(valtup[0]) in DocConfig.valueproperties and isinstance(valtup[1], Literal):
-                                    foundval = str(valtup[1])
+                            DocUtils.resolveUnitValue(graph,geoinstance[1],None,str(geoinstance[1]),foundunit,foundval)
                             if foundval is not None:
                                 properties[str(geoinstance[0])+".value"]=foundval
                             if foundunit is not None:
