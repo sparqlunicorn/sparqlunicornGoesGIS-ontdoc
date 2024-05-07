@@ -1644,6 +1644,7 @@ function restyleLayer(propertyName,geojsonLayer) {
             //console.log("No Marker")
             layer.setStyle({
                 fillColor: thecolor,
+                color: thecolor,
                 fillOpacity:0.8,
                 weight:0.5
             })
