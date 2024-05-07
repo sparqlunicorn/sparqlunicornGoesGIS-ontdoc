@@ -167,6 +167,7 @@ class DocUtils:
 
     @staticmethod
     def resolveUnitValue(graph,obj,tuppredstr,tupobjstr,foundval,foundunit):
+        print("RESOLVE UNIT VALUE: "+str(obj))
         if tuppredstr == "http://www.w3.org/ns/oa#hasSource":
             foundval = tupobjstr
         elif tuppredstr is not None and tuppredstr != "http://www.w3.org/ns/oa#hasSource" and DocConfig.valueproperties[
