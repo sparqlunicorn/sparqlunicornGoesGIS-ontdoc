@@ -548,7 +548,9 @@ class HTMLExporter():
                 annosource = tupobjstr
                 #print("Found annosource " + tupobjstr + " from " + str(object) + " Imageannos: " + str(len(imageannos)))
             elif tuppredstr in DocConfig.valueproperties:
-                DocUtils.resolveUnitValue(graph,tup[1],tuppredstr,tupobjstr,foundval,foundunit)
+                res=DocUtils.resolveUnitValue(graph,tup[1],tuppredstr,tupobjstr,foundval,foundunit)
+                foundval=res[0]
+                foundunit=res[1]
                 """
                 if tempvalprop is None and tuppredstr == "http://www.w3.org/ns/oa#hasSource":
                     tempvalprop = tuppredstr
