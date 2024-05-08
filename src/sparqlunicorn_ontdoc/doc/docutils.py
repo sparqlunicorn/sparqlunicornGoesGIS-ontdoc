@@ -190,7 +190,7 @@ class DocUtils:
                 if str(valtup[0]) in DocConfig.unitproperties:
                     foundunit = str(valtup[1])
                 elif str(valtup[0]) in DocConfig.valueproperties:
-                    print("Valtup[0]: "+str(valtup[0]))
+                    #print("Valtup[0]: "+str(valtup[0]))
                     if isinstance(valtup[1], Literal):
                         foundval = str(valtup[1])
                     elif isinstance(valtup[1], URIRef):
