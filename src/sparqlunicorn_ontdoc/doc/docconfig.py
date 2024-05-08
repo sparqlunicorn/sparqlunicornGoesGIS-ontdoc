@@ -286,6 +286,14 @@ class DocConfig:
         "https://www.w3.org/ns/activitystreams#partOf":"ObjectProperty"
     }
 
+    strictvalueproperties={
+        "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": "DatatypeProperty",
+        "http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue": "ObjectProperty",
+        "http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue": "DatatypeProperty",
+        "http://www.w3.org/ns/sosa/hasResult": "ObjectProperty",
+        "http://www.w3.org/ns/sosa/hasSimpleResult": "DatatypeProperty"
+    }
+
     valueproperties={
         "http://www.w3.org/1999/02/22-rdf-syntax-ns#value":"DatatypeProperty",
         "http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue":"ObjectProperty",
