@@ -6,7 +6,6 @@ import urllib.request
 
 from doc.docconfig import DocConfig
 from datetime import date
-from export.pages.bibpage import BibPage
 
 
 class DocUtils:
@@ -393,13 +392,3 @@ class DocUtils:
             except Exception as e:
                 print(e)
         return graph
-
-
-    @staticmethod
-    def generateCitationLinkForURI(graph,uri):
-        bibtex=BibPage.resolveBibtexReference(graph.predicate_objects(URIRef(uri)),URIRef(uri),graph)
-        bibtex=bibtex[:bibtex.rfind('\n')]
-        bibtex+="\nurl=\""+str(uri)+"\","
-        bibtex+="\nnote=\"[Online; page generated "+str(datetime.today().strftime('%d-%m-%Y'))+"]\""
-        bibtex+="\n}"
-        return bibtex
