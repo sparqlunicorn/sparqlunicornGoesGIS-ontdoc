@@ -46,7 +46,6 @@ class DocUtils:
             .replace("{{publishingorg}}", pubconfig["publishingorg"]).replace("{{publisher}}", pubconfig["publisher"]).replace(
             "{{datasettitle}}", pubconfig["datasettitle"]) \
             .replace("{{logo}}", pubconfig["logourl"])
-        template=template.replace("{{citationlink}}","")
         return template
 
     @staticmethod
