@@ -323,7 +323,7 @@ class HTMLExporter():
             relpath = DocUtils.generateRelativePathFromGivenDepth(checkdepth)
             if not foundlabel:
                 foundlabel = DocUtils.shortenURI(str(subject))
-            f.write(DocUtils.replaceStandardVariables(self.templates["htmltemplate"], subject, checkdepth, "false",self.pubconfig,foundlabel).replace(
+            f.write(DocUtils.replaceStandardVariables(self.templates["htmltemplate"], subject, checkdepth, "false",self.pubconfig).replace(
                 "{{iconprefixx}}", (relpath + "icons/" if self.pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",baseurl).replace(
                 "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace(
                 "{{relativedepth}}", str(checkdepth)).replace("{{prefixpath}}", self.pubconfig["prefixns"]).replace(
