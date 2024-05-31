@@ -5,6 +5,8 @@ import shutil
 import urllib.request
 
 from doc.docconfig import DocConfig
+from datetime import date
+from export.pages.bibpage import BibPage
 
 
 class DocUtils:
@@ -45,7 +47,12 @@ class DocUtils:
             .replace("{{publishingorg}}", pubconfig["publishingorg"]).replace("{{publisher}}", pubconfig["publisher"]).replace(
             "{{datasettitle}}", pubconfig["datasettitle"]) \
             .replace("{{logo}}", pubconfig["logourl"])
+        template=template.replace("{{citationlink}}","")
         return template
+
+    @staticmethod
+    def replaceCitationLink(template, foundlabel,uri,pubconfig):
+        return template.replace("{{citationlink}}","<details><summary>[CITE]</summary><pre>@misc{"+DocUtils.shortenURI(uri)+"\nauthor=\""+str(pubconfig["datasettitle"])+" Contributors+\"\n,title=\""+str(foundlabel)+"\",\n\"url=\""+str(uri)+"\",\nnote=\"[Online; documentation generated at "+str(date.today())+"]\"}</pre></details>")
 
     @staticmethod
     def getLDFilesFromFolder(folder):
@@ -386,3 +393,13 @@ class DocUtils:
             except Exception as e:
                 print(e)
         return graph
+
+
+    @staticmethod
+    def generateCitationLinkForURI(graph,uri):
+        bibtex=BibPage.resolveBibtexReference(graph.predicate_objects(URIRef(uri)),URIRef(uri),graph)
+        bibtex=bibtex[:bibtex.rfind('\n')]
+        bibtex+="\nurl=\""+str(uri)+"\","
+        bibtex+="\nnote=\"[Online; page generated "+str(datetime.today().strftime('%d-%m-%Y'))+"]\""
+        bibtex+="\n}"
+        return bibtex

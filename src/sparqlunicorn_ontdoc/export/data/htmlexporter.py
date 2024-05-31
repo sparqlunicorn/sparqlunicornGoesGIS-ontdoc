@@ -312,13 +312,10 @@ class HTMLExporter():
             searchfilelink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, searchfilename, False)
             classtreelink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, classtreename, False)
             csslink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "style.css", False)
-            startscriptlink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "startscripts.js",
-                                                                          False)
-            proprelationslink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "proprelations.js",
-                                                                            False)
+            startscriptlink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "startscripts.js",False)
+            proprelationslink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "proprelations.js",False)
             epsgdefslink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "epsgdefs.js", False)
-            vowlresultlink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "vowl_result.js",
-                                                                         False)
+            vowlresultlink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, "vowl_result.js",False)
             if geojsonrep is not None:
                 myexports = self.templates["geoexports"]
             else:
@@ -326,7 +323,7 @@ class HTMLExporter():
             relpath = DocUtils.generateRelativePathFromGivenDepth(checkdepth)
             if not foundlabel:
                 foundlabel = DocUtils.shortenURI(str(subject))
-            f.write(DocUtils.replaceStandardVariables(self.templates["htmltemplate"], subject, checkdepth, "false",self.pubconfig).replace(
+            f.write(DocUtils.replaceStandardVariables(self.templates["htmltemplate"], subject, checkdepth, "false",self.pubconfig,foundlabel).replace(
                 "{{iconprefixx}}", (relpath + "icons/" if self.pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",baseurl).replace(
                 "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace(
                 "{{relativedepth}}", str(checkdepth)).replace("{{prefixpath}}", self.pubconfig["prefixns"]).replace(
@@ -471,6 +468,7 @@ class HTMLExporter():
                 "{{exports}}",
                 myexports).replace(
                 "{{license}}", curlicense).replace("{{bibtex}}", "").replace("{{stats}}", "")
+            tempfoot=DocUtils.replaceCitationLink(tempfoot,foundlabel,subject,self.pubconfig)
             tempfoot = DocUtils.conditionalArrayReplace(tempfoot,
                                                         [True, self.pubconfig["apis"]["ogcapifeatures"], self.pubconfig["apis"]["iiif"],
                                                          self.pubconfig["apis"]["ckan"]],
