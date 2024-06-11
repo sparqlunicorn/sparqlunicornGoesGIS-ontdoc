@@ -32,6 +32,7 @@ from export.data.vowlexporter import OWL2VOWL
 from export.api.iiifexporter import IIIFAPIExporter
 from export.api.ogcapifeaturesexporter import OGCAPIFeaturesExporter
 from export.api.ckanexporter import CKANExporter
+from export.api.wfsexporter import WFSExporter
 from export.api.solidexporter import SolidExporter
 
 import argparse
@@ -336,6 +337,7 @@ class OntDocGeneration:
                 "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "")
             OGCAPIFeaturesExporter.generateOGCAPIFeaturesPages(outpath, self.pubconfig["deploypath"], self.htmlexporter.featurecollectionspaths,
                                                                self.pubconfig["prefixns"], self.pubconfig["apis"]["ogcapifeatures"], True)
+            WFSExporter.generateWFSPages(outpath,self.pubconfig["deploypath"], self.htmlexporter.featurecollectionspaths,self.licenseuri)
             indexhtml += "<p>This page shows feature collections present in the linked open data export</p><script src=\"features.js\"></script>"
             indexhtml += templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace(
                 "var featurecolls = {{myfeature}}", "").replace("{{relativepath}}",
