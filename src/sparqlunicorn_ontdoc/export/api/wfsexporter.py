@@ -7,8 +7,7 @@ class WFSExporter:
     def generateWFSPages(outpath,deploypath, featurecollectionspaths,license):
         #os.mkdir(outpath+"/wfs")
         apihtml = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><metaname=\"description\" content=\"SwaggerUI\"/><title>SwaggerUI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist/swagger-ui.css\" /></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js\" crossorigin></script><script>const swaggerUrl = \"" + str(
-            deploypath) + "/api/index.json\"; const apiUrl = \"" + str(
-            deploypath) + "/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
+            deploypath) + "/api/index.json\"; const apiUrl = \"" + str(deploypath) + "/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
         apijson = {"openapi": "3.0.1", "info": {"title": str(deploypath) + " Feature Collections",
                                                 "description": "Feature Collections of " + str(deploypath)},
                    "servers": [{"url": str(deploypath)}], "paths": {}}
@@ -40,13 +39,11 @@ class WFSExporter:
         </wfs:Capability>
         <wfs:FeatureTypeList><wfs:Operations><wfs:Query/></wfs:Operations>
         """
-
         for coll in featurecollectionspaths:
             curcoll = None
             if os.path.exists(coll):
                 with open(coll, 'r', encoding="utf-8") as infile:
                     curcoll = json.load(infile)
-
                 curftype=f"""
                     <wfs:FeatureType>
             <wfs:Name>{str(coll.replace(outpath,"").replace("index.geojson", "").replace(".geojson", "")[1:]).rstrip("/")}</wfs:Name>
@@ -63,6 +60,7 @@ class WFSExporter:
             curftype+="</wfs:FeatureType>"
             getcapabilities+=curftype+"\n"
         getcapabilities += f"""</wfs:FeatureTypeList><ogc:Filter_Capabilities></ogc:Filter_Capabilities><wfs:WFS_Capabilities>"""
+        print("SAVE WFS GETCAPABILITIES: "+str(outpath + "/wfs?request=GetCapabilities&service=WFS&version=1.0.0"))
         f = open(outpath + "/wfs?request=GetCapabilities&service=WFS&version=1.0.0", "w", encoding="utf-8")
         f.write(getcapabilities)
         f.close()
