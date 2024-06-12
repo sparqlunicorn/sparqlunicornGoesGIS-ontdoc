@@ -11,33 +11,36 @@ class WFSExporter:
         apijson = {"openapi": "3.0.1", "info": {"title": str(deploypath) + " Feature Collections",
                                                 "description": "Feature Collections of " + str(deploypath)},
                    "servers": [{"url": str(deploypath)}], "paths": {}}
-        getcapabilities=f"""
-        <wfs:WFS_Capabilities xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:BAYSIS_Strassennetz="https://www.baysis.bayern.de/gis/admin/services/BAYSIS_Strassennetz/MapServer/WFSServer" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-capabilities.xsd https://www.baysis.bayern.de/gis/admin/services/BAYSIS_Strassennetz/MapServer/WFSServer https://www.baysis.bayern.de/gis/services/wfs/BAYSIS_Strassennetz/MapServer/WFSServer?service=wfs%26version=1.0.0%26request=DescribeFeatureType" version="1.0.0">
-            <wfs:Service>
-            <wfs:Name>Static WFS</wfs:Name>
-            <wfs:Title>Static WFS for {deploypath}</wfs:Title>
-            <wfs:Abstract>This Static WFS exposes geodata included in the knowledge grap for the inclusion into GIS applications.</wfs:Abstract>
-            <wfs:Keywords>{deploypath}</wfs:Keywords>
-            <wfs:OnlineResource>{deploypath}</wfs:OnlineResource>
-            <wfs:Fees>none</wfs:Fees>
-            <wfs:AccessConstraints>{license}</wfs:AccessConstraints>
-            </wfs:Service>
-            <wfs:Capability>
-            <wfs:Request>
-            <wfs:GetCapabilities><wfs:DCPType><wfs:HTTP><wfs:Get onlineResource="{deploypath}/wfs?"/></wfs:HTTP></wfs:DCPType>
-                        <wfs:DCPType><wfs:HTTP><wfs:Post onlineResource="{deploypath}/wfs?"/></wfs:HTTP></wfs:DCPType>
+        getcapabilities=f"""<?xml version="1.0" encoding="UTF-8" ?>
+<wfs:WFS_Capabilities xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-capabilities.xsd https://www.baysis.bayern.de/gis/admin/services/BAYSIS_Strassennetz/MapServer/WFSServer https://www.baysis.bayern.de/gis/services/wfs/BAYSIS_Strassennetz/MapServer/WFSServer?service=wfs%26version=1.0.0%26request=DescribeFeatureType" version="1.0.0">
+    <wfs:Service>
+        <wfs:Name>Static WFS</wfs:Name>
+        <wfs:Title>Static WFS for {deploypath}</wfs:Title>
+        <wfs:Abstract>This Static WFS exposes geodata included in the knowledge grap for the inclusion into GIS applications.</wfs:Abstract>
+        <wfs:Keywords>{deploypath}</wfs:Keywords>
+        <wfs:OnlineResource>{deploypath}</wfs:OnlineResource>
+        <wfs:Fees>none</wfs:Fees>
+        <wfs:AccessConstraints>{license}</wfs:AccessConstraints>
+    </wfs:Service>
+    <wfs:Capability>
+        <wfs:Request>
+            <wfs:GetCapabilities>
+                <wfs:DCPType><wfs:HTTP><wfs:Get onlineResource="{deploypath}/wfs?"/></wfs:HTTP></wfs:DCPType>
+                <wfs:DCPType><wfs:HTTP><wfs:Post onlineResource="{deploypath}/wfs?"/></wfs:HTTP></wfs:DCPType>
             </wfs:GetCapabilities>
-            <wfs:DescribeFeatureType><wfs:SchemaDescriptionLanguage><wfs:XMLSCHEMA/></wfs:SchemaDescriptionLanguage>
-                        <wfs:DCPType><wfs:HTTP><wfs:Get onlineResource="{deploypath}/wfs?"/></wfs:HTTP></wfs:DCPType>
-                        <wfs:DCPType><wfs:HTTP><wfs:Post onlineResource="{deploypath}/wfs"/></wfs:HTTP></wfs:DCPType>
+            <wfs:DescribeFeatureType>
+                <wfs:SchemaDescriptionLanguage><wfs:XMLSCHEMA/></wfs:SchemaDescriptionLanguage>
+                <wfs:DCPType><wfs:HTTP><wfs:Get onlineResource="{deploypath}/wfs?"/></wfs:HTTP></wfs:DCPType>
+                <wfs:DCPType><wfs:HTTP><wfs:Post onlineResource="{deploypath}/wfs"/></wfs:HTTP></wfs:DCPType>
             </wfs:DescribeFeatureType>
-            <wfs:GetFeature><wfs:ResultFormat><wfs:JSON/></wfs:ResultFormat>
-                        <wfs:DCPType><wfs:HTTP><wfs:Get onlineResource="{deploypath}/wfs?"/></wfs:HTTP></wfs:DCPType>
-                        <wfs:DCPType><wfs:HTTP><wfs:Post onlineResource="{deploypath}/wfs"/></wfs:HTTP></wfs:DCPType>
+            <wfs:GetFeature>
+                <wfs:ResultFormat><wfs:JSON/></wfs:ResultFormat>
+                <wfs:DCPType><wfs:HTTP><wfs:Get onlineResource="{deploypath}/wfs?"/></wfs:HTTP></wfs:DCPType>
+                <wfs:DCPType><wfs:HTTP><wfs:Post onlineResource="{deploypath}/wfs"/></wfs:HTTP></wfs:DCPType>
             </wfs:GetFeature>
-            </wfs:Request>
-        </wfs:Capability>
-        <wfs:FeatureTypeList><wfs:Operations><wfs:Query/></wfs:Operations>
+        </wfs:Request>
+    </wfs:Capability>
+    <wfs:FeatureTypeList><wfs:Operations><wfs:Query/></wfs:Operations>
         """
         for coll in featurecollectionspaths:
             curcoll = None
@@ -46,9 +49,9 @@ class WFSExporter:
                     curcoll = json.load(infile)
                 curftype=f"""
                     <wfs:FeatureType>
-            <wfs:Name>{str(coll.replace(outpath,"").replace("index.geojson", "").replace(".geojson", "")[1:]).rstrip("/")}</wfs:Name>
-            <wfs:Title>{str(coll.replace(outpath,"").replace("index.geojson", "").replace(".geojson", "")[1:]).rstrip("/")}</wfs:Title>
-            <wfs:Abstract>FeatureCollection {str(coll.replace(outpath,"").replace("index.geojson", "").replace(".geojson", "")[1:]).rstrip("/")}</wfs:Abstract>
+            <wfs:Name>{str(coll.replace(outpath,"").replace("index.geojson", "").replace(".geojson", "")).rstrip("/")}</wfs:Name>
+            <wfs:Title>{str(coll.replace(outpath,"").replace("index.geojson", "").replace(".geojson", "")).rstrip("/")}</wfs:Title>
+            <wfs:Abstract>FeatureCollection {str(coll.replace(outpath,"").replace("index.geojson", "").replace(".geojson", "")).rstrip("/")}</wfs:Abstract>
             """
             if "crs" in curcoll:
                 curftype+=f"""<wfs:SRS>{curcoll["crs"]}</wfs:SRS>"""
@@ -59,7 +62,9 @@ class WFSExporter:
                 curftype+=f"""<wfs:LatLongBoundingBox minx="{bboxcoords[0]}" miny="{bboxcoords[1]}" maxx="{bboxcoords[2]}" maxy="{bboxcoords[3]}"/>"""
             curftype+="</wfs:FeatureType>"
             getcapabilities+=curftype+"\n"
-        getcapabilities += f"""</wfs:FeatureTypeList><ogc:Filter_Capabilities></ogc:Filter_Capabilities><wfs:WFS_Capabilities>"""
+        getcapabilities += f"""</wfs:FeatureTypeList>
+    <ogc:Filter_Capabilities></ogc:Filter_Capabilities>
+<wfs:WFS_Capabilities>"""
         print("SAVE WFS GETCAPABILITIES: "+str(outpath + "/wfs?request=GetCapabilities&service=WFS&version=1.0.0"))
         f = open(outpath + "/wfs?request=GetCapabilities&service=WFS&version=1.0.0", "w", encoding="utf-8")
         f.write(getcapabilities)
