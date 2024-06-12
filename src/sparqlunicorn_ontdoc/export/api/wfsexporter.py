@@ -64,7 +64,7 @@ class WFSExporter:
             getcapabilities+=curftype+"\n"
         getcapabilities += f"""</wfs:FeatureTypeList>
     <ogc:Filter_Capabilities></ogc:Filter_Capabilities>
-<wfs:WFS_Capabilities>"""
+</wfs:WFS_Capabilities>"""
         print("SAVE WFS GETCAPABILITIES: "+str(outpath + "/wfs?request=GetCapabilities&service=WFS&version=1.0.0"))
         f = open(outpath + "/wfs?request=GetCapabilities&service=WFS&version=1.0.0", "w", encoding="utf-8")
         f.write(getcapabilities)
