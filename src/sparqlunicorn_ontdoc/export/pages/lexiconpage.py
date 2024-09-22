@@ -2,6 +2,7 @@ from rdflib import URIRef, Literal
 from doc.docutils import DocUtils
 from doc.docconfig import DocConfig
 from export.pages.page import Page
+from ...doc.docconfig import DocConfig
 
 
 class LexiconPage(Page):
@@ -57,11 +58,11 @@ class LexiconPage(Page):
             f.write(f"<table id=\"lexicon\">{LexiconPage.tableheader}<tbody>")
         f.write("<tr><td><a href=\""+str(subject)+"\" target=\"_blank\">"+str(lexentry["lemma"])+"</a></td>")
         if "http" in lexentry["lexcat"]:
-            f.write("<td><a href=\""+str(lexentry["lexcat"])+"\">" + str(lexentry["lexcat"]) + "</a></td>")
+            f.write("<td><a href=\""+str(lexentry["lexcat"])+"\">" + DocUtils.shortenURI(str(lexentry["lexcat"])) + "</a></td>")
         else:
             f.write("<td>"+str(lexentry["lexcat"])+"</td>")
         if "http" in lexentry["language"]:
-            f.write("<td><a href=\""+str(lexentry["language"])+"\">" + str(lexentry["language"]) + "</a></td><td>")
+            f.write("<td><a href=\""+str(lexentry["language"])+"\">" + DocUtils.shortenURI(str(lexentry["language"])) + "</a></td><td>")
         else:
             f.write("<td>"+str(lexentry["language"])+"</td><td>")
         for form in lexentry["forms"]:
