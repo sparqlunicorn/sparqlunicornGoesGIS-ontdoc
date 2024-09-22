@@ -79,7 +79,7 @@ class LexiconPage(Page):
             for lexentry in graph.objects(subject, URIRef("http://www.w3.org/ns/lemon/lime#entry"), True):
                 LexiconPage.generatePageWidget(graph,lexentry,f,True)
                 count+=1
-        f.write("</tbody></table>")
+        f.write("</tbody></table><script>$('#lexicon').DataTable();</script>")
 
     def generatePageView(self,templates,g,f):
         print("PageView")
