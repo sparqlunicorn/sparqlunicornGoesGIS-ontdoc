@@ -2,7 +2,6 @@ from rdflib import URIRef, Literal
 from doc.docutils import DocUtils
 from doc.docconfig import DocConfig
 from export.pages.page import Page
-from ...doc.docconfig import DocConfig
 
 
 class LexiconPage(Page):
