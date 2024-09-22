@@ -55,7 +55,15 @@ class LexiconPage(Page):
         lexentry=LexiconPage.extractLexEntry(graph,subject)
         if not onlybody:
             f.write(f"<table id=\"lexicon\">{LexiconPage.tableheader}<tbody>")
-        f.write("<tr><td><a href=\""+str(subject)+"\" target=\"_blank\">"+str(lexentry["lemma"])+"</a></td><td>"+str(lexentry["lexcat"])+"</td><td>"+str(lexentry["language"])+"</td><td>")
+        f.write("<tr><td><a href=\""+str(subject)+"\" target=\"_blank\">"+str(lexentry["lemma"])+"</a></td>")
+        if "http" in lexentry["lexcat"]:
+            f.write("<td><a href=\""+str(lexentry["lexcat"])+"\">" + str(lexentry["lexcat"]) + "</a></td>")
+        else:
+            f.write("<td>"+str(lexentry["lexcat"])+"</td>")
+        if "http" in lexentry["language"]:
+            f.write("<td><a href=\""+str(lexentry["language"])+"\">" + str(lexentry["language"]) + "</a></td><td>")
+        else:
+            f.write("<td>"+str(lexentry["language"])+"</td><td>")
         for form in lexentry["forms"]:
             f.write(f"<a href=\"{form['uri']}\" target=\"_blank\">{form['label']}</a> ")
         f.write("</td><td>")
