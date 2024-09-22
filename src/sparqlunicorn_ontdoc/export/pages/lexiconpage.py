@@ -31,7 +31,7 @@ class LexiconPage(Page):
                 label=None
                 senseref=""
                 for senseprop in graph.predicate_objects(lexprop[1], True):
-                    if str(senseprop[0]) in DocUtils.labelproperties and isinstance(senseprop[1],Literal):
+                    if str(senseprop[0]) in DocConfig.labelproperties and isinstance(senseprop[1],Literal):
                         label=senseprop[1]
                     if str(senseprop[0])=="http://www.w3.org/ns/lemon/ontolex#reference":
                         senseref=senseprop[1]
@@ -39,7 +39,7 @@ class LexiconPage(Page):
             elif lexpredstr == "http://www.w3.org/ns/lemon/ontolex#lexicalForm" or lexpredstr == "http://www.w3.org/ns/lemon/ontolex#form":
                 label=None
                 for formprop in graph.predicate_objects(lexprop[1], True):
-                    if str(formprop[0]) in DocUtils.labelproperties and isinstance(formprop[1], Literal):
+                    if str(formprop[0]) in DocConfig.labelproperties and isinstance(formprop[1], Literal):
                         label = formprop[1]
                 forms.append({"uri": lexobjstr, "label": label})
             elif lexpredstr == "http://www.w3.org/ns/lemon/ontolex#lemma" or lexpredstr == "http://www.w3.org/ns/lemon/ontolex#canonicalForm":
