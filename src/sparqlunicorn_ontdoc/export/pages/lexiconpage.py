@@ -10,7 +10,7 @@ class LexiconPage(Page):
 
     @staticmethod
     def collectionConstraint():
-        return ["http://www.w3.org/ns/lemon/lime#Lexicon"]
+        return ["http://www.w3.org/ns/lemon/lime#Lexicon","http://www.w3.org/ns/lemon/lexicog#LexicographicResource"]
 
     @staticmethod
     def pageWidgetConstraint():
@@ -71,8 +71,14 @@ class LexiconPage(Page):
     @staticmethod
     def generateCollectionWidget(graph,subject,templates,f):
         f.write(f"<table id=\"lexicon\">{LexiconPage.tableheader}<tbody>")
+        count=0
         for lexentry in graph.objects(subject, URIRef("http://www.w3.org/ns/lemon/lexicog#entry"), True):
             LexiconPage.generatePageWidget(graph,lexentry,f,True)
+            count+=1
+        if count==0:
+            for lexentry in graph.objects(subject, URIRef("http://www.w3.org/ns/lemon/lime#entry"), True):
+                LexiconPage.generatePageWidget(graph,lexentry,f,True)
+                count+=1
         f.write("</tbody></table>")
 
     def generatePageView(self,templates,g,f):
