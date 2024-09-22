@@ -57,11 +57,11 @@ class LexiconPage(Page):
             f.write(f"<table id=\"lexicon\">{LexiconPage.tableheader}<tbody>")
         f.write("<tr><td><a href=\""+str(subject)+"\" target=\"_blank\">"+str(lexentry["lemma"])+"</a></td>")
         if "http" in lexentry["lexcat"]:
-            f.write("<td><a href=\""+str(lexentry["lexcat"])+"\">" + DocUtils.shortenURI(str(lexentry["lexcat"])) + "</a></td>")
+            f.write("<td><a href=\""+str(lexentry["lexcat"])+"\" target=\"_blank\">" + DocUtils.shortenURI(str(lexentry["lexcat"])) + "</a></td>")
         else:
             f.write("<td>"+str(lexentry["lexcat"])+"</td>")
         if "http" in lexentry["language"]:
-            f.write("<td><a href=\""+str(lexentry["language"])+"\">" + DocUtils.shortenURI(str(lexentry["language"])) + "</a></td><td>")
+            f.write("<td><a href=\""+str(lexentry["language"])+"\" target=\"_blank\">" + DocUtils.shortenURI(str(lexentry["language"])) + "</a></td><td>")
         else:
             f.write("<td>"+str(lexentry["language"])+"</td><td>")
         for form in lexentry["forms"]:
