@@ -17,7 +17,7 @@ class SolidExporter:
         webidprofilegraph.add((URIRef(outpath+"/profile/card"), RDF.type, URIRef("http://xmlns.com/foaf/0.1/PersonalProfileDocument")))
         preferencesgraph=Graph()
         preferencesgraph.serialize(destination=outpath+"/settings/prefs.ttl", format="ttl")
-        publisheruri=publisher
+        publisheruri=publisher.replace(" ","_")
         if not publisher.startswith("http"):
             publisheruri=deploypath+"/profile/card#"+str(publisher)
         webidprofilegraph.add((URIRef(outpath + "/profile/card"), URIRef("http://xmlns.com/foaf/0.1/primaryTopic"), URIRef(str(publisheruri))))
