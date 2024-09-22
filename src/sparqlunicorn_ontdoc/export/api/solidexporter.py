@@ -19,10 +19,10 @@ class SolidExporter:
         preferencesgraph.serialize(destination=outpath+"/settings/prefs.ttl", format="ttl")
         publisheruri=publisher.replace(" ","_")
         if not publisher.startswith("http"):
-            publisheruri=deploypath+"/profile/card#"+str(publisher)
+            publisheruri=deploypath+"/profile/card#"+str(publisher).replace(" ","_")
         webidprofilegraph.add((URIRef(outpath + "/profile/card"), URIRef("http://xmlns.com/foaf/0.1/primaryTopic"), URIRef(str(publisheruri))))
         webidprofilegraph.add((URIRef(str(publisheruri)), RDF.type, FOAF.Person))
-        webidprofilegraph.add((URIRef(str(publisheruri)), URIRef("http://www.w3.org/ns/pim/space#storage"), URIRef(str(deploypath) + str(datasetname))))
+        webidprofilegraph.add((URIRef(str(publisheruri)), URIRef("http://www.w3.org/ns/pim/space#storage"), URIRef(str(deploypath) + str(datasetname).replace(" ","_"))))
         webidprofilegraph.add((URIRef(str(publisheruri)), URIRef("http://www.w3.org/ns/solid/terms#publicTypeIndex"), URIRef(deploypath + "/settings/publicTypeIndex.ttl")))
         webidprofilegraph.add((URIRef(str(publisheruri)), URIRef("http://www.w3.org/ns/solid/terms#privateTypeIndex"), URIRef(deploypath + "/settings/privateTypeIndex.ttl")))
         webidprofilegraph.serialize(destination=outpath+"/profile/card.ttl", format="ttl")
