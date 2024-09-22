@@ -16,11 +16,8 @@ import traceback
 from export.api.iiifexporter import IIIFAPIExporter
 from export.pages.geometryviewpage import GeometryViewPage
 from export.pages.lexiconpage import LexiconPage
-from export.pages.observationpage import ObservationPage
 from export.pages.personpage import PersonPage
 from export.pages.model3dpage import Model3DPage
-
-from export.pages.mediapage import MediaPage
 
 from export.pages.textannopage import TextAnnoPage
 
@@ -430,7 +427,7 @@ class HTMLExporter():
                 f.write(self.templates["videotemplate"].replace("{{video}}", str(video)))
             for type in curtypes:
                 if type in DocConfig.lexicontypes:
-                    LexiconPage.generatePageWidget(graph, subject, f, {}, False)
+                    LexiconPage.generatePageWidget(graph, subject, f, False)
                 if type in PersonPage.pageWidgetConstraint():
                     PersonPage.generatePageWidget(graph, subject, self.templates, f, True)
             for coll in collections:
