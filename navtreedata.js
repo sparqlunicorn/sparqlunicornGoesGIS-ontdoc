@@ -24,12 +24,19 @@
 */
 var NAVTREE =
 [
-  [ "SPARQLing Unicorn Ontology Documentation", "index.html", ]
+  [ "SPARQLing Unicorn Ontology Documentation", "index.html", [
+    [ "Packages", "namespaces.html", [
+      [ "Packages", "namespaces.html", "namespaces_dup" ]
+    ] ],
+    [ "Files", "files.html", [
+      [ "File List", "files.html", "files_dup" ]
+    ] ]
+  ] ]
 ];
 
 var NAVTREEINDEX =
 [
-"index.html"
+"a00002.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
