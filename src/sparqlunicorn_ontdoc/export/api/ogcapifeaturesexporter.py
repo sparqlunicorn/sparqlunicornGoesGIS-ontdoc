@@ -243,8 +243,12 @@ class OGCAPIFeaturesExporter:
                                     "nonns_" + featurecollectionspaths[coll]["id"] + ".html"),
                                 str(op + "/items/indexc.html").replace("//", "/"), outpath)
                             f = open(str(op + "/items/indexc.html"), "w")
-                            f.write(
-                                "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + deploypath+"/"+collid+"/"+ "\" /></head></html>")
+                            if "nonns" in collid:
+                                f.write(
+                                    "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + deploypath+"/"+collid+".html"+ "\" /></head></html>")
+                            else:
+                                f.write(
+                                    "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + deploypath+"/"+collid+"/"+ "\" /></head></html>")
                             f.close()
                         #print("symlinks created")
                     except Exception as e:
