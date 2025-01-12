@@ -126,7 +126,7 @@ class OGCAPIFeaturesExporter:
                 {"href": outpath + "collections/index.html", "rel": "self", "type": "text/html",
                  "title": "this document as HTML"}]}
             collectionshtml = "<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><link rel=\"stylesheet\" href=\"../style.css\"/><link rel=\"stylesheet\" href=\"https://cdn.datatables.net/2.2.1/css/dataTables.dataTables.css\" /><script src=\"https://code.jquery.com/jquery-3.7.1.js\"></script><script src=\"https://cdn.datatables.net/2.2.1/js/dataTables.js\"></script></head><body><header id=\"header\"><h1 id=\"title\">Collections of " + str(
-                deploypath) + "</h1></header>{{collectiontable}}<footer id=\"footer\"><a href=\"index.json\">This page as JSON</a></footer><script>$(document).ready( function () {$('#collectiontable').DataTable();} );</script></body></html>"
+                deploypath) + "</h1></header>{{collectiontable}}<footer id=\"footer\"><a href=\"../\">Landing page</a>&nbsp;<a href=\"index.json\">This page as JSON</a></footer><script>$(document).ready( function () {$('#collectiontable').DataTable();} );</script></body></html>"
             collectiontable = "<table id=\"collectiontable\"><thead><th>Collection</th><th>#Features</th><th>Links</th></thead><tbody>"
             apijson["paths"]["/collections"] = {"get": {"tags": ["Collections"], "summary": "describes collections",
                                                         "description": "Describes all collections provided by this service",
