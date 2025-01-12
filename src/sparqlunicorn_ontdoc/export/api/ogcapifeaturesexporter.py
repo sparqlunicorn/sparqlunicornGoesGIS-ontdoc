@@ -163,8 +163,9 @@ class OGCAPIFeaturesExporter:
                 if opwebcoll.endswith("/"):
                     opwebcoll = opwebcoll[0:-1]
                 opwebcoll = opwebcoll.replace("//", "/")
+                collid=coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]
                 collectionsjson["collections"].append(
-                    {"id": coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:],
+                    {"id": collid,
                      "title": featurecollectionspaths[coll]["name"], "links": [
                         {"href": str(opweb.replace(".geojson", "") + "/index.json").replace("//", "/"),
                          "rel": "collection", "type": "application/json", "title": "Collection as JSON"},
@@ -173,7 +174,7 @@ class OGCAPIFeaturesExporter:
                         {"href": str(opweb.replace(".geojson", "") + "/index.ttl").replace("//", "/"),
                          "rel": "collection", "type": "text/ttl", "title": "Collection as TTL"}]})
                 currentcollection = {"title": featurecollectionspaths[coll]["name"],
-                                     "id": coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson","")[1:],
+                                     "id": collid,
                                      "links": [], "itemType": "feature"}
                 currentcollection["links"] = [
                     {"href": opwebcoll + "/items/index.json", "rel": "items", "type": "application/json",
@@ -243,7 +244,7 @@ class OGCAPIFeaturesExporter:
                                 str(op + "/items/indexc.html").replace("//", "/"), outpath)
                             f = open(str(op + "/items/indexc.html"), "w")
                             f.write(
-                                "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + deploypath+"/"+featurecollectionspaths[coll]["id"]+"/"+ "\" /></head></html>")
+                                "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + deploypath+"/"+collid+"/"+ "\" /></head></html>")
                             f.close()
                         #print("symlinks created")
                     except Exception as e:
