@@ -243,7 +243,7 @@ class OGCAPIFeaturesExporter:
                                 str(op + "/items/indexc.html").replace("//", "/"), outpath)
                             f = open(str(op + "/items/indexc.html"), "w")
                             f.write(
-                                "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + targetpath.replace(".geojson","/") + "\" /></head></html>")
+                                "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + deploypath+"/"+featurecollectionspaths[coll]["name"]+"/"+ "\" /></head></html>")
                             f.close()
                         #print("symlinks created")
                     except Exception as e:
