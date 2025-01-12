@@ -24,34 +24,12 @@
 */
 var NAVTREE =
 [
-  [ "SPARQLing Unicorn Ontology Documentation", "index.html", [
-    [ "Packages", "namespaces.html", [
-      [ "Packages", "namespaces.html", "namespaces_dup" ],
-      [ "Package Functions", "namespacemembers.html", [
-        [ "All", "namespacemembers.html", null ],
-        [ "Functions", "namespacemembers_func.html", null ],
-        [ "Variables", "namespacemembers_vars.html", null ]
-      ] ]
-    ] ],
-    [ "Classes", "annotated.html", [
-      [ "Class List", "annotated.html", "annotated_dup" ],
-      [ "Class Index", "classes.html", null ],
-      [ "Class Members", "functions.html", [
-        [ "All", "functions.html", "functions_dup" ],
-        [ "Functions", "functions_func.html", null ],
-        [ "Variables", "functions_vars.html", null ]
-      ] ]
-    ] ],
-    [ "Files", "files.html", [
-      [ "File List", "files.html", "files_dup" ]
-    ] ]
-  ] ]
+  [ "SPARQLing Unicorn Ontology Documentation", "index.html", ]
 ];
 
 var NAVTREEINDEX =
 [
-"a00002.html",
-"a00195.html#af61e071a9b110b7d8d4413cda8664dbc"
+"index.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
