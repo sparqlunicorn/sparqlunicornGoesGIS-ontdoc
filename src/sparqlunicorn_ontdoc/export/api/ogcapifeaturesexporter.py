@@ -38,8 +38,7 @@ class OGCAPIFeaturesExporter:
                                                                                          "namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
                                                      "description": {"type": "string", "xml": {"name": "Description",
                                                                                                "namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
-                                                     "links": {"type": "array", "xml": {"name": "link",
-                                                                                        "namespace": "http://www.w3.org/2005/Atom"},
+                                                     "links": {"type": "array", "xml": {"name": "link","namespace": "http://www.w3.org/2005/Atom"},
                                                                "items": {"$ref": "#/components/schemas/Link"}},
                                                      "extent": {"$ref": "#/components/schemas/Extent"},
                                                      "itemType": {"type": "string"},
@@ -47,8 +46,7 @@ class OGCAPIFeaturesExporter:
                                                      "storageCrs": {"type": "string"}}, "xml": {"name": "Collection",
                                                                                                 "namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
                                                  "Collections": {"type": "object", "properties": {
-                                                     "links": {"type": "array", "xml": {"name": "link",
-                                                                                        "namespace": "http://www.w3.org/2005/Atom"},
+                                                     "links": {"type": "array", "xml": {"name": "link","namespace": "http://www.w3.org/2005/Atom"},
                                                                "items": {"$ref": "#/components/schemas/Link"}},
                                                      "collections": {"type": "array", "xml": {"name": "Collection",
                                                                                               "namespace": "http://www.opengis.net/ogcapi-features-1/1.0"},
@@ -66,8 +64,7 @@ class OGCAPIFeaturesExporter:
                                                      "rel": {"type": "string", "xml": {"attribute": True}},
                                                      "type": {"type": "string", "xml": {"attribute": True}},
                                                      "title": {"type": "string", "xml": {"attribute": True}}},
-                                                          "xml": {"name": "link",
-                                                                  "namespace": "http://www.w3.org/2005/Atom"}},
+                                                          "xml": {"name": "link","namespace": "http://www.w3.org/2005/Atom"}},
                                                  "Spatial": {"type": "object", "properties": {"bbox": {"type": "array",
                                                                                                        "items": {
                                                                                                            "type": "array",
@@ -75,16 +72,12 @@ class OGCAPIFeaturesExporter:
                                                                                                                "type": "number",
                                                                                                                "format": "double"}}},
                                                                                               "crs": {"type": "string",
-                                                                                                      "xml": {
-                                                                                                          "attribute": True}}},
-                                                             "xml": {"name": "SpatialExtent",
-                                                                     "namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
+                                                                                                      "xml": {"attribute": True}}},
+                                                             "xml": {"name": "SpatialExtent","namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
                                                  "Temporal": {"type": "object", "properties": {
-                                                     "interval": {"type": "array",
-                                                                  "items": {"type": "string", "format": "date-time"}},
+                                                     "interval": {"type": "array","items": {"type": "string", "format": "date-time"}},
                                                      "trs": {"type": "string", "xml": {"attribute": True}}},
-                                                              "xml": {"name": "TemporalExtent",
-                                                                      "namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
+                                                              "xml": {"name": "TemporalExtent","namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
                                                  "LandingPage": {"type": "object"}}}
             landingpagejson = {"title": "Landing Page", "description": "Landing Page", "links": [{
                 "href": str(deploypath) + "/index.json",
@@ -132,7 +125,7 @@ class OGCAPIFeaturesExporter:
                  "title": "this document as JSON"},
                 {"href": outpath + "collections/index.html", "rel": "self", "type": "text/html",
                  "title": "this document as HTML"}]}
-            collectionshtml = "<html><head></head><body><header><h1>Collections of " + str(
+            collectionshtml = "<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /></head><body><header><h1>Collections of " + str(
                 deploypath) + "</h1></head>{{collectiontable}}<footer><a href=\"index.json\">This page as JSON</a></footer></body></html>"
             collectiontable = "<table><thead><th>Collection</th><th>Links</th></thead><tbody>"
             apijson["paths"]["/collections"] = {"get": {"tags": ["Collections"], "summary": "describes collections",
@@ -180,8 +173,7 @@ class OGCAPIFeaturesExporter:
                         {"href": str(opweb.replace(".geojson", "") + "/index.ttl").replace("//", "/"),
                          "rel": "collection", "type": "text/ttl", "title": "Collection as TTL"}]})
                 currentcollection = {"title": featurecollectionspaths[coll]["name"],
-                                     "id": coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson",
-                                                                                                          "")[1:],
+                                     "id": coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson","")[1:],
                                      "links": [], "itemType": "feature"}
                 currentcollection["links"] = [
                     {"href": opwebcoll + "/items/index.json", "rel": "items", "type": "application/json",
@@ -208,8 +200,7 @@ class OGCAPIFeaturesExporter:
                         "/"), "operationId": "collection-" + str(
                         coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]),
                             "parameters": [], "responses": {"default": {"description": "default response", "content": {
-                            "application/json": {"schema": {"$ref": "#/components/schemas/Collections"},
-                                                 "example": None}}}}}}
+                            "application/json": {"schema": {"$ref": "#/components/schemas/Collections"},"example": None}}}}}}
                 curcollrow = "<tr><td><a href=\"" + opweb.replace(".geojson", "") + "/items/indexc.html\">" + str(
                     featurecollectionspaths[coll]["name"]) + "</a></td><td><a href=\"" + opweb.replace(".geojson",
                                                                                                        "") + "/items/indexc.html\">[Collection as HTML]</a>&nbsp;<a href=\"" + opweb.replace(
@@ -219,7 +210,7 @@ class OGCAPIFeaturesExporter:
                 f.write(json.dumps(currentcollection))
                 f.close()
                 f = open(op + "indexc.html", "w", encoding="utf-8")
-                f.write("<html><head></head><body><h1>" + featurecollectionspaths[coll][
+                f.write("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /></head><body><h1>" + featurecollectionspaths[coll][
                     "name"] + "</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>" + str(
                     curcollrow) + "</tbody></table></html>")
                 f.close()
@@ -350,7 +341,7 @@ class OGCAPIFeaturesExporter:
                             print(e)
                     if mergeJSON:
                         result.append(curcoll)
-                collectiontable += "</tbody></table>"
+        collectiontable += "</tbody></table>"
         if mergeJSON:
             with open(outpath + "/features.js", 'w', encoding="utf-8") as output_file:
                 output_file.write("var featurecolls=" + json.dumps(result))
