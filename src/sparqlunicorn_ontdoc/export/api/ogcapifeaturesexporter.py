@@ -127,7 +127,7 @@ class OGCAPIFeaturesExporter:
                  "title": "this document as HTML"}]}
             collectionshtml = "<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /></head><body><header><h1>Collections of " + str(
                 deploypath) + "</h1></head>{{collectiontable}}<footer><a href=\"index.json\">This page as JSON</a></footer></body></html>"
-            collectiontable = "<table><thead><th>Collection</th><th>Links</th></thead><tbody>"
+            collectiontable = "<table id=\"collectiontable\"><thead><th>Collection</th><th>Links</th></thead><tbody>"
             apijson["paths"]["/collections"] = {"get": {"tags": ["Collections"], "summary": "describes collections",
                                                         "description": "Describes all collections provided by this service",
                                                         "operationId": "collections", "parameters": [], "responses": {
@@ -243,7 +243,7 @@ class OGCAPIFeaturesExporter:
                                 str(op + "/items/indexc.html").replace("//", "/"), outpath)
                             f = open(str(op + "/items/indexc.html"), "w")
                             f.write(
-                                "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + targetpath + "\" /></head></html>")
+                                "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + targetpath.replace(".geojson","/") + "\" /></head></html>")
                             f.close()
                         #print("symlinks created")
                     except Exception as e:
