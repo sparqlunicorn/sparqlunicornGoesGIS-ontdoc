@@ -60,7 +60,7 @@ class WFSExporter:
             <ogc:Filter_Capabilities></ogc:Filter_Capabilities>
         </wfs:WFS_Capabilities>"""
         print("SAVE WFS GETCAPABILITIES: " + str(outpath + "/wfs?request=GetCapabilities&service=WFS&version=1.0.0"))
-        f = open(outpath + "/wfs?request=GetCapabilities&service=WFS&version=1.0.0", "w", encoding="utf-8")
+        f = open(outpath + "/wfs/index.xml", "w", encoding="utf-8")
         f.write(getcapabilities)
         f.close()
 
@@ -72,5 +72,5 @@ class WFSExporter:
         apijson = {"openapi": "3.0.1", "info": {"title": str(deploypath) + " Feature Collections",
                                                 "description": "Feature Collections of " + str(deploypath)},
                    "servers": [{"url": str(deploypath)}], "paths": {}}
-        if wfsversion=="1.0.0":
-            WFSExporter.generateWFSPages10()
+        #if wfsversion=="1.0.0":
+        #    WFSExporter.generateWFSPages10()
