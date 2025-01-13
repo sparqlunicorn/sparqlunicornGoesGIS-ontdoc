@@ -243,6 +243,7 @@ class WFSExporter:
             <ogc:Filter_Capabilities></ogc:Filter_Capabilities>
         </wfs:WFS_Capabilities>"""
         WFSExporter.generateFeatureList(outpath, deploypath, featurecollectionspaths, "1.1.0", "")
+        WFSExporter.generateFeatureDescriptions(outpath, deploypath, featurecollectionspaths, "1.1.0", "")
         print("SAVE WFS GETCAPABILITIES: " + str(outpath + "/wfs?request=GetCapabilities&service=WFS&version=1.0.0"))
         f = open(outpath + "/wfs/index.xml", "w", encoding="utf-8")
         f.write(getcapabilities)
