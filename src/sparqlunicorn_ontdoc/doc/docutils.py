@@ -308,7 +308,10 @@ class DocUtils:
         #rellink =
         #for i in range(0, checkdepth):
         #    rellink = "../" + rellink
-        return "../"*checkdepth
+        result="../"*checkdepth
+        if result=="":
+            return "."
+        return result
 
     @staticmethod
     def createOfflineCompatibleVersion(outpath, myhtmltemplate, templatepath, templatename):
