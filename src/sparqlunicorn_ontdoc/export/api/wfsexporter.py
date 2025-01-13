@@ -4,6 +4,54 @@ import json
 class WFSExporter:
 
     @staticmethod
+    def generateFeatureDescriptions(outpath,deploypath,featurecollectionspaths,version,fsresult):
+        result="""<schema xmlns:myns="http://www.someserver.example.com/myns" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" targetNamespace="http://www.someserver.example.com/myns" elementFormDefault="qualified" version="2.0.2">
+<import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>"""
+        for coll in featurecollectionspaths:
+            curcoll = None
+            os.mkdir(outpath + "/wfs/DescribedFeatureType")
+            if os.path.exists(coll):
+                with open(coll, 'r', encoding="utf-8") as infile:
+                    curcoll = json.load(infile)
+                op = outpath + "wfs/DescribeFeatureType/request=DescribedFeatureType&version="+version+"&typeName=" + coll.replace(outpath, "").replace("index.geojson", "")
+                os.mkdir(op)
+                op = op.replace(".geojson", "")
+                op = op.replace("//", "/")
+                if not os.path.exists(op):
+                    os.makedirs(op)
+                opweb = op.replace(outpath, deploypath)
+                opwebcoll = opweb
+                if opwebcoll.endswith("/"):
+                    opwebcoll = opwebcoll[0:-1]
+                opwebcoll = opwebcoll.replace("//", "/")
+                collid=coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]
+                currentcollection = {"title": featurecollectionspaths[coll]["name"],
+                                     "id": collid,
+                                     "links": [], "itemType": "feature"}
+                if "bbox" in curcoll:
+                    currentcollection["extent"] = {"spatial": {"bbox": curcoll["bbox"]}}
+                if "crs" in curcoll:
+                    currentcollection["crs"] = curcoll["crs"]
+                    if "extent" in currentcollection:
+                        currentcollection["extent"]["spatial"]["crs"] = curcoll["crs"]
+                if "features" in curcoll and len(curcoll["features"])>0:
+                    firstfeat=curcoll["features"][0]
+                    if "properties" in firstfeat:
+                        result+="<complexType name=\""+coll+"\"><complexContent><extension base=\"gml:AbstractFeatureType\"><sequence>"
+                        for prop in firstfeat["properties"]:
+                            result+=f"""<element name="{prop}" minOccurs="0"/>"""
+                        result+="</sequence></extension></complexContent></complexType>"
+                f = open(op + "/index.json", "w", encoding="utf-8")
+                f.write(json.dumps(currentcollection))
+                f.close()
+                f = open(op + "/index.html", "w", encoding="utf-8")
+                f.write("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /></head><body><h1>" + featurecollectionspaths[coll][
+                    "name"] + "</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>" #+ str(curcollrow)
+                     + "</tbody></table></html>")
+                f.close()
+
+
+    @staticmethod
     def generateFeatureList(outpath,deploypath,featurecollectionspaths,version,fsresult):
         apijson={}
         collectionshtml = "<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><link rel=\"stylesheet\" href=\"../style.css\"/><link rel=\"stylesheet\" href=\"https://cdn.datatables.net/2.2.1/css/dataTables.dataTables.css\" /><script src=\"https://code.jquery.com/jquery-3.7.1.js\"></script><script src=\"https://cdn.datatables.net/2.2.1/js/dataTables.js\"></script></head><body><header id=\"header\"><h1 id=\"title\">Collections of " + str(
@@ -156,7 +204,7 @@ class WFSExporter:
                 </ows:Parameter>
             </ows:Operation>
             <ows:Operation name="DescribeFeatureType">
-                <ows:DCP><ows:HTTP><ows:Get xlink:href=\"{deploypath}/wfs/DescribeFeatureType\"/></ows:HTTP></ows:DCP>
+                <ows:DCP><ows:HTTP><ows:Get xlink:href=\"{deploypath}/wfs/DescribeFeatureType/\"/></ows:HTTP></ows:DCP>
                 <ows:Parameter name="resultType">
                     <ows:Value>results</ows:Value>
                     <ows:Value>hits</ows:Value>
