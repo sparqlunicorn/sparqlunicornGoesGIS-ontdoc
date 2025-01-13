@@ -73,4 +73,4 @@ class WFSExporter:
                                                 "description": "Feature Collections of " + str(deploypath)},
                    "servers": [{"url": str(deploypath)}], "paths": {}}
         if wfsversion=="1.0.0":
-            WFSExporter.generateWFSPages10()
+            WFSExporter.generateWFSPages10(outpath,deploypath,featurecollectionspaths,license)
