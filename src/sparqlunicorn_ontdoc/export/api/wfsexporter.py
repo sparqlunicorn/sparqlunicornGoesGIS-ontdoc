@@ -60,13 +60,14 @@ class WFSExporter:
             <ogc:Filter_Capabilities></ogc:Filter_Capabilities>
         </wfs:WFS_Capabilities>"""
         print("SAVE WFS GETCAPABILITIES: " + str(outpath + "/wfs?request=GetCapabilities&service=WFS&version=1.0.0"))
+
         f = open(outpath + "/wfs/index.xml", "w", encoding="utf-8")
         f.write(getcapabilities)
         f.close()
 
     @staticmethod
     def generateWFSPages(outpath,deploypath, featurecollectionspaths,license,wfsversion="1.0.0"):
-        #os.mkdir(outpath+"/wfs")
+        os.mkdir(outpath+"/wfs")
         apihtml = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><metaname=\"description\" content=\"SwaggerUI\"/><title>SwaggerUI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist/swagger-ui.css\" /></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js\" crossorigin></script><script>const swaggerUrl = \"" + str(
             deploypath) + "/api/index.json\"; const apiUrl = \"" + str(deploypath) + "/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
         apijson = {"openapi": "3.0.1", "info": {"title": str(deploypath) + " Feature Collections",
