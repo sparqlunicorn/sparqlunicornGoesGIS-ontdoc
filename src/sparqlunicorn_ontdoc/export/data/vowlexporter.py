@@ -2,7 +2,7 @@ from rdflib import Graph, URIRef
 from rdflib.namespace import RDFS,OWL
 import json
 
-class OWL2VOWL():
+class VOWLExporter:
 
     def __init__(self):
         print("init")
@@ -12,7 +12,7 @@ class OWL2VOWL():
         for tup in graph.objects(URIRef(prop),URIRef(typeproperty)):
             #print(tup)
             if str(tup)!="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property":
-                return OWL2VOWL.normalizeNS(str(tup))
+                return VOWLExporter.normalizeNS(str(tup))
         return "rdf:Property"
 
     @staticmethod
@@ -52,9 +52,9 @@ class OWL2VOWL():
                 nodeuriToId[predstr]=nodecounter
                 nodecounter+=1
                 if pred[1]==OWL.Class or pred[1]==RDFS.Class or pred[1]==RDFS.Datatype:
-                    nodes.append({"name":OWL2VOWL.getIRILabel(predstr),"type":"class","uri":predstr})
+                    nodes.append({"name":VOWLExporter.getIRILabel(predstr), "type": "class", "uri":predstr})
                 else:
-                    nodes.append({"name": OWL2VOWL.getIRILabel(predstr), "type": "class", "uri": predstr})
+                    nodes.append({"name": VOWLExporter.getIRILabel(predstr), "type": "class", "uri": predstr})
         if predicates:
             for pred in predicates:
                 if "from" in predicates[pred] and "to" in predicates[pred]:
@@ -65,14 +65,14 @@ class OWL2VOWL():
                                     if "http://www.w3.org/1999/02/22-rdf-syntax-ns#" not in str(topred) and "http://www.w3.org/2002/07/owl#" not in str(topred):
                                         links.append({"source": nodeuriToId[str(fromsub)],
                                                       "target": nodeuriToId[str(topred)],
-                                                      "valueTo": OWL2VOWL.getIRILabel(str(pred)),
+                                                      "valueTo": VOWLExporter.getIRILabel(str(pred)),
                                                       "propertyTo": "class",
                                                       "uriTo": str(pred)})
         else:
             for node in nodeuriToId:
                 for predobj in g.predicate_objects(URIRef(node)):
                     if node in nodeuriToId and str(predobj[1]) in nodeuriToId and str(predobj[0])!=typeproperty:
-                        links.append({"source":nodeuriToId[node],"target":nodeuriToId[str(predobj[1])],"valueTo": OWL2VOWL.getIRILabel(str(predobj[0])),"propertyTo":("class" if isinstance(predobj[1],URIRef) else "datatype"), "uriTo":(str(predobj[1]) if isinstance(predobj[1],URIRef) else predobj[1].datatype)})
+                        links.append({"source":nodeuriToId[node],"target":nodeuriToId[str(predobj[1])],"valueTo": VOWLExporter.getIRILabel(str(predobj[0])), "propertyTo":("class" if isinstance(predobj[1], URIRef) else "datatype"), "uriTo":(str(predobj[1]) if isinstance(predobj[1], URIRef) else predobj[1].datatype)})
         minivowlresult["nodes"]=nodes
         minivowlresult["links"] = links
         f = open(outpath + "/"+str(outfile), "w")
@@ -106,12 +106,12 @@ class OWL2VOWL():
             if predobjstr=="http://www.w3.org/2002/07/owl#Class" or predobjstr=="http://www.w3.org/2000/01/rdf-schema#Class" or predobjstr=="http://www.w3.org/2000/01/rdf-schema#Datatype":
                 classes.append({"id":idcounter,"type":predobjstr})
                 classiriToProdId[predsubstr]={"id":idcounter,"attid":len(classAttributes)-1}
-                classAttributes.append({"id":idcounter,"iri":predsubstr,"baseIRI":OWL2VOWL.getBaseIRI(predsubstr),"instances":0,"label":{"IRI-based":OWL2VOWL.getIRILabel(predsubstr)},"annotations":{},"subClasses":[],"superClasses":[]})
+                classAttributes.append({"id":idcounter,"iri":predsubstr,"baseIRI":VOWLExporter.getBaseIRI(predsubstr), "instances":0, "label":{"IRI-based":VOWLExporter.getIRILabel(predsubstr)}, "annotations":{}, "subClasses":[], "superClasses":[]})
                 idcounter+=1
             else:
-                props.append({"id":idcounter,"type":OWL2VOWL.getTypeForProperty(str(predsubstr),g,typeproperty)})
+                props.append({"id":idcounter,"type":VOWLExporter.getTypeForProperty(str(predsubstr), g, typeproperty)})
                 propiriToProdId[predsubstr]={"id":idcounter,"attid":len(propAttributes)-1}
-                propAttributes.append({"id":idcounter,"iri":str(predsubstr),"baseIRI":OWL2VOWL.getBaseIRI(predsubstr),"instances":0,"label":{"IRI-based":OWL2VOWL.getIRILabel(predsubstr)},"annotations":{},"range":[],"domain":[],"subProperties":[],"superProperties":[]})
+                propAttributes.append({"id":idcounter,"iri":str(predsubstr),"baseIRI":VOWLExporter.getBaseIRI(predsubstr), "instances":0, "label":{"IRI-based":VOWLExporter.getIRILabel(predsubstr)}, "annotations":{}, "range":[], "domain":[], "subProperties":[], "superProperties":[]})
                 idcounter+=1
 
         for pred in g.subject_objects(RDFS.range):
@@ -120,7 +120,7 @@ class OWL2VOWL():
             if predstr not in classiriToProdId:
                 classes.append({"id":idcounter,"type":"http://www.w3.org/2000/01/rdf-schema#Datatype"})
                 classiriToProdId[predstr]={"id":idcounter,"attid":len(classAttributes)-1}
-                classAttributes.append({"id":idcounter,"iri":predstr,"baseIRI":OWL2VOWL.getBaseIRI(str(pred)),"instances":0,"label":{"IRI-based":OWL2VOWL.getIRILabel(predstr)},"annotations":{},"subClasses":[],"superClasses":[]})
+                classAttributes.append({"id":idcounter,"iri":predstr,"baseIRI":VOWLExporter.getBaseIRI(str(pred)), "instances":0, "label":{"IRI-based":VOWLExporter.getIRILabel(predstr)}, "annotations":{}, "subClasses":[], "superClasses":[]})
                 idcounter+=1
 
         for iri in classiriToProdId:
