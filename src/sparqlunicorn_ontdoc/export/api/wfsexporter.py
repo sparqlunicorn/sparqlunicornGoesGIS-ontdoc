@@ -72,5 +72,5 @@ class WFSExporter:
         apijson = {"openapi": "3.0.1", "info": {"title": str(deploypath) + " Feature Collections",
                                                 "description": "Feature Collections of " + str(deploypath)},
                    "servers": [{"url": str(deploypath)}], "paths": {}}
-        #if wfsversion=="1.0.0":
-        #    WFSExporter.generateWFSPages10()
+        if wfsversion=="1.0.0":
+            WFSExporter.generateWFSPages10()
