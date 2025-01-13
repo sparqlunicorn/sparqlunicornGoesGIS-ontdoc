@@ -4,6 +4,63 @@ import json
 class WFSExporter:
 
     @staticmethod
+    def generateFeatureList(outpath,deploypath,featurecollectionspaths,version,fsresult):
+        apijson={}
+        collectionshtml = "<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><link rel=\"stylesheet\" href=\"../style.css\"/><link rel=\"stylesheet\" href=\"https://cdn.datatables.net/2.2.1/css/dataTables.dataTables.css\" /><script src=\"https://code.jquery.com/jquery-3.7.1.js\"></script><script src=\"https://cdn.datatables.net/2.2.1/js/dataTables.js\"></script></head><body><header id=\"header\"><h1 id=\"title\">Collections of " + str(
+            deploypath) + "</h1></header>{{collectiontable}}<footer id=\"footer\"><a href=\"../\">Landing page</a>&nbsp;<a href=\"index.json\">This page as JSON</a></footer><script>$(document).ready( function () {$('#collectiontable').DataTable();} );</script></body></html>"
+        collectiontable = "<table id=\"collectiontable\"><thead><th>Collection</th><th>#Features</th><th>Links</th></thead><tbody>"
+        os.mkdir(outpath+"/wfs/GetFeature")
+        for coll in featurecollectionspaths:
+            curcoll = None
+            if os.path.exists(coll):
+                with open(coll, 'r', encoding="utf-8") as infile:
+                    curcoll = json.load(infile)
+                op = outpath + "wfs/GetFeature/request=GetFeature&version="+version+"&typeName=" + coll.replace(outpath, "").replace("index.geojson", "")
+                op = op.replace(".geojson", "")
+                op = op.replace("//", "/")
+                if not os.path.exists(op):
+                    os.makedirs(op)
+                opweb = op.replace(outpath, deploypath)
+                opwebcoll = opweb
+                if opwebcoll.endswith("/"):
+                    opwebcoll = opwebcoll[0:-1]
+                opwebcoll = opwebcoll.replace("//", "/")
+                collid=coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]
+                currentcollection = {"title": featurecollectionspaths[coll]["name"],
+                                     "id": collid,
+                                     "links": [], "itemType": "feature"}
+                if "bbox" in curcoll:
+                    currentcollection["extent"] = {"spatial": {"bbox": curcoll["bbox"]}}
+                if "crs" in curcoll:
+                    currentcollection["crs"] = curcoll["crs"]
+                    if "extent" in currentcollection:
+                        currentcollection["extent"]["spatial"]["crs"] = curcoll["crs"]
+                apijson["paths"]["/collections/" + str(
+                    coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]).rstrip("/")] = {
+                    "get": {"tags": ["Collections"], "summary": "describes collection " + str(
+                        str(coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:])).rstrip(
+                        "/"), "description": "Describes the collection with the id " + str(
+                        str(coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:])).rstrip(
+                        "/"), "operationId": "collection-" + str(
+                        coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]),
+                            "parameters": [], "responses": {"default": {"description": "default response", "content": {
+                            "application/json": {"schema": {"$ref": "#/components/schemas/Collections"},"example": None}}}}}}
+                #curcollrow = "<tr><td><a href=\"" + opweb.replace(".geojson", "") + "/items/"+collectionhtmlname+"\">" + str(
+                #    featurecollectionspaths[coll]["name"]) + "</a></td><td>"+str(len(curcoll["features"]))+"</td><td><a href=\"" + opweb.replace(".geojson",
+                #                                                                                       "") + "/items/"+collectionhtmlname+"\">[Collection as HTML]</a>&nbsp;<a href=\"" + opweb.replace(
+                #    ".geojson", "") + "/items/\">[Collection as JSON]</a>&nbsp;<a href=\"" + opweb.replace(".geojson",
+                #                                                                                           "") + "/items/index.ttl\">[Collection as TTL]</a></td></tr>"
+                f = open(op + "index.json", "w", encoding="utf-8")
+                f.write(json.dumps(currentcollection))
+                f.close()
+                f = open(op + "index.html", "w", encoding="utf-8")
+                f.write("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /></head><body><h1>" + featurecollectionspaths[coll][
+                    "name"] + "</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>" #+ str(curcollrow)
+                     + "</tbody></table></html>")
+                f.close()
+
+
+    @staticmethod
     def generateWFSPages10(outpath,deploypath,featurecollectionspaths,license):
         getcapabilities = f"""<?xml version="1.0" encoding="UTF-8" ?>
         <wfs:WFS_Capabilities xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-capabilities.xsd" version="1.0.0">
@@ -78,10 +135,40 @@ class WFSExporter:
             </ows:Keywords>
             <ows:ServiceType>WFS</ows:ServiceType>
             <ows:ServiceTypeVersion>1.1.3</ows:ServiceTypeVersion>
+            <ows:ServiceTypeVersion>1.1.2</ows:ServiceTypeVersion>
+            <ows:ServiceTypeVersion>1.1.1</ows:ServiceTypeVersion>
             <ows:ServiceTypeVersion>1.1.0</ows:ServiceTypeVersion>
             <ows:Fees>None</ows:Fees>
             <ows:AccessConstraints>{license}</ows:AccessConstraints>
         </ows:ServiceIdentification>
+        <ows:OperationsMetadata>
+            <ows:Operation name="GetCapabilities">
+                <ows:DCP><ows:HTTP><ows:Get xlink:href=\"{deploypath}/wfs/\"/></ows:HTTP></ows:DCP>
+                <ows:Parameter name="AcceptVersions">
+                    <ows:Value>1.1.0</ows:Value>
+                    <ows:Value>1.1.1</ows:Value>
+                    <ows:Value>1.1.2</ows:Value>
+                    <ows:Value>1.1.3</ows:Value>
+                </ows:Parameter>
+                <ows:Parameter name="AcceptFormats">
+                    <ows:Value>text/xml</ows:Value>
+                </ows:Parameter>
+            </ows:Operation>
+            <ows:Operation name="DescribeFeatureType">
+                <ows:DCP><ows:HTTP><ows:Get xlink:href=\"{deploypath}/wfs/DescribeFeatureType\"/></ows:HTTP></ows:DCP>
+                <ows:Parameter name="resultType">
+                    <ows:Value>results</ows:Value>
+                    <ows:Value>hits</ows:Value>
+                </ows:Parameter>
+            </ows:Operation>
+            <ows:Operation name="GetFeature">
+                <ows:DCP><ows:HTTP><ows:Get xlink:href=\"{deploypath}/wfs/GetFeature/\"/></ows:HTTP></ows:DCP>
+                <ows:Parameter name="resultType">
+                    <ows:Value>results</ows:Value>
+                    <ows:Value>hits</ows:Value>
+                </ows:Parameter>
+            </ows:Operation>
+        </ows:OperationsMetadata>
         <wfs:FeatureTypeList>"""
         for coll in featurecollectionspaths:
             curcoll = None
@@ -106,6 +193,7 @@ class WFSExporter:
         getcapabilities += f"""</wfs:FeatureTypeList>
             <ogc:Filter_Capabilities></ogc:Filter_Capabilities>
         </wfs:WFS_Capabilities>"""
+        WFSExporter.generateFeatureList(outpath, deploypath, featurecollectionspaths, "1.1.0", "")
         print("SAVE WFS GETCAPABILITIES: " + str(outpath + "/wfs?request=GetCapabilities&service=WFS&version=1.0.0"))
         f = open(outpath + "/wfs/index.xml", "w", encoding="utf-8")
         f.write(getcapabilities)
@@ -116,15 +204,16 @@ class WFSExporter:
         getcapabilities="<WFS_Capabilities xmlns=\"http://www.opengis.net/wfs/2.0\" xmlns:gml=\"http://www.opengis.net/gml/3.2\" xmlns:fes=\"http://www.opengis.net/fes/2.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"2.0.2\" xsi:schemaLocation=\"http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://www.opengis.net/ows/1.1 http://schemas.opengis.net/ows/1.1.0/owsAll.xsd\">"
         getcapabilities+=f"""
         <ows:ServiceIdentification>
-            <ows:Title>Static WFS 1.1.0</ows:Title>
+            <ows:Title>Static WFS 2.0</ows:Title>
             <ows:Abstract>This Static WFS exposes geodata included in the knowledge grap for the inclusion into GIS applications.</ows:Abstract>
             <ows:Keywords>
             <ows:Keyword>{deploypath}</ows:Keyword>
             <ows:Type>String</ows:Type>
             </ows:Keywords>
             <ows:ServiceType>WFS</ows:ServiceType>
-            <ows:ServiceTypeVersion>1.1.3</ows:ServiceTypeVersion>
-            <ows:ServiceTypeVersion>1.1.0</ows:ServiceTypeVersion>
+            <ows:ServiceTypeVersion>2.0.2</ows:ServiceTypeVersion>
+            <ows:ServiceTypeVersion>2.0.1</ows:ServiceTypeVersion>
+            <ows:ServiceTypeVersion>2.0.0</ows:ServiceTypeVersion>
             <ows:Fees>None</ows:Fees>
             <ows:AccessConstraints>{license}</ows:AccessConstraints>
         </ows:ServiceIdentification>
