@@ -9,10 +9,13 @@ from doc.docutils import DocUtils
 class OGCAPIFeaturesExporter:
 
     @staticmethod
-    def generateOGCAPIFeaturesPages(outpath,deploypath, featurecollectionspaths, prefixnamespace, ogcapi, mergeJSON):
+    def generateOGCAPIFeaturesPages(outpath,deploypath, featurecollectionspaths, prefixnamespace, ogcapi, mergeJSON, contentnegotiation=False):
         apihtml = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><metaname=\"description\" content=\"SwaggerUI\"/><title>SwaggerUI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist/swagger-ui.css\" /></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js\" crossorigin></script><script>const swaggerUrl = \"" + str(
             deploypath) + "/api/index.json\"; const apiUrl = \"" + str(
             deploypath) + "/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
+        collectionhtmlname="indexc.html"
+        if contentnegotiation:
+            collectionhtmlname="index.html"
         apijson = {"openapi": "3.0.1", "info": {"title": str(deploypath) + " Feature Collections",
                                                 "description": "Feature Collections of " + str(deploypath)},
                    "servers": [{"url": str(deploypath)}], "paths": {}}
@@ -95,7 +98,7 @@ class OGCAPIFeaturesExporter:
                 "type": "application/json",
                 "title": "Supported Feature Collections as JSON"
             }, {
-                "href": str(deploypath) + "/collections/indexc.html",
+                "href": str(deploypath) + "/collections/"+collectionhtmlname,
                 "rel": "data",
                 "type": "text/html",
                 "title": "Supported Feature Collections as HTML"
@@ -179,7 +182,7 @@ class OGCAPIFeaturesExporter:
                 currentcollection["links"] = [
                     {"href": opwebcoll + "/items/index.json", "rel": "items", "type": "application/json",
                      "title": "Collection as JSON"},
-                    {"href": opwebcoll + "/items/indexc.html", "rel": "items", "type": "text/html",
+                    {"href": opwebcoll + "/items/"+collectionhtmlname, "rel": "items", "type": "text/html",
                      "title": "Collection as HTML"},
                     {"href": opwebcoll + "/items/index.ttl", "rel": "collection", "type": "text/ttl",
                      "title": "Collection as TTL"}]
@@ -202,15 +205,15 @@ class OGCAPIFeaturesExporter:
                         coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]),
                             "parameters": [], "responses": {"default": {"description": "default response", "content": {
                             "application/json": {"schema": {"$ref": "#/components/schemas/Collections"},"example": None}}}}}}
-                curcollrow = "<tr><td><a href=\"" + opweb.replace(".geojson", "") + "/items/indexc.html\">" + str(
+                curcollrow = "<tr><td><a href=\"" + opweb.replace(".geojson", "") + "/items/"+collectionhtmlname+"\">" + str(
                     featurecollectionspaths[coll]["name"]) + "</a></td><td>"+str(len(curcoll["features"]))+"</td><td><a href=\"" + opweb.replace(".geojson",
-                                                                                                       "") + "/items/indexc.html\">[Collection as HTML]</a>&nbsp;<a href=\"" + opweb.replace(
+                                                                                                       "") + "/items/"+collectionhtmlname+"\">[Collection as HTML]</a>&nbsp;<a href=\"" + opweb.replace(
                     ".geojson", "") + "/items/\">[Collection as JSON]</a>&nbsp;<a href=\"" + opweb.replace(".geojson",
                                                                                                            "") + "/items/index.ttl\">[Collection as TTL]</a></td></tr>"
                 f = open(op + "index.json", "w", encoding="utf-8")
                 f.write(json.dumps(currentcollection))
                 f.close()
-                f = open(op + "indexc.html", "w", encoding="utf-8")
+                f = open(op + collectionhtmlname, "w", encoding="utf-8")
                 f.write("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /></head><body><h1>" + featurecollectionspaths[coll][
                     "name"] + "</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>" + str(
                     curcollrow) + "</tbody></table></html>")
@@ -241,8 +244,8 @@ class OGCAPIFeaturesExporter:
                                 coll.replace("//", "/").replace("index.geojson", "index.html").replace(
                                     "nonns_" + featurecollectionspaths[coll]["id"] + ".geojson",
                                     "nonns_" + featurecollectionspaths[coll]["id"] + ".html"),
-                                str(op + "/items/indexc.html").replace("//", "/"), outpath)
-                            f = open(str(op + "/items/indexc.html"), "w")
+                                str(op + "/items/"+collectionhtmlname).replace("//", "/"), outpath)
+                            f = open(str(op + "/items/"+collectionhtmlname), "w")
                             if "nonns" in collid:
                                 f.write(
                                     "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + deploypath+"/"+collid+".html"+ "\" /></head></html>")
@@ -361,7 +364,7 @@ class OGCAPIFeaturesExporter:
             f = open(outpath + "/api/api.html", "w", encoding="utf-8")
             f.write(apihtml)
             f.close()
-            f = open(outpath + "/collections/indexc.html", "w", encoding="utf-8")
+            f = open(outpath + "/collections/"+collectionhtmlname, "w", encoding="utf-8")
             f.write(collectionshtml.replace("{{collectiontable}}", collectiontable))
             f.close()
             f = open(outpath + "/collections/index.json", "w", encoding="utf-8")
