@@ -28,7 +28,7 @@ from doc.classtreeutils import ClassTreeUtils
 from doc.docdefaults import DocDefaults
 from doc.docconfig import DocConfig
 from doc.templateutils import TemplateUtils
-from export.data.vowlexporter import OWL2VOWL
+from export.data.vowlexporter import VOWLExporter
 from export.api.iiifexporter import IIIFAPIExporter
 from export.api.ogcapifeaturesexporter import OGCAPIFeaturesExporter
 from export.api.ckanexporter import CKANExporter
@@ -109,7 +109,7 @@ class OntDocGeneration:
         uritolabel = {}
         uritotreeitem = {}
         if self.pubconfig["createvowl"]:
-            vowlinstance = OWL2VOWL()
+            vowlinstance = VOWLExporter()
             vowlinstance.convertOWL2VOWL(self.graph, outpath)
         tmp=HTMLExporter.processLicense(self.pubconfig["license"])
         curlicense=tmp[0]
@@ -250,7 +250,7 @@ class OntDocGeneration:
         if self.pubconfig["nonnspages"]:
             start = time.time()
             labeltouri = self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, self.pubconfig["corpusid"], outpath,
-                                                             self.pubconfig["license"], prefixnamespace, uritotreeitem, labeltouri)
+                                                             self.licensehtml, prefixnamespace, uritotreeitem, labeltouri)
             end=time.time()
             self.exectimes["NonNS Pages"] = {"time": end - start,"items":len(nonnsmap)}
             print("NonNS Page Generation time "+str(end-start)+" seconds")
@@ -565,6 +565,20 @@ def main():
                     resg.add((sub, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
                               URIRef("http://www.w3.org/ns/ldp#Resource")))
         resg.serialize(outpath[0] + '/index.ttl')
+    manifest={
+        "lang": "en-us",
+        "name": "SPARQLing Unicorn Ontology Documentation Script: "+args.prefixnsshort,
+        "short_name": args.prefixnsshort,
+        "description": "HTML Deployment produced by the SPARQLing Unicorn Ontology Documentation Script",
+        "start_url": "/",
+        "background_color": "#2f3d58",
+        "theme_color": "#2f3d58",
+        "orientation": "any",
+        "display": "standalone"
+    }
+    f=open(outpath[0] + "/manifest.json", "w", encoding="utf-8")
+    f.write(json.dumps(manifest))
+    f.close()
     if not os.path.exists(outpath[0] + '/index.html'):
         indexf = open(outpath[0] + "/index.html", "w", encoding="utf-8")
         nonnslink = ""
