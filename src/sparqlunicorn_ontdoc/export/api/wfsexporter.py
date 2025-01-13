@@ -9,7 +9,7 @@ class WFSExporter:
 <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>"""
         for coll in featurecollectionspaths:
             curcoll = None
-            os.mkdir(outpath + "/wfs/DescribedFeatureType")
+            os.mkdir(outpath + "/wfs/DescribeFeatureType")
             if os.path.exists(coll):
                 with open(coll, 'r', encoding="utf-8") as infile:
                     curcoll = json.load(infile)
