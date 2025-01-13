@@ -4,7 +4,7 @@ from doc.docutils import DocUtils
 from doc.docconfig import DocConfig
 import json
 from collections import defaultdict
-from export.data.vowlexporter import OWL2VOWL
+from export.data.vowlexporter import VOWLExporter
 
 class GraphUtils:
 
@@ -139,7 +139,7 @@ class GraphUtils:
             predicates[pred]["to"] = list(predicates[pred]["to"])
             predicatecounter += 1
             predicatelength += len(str(pred))
-        OWL2VOWL.convertOWL2MiniVOWL(graph, outpath, "minivowl_result.js", predicates)
+        VOWLExporter.convertOWL2MiniVOWL(graph, outpath, "minivowl_result.js", predicates)
         with open(outpath + "proprelations.js", 'w', encoding='utf-8') as f:
             f.write("var proprelations=" + json.dumps(predicates))
             f.close()
