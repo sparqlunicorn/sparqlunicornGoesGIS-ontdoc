@@ -39,7 +39,7 @@ class SPARQLPage():
         sparqlhtml += templates["sparqltemplate"]
         tempfoot = DocUtils.replaceStandardVariables(templates["footer"], "", "0", "false",pubconfig).replace("{{license}}",
                                                                                                 curlicense).replace(
-            "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "").replace("{{stats}}",
+            "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "").replace("{{citationlink}}","").replace("{{stats}}",
                                                                                          voidstatshtml)
         tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, pubconfig["apis"]["ogcapifeatures"], pubconfig["apis"]["iiif"],
                                                                pubconfig["apis"]["ckan"]],
