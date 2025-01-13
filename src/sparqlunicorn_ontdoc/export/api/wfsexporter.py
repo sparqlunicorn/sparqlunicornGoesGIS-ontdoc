@@ -16,6 +16,7 @@ class WFSExporter:
                 with open(coll, 'r', encoding="utf-8") as infile:
                     curcoll = json.load(infile)
                 op = outpath + "wfs/GetFeature/request=GetFeature&version="+version+"&typeName=" + coll.replace(outpath, "").replace("index.geojson", "")
+                os.mkdir(op)
                 op = op.replace(".geojson", "")
                 op = op.replace("//", "/")
                 if not os.path.exists(op):
@@ -50,10 +51,10 @@ class WFSExporter:
                 #                                                                                       "") + "/items/"+collectionhtmlname+"\">[Collection as HTML]</a>&nbsp;<a href=\"" + opweb.replace(
                 #    ".geojson", "") + "/items/\">[Collection as JSON]</a>&nbsp;<a href=\"" + opweb.replace(".geojson",
                 #                                                                                           "") + "/items/index.ttl\">[Collection as TTL]</a></td></tr>"
-                f = open(op + "index.json", "w", encoding="utf-8")
+                f = open(op + "/index.json", "w", encoding="utf-8")
                 f.write(json.dumps(currentcollection))
                 f.close()
-                f = open(op + "index.html", "w", encoding="utf-8")
+                f = open(op + "/index.html", "w", encoding="utf-8")
                 f.write("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /></head><body><h1>" + featurecollectionspaths[coll][
                     "name"] + "</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>" #+ str(curcollrow)
                      + "</tbody></table></html>")
