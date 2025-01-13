@@ -363,7 +363,7 @@ class OntDocGeneration:
         return subjectstorender
 
 
-    def getSubjectPagesForNonGraphURIs(self, uristorender, graph, prefixnamespace, corpusid, outpath, nonnsmap, baseurl,
+    def getSubjectPagesForNonGraphURIs(self, uristorender, graph, prefixnamespace, corpusid, outpath, curlicense, baseurl,
                                        uritotreeitem, labeltouri):
         nonnsuris = len(uristorender)
         counter = 0
@@ -390,7 +390,7 @@ class OntDocGeneration:
                     DocUtils.updateProgressBar(counter, nonnsuris, "NonNS URIs")
                 self.htmlexporter.createHTML(outpath + "nonns_" + DocUtils.shortenURI(uri) + ".html", None, URIRef(uri), baseurl,
                                 graph.subject_predicates(URIRef(uri), True), graph, str(corpusid) + "_search.js",
-                                str(corpusid) + "_classtree.js", None, self.pubconfig["license"], None, Graph(), uristorender, True,
+                                str(corpusid) + "_classtree.js", None, curlicense, None, Graph(), uristorender, True,
                                 label)
                 counter += 1
         return labeltouri
