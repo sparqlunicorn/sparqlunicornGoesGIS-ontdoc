@@ -7,13 +7,13 @@ class WFSExporter:
     def generateFeatureDescriptions(outpath,deploypath,featurecollectionspaths,version,fsresult):
         result="""<schema xmlns:myns="http://www.someserver.example.com/myns" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" targetNamespace="http://www.someserver.example.com/myns" elementFormDefault="qualified" version="2.0.2">
 <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>"""
+        os.mkdir(outpath + "/wfs/DescribeFeatureType")
         for coll in featurecollectionspaths:
             curcoll = None
-            os.mkdir(outpath + "/wfs/DescribeFeatureType")
             if os.path.exists(coll):
                 with open(coll, 'r', encoding="utf-8") as infile:
                     curcoll = json.load(infile)
-                op = outpath + "wfs/DescribeFeatureType/request=DescribedFeatureType&version="+version+"&typeName=" + coll.replace(outpath, "").replace("index.geojson", "")
+                op = outpath + "wfs/DescribeFeatureType/request=DescribeFeatureType&version="+version+"&typeName=" + coll.replace(outpath, "").replace("index.geojson", "")
                 os.mkdir(op)
                 op = op.replace(".geojson", "")
                 op = op.replace("//", "/")
