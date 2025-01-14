@@ -41,10 +41,11 @@ class WFSExporter:
                         for prop in firstfeat["properties"]:
                             result+=f"""<element name="{prop}" minOccurs="0"/>"""
                         result+="</sequence></extension></complexContent></complexType>"
-                f = open(op + "/index.json", "w", encoding="utf-8")
-                f.write(json.dumps(currentcollection))
+                result+="</schema>"
+                f = open(op + "/index.xml", "w", encoding="utf-8")
+                f.write(json.dumps(result))
                 f.close()
-                f = open(op + "/index.html", "w", encoding="utf-8")
+                f = open(op + "/indexc.html", "w", encoding="utf-8")
                 f.write("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /></head><body><h1>" + featurecollectionspaths[coll][
                     "name"] + "</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>" #+ str(curcollrow)
                      + "</tbody></table></html>")
