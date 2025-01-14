@@ -12,7 +12,7 @@ class WFSExporter:
             if os.path.exists(coll):
                 with open(coll, 'r', encoding="utf-8") as infile:
                     curcoll = json.load(infile)
-                op = outpath + "wfs/DescribeFeatureType/request=DescribeFeatureType&version="+version+"&typeName=" + coll.replace(outpath, "").replace("index.geojson", "")
+                op = outpath + "wfs/DescribeFeatureType/?SERVICE=WFS&REQUEST=DescribeFeatureType&VERSION="+version+"&typeName=" + coll.replace(outpath, "").replace("index.geojson", "")
                 os.mkdir(op)
                 op = op.replace(".geojson", "")
                 op = op.replace("//", "/")
@@ -110,11 +110,11 @@ class WFSExporter:
 
 
     @staticmethod
-    def generateWFSPages10(outpath,deploypath,featurecollectionspaths,license):
+    def generateWFSPages10(outpath,deploypath,featurecollectionspaths,license,wfsversion):
         getcapabilities = f"""<?xml version="1.0" encoding="UTF-8" ?>
         <wfs:WFS_Capabilities xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-capabilities.xsd" version="1.0.0">
             <wfs:Service>
-                <wfs:Name>Static WFS 1.0.0</wfs:Name>
+                <wfs:Name>Static WFS {wfsversion}</wfs:Name>
                 <wfs:Title>Static WFS for {deploypath}</wfs:Title>
                 <wfs:Abstract>This Static WFS exposes geodata included in the knowledge grap for the inclusion into GIS applications.</wfs:Abstract>
                 <wfs:Keywords>{deploypath}</wfs:Keywords>
@@ -165,14 +165,14 @@ class WFSExporter:
         getcapabilities += f"""</wfs:FeatureTypeList>
             <ogc:Filter_Capabilities></ogc:Filter_Capabilities>
         </wfs:WFS_Capabilities>"""
-        print("SAVE WFS GETCAPABILITIES: " + str(outpath + "/wfs?request=GetCapabilities&service=WFS&version=1.0.0"))
+        print("SAVE WFS GETCAPABILITIES: " + str(outpath + "/wfs?request=GetCapabilities&service=WFS&version="+str(wfsversion)))
 
         f = open(outpath + "/wfs/index.xml", "w", encoding="utf-8")
         f.write(getcapabilities)
         f.close()
 
     @staticmethod
-    def generateWFSPages11(outpath,deploypath,featurecollectionspaths,license):
+    def generateWFSPages11(outpath,deploypath,featurecollectionspaths,license,wfsversion):
         getcapabilities="<wfs:WFS_Capabilities xmlns:ows=\"http://www.opengis.net/ows\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.3/wfs.xsd\" version=\"1.1.3\" updateSequence=\"0\">"
         getcapabilities+=f"""
         <ows:ServiceIdentification>
@@ -183,9 +183,6 @@ class WFSExporter:
             <ows:Type>String</ows:Type>
             </ows:Keywords>
             <ows:ServiceType>WFS</ows:ServiceType>
-            <ows:ServiceTypeVersion>1.1.3</ows:ServiceTypeVersion>
-            <ows:ServiceTypeVersion>1.1.2</ows:ServiceTypeVersion>
-            <ows:ServiceTypeVersion>1.1.1</ows:ServiceTypeVersion>
             <ows:ServiceTypeVersion>1.1.0</ows:ServiceTypeVersion>
             <ows:Fees>None</ows:Fees>
             <ows:AccessConstraints>{license}</ows:AccessConstraints>
@@ -194,10 +191,7 @@ class WFSExporter:
             <ows:Operation name="GetCapabilities">
                 <ows:DCP><ows:HTTP><ows:Get xlink:href=\"{deploypath}/wfs/\"/></ows:HTTP></ows:DCP>
                 <ows:Parameter name="AcceptVersions">
-                    <ows:Value>1.1.0</ows:Value>
-                    <ows:Value>1.1.1</ows:Value>
-                    <ows:Value>1.1.2</ows:Value>
-                    <ows:Value>1.1.3</ows:Value>
+                    <ows:Value>{wfsversion}</ows:Value>
                 </ows:Parameter>
                 <ows:Parameter name="AcceptFormats">
                     <ows:Value>text/xml</ows:Value>
@@ -242,15 +236,15 @@ class WFSExporter:
         getcapabilities += f"""</wfs:FeatureTypeList>
             <ogc:Filter_Capabilities></ogc:Filter_Capabilities>
         </wfs:WFS_Capabilities>"""
-        WFSExporter.generateFeatureList(outpath, deploypath, featurecollectionspaths, "1.1.0", "")
-        WFSExporter.generateFeatureDescriptions(outpath, deploypath, featurecollectionspaths, "1.1.0", "")
-        print("SAVE WFS GETCAPABILITIES: " + str(outpath + "/wfs?request=GetCapabilities&service=WFS&version=1.0.0"))
+        WFSExporter.generateFeatureList(outpath, deploypath, featurecollectionspaths, str(wfsversion), "")
+        WFSExporter.generateFeatureDescriptions(outpath, deploypath, featurecollectionspaths, str(wfsversion), "")
+        print("SAVE WFS GETCAPABILITIES: " + str(outpath + "/wfs?request=GetCapabilities&service=WFS&version="+str(wfsversion)))
         f = open(outpath + "/wfs/index.xml", "w", encoding="utf-8")
         f.write(getcapabilities)
         f.close()
 
     @staticmethod
-    def generateWFSPages20(outpath,deploypath,featurecollectionspaths,license):
+    def generateWFSPages20(outpath,deploypath,featurecollectionspaths,license,wfsversion):
         getcapabilities="<WFS_Capabilities xmlns=\"http://www.opengis.net/wfs/2.0\" xmlns:gml=\"http://www.opengis.net/gml/3.2\" xmlns:fes=\"http://www.opengis.net/fes/2.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"2.0.2\" xsi:schemaLocation=\"http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://www.opengis.net/ows/1.1 http://schemas.opengis.net/ows/1.1.0/owsAll.xsd\">"
         getcapabilities+=f"""
         <ows:ServiceIdentification>
@@ -261,9 +255,7 @@ class WFSExporter:
             <ows:Type>String</ows:Type>
             </ows:Keywords>
             <ows:ServiceType>WFS</ows:ServiceType>
-            <ows:ServiceTypeVersion>2.0.2</ows:ServiceTypeVersion>
-            <ows:ServiceTypeVersion>2.0.1</ows:ServiceTypeVersion>
-            <ows:ServiceTypeVersion>2.0.0</ows:ServiceTypeVersion>
+            <ows:ServiceTypeVersion>{wfsversion}</ows:ServiceTypeVersion>
             <ows:Fees>None</ows:Fees>
             <ows:AccessConstraints>{license}</ows:AccessConstraints>
         </ows:ServiceIdentification>
@@ -304,8 +296,8 @@ class WFSExporter:
                                                 "description": "Feature Collections of " + str(deploypath)},
                    "servers": [{"url": str(deploypath)}], "paths": {}}
         if wfsversion=="1.0.0":
-            WFSExporter.generateWFSPages10(outpath,deploypath,featurecollectionspaths,license)
+            WFSExporter.generateWFSPages10(outpath,deploypath,featurecollectionspaths,license,wfsversion)
         elif wfsversion.startswith("1.1"):
-            WFSExporter.generateWFSPages11(outpath, deploypath, featurecollectionspaths, license)
+            WFSExporter.generateWFSPages11(outpath, deploypath, featurecollectionspaths, license,wfsversion)
         elif wfsversion=="2" or wfsversion.startswith("2."):
-            WFSExporter.generateWFSPages20(outpath, deploypath, featurecollectionspaths, license)
+            WFSExporter.generateWFSPages20(outpath, deploypath, featurecollectionspaths, license,wfsversion)
