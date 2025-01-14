@@ -12,7 +12,7 @@ class WFSExporter:
             if os.path.exists(coll):
                 with open(coll, 'r', encoding="utf-8") as infile:
                     curcoll = json.load(infile)
-                op = outpath + "wfs/DescribeFeatureType/?SERVICE=WFS&REQUEST=DescribeFeatureType&VERSION="+version+"&typeName=" + coll.replace(outpath, "").replace("index.geojson", "")
+                op = outpath + "wfs/DescribeFeatureType/%3FSERVICE=WFS&REQUEST=DescribeFeatureType&VERSION="+version+"&typeName=" + coll.replace(outpath, "").replace("index.geojson", "")
                 os.mkdir(op)
                 op = op.replace(".geojson", "")
                 op = op.replace("//", "/")
@@ -63,7 +63,7 @@ class WFSExporter:
             if os.path.exists(coll):
                 with open(coll, 'r', encoding="utf-8") as infile:
                     curcoll = json.load(infile)
-                op = outpath + "wfs/GetFeature/request=GetFeature&version="+version+"&typeName=" + coll.replace(outpath, "").replace("index.geojson", "")
+                op = outpath + "wfs/GetFeature/SERVICE=WFS&REQUEST=GetFeature&VERSION="+version+"&TYPENAME=" + coll.replace(outpath, "").replace("index.geojson", "")
                 os.mkdir(op)
                 op = op.replace(".geojson", "")
                 op = op.replace("//", "/")
@@ -176,14 +176,14 @@ class WFSExporter:
         getcapabilities="<wfs:WFS_Capabilities xmlns:ows=\"http://www.opengis.net/ows\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.3/wfs.xsd\" version=\"1.1.3\" updateSequence=\"0\">"
         getcapabilities+=f"""
         <ows:ServiceIdentification>
-            <ows:Title>Static WFS 1.1.0</ows:Title>
+            <ows:Title>Static WFS {wfsversion}</ows:Title>
             <ows:Abstract>This Static WFS exposes geodata included in the knowledge grap for the inclusion into GIS applications.</ows:Abstract>
             <ows:Keywords>
             <ows:Keyword>{deploypath}</ows:Keyword>
             <ows:Type>String</ows:Type>
             </ows:Keywords>
             <ows:ServiceType>WFS</ows:ServiceType>
-            <ows:ServiceTypeVersion>1.1.0</ows:ServiceTypeVersion>
+            <ows:ServiceTypeVersion>{wfsversion}</ows:ServiceTypeVersion>
             <ows:Fees>None</ows:Fees>
             <ows:AccessConstraints>{license}</ows:AccessConstraints>
         </ows:ServiceIdentification>
@@ -248,7 +248,7 @@ class WFSExporter:
         getcapabilities="<WFS_Capabilities xmlns=\"http://www.opengis.net/wfs/2.0\" xmlns:gml=\"http://www.opengis.net/gml/3.2\" xmlns:fes=\"http://www.opengis.net/fes/2.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"2.0.2\" xsi:schemaLocation=\"http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://www.opengis.net/ows/1.1 http://schemas.opengis.net/ows/1.1.0/owsAll.xsd\">"
         getcapabilities+=f"""
         <ows:ServiceIdentification>
-            <ows:Title>Static WFS 2.0</ows:Title>
+            <ows:Title>Static WFS {wfsversion}</ows:Title>
             <ows:Abstract>This Static WFS exposes geodata included in the knowledge grap for the inclusion into GIS applications.</ows:Abstract>
             <ows:Keywords>
             <ows:Keyword>{deploypath}</ows:Keyword>
