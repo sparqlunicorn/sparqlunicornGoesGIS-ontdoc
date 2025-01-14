@@ -5,8 +5,7 @@ class WFSExporter:
 
     @staticmethod
     def generateFeatureDescriptions(outpath,deploypath,featurecollectionspaths,version,fsresult):
-        result="""<schema xmlns:myns="http://www.someserver.example.com/myns" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" targetNamespace="http://www.someserver.example.com/myns" elementFormDefault="qualified" version="2.0.2">
-<import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>"""
+        result=" <?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><schema xmlns:myns=\"http://www.someserver.example.com/myns\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns=\"http://www.w3.org/2001/XMLSchema\" xmlns:gml=\"http://www.opengis.net/gml/3.2\" targetNamespace=\"http://www.someserver.example.com/myns\" elementFormDefault=\"qualified\" version=\"2.0.2\"><import namespace=\"http://www.opengis.net/gml/3.2\" schemaLocation=\"http://schemas.opengis.net/gml/3.2.1/gml.xsd\"/>"
         os.mkdir(outpath + "/wfs/DescribeFeatureType")
         for coll in featurecollectionspaths:
             curcoll = None
