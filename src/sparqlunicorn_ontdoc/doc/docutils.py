@@ -394,3 +394,10 @@ class DocUtils:
             except Exception as e:
                 print(e)
         return graph
+
+    @staticmethod
+    def replaceColonFromWinPath(thepath):
+        if ":/" in thepath and re.search("^[A-Z]:[\/\\]",thepath)!=None:
+            return thepath[0:2]+thepath[3:].replace(":","_")        
+        else:
+            return thepath.replace(":","_")

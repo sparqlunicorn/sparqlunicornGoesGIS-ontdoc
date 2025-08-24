@@ -22,8 +22,6 @@ from export.pages.model3dpage import Model3DPage
 from export.pages.textannopage import TextAnnoPage
 
 
-
-
 class HTMLExporter():
     listthreshold = 5
     maxlistthreshold = 1500
@@ -291,10 +289,10 @@ class HTMLExporter():
             if "http:" in savepath:
                 completesavepath = savepath[0:savepath.find("http:") - 1] + savepath[savepath.find("http:"):].replace(":", "_").replace("/", "_")
             else:
-                completesavepath = savepath
+                completesavepath = replaceColonFromWinPath(savepath)
             nonnslink = f"<div>This page describes linked instances to the concept  <a target=\"_blank\" href=\"{subject}\">{foundlabel} ({DocUtils.shortenURI(subject)}) </a> in this knowledge graph. It is defined <a target=\"_blank\" href=\"{subject}\">here</a></div>"
         else:
-            completesavepath = savepath + "/index.html"
+            completesavepath = replaceColonFromWinPath(savepath) + "/index.html"
             if os.path.exists(savepath):
                 try:
                     ttlf.serialize(savepath + "/index.ttl", encoding="utf-8")
