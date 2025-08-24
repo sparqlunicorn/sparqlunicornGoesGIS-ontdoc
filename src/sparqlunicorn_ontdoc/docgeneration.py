@@ -1070,6 +1070,11 @@ class OntDocGeneration:
     def getAccessFromBaseURL(self,baseurl,savepath):
         return savepath.replace(baseurl, "")
 
+	def replaceColonFromWinPath(thepath):
+        if ":/" in thepath and re.search("^[A-Z]:[\/\\]",thepath)!=None:
+            return thepath[0:2]+thepath[3:].replace(":","_")        
+        else:
+            return thepath.replace(":","_")
 
     def createHTML(self,savepath, predobjs, subject, baseurl, subpreds, graph, searchfilename, classtreename,uritotreeitem,curlicense,subjectstorender,postprocessing,nonnsmap=None,nonns=False,foundlabel=""):
         tablecontents = ""
@@ -1303,10 +1308,10 @@ class OntDocGeneration:
             ttlf.add((subject, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("https://www.iana.org/assignments/media-types/text/turtle#Resource")))
         nonnslink=""
         if nonns:
-            completesavepath = savepath.replace(":","_")
+            completesavepath = replaceColonFromWinPath(savepath)
             nonnslink="<div>This page describes linked instances to the concept  <a target=\"_blank\" href=\"" + str(subject) + "\">" + str(foundlabel) + " ("+str(DocUtils.shortenURI(subject))+") </a> in this knowledge graph. It is defined <a target=\"_blank\" href=\""+str(subject)+"\">here</a></div>"
         else:
-            completesavepath=savepath.replace(":","_") + "/index.html"
+            completesavepath= replaceColonFromWinPath(savepath) + "/index.html"
         if not nonns:
             if os.path.exists(savepath):
                 try:
