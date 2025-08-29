@@ -438,7 +438,7 @@ def main():
     parser.add_argument("-of", "--offlinecompat", help="built-result is offline compatible", default=False,
                         type=lambda x: (str(x).lower() in ['true', '1', 'yes']))
     parser.add_argument("-ogc", "--ogcapifeatures", help="create ogc api features collections?", action="store",
-                        default=False, type=lambda x: (str(x).lower() in ['true', '1', 'yes']))
+                        default=True, type=lambda x: (str(x).lower() in ['true', '1', 'yes']))
     parser.add_argument("-stac", "--stacapi", help="create stac api collections?", action="store", default=False,
                         type=lambda x: (str(x).lower() in ['true', '1', 'yes']))
     parser.add_argument("-iiif", "--iiifmanifest", help="create iiif manifests?", action="store", default=True,
@@ -490,17 +490,17 @@ def main():
             dataexports.append(expo)
     print("EXPORTS: "+str(dataexports))
     print(os.listdir(os.getcwd()))
-    if args.templatepath!=None:
+    if args.templatepath is not None:
         templatepath=args.templatepath
         if templatepath.startswith("http") and templatepath.endswith(".zip"):
             with urlopen(templatepath) as zipresp:
                 with ZipFile(BytesIO(zipresp.read())) as zfile:
                     subfoldername = zfile.namelist()[0][0:zfile.namelist()[0].rfind('/')]
-                    zfile.extractall('ontdocscript/src/sparqlunicorn_ontdoc/resources/html/')
-                    templatepath = "ontdocscript/src/sparqlunicorn_ontdoc/resources/html/" + subfoldername
+                    zfile.extractall(resourcepath+'/html/')
+                    templatepath = resourcepath+'/html/' + subfoldername
                     if subfoldername.endswith("/"):
                         subfoldername = subfoldername[0:-1]
-                    templatepath = "ontdocscript/src/sparqlunicorn_ontdoc/resources/html/" + subfoldername[0:subfoldername.rfind('/') + 1]
+                    templatepath = resourcepath+'/html/' + subfoldername[0:subfoldername.rfind('/') + 1]
                     args.templatename = subfoldername
                     if templatepath.endswith("/"):
                         templatepath = templatepath[0:-1]
@@ -529,10 +529,13 @@ def main():
             #print("Args: "+str(vars(args)))
             if fcounter < len(outpath):
                 docgen = OntDocGeneration(prefixes, modtime, outpath[fcounter],apis, g, vars(args),dataexports)
+                curpath=outpath[fcounter]
             else:
                 docgen = OntDocGeneration(prefixes, modtime, outpath[-1],apis, g, vars(args),dataexports)
+                curpath=outpath[-1]
             subrend = docgen.generateOntDocForNameSpace(args.prefixns, dataformat="HTML")
             DocUtils.printExecutionStats(docgen.exectimes)
+            DocUtils.writeExecutionStats(docgen.exectimes,curpath+"/buildlog.txt")
         except Exception as inst:
             print("Could not parse " + str(fp))
             print(inst)
@@ -542,7 +545,7 @@ def main():
     if docgen is not None:
         curlicense = docgen.licensehtml
     print("Path exists? " + outpath[0] + '/index.html ' + str(os.path.exists(outpath[0] + '/index.html')))
-    if not os.path.exists(outpath[0] + '/index.ttl') and subrend != None:
+    if not os.path.exists(outpath[0] + '/index.ttl') and subrend is not None:
         resg = Graph()
         for sub in subrend:
             for predobj in g.predicate_objects(sub):
@@ -591,8 +594,7 @@ def main():
             subfolders = [f.path for f in os.scandir(outpath[0]) if f.is_dir()]
             #print(subfolders)
             for path in subfolders:
-                indexf.write("<tr><td><a href=\"" + path.replace(outpath[0] + "/", "") + "/index.html\">" + path.replace(
-                    outpath[0] + "/", "") + "</a></td></tr>")
+                indexf.write("<tr><td><a href=\"" + path.replace(outpath[0] + "/", "") + "/index.html\">" + path.replace(outpath[0] + "/", "") + "</a></td></tr>")
             indexf.write("</tbody></table><script>$('#indextable').DataTable();</script>")
             indexf.write(DocUtils.replaceStandardVariables(templates["footer"], "", "0", "true",docgen.pubconfig).replace("{{license}}", curlicense).replace("{{exports}}",
                                                                                         templates["nongeoexports"]).replace(

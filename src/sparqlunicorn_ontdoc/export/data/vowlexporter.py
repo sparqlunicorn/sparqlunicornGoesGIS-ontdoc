@@ -75,9 +75,8 @@ class VOWLExporter:
                         links.append({"source":nodeuriToId[node],"target":nodeuriToId[str(predobj[1])],"valueTo": VOWLExporter.getIRILabel(str(predobj[0])), "propertyTo":("class" if isinstance(predobj[1], URIRef) else "datatype"), "uriTo":(str(predobj[1]) if isinstance(predobj[1], URIRef) else predobj[1].datatype)})
         minivowlresult["nodes"]=nodes
         minivowlresult["links"] = links
-        f = open(outpath + "/"+str(outfile), "w")
-        f.write("var minivowlresult=" + json.dumps(minivowlresult, indent=1))
-        f.close()
+        with open(outpath + "/"+str(outfile), "w",encoding="utf-8") as f:
+            f.write("var minivowlresult=" + json.dumps(minivowlresult, indent=1))
         return minivowlresult
 
     @staticmethod
@@ -169,6 +168,6 @@ class VOWLExporter:
         vowlresult["propertyAttribute"]=propAttributes
         vowlresult["class"]=classes
         vowlresult["classAttribute"]=classAttributes
-        with open(outpath+"/vowl_result.js","w") as f:
+        with open(outpath+"/vowl_result.js","w",encoding="utf-8") as f:
             f.write("var vowlresult="+json.dumps(vowlresult,indent=1))
         return vowlresult

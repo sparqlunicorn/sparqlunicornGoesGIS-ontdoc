@@ -132,6 +132,18 @@ class DocUtils:
             print("\n",end="")
         print(f"Total measured execution time: {totaltime} seconds")
 
+    @staticmethod
+    def writeExecutionStats(timeexec,filename="buildlog.txt"):
+        with open(filename,"w",encoding="utf-8") as f:
+            f.write(f"Selected Execution Statistics in order of execution:\n")
+            totaltime=0
+            for entry in timeexec:
+                f.write(f"{entry}: {timeexec[entry]['time']} seconds")
+                totaltime+=timeexec[entry]['time']
+                if "items" in timeexec[entry]:
+                    f.write(f" for {timeexec[entry]['items']} items, about {timeexec[entry]['time']/timeexec[entry]['items']} seconds per item")
+                f.write("\n")
+            f.write(f"Total measured execution time: {totaltime} seconds")
 
     @staticmethod
     def shortenURI(uri,ns=False):
@@ -336,8 +348,7 @@ class DocUtils:
                         print(e)
                         thepath=f"{templatepath}/{templatename}/js/lib/{m[m.rfind('/') + 1:]}"
                         if os.path.exists(thepath):
-                            shutil.copy(thepath,
-                                        outpath + str(os.sep) + "js" + str(os.sep) + m[m.rfind("/") + 1:])
+                            shutil.copy(thepath,outpath + str(os.sep) + "js" + str(os.sep) + m[m.rfind("/") + 1:])
                     myhtmltemplate = myhtmltemplate.replace(m, "{{relativepath}}js/" + m[m.rfind("/") + 1:])
             else:
                 match = match.replace("\"", "")
@@ -349,8 +360,7 @@ class DocUtils:
                     print(e)
                     thepath=f"{templatepath}/{templatename}/js/lib/{match[match.rfind('/') + 1:]}"
                     if os.path.exists(thepath):
-                        shutil.copy(thepath,
-                                    outpath + str(os.sep) + "js" + str(os.sep) + match[match.rfind("/") + 1:])
+                        shutil.copy(thepath,outpath + str(os.sep) + "js" + str(os.sep) + match[match.rfind("/") + 1:])
                 myhtmltemplate = myhtmltemplate.replace(match, "{{relativepath}}js/" + match[match.rfind("/") + 1:])
         matched = re.findall(r'href="(http.*.css)"', myhtmltemplate)
         for match in matched:
@@ -364,8 +374,7 @@ class DocUtils:
             except Exception as e:
                 thepath=f"{templatepath}/{templatename}/css/lib/{match[match.rfind('/') + 1:]}"
                 if os.path.exists(thepath):
-                    shutil.copy(thepath,
-                                outpath + str(os.sep) + "css" + str(os.sep) + match[match.rfind("/") + 1:])
+                    shutil.copy(thepath,outpath + str(os.sep) + "css" + str(os.sep) + match[match.rfind("/") + 1:])
             myhtmltemplate = myhtmltemplate.replace(match, "{{relativepath}}css/" + match[match.rfind("/") + 1:])
         return myhtmltemplate
 

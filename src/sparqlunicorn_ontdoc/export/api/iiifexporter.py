@@ -154,9 +154,10 @@ class IIIFAPIExporter:
             #print("IMAGEPATH: "+str(imgpath))
             categories.add(DocUtils.shortenURI(imgpath["class"]))
             for imgp in imgpath["imgpath"]:
+                induri=DocUtils.shortenURI(imgpath["ind"])
                 imghtml+="<li data-groups='[\"all\",\"red\",\""+str(imgpath["class"])+"\"]' style=\"width:25%;background-color:white;border-radius:25px;\"><figure class=\"col-3@sm picture-item\"><div class=\"aspect aspect--16x9\"><div class=\"aspect__inner\">"
-                imghtml+="<a href=\""+str(deploypath)+"/"+DocUtils.shortenURI(imgpath["ind"])+"\" target=\"_blank\"><img src=\""+str(imgp)+"\" loading=\"lazy\" class=\"imgborder\" alt=\""+str(imgpath["label"])+"\"/></a></div></div>"
-                imghtml+="<figcaption style=\"color:black\"><a href=\""+str(deploypath)+"/"+DocUtils.shortenURI(imgpath["ind"])+"\" style=\"font-weight:bold;color:black\" target=\"_blank\">"
+                imghtml+="<a href=\""+str(deploypath)+"/"+induri+"\" target=\"_blank\"><img src=\""+str(imgp)+"\" loading=\"lazy\" class=\"imgborder\" alt=\""+str(imgpath["label"])+"\"/></a></div></div>"
+                imghtml+="<figcaption style=\"color:black\"><a href=\""+str(deploypath)+"/"+induri+"\" style=\"font-weight:bold;color:black\" target=\"_blank\">"
                 if imgpath["label"]!="":
                    imghtml+=str(imgpath["label"])+"</a></figcaption></figure></li>"
                 else:

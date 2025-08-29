@@ -100,12 +100,18 @@ class IndexViewPage:
                 if (item["type"] == "geoclass" or item["type"] == "class" or item["type"] == "featurecollection" or
                     item["type"] == "geocollection") and "instancecount" in item and item["instancecount"] > 0:
                     exitem = None
+                    exitemlabel=""
                     for item2 in tree["core"]["data"]:
                         if item2["parent"] == item["id"] and (item2["type"] == "instance" or item2["type"] == "geoinstance") and nslink in item2["id"]:
                             exitem = f"<td><img src=\"{tree['types'][item2['type']]['icon']}\" height=\"25\" width=\"25\" alt=\"{item2['type']}\"/><a property=\"http://rdfs.org/ns/void#exampleResource\" resource=\"" + str(
                                 DocUtils.shortenURI(str(item2["id"]))) + "\" href=\"" + DocUtils.generateRelativeLinkFromGivenDepth(
-                                pubconfig["prefixns"], checkdepth, str(re.sub("_suniv[0-9]+_", "", item2["id"])),
-                                True) + "\">" + str(item2["text"]) + "</a></td>"
+                                pubconfig["prefixns"], checkdepth, str(re.sub("_suniv[0-9]+_", "", item2["id"])),True) + "\">"
+                            if "[" in item2["text"]:
+                                exitem+=str(item2["text"])[0:str(item2["text"]).rfind("[")] + "</a></td>"
+                                exitemlabel=str(item2["text"])[0:str(item2["text"]).rfind("[")]
+                            else:
+                                exitem+=str(item2["text"]) + "</a></td>"
+                                exitemlabel=str(item2["text"])
                             break
                     if exitem is not None:
                         if pubconfig["createCollections"]:
@@ -113,7 +119,11 @@ class IndexViewPage:
                                 DocUtils.shortenURI(str(item["id"])) + "_collection/") + "\" href=\"" + DocUtils.shortenURI(
                                 str(item["id"])) + "_collection/index.html\" target=\"_blank\">" + str(item["text"]) + "</a></td>"
                         else:
-                            indexhtml += f"<tr><td><img src=\"{tree['types'][item['type']]['icon']}\" height=\"25\" width=\"25\" alt=\"{item['type']}\"/><a  href=\"{item['id']}\" target=\"_blank\">{item['text']}</a></td>"
+                            indexhtml += f"<tr><td><img src=\"{tree['types'][item['type']]['icon']}\" height=\"25\" width=\"25\" alt=\"{item['type']}\"/><a  href=\"{item['id']}\" target=\"_blank\">"
+                            if "[" in item["text"]:
+                                indexhtml+=str(item["text"])[0:str(item["text"]).rfind("[")]+ "</a></td>"
+                            else:
+                                indexhtml+=str(item["text"]) + "</a></td>"
                         indexhtml += f"<td property=\"http://rdfs.org/ns/void#classPartition\" typeof=\"http://rdfs.org/ns/void#Dataset\" resource=\"{voidds}_{DocUtils.shortenURI(item['id'])}\"><span about=\"" + str(
                             voidds) + "_" + str(DocUtils.shortenURI(item["id"])) + "\" property=\"http://rdfs.org/ns/void#class\" resource=\"" + str(
                             item["id"]) + "\"></span><span about=\"" + str(voidds) + "_" + str(DocUtils.shortenURI(item["id"])) + "\" property=\"http://rdfs.org/ns/void#entities\" content=\"" + str(item[

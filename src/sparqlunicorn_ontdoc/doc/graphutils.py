@@ -142,7 +142,6 @@ class GraphUtils:
         VOWLExporter.convertOWL2MiniVOWL(graph, outpath, "minivowl_result.js", predicates)
         with open(outpath + "proprelations.js", 'w', encoding='utf-8') as f:
             f.write("var proprelations=" + json.dumps(predicates))
-            f.close()
         return {"preds": predicatecounter, "avgpredlen": str(int(DocUtils.zero_div(predicatelength,predicatecounter))),
                 "predclasses": predicateClasses, "objs": len(objects), "predmap": predicates}
 
