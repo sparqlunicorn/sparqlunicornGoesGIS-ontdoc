@@ -6,14 +6,16 @@ class WFSExporter:
     @staticmethod
     def generateFeatureDescriptions(outpath,deploypath,featurecollectionspaths,version,fsresult):
         result="<schema xmlns:myns=\"http://www.someserver.example.com/myns\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns=\"http://www.w3.org/2001/XMLSchema\" xmlns:gml=\"http://www.opengis.net/gml/3.2\" targetNamespace=\"http://www.someserver.example.com/myns\" elementFormDefault=\"qualified\" version=\"2.0.2\"><import namespace=\"http://www.opengis.net/gml/3.2\" schemaLocation=\"http://schemas.opengis.net/gml/3.2.1/gml.xsd\"/>"
-        os.mkdir(outpath + "/wfs/DescribeFeatureType")
+        if not os.path.exists(outpath + "/wfs/DescribeFeatureType"):
+            os.mkdir(outpath + "/wfs/DescribeFeatureType")
         for coll in featurecollectionspaths:
             curcoll = None
             if os.path.exists(coll):
                 with open(coll, 'r', encoding="utf-8") as infile:
                     curcoll = json.load(infile)
                 op = outpath + "wfs/DescribeFeatureType/%3FSERVICE=WFS&REQUEST=DescribeFeatureType&VERSION="+version+"&typeName=" + coll.replace(outpath, "").replace("index.geojson", "")
-                os.mkdir(op)
+                if not os.path.exists(op):
+                    os.mkdir(op)
                 op = op.replace(".geojson", "")
                 op = op.replace("//", "/")
                 if not os.path.exists(op):
@@ -55,14 +57,16 @@ class WFSExporter:
         collectionshtml = "<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><link rel=\"stylesheet\" href=\"../style.css\"/><link rel=\"stylesheet\" href=\"https://cdn.datatables.net/2.2.1/css/dataTables.dataTables.css\" /><script src=\"https://code.jquery.com/jquery-3.7.1.js\"></script><script src=\"https://cdn.datatables.net/2.2.1/js/dataTables.js\"></script></head><body><header id=\"header\"><h1 id=\"title\">Collections of " + str(
             deploypath) + "</h1></header>{{collectiontable}}<footer id=\"footer\"><a href=\"../\">Landing page</a>&nbsp;<a href=\"index.json\">This page as JSON</a></footer><script>$(document).ready( function () {$('#collectiontable').DataTable();} );</script></body></html>"
         collectiontable = "<table id=\"collectiontable\"><thead><th>Collection</th><th>#Features</th><th>Links</th></thead><tbody>"
-        os.mkdir(outpath+"/wfs/GetFeature")
+        if not os.path.exists(outpath+"/wfs/GetFeature"):
+            os.mkdir(outpath+"/wfs/GetFeature")
         for coll in featurecollectionspaths:
             curcoll = None
             if os.path.exists(coll):
                 with open(coll, 'r', encoding="utf-8") as infile:
                     curcoll = json.load(infile)
                 op = outpath + "wfs/GetFeature/SERVICE=WFS&REQUEST=GetFeature&VERSION="+version+"&TYPENAME=" + coll.replace(outpath, "").replace("index.geojson", "")
-                os.mkdir(op)
+                if not os.path.exists(op):
+                    os.mkdir(op)
                 op = op.replace(".geojson", "")
                 op = op.replace("//", "/")
                 if not os.path.exists(op):
@@ -281,7 +285,8 @@ class WFSExporter:
 
     @staticmethod
     def generateWFSPages(outpath,deploypath, featurecollectionspaths,license,wfsversion="1.1.0"):
-        os.mkdir(outpath+"/wfs")
+        if not os.path.exists(outpath+"/wfs"):
+            os.mkdir(outpath+"/wfs")
         apihtml = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><metaname=\"description\" content=\"SwaggerUI\"/><title>SwaggerUI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist/swagger-ui.css\" /></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js\" crossorigin></script><script>const swaggerUrl = \"" + str(
             deploypath) + "/api/index.json\"; const apiUrl = \"" + str(deploypath) + "/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
         apijson = {"openapi": "3.0.1", "info": {"title": str(deploypath) + " Feature Collections",

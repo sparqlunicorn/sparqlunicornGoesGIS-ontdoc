@@ -118,7 +118,8 @@ class OntDocGeneration:
         voidds = prefixnamespace + self.pubconfig["datasettitle"].replace(" ","_")
         if self.pubconfig["createCollections"]:
             start=time.time()
-            self.graph = GraphUtils.createCollections(self.graph, prefixnamespace,self.typeproperty)
+            ccls=self.pubconfig["collectionClass"]
+            self.graph = GraphUtils.createCollections(self.graph, prefixnamespace,self.typeproperty,ccls)
             end=time.time()
             self.exectimes["Create Collections"] = {"time": end - start}
         if self.pubconfig["logourl"] is not None and self.pubconfig["logourl"] != "" and not self.pubconfig["logourl"].startswith("http"):
@@ -414,6 +415,7 @@ def main():
                         type=lambda x: (str(x).lower() in ['true', '1', 'yes']))
     parser.add_argument("-cc", "--createCollections", help="create collections?", default=True,
                         type=lambda x: (str(x).lower() in ['true', '1', 'yes']))
+    parser.add_argument("-ccls", "--collectionClass", help="collection class?", action="store",default="http://www.w3.org/2004/02/skos/core#Collection")
     parser.add_argument("-ll", "--labellang", help="preferred label language (default: en)", action="store",
                         default="en")
     parser.add_argument("-li", "--license", help="license under which this data is published", action="store",

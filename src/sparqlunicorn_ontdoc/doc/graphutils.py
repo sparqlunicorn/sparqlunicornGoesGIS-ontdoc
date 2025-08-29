@@ -29,7 +29,7 @@ class GraphUtils:
 
 
     @staticmethod
-    def createCollections(graph, namespace,typeproperty):
+    def createCollections(graph, namespace,typeproperty,collectionClass=None):
         classToInstances = defaultdict(set)
         classToGeoColl = defaultdict(int)
         classToFColl = defaultdict(int)
@@ -55,7 +55,7 @@ class GraphUtils:
             if classToFColl[cls] == len(classToInstances[cls]):
                 graph.add((URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection"),
                            RDFS.subClassOf,
-                           SKOS.Collection))
+                           URIRef(collectionClass)))
                 graph.add((URIRef("http://www.opengis.net/ont/geosparql#FeatureCollection"),
                            RDFS.subClassOf,
                            URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection")))
@@ -64,7 +64,7 @@ class GraphUtils:
             elif classToGeoColl[cls] == len(classToInstances[cls]):
                 graph.add((URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection"),
                            RDFS.subClassOf,
-                           SKOS.Collection))
+                           URIRef(collectionClass)))
                 graph.add((URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection"),
                            RDFS.subClassOf,
                            URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection")))
@@ -77,17 +77,17 @@ class GraphUtils:
                                URIRef(DocConfig.classToCollectionClass[cls]["super"])))
                     graph.add((URIRef(DocConfig.classToCollectionClass[cls]["super"]),
                                RDFS.subClassOf,
-                               SKOS.Collection))
+                               URIRef(collectionClass)))
                 else:
                     graph.add((URIRef(DocConfig.classToCollectionClass[cls]["class"]),
                                RDFS.subClassOf,
-                               SKOS.Collection))
+                               URIRef(collectionClass)))
                 graph.add((URIRef(colluri), URIRef(typeproperty),
                            URIRef(DocConfig.classToCollectionClass[cls]["class"])))
                 collrelprop = DocConfig.classToCollectionClass[cls]["prop"]
             else:
                 graph.add((URIRef(colluri), URIRef(typeproperty),
-                           SKOS.Collection))
+                           URIRef(collectionClass)))
             graph.add((URIRef(colluri), RDFS.label,
                        Literal(str(DocUtils.shortenURI(cls)) + " Instances Collection", lang="en")))
             for instance in classToInstances[cls]:
