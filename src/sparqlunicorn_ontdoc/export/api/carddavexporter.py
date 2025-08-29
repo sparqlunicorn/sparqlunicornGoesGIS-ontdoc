@@ -5,13 +5,12 @@ from ..pages.personpage import PersonPage
 class CardDAVExporter:
 
     def vcardJSONToFile(self,vcard,path):
-        f=open(path,"w")
-        f.write("BEGIN:VCARD\nVERSION:4.0\n")
-        f.write("PROFILE:VCARD\n")
-        for key in vcard:
-            f.write(str(key).upper()+":"+str(vcard[key])+"\n")
-        f.write("END:VCARD\n")
-        f.close()
+        with open(path,"w",encoding="utf-8") as f:
+            f.write("BEGIN:VCARD\nVERSION:4.0\n")
+            f.write("PROFILE:VCARD\n")
+            for key in vcard:
+                f.write(str(key).upper()+":"+str(vcard[key])+"\n")
+            f.write("END:VCARD\n")
 
 
     def generateCardDAVCollection(self, outpath, deploypath, graph,subject,license="",version="3"):

@@ -22,9 +22,8 @@ class IIIFAPIExporter:
                     sur = DocUtils.shortenURI(ur)
                     # print("Getting "+outpath+"/iiif/mf/"+sur+"/manifest.json")
                     if os.path.exists(outpath + "/iiif/mf/" + sur + "/manifest.json") and "anno" in imagetoURI[imgpath]:
-                        f = open(outpath + "/iiif/mf/" + sur + "/manifest.json", 'r', encoding="utf-8")
-                        curmanifest = json.loads(f.read())
-                        f.close()
+                        with open(outpath + "/iiif/mf/" + sur + "/manifest.json", 'r', encoding="utf-8") as f:
+                            curmanifest = json.loads(f.read())
                         annocounter = 2
                         for anno in imagetoURI[imgpath]["anno"]:
                             anno["id"] = f"{imgpath}/canvas/p2/anno-{annocounter}"
@@ -34,9 +33,8 @@ class IIIFAPIExporter:
                                 anno["body"] += imagetoURI[imgpath]["uri"]["bodies"]
                             curmanifest["items"][0]["annotations"][0]["items"].append(anno)
                             annocounter += 1
-                        f = open(outpath + "/iiif/mf/" + sur + "/manifest.json", 'w', encoding="utf-8")
-                        f.write(json.dumps(curmanifest))
-                        f.close()
+                        with open(outpath + "/iiif/mf/" + sur + "/manifest.json", 'w', encoding="utf-8") as f:
+                            f.write(json.dumps(curmanifest))
 
     @staticmethod
     def generateIIIFManifest(g, outpath, deploypath, imgpaths, annos, annobodies, curind, prefixnamespace, imagetoURI, imagemetadata,metadatanamespaces, label="",
@@ -74,9 +72,8 @@ class IIIFAPIExporter:
             for imgpath in imgpaths:
                 pcstr=str(pagecounter)
                 if imgpath.startswith("<svg") and "http" not in imgpath:
-                    f = open(outpath + "/iiif/svg/" + DocUtils.shortenURI(curind) + "_" + pcstr + ".svg", "w", encoding="utf-8")
-                    f.write(str(imgpath).replace("<svg","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" "))
-                    f.close()
+                    with open(outpath + "/iiif/svg/" + DocUtils.shortenURI(curind) + "_" + pcstr + ".svg", "w", encoding="utf-8") as f:
+                        f.write(str(imgpath).replace("<svg","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" "))
                     imgpath = f"{deploypath}/iiif/svg/{DocUtils.shortenURI(curind)}_{pcstr}.svg"
                 if imgpath not in imagetoURI:
                     imagetoURI[imgpath] = {}
@@ -134,9 +131,8 @@ class IIIFAPIExporter:
             if summary is not None and summary != "" and summary != {}:
                 curiiifmanifest["summary"] = {"en": [str(summary)]}
             os.makedirs(outpath + "/iiif/mf/" + DocUtils.shortenURI(curind))
-            f = open(outpath + "/iiif/mf/" + DocUtils.shortenURI(curind) + "/manifest.json", "w", encoding="utf-8")
-            f.write(json.dumps(curiiifmanifest))
-            f.close()
+            with open(outpath + "/iiif/mf/" + DocUtils.shortenURI(curind) + "/manifest.json", "w", encoding="utf-8") as f:
+                f.write(json.dumps(curiiifmanifest))
         # if annos!=None:
         #    self.generateIIIFAnnotations(self.outpath,annos,curind,next(iter(imgpaths)))
         besttype = ""
@@ -166,11 +162,10 @@ class IIIFAPIExporter:
                 else:
                    imghtml += DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", "")) + "</a></figcaption></figure></li>"
         if targetfile is not None:
-            f = open(targetfile, "w")
-            f.write(headertemplate)
-            f.write(imagegridtemplate.replace("{{imagecontainers}}",imghtml).replace("{{categories}}",str(categories).replace("{","").replace("}","")))
-            f.write(footertemplate)
-            f.close()
+            with open(targetfile, "w",encoding="utf-8") as f:
+                f.write(headertemplate)
+                f.write(imagegridtemplate.replace("{{imagecontainers}}",imghtml).replace("{{categories}}",str(categories).replace("{","").replace("}","")))
+                f.write(footertemplate)
         else:
             imggrid=headertemplate
             imggrid+=imagegridtemplate.replace("{{imagecontainers}}",imghtml).replace("{{categories}}",str(categories).replace("{","").replace("}",""))
@@ -204,10 +199,9 @@ class IIIFAPIExporter:
         if not os.path.exists(outpath + "/iiif/collection/"):
             os.makedirs(outpath + "/iiif/collection/")
         if os.path.exists(outpath + "/iiif/collection/iiifcoll.json"):
-            f=open(outpath+"/iiif/collection/iiifcoll.json","r",encoding="utf-8")
-            collections={}
-            collections["main"]=json.loads(f.read())
-            f.close()
+            collections = {}
+            with open(outpath+"/iiif/collection/iiifcoll.json","r",encoding="utf-8") as f:
+                collections["main"]=json.loads(f.read())
         else:
             collections = {"main": {"@context": "http://iiif.io/api/presentation/3/context.json",
                                     "id": deploypath + "/iiif/collection/iiifcoll.json", "type": "Collection",
@@ -239,19 +233,14 @@ class IIIFAPIExporter:
         for coll in collections:
             if coll!="main":
                 collections["main"]["items"].append(collections[coll])
-                f=open(outpath+"/iiif/collection/"+str(DocUtils.shortenURI(coll))+".json","w",encoding="utf-8")
-                f.write(json.dumps(collections[coll]))
-                f.close()
-        f = open(outpath + "/iiif/collection/iiifcoll.json", "w", encoding="utf-8")
-        f.write(json.dumps(collections["main"]))
-        f.close()
+                with open(outpath+"/iiif/collection/"+str(DocUtils.shortenURI(coll))+".json","w",encoding="utf-8") as f:
+                    f.write(json.dumps(collections[coll]))
+        with open(outpath + "/iiif/collection/iiifcoll.json", "w", encoding="utf-8") as f:
+            f.write(json.dumps(collections["main"]))
         iiifindex = """<html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"><script src="https://unpkg.com/mirador@latest/dist/mirador.min.js"></script></head><body><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500"><div id="my-mirador"/><script type="text/javascript">var mirador = Mirador.viewer({"id": "my-mirador","manifests": {"collection/iiifcoll.json": {"provider": "Harvard University"}},"windows": [{"loadedManifest": "collection/iiifcoll.json","canvasIndex": 2,"thumbnailNavigationPosition": 'far-bottom'}]});</script></body></html>"""
-        f = open(outpath + "/iiif/index.html", "w", encoding="utf-8")
-        f.write(iiifindex)
-        f.close()
-        f = open(outpath + "/iiif/api.html", "w", encoding="utf-8")
-        f.write(apihtml)
-        f.close()
-        f = open(outpath + "/iiif/api.json", "w", encoding="utf-8")
-        f.write(json.dumps(apijson))
-        f.close()
+        with open(outpath + "/iiif/index.html", "w", encoding="utf-8") as f:
+            f.write(iiifindex)
+        with open(outpath + "/iiif/api.html", "w", encoding="utf-8") as f:
+            f.write(apihtml)
+        with open(outpath + "/iiif/api.json", "w", encoding="utf-8") as f:
+            f.write(json.dumps(apijson))

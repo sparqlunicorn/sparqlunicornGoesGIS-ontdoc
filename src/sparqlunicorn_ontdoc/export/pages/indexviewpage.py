@@ -59,7 +59,6 @@ class IndexViewPage:
                     if ex not in ExporterUtils.rdfformats:
                         with open(path + "index." + str(ex), 'w', encoding='utf-8') as f:
                             ExporterUtils.exportToFunction[ex](subgraph, f, subjectstorender, classlist, ex)
-                            f.close()
                     else:
                         ExporterUtils.exportToFunction[ex](subgraph, path + "index." + str(ex), subjectstorender,
                                                            classlist, ex)
@@ -85,16 +84,15 @@ class IndexViewPage:
                          templates["vowltemplate"].replace("{{vowlpath}}", "minivowl_result.js")
             if pubconfig["startconcept"] is not None and path == pubconfig["outpath"] and pubconfig["startconcept"] in uritotreeitem:
                 startconcept=pubconfig["startconcept"]
-                if pubconfig["createCollections"]:
-                    indexhtml += f"<p>Start exploring the graph here: <img src=\"{tree['types'][uritotreeitem[startconcept][-1]['type']]['icon']}\" height=\"25\" width=\"25\" alt=\"" + \
-                                 uritotreeitem[startconcept][-1]["type"] + "\"/><a property=\"http://rdfs.org/ns/void#rootResource\" resource=\"" + str(
-                        startconcept) + "\" href=\"" + DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixns"], 0, str(startconcept), True) + "\">" + DocUtils.shortenURI(
-                        startconcept) + "</a></p>"
-                else:
-                    indexhtml += "<p>Start exploring the graph here: <img src=\"" + tree["types"][uritotreeitem[startconcept][-1]["type"]]["icon"] + "\" height=\"25\" width=\"25\" alt=\"" + \
-                                 uritotreeitem[startconcept][-1]["type"] + "\"/><a property=\"http://rdfs.org/ns/void#rootResource\" resource=\"" + str(
-                        startconcept) + "\" href=\"" + DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixns"], 0, str(startconcept), True) + "\">" + DocUtils.shortenURI(
-                        startconcept) + "</a></p>"
+                indexhtml += "<p>Start exploring the graph here: <img src=\"" + \
+                             tree["types"][uritotreeitem[startconcept][-1]["type"]][
+                                 "icon"] + "\" height=\"25\" width=\"25\" alt=\"" + \
+                             uritotreeitem[startconcept][-1][
+                                 "type"] + "\"/><a property=\"http://rdfs.org/ns/void#rootResource\" resource=\"" + str(
+                    startconcept) + "\" href=\"" + DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixns"], 0,
+                                                                                               str(startconcept),
+                                                                                               True) + "\">" + DocUtils.shortenURI(
+                    startconcept) + "</a></p>"
             indexhtml += "<table about=\"" + str(
                 voidds) + "\" typeof=\"http://rdfs.org/ns/void#Dataset\" property=\"http://rdfs.org/ns/void#dataDump\" resource=\"" + str(
                 pubconfig["deploypath"] + "/index.ttl") + "\" class=\"description\" style =\"height: 100%; overflow: auto\" border=1 id=indextable><thead><tr><th>Class</th><th>Number of instances</th><th>Instance Example</th></tr></thead><tbody>"
@@ -103,8 +101,7 @@ class IndexViewPage:
                     item["type"] == "geocollection") and "instancecount" in item and item["instancecount"] > 0:
                     exitem = None
                     for item2 in tree["core"]["data"]:
-                        if item2["parent"] == item["id"] and (
-                                item2["type"] == "instance" or item2["type"] == "geoinstance") and nslink in item2["id"]:
+                        if item2["parent"] == item["id"] and (item2["type"] == "instance" or item2["type"] == "geoinstance") and nslink in item2["id"]:
                             exitem = f"<td><img src=\"{tree['types'][item2['type']]['icon']}\" height=\"25\" width=\"25\" alt=\"{item2['type']}\"/><a property=\"http://rdfs.org/ns/void#exampleResource\" resource=\"" + str(
                                 DocUtils.shortenURI(str(item2["id"]))) + "\" href=\"" + DocUtils.generateRelativeLinkFromGivenDepth(
                                 pubconfig["prefixns"], checkdepth, str(re.sub("_suniv[0-9]+_", "", item2["id"])),
@@ -137,5 +134,4 @@ class IndexViewPage:
             # print(path)
             with open(path + "index.html", 'w', encoding='utf-8') as f:
                 f.write(indexhtml)
-                f.close()
 

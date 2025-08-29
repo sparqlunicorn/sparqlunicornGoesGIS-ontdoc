@@ -218,14 +218,12 @@ class StacAPIExporter:
                                                                                                        "") + "/items/indexc.html\">[Collection as HTML]</a>&nbsp;<a href=\"" + opweb.replace(
                     ".geojson", "") + "/items/\">[Collection as JSON]</a>&nbsp;<a href=\"" + opweb.replace(".geojson",
                                                                                                            "") + "/items/index.ttl\">[Collection as TTL]</a></td></tr>"
-                f = open(op + "index.json", "w", encoding="utf-8")
-                f.write(json.dumps(currentcollection))
-                f.close()
-                f = open(op + "indexc.html", "w", encoding="utf-8")
-                f.write("<html><head></head><body><h1>" + featurecollectionspaths[coll][
-                    "name"] + "</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>" + str(
-                    curcollrow) + "</tbody></table></html>")
-                f.close()
+                with open(op + "index.json", "w", encoding="utf-8") as f:
+                    f.write(json.dumps(currentcollection))
+                with open(op + "indexc.html", "w", encoding="utf-8") as f:
+                    f.write("<html><head></head><body><h1>" + featurecollectionspaths[coll][
+                        "name"] + "</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>" + str(
+                        curcollrow) + "</tbody></table></html>")
                 collectiontable += curcollrow
                 if os.path.exists(coll):
                     try:
@@ -253,10 +251,8 @@ class StacAPIExporter:
                                     "nonns_" + featurecollectionspaths[coll]["id"] + ".geojson",
                                     "nonns_" + featurecollectionspaths[coll]["id"] + ".html"),
                                 str(op + "/items/indexc.html").replace("//", "/"), outpath)
-                            f = open(str(op + "/items/indexc.html"), "w")
-                            f.write(
-                                "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + targetpath + "\" /></head></html>")
-                            f.close()
+                            with open(str(op + "/items/indexc.html"), "w",encoding="utf-8") as f:
+                                f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + targetpath + "\" /></head></html>")
                         #print("symlinks created")
                     except Exception as e:
                         print("symlink creation error")
@@ -344,7 +340,7 @@ class StacAPIExporter:
                             if os.path.exists(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.html"):
                                 targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.html", str(op + "/items/" + str(
                                     DocUtils.shortenURI(feat["id"])) + "/index.html").replace("//", "/"), outpath, True)
-                                f = open(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"]))) + "/index.html", "w")
+                                f = open(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"]))) + "/index.html", "w",encoding="utf-8")
                                 f.write(
                                     "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + targetpath + "\" /></head></html>")
                                 f.close()
@@ -360,21 +356,15 @@ class StacAPIExporter:
                 output_file.write("var featurecolls=" + json.dumps(result))
                 # shutil.move(coll, op+"/items/index.json")
         if ogcapi:
-            f = open(outpath + "/index.json", "w", encoding="utf-8")
-            f.write(json.dumps(landingpagejson))
-            f.close()
-            f = open(outpath + "/api/index.json", "w", encoding="utf-8")
-            f.write(json.dumps(apijson))
-            f.close()
-            f = open(outpath + "/api/api.html", "w", encoding="utf-8")
-            f.write(apihtml)
-            f.close()
-            f = open(outpath + "/collections/indexc.html", "w", encoding="utf-8")
-            f.write(collectionshtml.replace("{{collectiontable}}", collectiontable))
-            f.close()
-            f = open(outpath + "/collections/index.json", "w", encoding="utf-8")
-            f.write(json.dumps(collectionsjson))
-            f.close()
-            f = open(outpath + "/conformance/index.json", "w", encoding="utf-8")
-            f.write(json.dumps(conformancejson))
-            f.close()
+            with open(outpath + "/index.json", "w", encoding="utf-8") as f:
+                f.write(json.dumps(landingpagejson))
+            with open(outpath + "/api/index.json", "w", encoding="utf-8") as f:
+                f.write(json.dumps(apijson))
+            with open(outpath + "/api/api.html", "w", encoding="utf-8") as f:
+                f.write(apihtml)
+            with open(outpath + "/collections/indexc.html", "w", encoding="utf-8") as f:
+                f.write(collectionshtml.replace("{{collectiontable}}", collectiontable))
+            with open(outpath + "/collections/index.json", "w", encoding="utf-8") as f:
+                f.write(json.dumps(collectionsjson))
+            with open(outpath + "/conformance/index.json", "w", encoding="utf-8") as f:
+                f.write(json.dumps(conformancejson))

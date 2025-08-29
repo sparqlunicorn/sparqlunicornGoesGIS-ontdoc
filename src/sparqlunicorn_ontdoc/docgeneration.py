@@ -146,7 +146,6 @@ class OntDocGeneration:
                 print(traceback.format_exc())
         with open(outpath + self.pubconfig["corpusid"] + '_search.js', 'w', encoding='utf-8') as f:
             f.write("var search=" + json.dumps(labeltouri, indent=2, sort_keys=True))
-            f.close()
         if self.pubconfig["offlinecompat"]:
             if os.path.exists(outpath + "icons/"):
                 shutil.rmtree(outpath + "icons/")
@@ -160,7 +159,7 @@ class OntDocGeneration:
                 print("Exception occurred " + str(e))
         classidset = set()
         start=time.time()
-        clsress = ClassTreeUtils.getClassTree(self.graph, uritolabel, classidset, uritotreeitem,self.typeproperty,self.pubconfig["prefixes"],self.preparedclassquery,self.pubconfig["outpath"],self.pubconfig)
+        clsress = ClassTreeUtils.getClassTree(self.graph, uritolabel, classidset, uritotreeitem,self.typeproperty,self.pubconfig["prefixes"],self.preparedclassquery,res["instancecount"],self.pubconfig["outpath"],self.pubconfig)
         end=time.time()
         self.exectimes["Class Tree Generation"]={"time":end-start,"items":len(clsress[2])}
         print(f"Class Tree Generation time for {len(clsress[2])} classes: {end-start} seconds")
@@ -185,28 +184,25 @@ class OntDocGeneration:
         print(f"Void stats generation time for {len(classidset)} classes: {end-start} seconds")
         with open(outpath + "style.css", 'w', encoding='utf-8') as f:
             f.write(templates["style"])
-            f.close()
         with open(outpath + "startscripts.js", 'w', encoding='utf-8') as f:
             f.write(templates["startscripts"].replace("{{baseurl}}", prefixnamespace))
-            f.close()
         with open(outpath + "epsgdefs.js", 'w', encoding='utf-8') as f:
             f.write(templates["epsgdefs"])
-            f.close()
         paths = {}
         nonnsmap = {}
         postprocessing = Graph()
         subtorencounter = 0
         start=time.time()
         for subj in subjectstorender:
-            path = subj.replace(prefixnamespace, "")
+            path=DocUtils.replaceColonFromWinPath(subj.replace(prefixnamespace, ""))
             # try:
             paths = DocUtils.processSubjectPath(outpath, paths, path, self.graph)
-            if os.path.exists(outpath + path + "/index.ttl"):
-                try:
-                    self.graph.parse(outpath + path + "/index.ttl")
-                except Exception as e:
-                    print(e)
-                    print(traceback.format_exc())
+            #if os.path.exists(outpath + path + "/index.ttl"):
+            #    try:
+            #        self.graph.parse(outpath + path + "/index.ttl")
+            #    except Exception as e:
+            #        print(e)
+            #        print(traceback.format_exc())
             res = self.htmlexporter.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace,
                                   self.graph.subject_predicates(subj),
                                   self.graph, str(self.pubconfig["corpusid"]) + "_search.js", str(self.pubconfig["corpusid"]) + "_classtree.js",
@@ -256,19 +252,15 @@ class OntDocGeneration:
             print("NonNS Page Generation time "+str(end-start)+" seconds")
         with open(outpath + self.pubconfig["corpusid"] + "_classtree.js", 'w', encoding='utf-8') as f:
             f.write("var tree=" + json.dumps(tree, indent=2))
-            f.close()
         with open(outpath +  self.pubconfig["corpusid"] + '_search.js', 'w', encoding='utf-8') as f:
             f.write("var search=" + json.dumps(labeltouri, indent=2, sort_keys=True))
-            f.close()
         if self.htmlexporter.has3d:
             if not os.path.exists(outpath + "/js"):
                 os.makedirs(outpath + "/js")
             with open(outpath + "/js/corto.em.js", 'w', encoding='utf-8') as f:
                 f.write(templates["corto.em"])
-                f.close()
             with open(outpath + "/js/nexus.js", 'w', encoding='utf-8') as f:
                 f.write(templates["nexus"])
-                f.close()
         if self.pubconfig["apis"]["iiif"]:
             IIIFAPIExporter.generateIIIFAnnotations(outpath, self.htmlexporter.imagetoURI)
         if self.pubconfig["createIndexPages"]:
@@ -284,7 +276,6 @@ class OntDocGeneration:
         if "sparqltemplate" in templates:
             with open(outpath + "sparql.html", 'w', encoding='utf-8') as f:
                 SPARQLPage().generatePageView(templates, self.pubconfig, curlicense, self.voidstatshtml,self.graph, f)
-                f.close()
         relpath = DocUtils.generateRelativePathFromGivenDepth(0)
         if len(self.htmlexporter.iiifmanifestpaths["default"]) > 0:
             start=time.time()
@@ -359,7 +350,6 @@ class OntDocGeneration:
             indexhtml+=tempfoot
             with open(outpath + "featurecollections.html", 'w', encoding='utf-8') as f:
                 f.write(indexhtml)
-                f.close()
         return subjectstorender
 
 
@@ -576,40 +566,39 @@ def main():
         "orientation": "any",
         "display": "standalone"
     }
-    f=open(outpath[0] + "/manifest.json", "w", encoding="utf-8")
-    f.write(json.dumps(manifest))
-    f.close()
+    with open(outpath[0] + "/manifest.json", "w", encoding="utf-8") as f:
+        f.write(json.dumps(manifest))
     if not os.path.exists(outpath[0] + '/index.html'):
-        indexf = open(outpath[0] + "/index.html", "w", encoding="utf-8")
-        nonnslink = ""
-        relpath = ""
-        indexhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], "", "0", "true",docgen.pubconfig)
-        indexhtml = indexhtml.replace("{{iconprefixx}}", (relpath + "icons/" if args.offlinecompat else "")).replace(
-            "{{baseurl}}", args.prefixns).replace("{{relativepath}}", relpath).replace("{{relativedepth}}",
-                                                                                       "0").replace("{{toptitle}}",
-                                                                                                    "Index page").replace(
-            "{{title}}", "Index page").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}",
-                                                                                                 "style.css") \
-            .replace("{{classtreefolderpath}}", args.prefixnsshort + "_classtree.js").replace("{{baseurlhtml}}",
-                                                                                              ".").replace(
-            "{{nonnslink}}", str(nonnslink)).replace("{{proprelationpath}}", "proprelations.js").replace(
-            "{{scriptfolderpath}}", args.prefixnsshort + '_search.js').replace("{{exports}}",
-                                                                               templates["nongeoexports"]).replace(
-            "{{bibtex}}", "")
-        indexhtml += "<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>"
-        indexhtml += "<table class=\"description\" border=1 id=indextable><thead><tr><th>Dataset</th></tr></thead><tbody>"
-        subfolders = [f.path for f in os.scandir(outpath[0]) if f.is_dir()]
-        #print(subfolders)
-        for path in subfolders:
-            indexhtml += "<tr><td><a href=\"" + path.replace(outpath[0] + "/", "") + "/index.html\">" + path.replace(
-                outpath[0] + "/", "") + "</a></td></tr>"
-        indexhtml += "</tbody></table><script>$('#indextable').DataTable();</script>"
-        indexhtml += DocUtils.replaceStandardVariables(templates["footer"], "", "0", "true",docgen.pubconfig).replace("{{license}}", curlicense).replace("{{exports}}",
-                                                                                    templates["nongeoexports"]).replace(
-            "{{bibtex}}", "").replace("{{stats}}", "")
-        # print(indexhtml)
-        indexf.write(indexhtml)
-        indexf.close()
+        with open(outpath[0] + "/index.html", "w", encoding="utf-8") as indexf:
+            nonnslink = ""
+            relpath = ""
+            indexhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], "", "0", "true",docgen.pubconfig)
+            indexhtml = indexhtml.replace("{{iconprefixx}}", (relpath + "icons/" if args.offlinecompat else "")).replace(
+                "{{baseurl}}", args.prefixns).replace("{{relativepath}}", relpath).replace("{{relativedepth}}",
+                                                                                           "0").replace("{{toptitle}}",
+                                                                                                        "Index page").replace(
+                "{{title}}", "Index page").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}",
+                                                                                                     "style.css") \
+                .replace("{{classtreefolderpath}}", args.prefixnsshort + "_classtree.js").replace("{{baseurlhtml}}",
+                                                                                                  ".").replace(
+                "{{nonnslink}}", str(nonnslink)).replace("{{proprelationpath}}", "proprelations.js").replace(
+                "{{scriptfolderpath}}", args.prefixnsshort + '_search.js').replace("{{exports}}",
+                                                                                   templates["nongeoexports"]).replace(
+                "{{bibtex}}", "")
+            indexf.write(indexhtml)
+            indexf.write("<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>")
+            indexf.write("<table class=\"description\" border=1 id=indextable><thead><tr><th>Dataset</th></tr></thead><tbody>")
+            subfolders = [f.path for f in os.scandir(outpath[0]) if f.is_dir()]
+            #print(subfolders)
+            for path in subfolders:
+                indexf.write("<tr><td><a href=\"" + path.replace(outpath[0] + "/", "") + "/index.html\">" + path.replace(
+                    outpath[0] + "/", "") + "</a></td></tr>")
+            indexf.write("</tbody></table><script>$('#indextable').DataTable();</script>")
+            indexf.write(DocUtils.replaceStandardVariables(templates["footer"], "", "0", "true",docgen.pubconfig).replace("{{license}}", curlicense).replace("{{exports}}",
+                                                                                        templates["nongeoexports"]).replace(
+                "{{bibtex}}", "").replace("{{stats}}", ""))
+            # print(indexhtml)
+            indexf.write(indexhtml)
 
 
 if __name__ == "__main__":

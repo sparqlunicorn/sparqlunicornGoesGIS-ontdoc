@@ -290,16 +290,15 @@ class HTMLExporter():
             if "http:" in savepath:
                 completesavepath = savepath[0:savepath.find("http:") - 1] + savepath[savepath.find("http:"):].replace(":", "_").replace("/", "_")
             else:
-                completesavepath = DocUtils.replaceColonFromWinPath(savepath)
+                completesavepath = savepath
             nonnslink = f"<div>This page describes linked instances to the concept  <a target=\"_blank\" href=\"{subject}\">{foundlabel} ({DocUtils.shortenURI(subject)}) </a> in this knowledge graph. It is defined <a target=\"_blank\" href=\"{subject}\">here</a></div>"
         else:
-            completesavepath = DocUtils.replaceColonFromWinPath(savepath) + "/index.html"
+            completesavepath = savepath + "/index.html"
             if os.path.exists(savepath):
                 try:
                     ttlf.serialize(savepath + "/index.ttl", encoding="utf-8")
                     with open(savepath + "/index.json", 'w', encoding='utf-8') as f:
                         f.write(json.dumps(predobjmap))
-                        f.close()
                 except Exception as e:
                     print(e)
                     print(traceback.format_exc())
@@ -480,7 +479,6 @@ class HTMLExporter():
                                                                 checkdepth) + "/api/3/\">[CKAN]</a>"
                                                         ], "{{apis}}")
             f.write(tempfoot)
-            f.close()
         # except Exception as inst:
         #    print("Could not write " + str(completesavepath))
         #    print(inst)

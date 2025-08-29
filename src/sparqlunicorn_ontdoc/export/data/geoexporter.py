@@ -52,13 +52,12 @@ class GeoExporter:
         typeToRes=res[1]
         typeToGeom=res[2]
         for type in typeToFields:
-            f = open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
-                type) + "." + formatt, "w", encoding="utf-8")
-            resjson={"type":"FeatureCollection","features":[]}
-            for res in typeToRes[type]:
-                resjson["features"].append({"type":"Feature","properties":res,"geometry":typeToGeom[type]})
-            f.write(json.dumps(resjson))
-            f.close()
+            with open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
+                type) + "." + formatt, "w", encoding="utf-8") as f:
+                resjson={"type":"FeatureCollection","features":[]}
+                for res in typeToRes[type]:
+                    resjson["features"].append({"type":"Feature","properties":res,"geometry":typeToGeom[type]})
+                f.write(json.dumps(resjson))
         return None
 
     @staticmethod
@@ -68,13 +67,12 @@ class GeoExporter:
         typeToRes=res[1]
         typeToGeom=res[2]
         for type in typeToFields:
-            f = open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
-                type) + "." + formatt, "w", encoding="utf-8")
-            resjson={"type":"FeatureCollection","features":[]}
-            for res in typeToRes[type]:
-                resjson["features"].append({"type":"Feature","properties":res,"geometry":typeToGeom[type]})
-            f.write(json.dumps(resjson))
-            f.close()
+            with open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
+                type) + "." + formatt, "w", encoding="utf-8") as f:
+                resjson={"type":"FeatureCollection","features":[]}
+                for res in typeToRes[type]:
+                    resjson["features"].append({"type":"Feature","properties":res,"geometry":typeToGeom[type]})
+                f.write(json.dumps(resjson))
         return None
 
     @staticmethod
@@ -106,15 +104,14 @@ class GeoExporter:
         typeToRes=res[1]
         typeToGeom=res[2]
         for type in typeToFields:
-            f = open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
-                type) + "." + formatt, "w", encoding="utf-8")
-            f.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?><kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\">\n")
-            f.write("<Placemark>\n")
-            f.write("<"+str(typeToGeom[type]["type"]+">\n<coordinates>\n"))
-            f.write(str(typeToGeom[type]["coordinates"].replace("[","").replace("]","")))
-            f.write("</coordinates>\n</"+str(typeToGeom[type]["type"])+">\n")
-            f.write("</Placemark>\n</kml>")
-            f.close()
+            with open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
+                type) + "." + formatt, "w", encoding="utf-8") as f:
+                f.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?><kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\">\n")
+                f.write("<Placemark>\n")
+                f.write("<"+str(typeToGeom[type]["type"]+">\n<coordinates>\n"))
+                f.write(str(typeToGeom[type]["coordinates"].replace("[","").replace("]","")))
+                f.write("</coordinates>\n</"+str(typeToGeom[type]["type"])+">\n")
+                f.write("</Placemark>\n</kml>")
         return None
 
     @staticmethod
@@ -124,32 +121,31 @@ class GeoExporter:
         typeToRes=ress[1]
         typeToGeom=ress[2]
         for type in typeToFields:
-            f = open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
-                type) + "." + formatt, "w", encoding="utf-8")
-            f.write("<mapml>\n<head>\n<title></title>\n</head>\n<body>\n")
-            for res in typeToRes[type]:
-                f.write("<feature id=\""+str("")+"\" \"itemscope\"=\"itemscope\">\n")
-                f.write("<properties>\n<div class=\"table-container\"><table>\n<caption>Feature Properties</caption>\n<thead><tr><th>Property</th><th>Value</th></tr></thead>\n<tbody>\n")
-                for prop in res:
-                    f.write("<tr>\n<td itemprop=\""+str(prop)+"\"><a href=\""+str(prop)+"\">"+DocUtils.shortenURI(prop)+"</a></td>\n")
-                    if str(res[prop]).startswith("http"):
-                        f.write("<td><a href=\""+str(res[prop])+"\">"+DocUtils.shortenURI(res[prop])+"</a></td>\n")
-                    elif "^^" in str(res[prop]):
-                        f.write("<td><a href=\""+str(res[prop][res[prop].rfind("^^")+1:])+"\">"+res[prop][0:res[prop].rfind("^^")-2]+"</a></td>\n")
-                    else:
-                        f.write("<td>"+str(res[prop])+"</td>\n")
-                    f.write("</tr>\n")
-                f.write("</tbody>\n</table>\n</properties>\n")
-                f.write("<geometry>\n")
-                f.write("<"+str(typeToGeom[res]["type"])+">\n")
-                f.write("<coordinates>\n")
-                f.write(GeoExporter.geometryToCoordinateList(typeToGeom[res]))
-                f.write("</coordinates>\n")
-                f.write("</"+str(typeToGeom[res]["type"])+">\n")
-                f.write("</geometry>\n")
-                f.write("</feature>\n")
-            f.write("</body>\n</mapml>")
-            f.close()
+            with open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
+                type) + "." + formatt, "w", encoding="utf-8") as f:
+                f.write("<mapml>\n<head>\n<title></title>\n</head>\n<body>\n")
+                for res in typeToRes[type]:
+                    f.write("<feature id=\""+str("")+"\" \"itemscope\"=\"itemscope\">\n")
+                    f.write("<properties>\n<div class=\"table-container\"><table>\n<caption>Feature Properties</caption>\n<thead><tr><th>Property</th><th>Value</th></tr></thead>\n<tbody>\n")
+                    for prop in res:
+                        f.write("<tr>\n<td itemprop=\""+str(prop)+"\"><a href=\""+str(prop)+"\">"+DocUtils.shortenURI(prop)+"</a></td>\n")
+                        if str(res[prop]).startswith("http"):
+                            f.write("<td><a href=\""+str(res[prop])+"\">"+DocUtils.shortenURI(res[prop])+"</a></td>\n")
+                        elif "^^" in str(res[prop]):
+                            f.write("<td><a href=\""+str(res[prop][res[prop].rfind("^^")+1:])+"\">"+res[prop][0:res[prop].rfind("^^")-2]+"</a></td>\n")
+                        else:
+                            f.write("<td>"+str(res[prop])+"</td>\n")
+                        f.write("</tr>\n")
+                    f.write("</tbody>\n</table>\n</properties>\n")
+                    f.write("<geometry>\n")
+                    f.write("<"+str(typeToGeom[res]["type"])+">\n")
+                    f.write("<coordinates>\n")
+                    f.write(GeoExporter.geometryToCoordinateList(typeToGeom[res]))
+                    f.write("</coordinates>\n")
+                    f.write("</"+str(typeToGeom[res]["type"])+">\n")
+                    f.write("</geometry>\n")
+                    f.write("</feature>\n")
+                f.write("</body>\n</mapml>")
         return None
 
     @staticmethod

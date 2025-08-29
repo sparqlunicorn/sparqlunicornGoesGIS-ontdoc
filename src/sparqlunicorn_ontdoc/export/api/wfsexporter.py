@@ -5,7 +5,7 @@ class WFSExporter:
 
     @staticmethod
     def generateFeatureDescriptions(outpath,deploypath,featurecollectionspaths,version,fsresult):
-        result=" <?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><schema xmlns:myns=\"http://www.someserver.example.com/myns\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns=\"http://www.w3.org/2001/XMLSchema\" xmlns:gml=\"http://www.opengis.net/gml/3.2\" targetNamespace=\"http://www.someserver.example.com/myns\" elementFormDefault=\"qualified\" version=\"2.0.2\"><import namespace=\"http://www.opengis.net/gml/3.2\" schemaLocation=\"http://schemas.opengis.net/gml/3.2.1/gml.xsd\"/>"
+        result="<schema xmlns:myns=\"http://www.someserver.example.com/myns\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns=\"http://www.w3.org/2001/XMLSchema\" xmlns:gml=\"http://www.opengis.net/gml/3.2\" targetNamespace=\"http://www.someserver.example.com/myns\" elementFormDefault=\"qualified\" version=\"2.0.2\"><import namespace=\"http://www.opengis.net/gml/3.2\" schemaLocation=\"http://schemas.opengis.net/gml/3.2.1/gml.xsd\"/>"
         os.mkdir(outpath + "/wfs/DescribeFeatureType")
         for coll in featurecollectionspaths:
             curcoll = None
@@ -111,8 +111,7 @@ class WFSExporter:
 
     @staticmethod
     def generateWFSPages10(outpath,deploypath,featurecollectionspaths,license,wfsversion):
-        getcapabilities = f"""<?xml version="1.0" encoding="UTF-8" ?>
-        <wfs:WFS_Capabilities xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-capabilities.xsd" version="1.0.0">
+        getcapabilities = f"""<wfs:WFS_Capabilities xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-capabilities.xsd" version="1.0.0">
             <wfs:Service>
                 <wfs:Name>Static WFS {wfsversion}</wfs:Name>
                 <wfs:Title>Static WFS for {deploypath}</wfs:Title>
