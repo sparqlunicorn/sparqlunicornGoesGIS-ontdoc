@@ -41,14 +41,12 @@ class WFSExporter:
                             result+=f"""<element name="{prop}" minOccurs="0"/>"""
                         result+="</sequence></extension></complexContent></complexType>"
                 result+="</schema>"
-                f = open(op + "/index.xml", "w", encoding="utf-8")
-                f.write(result)
-                f.close()
-                f = open(op + "/indexc.html", "w", encoding="utf-8")
-                f.write("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /></head><body><h1>" + featurecollectionspaths[coll][
-                    "name"] + "</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>" #+ str(curcollrow)
-                     + "</tbody></table></html>")
-                f.close()
+                with open(op + "/index.xml", "w", encoding="utf-8") as f:
+                    f.write(result)
+                with open(op + "/indexc.html", "w", encoding="utf-8") as f:
+                    f.write("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /></head><body><h1>" + featurecollectionspaths[coll][
+                        "name"] + "</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>" #+ str(curcollrow)
+                         + "</tbody></table></html>")
 
 
     @staticmethod
@@ -99,14 +97,12 @@ class WFSExporter:
                 #                                                                                       "") + "/items/"+collectionhtmlname+"\">[Collection as HTML]</a>&nbsp;<a href=\"" + opweb.replace(
                 #    ".geojson", "") + "/items/\">[Collection as JSON]</a>&nbsp;<a href=\"" + opweb.replace(".geojson",
                 #                                                                                           "") + "/items/index.ttl\">[Collection as TTL]</a></td></tr>"
-                f = open(op + "/index.json", "w", encoding="utf-8")
-                f.write(json.dumps(currentcollection))
-                f.close()
-                f = open(op + "/indexc.html", "w", encoding="utf-8")
-                f.write("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /></head><body><h1>" + featurecollectionspaths[coll][
-                    "name"] + "</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>" #+ str(curcollrow)
-                     + "</tbody></table></html>")
-                f.close()
+                with open(op + "/index.json", "w", encoding="utf-8") as f:
+                    f.write(json.dumps(currentcollection))
+                with open(op + "/indexc.html", "w", encoding="utf-8") as f:
+                    f.write("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /></head><body><h1>" + featurecollectionspaths[coll][
+                        "name"] + "</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>" #+ str(curcollrow)
+                         + "</tbody></table></html>")
 
 
     @staticmethod
@@ -165,10 +161,8 @@ class WFSExporter:
             <ogc:Filter_Capabilities></ogc:Filter_Capabilities>
         </wfs:WFS_Capabilities>"""
         print("SAVE WFS GETCAPABILITIES: " + str(outpath + "/wfs?request=GetCapabilities&service=WFS&version="+str(wfsversion)))
-
-        f = open(outpath + "/wfs/index.xml", "w", encoding="utf-8")
-        f.write(getcapabilities)
-        f.close()
+        with open(outpath + "/wfs/index.xml", "w", encoding="utf-8") as f:
+            f.write(getcapabilities)
 
     @staticmethod
     def generateWFSPages11(outpath,deploypath,featurecollectionspaths,license,wfsversion):
@@ -238,9 +232,8 @@ class WFSExporter:
         WFSExporter.generateFeatureList(outpath, deploypath, featurecollectionspaths, str(wfsversion), "")
         WFSExporter.generateFeatureDescriptions(outpath, deploypath, featurecollectionspaths, str(wfsversion), "")
         print("SAVE WFS GETCAPABILITIES: " + str(outpath + "/wfs?request=GetCapabilities&service=WFS&version="+str(wfsversion)))
-        f = open(outpath + "/wfs/index.xml", "w", encoding="utf-8")
-        f.write(getcapabilities)
-        f.close()
+        with open(outpath + "/wfs/index.xml", "w", encoding="utf-8") as f:
+            f.write(getcapabilities)
 
     @staticmethod
     def generateWFSPages20(outpath,deploypath,featurecollectionspaths,license,wfsversion):
@@ -282,9 +275,8 @@ class WFSExporter:
         getcapabilities += f"""</wfs:FeatureTypeList>
             <ogc:Filter_Capabilities></ogc:Filter_Capabilities>
         </wfs:WFS_Capabilities>"""
-        f = open(outpath + "/wfs/index.xml", "w", encoding="utf-8")
-        f.write(getcapabilities)
-        f.close()
+        with open(outpath + "/wfs/index.xml", "w", encoding="utf-8") as f:
+            f.write(getcapabilities)
 
     @staticmethod
     def generateWFSPages(outpath,deploypath, featurecollectionspaths,license,wfsversion="1.1.0"):
