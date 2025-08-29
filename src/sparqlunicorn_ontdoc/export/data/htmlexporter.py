@@ -72,14 +72,14 @@ class HTMLExporter():
             "parent"].startswith("http"):
             parentclass = str(uritotreeitem[str(subject)][-1]["parent"])
             uritotreeitem.setdefault(parentclass, [
-                    {"id": parentclass, "parent": "#", "type": "class", "text": DocUtils.shortenURI(str(parentclass)),
-                     "data": {}}])
-            uritotreeitem[parentclass][-1]["instancecount"] = 0
+                    {"id": parentclass, "parent": "#", "type": "class","instancecount":0, "text": DocUtils.shortenURI(str(parentclass)),
+                     "data": {"from":{},"to":{}}}])
+            #uritotreeitem[parentclass][-1]["instancecount"] = 0
         ttlf = Graph(bind_namespaces="rdflib")
         # ttlf = open(savepath + "/index.ttl", "w", encoding="utf-8")
-        if parentclass is not None:
-            uritotreeitem[parentclass][-1]["data"]["to"] = {}
-            uritotreeitem[parentclass][-1]["data"]["from"] = {}
+        #if parentclass is not None:
+        #    uritotreeitem[parentclass][-1]["data"]["to"] = {}
+        #    uritotreeitem[parentclass][-1]["data"]["from"] = {}
         hasnonns = set()
         thetypes = set()
         itembibtex = ""
@@ -95,7 +95,7 @@ class HTMLExporter():
                         uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr]["instancecount"] = 0
                     else:
                         uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr]["instancecount"] += 1
-                        uritotreeitem[parentclass][-1]["instancecount"] += 1
+                        #uritotreeitem[parentclass][-1]["instancecount"] += 1
                 if isinstance(tup[1], URIRef):
                     for item in graph.objects(tup[1], URIRef(self.typeproperty)):
                         thetypes.add(str(item))
@@ -129,7 +129,7 @@ class HTMLExporter():
                         thetypes.add(tpstr)
                         curtypes.add(tpstr)
                         if tpstr in DocConfig.collectionclasses:
-                            uritotreeitem[tpstr][-1]["instancecount"] += 1
+                            #uritotreeitem[tpstr][-1]["instancecount"] += 1
                             collections.add(DocConfig.collectionclasses[tpstr])
                         elif tpstr in DocConfig.bibtextypemappings:
                             itembibtex = f"<details><summary>[BIBTEX]</summary><pre>{BibPage.resolveBibtexReference(graph.predicate_objects(subject), subject,graph)}</pre></details>"
@@ -225,10 +225,11 @@ class HTMLExporter():
             for tup in subpredsmap:
                 subpredtuplen=len(subpredsmap[tup])
                 tablecontentcounter += 1
-                if tablecontentcounter % 2 == 0:
-                    tablecontents += "<tr class=\"odd\">"
-                else:
-                    tablecontents += "<tr class=\"even\">"
+                tablecontents += f'<tr class="{"odd" if tablecontentcounter % 2 == 0 else "even"}">'
+                #if tablecontentcounter % 2 == 0:
+                #    tablecontents += "<tr class=\"odd\">"
+                #else:
+                #    tablecontents += "<tr class=\"even\">"
                 tablecontents = HTMLExporter.formatPredicate(tup, baseurl, checkdepth, tablecontents, graph, True,
                                                              self.pubconfig["labellang"], self.pubconfig["prefixes"])
                 if subpredtuplen > 0:

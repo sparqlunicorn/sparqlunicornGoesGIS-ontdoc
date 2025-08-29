@@ -76,8 +76,7 @@ class GeometryViewPage:
                 properties = {}
                 for geoinstance in graph.predicate_objects(memberid, True):
                     if isinstance(geoinstance[1], Literal) and (
-                            str(geoinstance[0]) in DocConfig.geoproperties or str(
-                        geoinstance[1].datatype) in DocConfig.geoliteraltypes):
+                            str(geoinstance[0]) in DocConfig.geoproperties or str(geoinstance[1].datatype) in DocConfig.geoliteraltypes):
                         geojsonrep = LiteralUtils.processLiteral(str(geoinstance[1]), str(geoinstance[1].datatype), "")
                         uritotreeitem[str(subject)][-1]["type"] = "geocollection"
                     elif str(geoinstance[0]) in DocConfig.geopointerproperties:
