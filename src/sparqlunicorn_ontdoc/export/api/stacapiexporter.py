@@ -340,9 +340,10 @@ class StacAPIExporter:
                             if os.path.exists(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.html"):
                                 targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.html", str(op + "/items/" + str(
                                     DocUtils.shortenURI(feat["id"])) + "/index.html").replace("//", "/"), outpath, True)
-                                with open(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"]))) + "/index.html", "w",encoding="utf-8") as f:
-                                    f.write(
-                                        "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + targetpath + "\" /></head></html>")
+                                f = open(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"]))) + "/index.html", "w",encoding="utf-8")
+                                f.write(
+                                    "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + targetpath + "\" /></head></html>")
+                                f.close()
                             #print("symlinks created")
                         except Exception as e:
                             print("symlink creation error")
