@@ -225,12 +225,12 @@ class OntDocGeneration:
         for subj in postprocessing.subjects(None, None, True):
             path = str(subj).replace(prefixnamespace, "")
             paths = DocUtils.processSubjectPath(outpath, paths, path, self.graph)
-            if os.path.exists(outpath + path + "/index.ttl"):
-                try:
-                    self.graph.parse(outpath + path + "/index.ttl")
-                except Exception as e:
-                    print(e)
-                    print(traceback.format_exc())
+            #if os.path.exists(outpath + path + "/index.ttl"):
+            #    try:
+            #        self.graph.parse(outpath + path + "/index.ttl")
+            #    except Exception as e:
+            #        print(e)
+            #        print(traceback.format_exc())
             self.htmlexporter.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace,
                             self.graph.subject_predicates(subj),
                             self.graph, str(self.pubconfig["corpusid"]) + "_search.js", str(self.pubconfig["corpusid"]) + "_classtree.js", uritotreeitem,
@@ -330,27 +330,27 @@ class OntDocGeneration:
             OGCAPIFeaturesExporter.generateOGCAPIFeaturesPages(outpath, self.pubconfig["deploypath"], self.htmlexporter.featurecollectionspaths,
                                                                self.pubconfig["prefixns"], self.pubconfig["apis"]["ogcapifeatures"], True)
             WFSExporter.generateWFSPages(outpath,self.pubconfig["deploypath"], self.htmlexporter.featurecollectionspaths,self.licenseuri)
-            indexhtml += "<p>This page shows feature collections present in the linked open data export</p><script src=\"features.js\"></script>"
-            indexhtml += templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace(
-                "var featurecolls = {{myfeature}}", "").replace("{{relativepath}}",
-                                                                DocUtils.generateRelativePathFromGivenDepth(0)).replace(
-                "{{baselayers}}",
-                json.dumps(DocConfig.baselayers).replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{dateatt}}", ""))
-            tempfoot = DocUtils.replaceStandardVariables(templates["footer"], "", "0", "true",self.pubconfig).replace("{{license}}",
-                                                                                                     curlicense).replace(
-                "{{subject}}", "").replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "").replace(
-                "{{stats}}", self.voidstatshtml)
-            tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.pubconfig["apis"]["ogcapifeatures"], self.pubconfig["apis"]["iiif"], self.pubconfig["apis"]["ckan"]],
-                                                        [
-                                                            "<a href=\"sparql.html?endpoint=" + str(
-                                                                self.pubconfig["deploypath"]) + "\">[SPARQL]</a>&nbsp;",
-                                                            "<a href=\"api/api.html\">[OGC API Features]</a>&nbsp;",
-                                                            "<a href=\"iiif/\">[IIIF]</a>&nbsp;",
-                                                            "<a href=\"api/3/\">[CKAN]</a>"
-                                                        ], "{{apis}}")
-            indexhtml+=tempfoot
             with open(outpath + "featurecollections.html", 'w', encoding='utf-8') as f:
                 f.write(indexhtml)
+                f.write("<p>This page shows feature collections present in the linked open data export</p><script src=\"features.js\"></script>")
+                f.write(templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace(
+                    "var featurecolls = {{myfeature}}", "").replace("{{relativepath}}",
+                                                                    DocUtils.generateRelativePathFromGivenDepth(0)).replace(
+                    "{{baselayers}}",
+                    json.dumps(DocConfig.baselayers).replace("{{epsgdefspath}}", "epsgdefs.js").replace("{{dateatt}}", "")))
+                tempfoot = DocUtils.replaceStandardVariables(templates["footer"], "", "0", "true",self.pubconfig).replace("{{license}}",
+                                                                                                         curlicense).replace(
+                    "{{subject}}", "").replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "").replace(
+                    "{{stats}}", self.voidstatshtml)
+                tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.pubconfig["apis"]["ogcapifeatures"], self.pubconfig["apis"]["iiif"], self.pubconfig["apis"]["ckan"]],
+                                                            [
+                                                                "<a href=\"sparql.html?endpoint=" + str(
+                                                                    self.pubconfig["deploypath"]) + "\">[SPARQL]</a>&nbsp;",
+                                                                "<a href=\"api/api.html\">[OGC API Features]</a>&nbsp;",
+                                                                "<a href=\"iiif/\">[IIIF]</a>&nbsp;",
+                                                                "<a href=\"api/3/\">[CKAN]</a>"
+                                                            ], "{{apis}}")
+                f.write(tempfoot)
         return subjectstorender
 
 

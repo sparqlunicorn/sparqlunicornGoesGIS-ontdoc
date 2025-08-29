@@ -185,7 +185,6 @@ class GeometryViewPage:
                         "name": featcoll["name"],
                         "id": featcoll["id"]}
                     fgeo.write(json.dumps(featcoll))
-                    fgeo.close()
         return geocache
 
     def generatePageView(self,headertemplate,footertemplate,g,f):
