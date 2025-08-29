@@ -29,24 +29,28 @@ class CKANExporter:
             os.makedirs(outpath + "/api/"+str(version)+"/action/package_list/")
         if not os.path.exists(outpath + "/api/"+str(version)+"/action/tag_list/"):
             os.makedirs(outpath + "/api/"+str(version)+"/action/tag_list/")
-        if not os.path.exists(outpath + "/api/"+str(version)+"/action/package_search"):
-            p = Path(str(outpath + "/api/"+str(version)+"/action/package_search"))
-            p.symlink_to("./package_list/")
-        if not os.path.exists(outpath + "/api/"+str(version)+"/action/group_list?all_fields=true"):
-            p = Path(outpath + "/api/"+str(version)+"/action/group_list?all_fields=true")
-            p.symlink_to("./group_list/")
-        if not os.path.exists(outpath + "/api/action/package_search/"):
-            p = Path(outpath + "/api/action/package_search/")
-            p.symlink_to("../"+str(version)+"/action/package_list/")
-        if not os.path.exists(outpath + "/api/action/group_list/"):
-            p = Path(outpath + "/api/action/group_list/")
-            p.symlink_to("../"+str(version)+"/action/group_list/")
-        if not os.path.exists(outpath + "/api/action/package_list/"):
-            p = Path(outpath + "/api/action/package_list/")
-            p.symlink_to("../"+str(version)+"/action/package_list/")
-        if not os.path.exists(outpath + "/api/action/tag_list/"):
-            p = Path(outpath + "/api/action/tag_list/")
-            p.symlink_to("../"+str(version)+"/action/tag_list/")
+        try:
+            if not os.path.exists(outpath + "/api/"+str(version)+"/action/package_search"):
+                p = Path(str(outpath + "/api/"+str(version)+"/action/package_search"))
+                p.symlink_to("./package_list/")
+            if not os.path.exists(outpath + "/api/"+str(version)+"/action/group_list?all_fields=true"):
+                p = Path(outpath + "/api/"+str(version)+"/action/group_list?all_fields=true")
+                p.symlink_to("./group_list/")
+            if not os.path.exists(outpath + "/api/action/package_search/"):
+                p = Path(outpath + "/api/action/package_search/")
+                p.symlink_to("../"+str(version)+"/action/package_list/")
+            if not os.path.exists(outpath + "/api/action/group_list/"):
+                p = Path(outpath + "/api/action/group_list/")
+                p.symlink_to("../"+str(version)+"/action/group_list/")
+            if not os.path.exists(outpath + "/api/action/package_list/"):
+                p = Path(outpath + "/api/action/package_list/")
+                p.symlink_to("../"+str(version)+"/action/package_list/")
+            if not os.path.exists(outpath + "/api/action/tag_list/"):
+                p = Path(outpath + "/api/action/tag_list/")
+                p.symlink_to("../"+str(version)+"/action/tag_list/")
+        except Exception as e:
+            print(e)
+            print("Symlink creation might not be allowed")
         with open(outpath + "/api/"+str(version)+"/index.json", "w",encoding="utf-8") as f:
             f.write(json.dumps({"version": int(version)}))
         ckanopenapi["paths"]["/api/"+str(version)+"/action/group_list/"] = {"get": {"tags": ["CKAN"],
@@ -87,10 +91,16 @@ class CKANExporter:
                     if item["type"]=="class" or item["type"]=="geoclass":
                         theid=DocUtils.shortenURI(item["id"])
                         classes.append({"description":theid,"display_name":item["text"],"name":item["text"],"title":item["text"],"type":"group"})
-                        if not os.path.exists(outpath + "/api/"+str(version)+"/action/group_show?id="+theid):
-                            os.makedirs(outpath + "/api/"+str(version)+"/action/group_show?id="+theid)
+                        thepath=outpath + "/api/"+str(version)+"/action/group_show?id="+DocUtils.replaceColonFromWinPath(theid)
+                        if not os.path.exists(thepath):
+                            try:
+                                os.makedirs(thepath)
+                            except Exception as e:
+                                thepath=thepath.replace("?","_")
+                                if not os.path.exists(thepath):
+                                    os.makedirs(thepath)
                         groupdesc={"success":True,"result":{"description":theid,"display_name":item["text"],"name":item["text"],"title":item["text"],"type":"group"}}
-                        with open(outpath + "/api/"+str(version)+"/action/group_show?id="+theid+"/index.json", 'w') as fl:
+                        with open(thepath+"/index.json", 'w') as fl:
                             fl.write(json.dumps(groupdesc))
                 f.write(json.dumps({"success": True, "result": classes}))
             else:
@@ -113,27 +123,31 @@ class CKANExporter:
             dataset={"success":True,"result":{"id":curcollname,"type":"dataset","num_resources":3,"title":curcollname,"license_id":license,"license_title":license,"name":curcollname,"notes":"","tags":[],"groups":[],"resources":[{"name":curcollname+" (text/ttl)","format":"TTL","id":curcollname,"package_id":curcollname,"mimetype":"text/ttl","resource_type":"file","url":deploypath+"/dataset/"+curcollname+".ttl","state":"active","url_type":""},{"name":curcollname+" (application/json)","id":curcollname,"format":"JSON","package_id":curcollname,"mimetype":"application/json","resource_type":"file","url":deploypath+"/dataset/"+curcollname+".json","state":"active","url_type":""},{"name":curcollname+" (text/html)","id":curcollname,"format":"HTML","package_id":curcollname,"mimetype":"text/html","resource_type":"file","url":deploypath+"/dataset/"+curcollname+".html","state":"active","url_type":""}]}}
             with open(outpath + "/dataset/"+curcollname+"_", "w",encoding="utf-8") as f:
                 f.write(json.dumps(dataset))
-            if not os.path.exists(str(op + ".json").replace("//", "/")):
-                targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"), str(op + ".json"),
-                                                          outpath)
-                p = Path(str(op + ".json").replace("//", "/"))
-                p.symlink_to(targetpath)
-                p = Path(outpath + "/api/"+str(version)+"/action/package_show?id="+str(curcollname)+".json")
-                p.symlink_to("../../"+targetpath)
-            if not os.path.exists(str(op + ".ttl").replace("//", "/")):
-                targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"), str(op + ".ttl"),
-                                                          outpath)
-                p = Path(str(op + ".ttl").replace("//", "/"))
-                p.symlink_to(targetpath)
-                p = Path(outpath + "/api/"+str(version)+"/action/package_show?id="+str(curcollname)+".ttl")
-                p.symlink_to("../../"+targetpath)
-            if not os.path.exists(str(op + ".html").replace("//", "/")):
-                targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"), str(op + ".html"),
-                                                          outpath)
-                p = Path(str(op + ".html").replace("//", "/"))
-                p.symlink_to(targetpath)
-                p = Path(outpath + "/api/"+str(version)+"/action/package_show?id="+str(curcollname)+".html")
-                p.symlink_to("../../"+targetpath)
+            try:
+                if not os.path.exists(str(op + ".json").replace("//", "/")):
+                    targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"), str(op + ".json"),
+                                                              outpath)
+                    p = Path(str(op + ".json").replace("//", "/"))
+                    p.symlink_to(targetpath)
+                    p = Path(outpath + "/api/"+str(version)+"/action/package_show?id="+str(curcollname)+".json")
+                    p.symlink_to("../../"+targetpath)
+                if not os.path.exists(str(op + ".ttl").replace("//", "/")):
+                    targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"), str(op + ".ttl"),
+                                                              outpath)
+                    p = Path(str(op + ".ttl").replace("//", "/"))
+                    p.symlink_to(targetpath)
+                    p = Path(outpath + "/api/"+str(version)+"/action/package_show?id="+str(curcollname)+".ttl")
+                    p.symlink_to("../../"+targetpath)
+                if not os.path.exists(str(op + ".html").replace("//", "/")):
+                    targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"), str(op + ".html"),
+                                                              outpath)
+                    p = Path(str(op + ".html").replace("//", "/"))
+                    p.symlink_to(targetpath)
+                    p = Path(outpath + "/api/"+str(version)+"/action/package_show?id="+str(curcollname)+".html")
+                    p.symlink_to("../../"+targetpath)
+            except Exception as e:
+                print(e)
+                print("Symlink creation might not be allowed")
             colls.append(dataset["result"])
         with open(outpath + "/api/"+str(version)+"/action/package_list/index.json", "w", encoding="utf-8") as f:
             f.write(json.dumps({"success": True, "result":{"count": len(colls), "results":colls}}))

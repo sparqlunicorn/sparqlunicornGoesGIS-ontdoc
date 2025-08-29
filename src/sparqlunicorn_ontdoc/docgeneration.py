@@ -412,7 +412,7 @@ def main():
     parser.add_argument("-px", "--prefixnsshort", help="the prefix", action="store", default="suni")
     parser.add_argument("-ip", "--createIndexPages", help="create index pages?", default=True,
                         type=lambda x: (str(x).lower() in ['true', '1', 'yes']))
-    parser.add_argument("-cc", "--createCollections", help="create collections?", default=False,
+    parser.add_argument("-cc", "--createCollections", help="create collections?", default=True,
                         type=lambda x: (str(x).lower() in ['true', '1', 'yes']))
     parser.add_argument("-ll", "--labellang", help="preferred label language (default: en)", action="store",
                         default="en")
@@ -438,7 +438,7 @@ def main():
     parser.add_argument("-of", "--offlinecompat", help="built-result is offline compatible", default=False,
                         type=lambda x: (str(x).lower() in ['true', '1', 'yes']))
     parser.add_argument("-ogc", "--ogcapifeatures", help="create ogc api features collections?", action="store",
-                        default=True, type=lambda x: (str(x).lower() in ['true', '1', 'yes']))
+                        default=False, type=lambda x: (str(x).lower() in ['true', '1', 'yes']))
     parser.add_argument("-stac", "--stacapi", help="create stac api collections?", action="store", default=False,
                         type=lambda x: (str(x).lower() in ['true', '1', 'yes']))
     parser.add_argument("-iiif", "--iiifmanifest", help="create iiif manifests?", action="store", default=True,
@@ -447,7 +447,7 @@ def main():
                         type=lambda x: (str(x).lower() in ['true', '1', 'yes']))
     parser.add_argument("-imgmd", "--imagemetadata", help="resolve image metadata?", action="store", default=False,
                         type=lambda x: (str(x).lower() in ['true', '1', 'yes']))
-    parser.add_argument("-ckan", "--ckanapi", help="create static ckan api docs?", action="store", default=True,
+    parser.add_argument("-ckan", "--ckanapi", help="create static ckan api docs?", action="store", default=False,
                         type=lambda x: (str(x).lower() in ['true', '1', 'yes']))
     parser.add_argument("-sc", "--startconcept", help="the concept suggested for browsing the HTML documentation",
                         action="store", default=None)
