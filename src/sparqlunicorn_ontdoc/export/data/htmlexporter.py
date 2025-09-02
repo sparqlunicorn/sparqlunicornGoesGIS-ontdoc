@@ -125,7 +125,7 @@ class HTMLExporter():
                             collections.add(DocConfig.collectionclasses[tpstr])
                         elif tpstr in DocConfig.bibtextypemappings:
                             itembibtex = f"<details><summary>[BIBTEX]</summary><pre>{BibPage.resolveBibtexReference(graph.predicate_objects(subject), subject,graph)}</pre></details>"
-                thetable = HTMLExporter.formatPredicate(tup, baseurl, checkdepth, thetable, graph, inverse, self.pubconfig["labellang"], self.pubconfig["prefixes"])
+                thetable += HTMLExporter.formatPredicate(tup, baseurl, checkdepth, graph, inverse, self.pubconfig["labellang"], self.pubconfig["prefixes"])
                 if tup in DocConfig.labelproperties:
                     for lab in predobjmap[tup]:
                         if lab.language == self.pubconfig["labellang"]:
@@ -222,7 +222,7 @@ class HTMLExporter():
                 #    tablecontents += "<tr class=\"odd\">"
                 #else:
                 #    tablecontents += "<tr class=\"even\">"
-                tablecontents = HTMLExporter.formatPredicate(tup, baseurl, checkdepth, tablecontents, graph, True,
+                tablecontents += HTMLExporter.formatPredicate(tup, baseurl, checkdepth, graph, True,
                                                              self.pubconfig["labellang"], self.pubconfig["prefixes"])
                 if subpredtuplen > 0:
                     tablecontents += "<td class=\"wrapword\">"
@@ -708,9 +708,9 @@ class HTMLExporter():
             return ["""All rights reserved.""", None]
 
     @staticmethod
-    def formatPredicate(tup, baseurl, checkdepth, tablecontents, graph, reverse, labellang, prefixes):
+    def formatPredicate(tup, baseurl, checkdepth, graph, reverse, labellang, prefixes):
         label = DocUtils.getLabelForObject(URIRef(str(tup)), graph, None, labellang)
-        tablecontents += f'<td class="property">{"Is " if reverse else ""}'
+        tablecontents = f'<td class="property">{"Is " if reverse else ""}'
         #if reverse:
         #    tablecontents += "Is "
         if baseurl in str(tup):
@@ -719,7 +719,7 @@ class HTMLExporter():
         else:
             res = DocUtils.replaceNameSpacesInLabel(prefixes, tup)
             tablecontents+= f"<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"{tup}\">{label} "+("<span style=\"color: #666;\">(" + res["uri"] + ")</span>" if res["uri"]!="" else "")+"</a> </span>"
-        return f'<td class="property">{" of" if reverse else ""}</td>'
+        return tablecontents+f'<td class="property">{" of" if reverse else ""}</td>'
         #if reverse:
         #    tablecontents += " of"
         #tablecontents += "</td>"
