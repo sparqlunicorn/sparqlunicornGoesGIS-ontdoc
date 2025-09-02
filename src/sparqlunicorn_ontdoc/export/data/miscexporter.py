@@ -40,9 +40,9 @@ class MiscExporter:
         for sub in subjectstorender:
             if str(sub) not in subjectsToType:
                 continue
-            res={}
-            for tup in g.predicate_objects(sub):
-                res[str(tup[0])]=str(tup[1])
+            res={str(tup[0]):str(tup[1]) for tup in g.predicate_objects(sub)}
+            #for tup in g.predicate_objects(sub):
+            #    res[str(tup[0])]=str(tup[1])
             typeToRes[subjectsToType[str(sub)]].append(res)
         for type in typeToFields:
             with open(os.path.realpath(file.name).replace("."+formatt,"")+"_"+DocUtils.shortenURI(type)+"."+formatt,"w") as f:
@@ -74,9 +74,9 @@ class MiscExporter:
         for sub in subjectstorender:
             if str(sub) not in subjectsToType:
                 continue
-            res = {}
-            for tup in g.predicate_objects(sub):
-                res[str(tup[0])] = str(tup[1])
+            res={str(tup[0]):str(tup[1]) for tup in g.predicate_objects(sub)}
+            #for tup in g.predicate_objects(sub):
+            #    res[str(tup[0])] = str(tup[1])
             typeToRes[subjectsToType[str(sub)]].append(res)
         for type in typeToFields:
             with open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(type) + "." + formatt, "w") as f:

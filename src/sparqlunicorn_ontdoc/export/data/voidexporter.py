@@ -31,18 +31,14 @@ class VoidExporter:
                    Literal("Repository for "+str(dsname), lang="en")))
         g.add((URIRef(voidds),RDF.type,VOID.Dataset))
         g.add((URIRef(voidds), RDF.type, URIRef("http://www.w3.org/ns/adms#Asset")))
-        g.add((URIRef(voidds), RDFS.label,
-              Literal(dsname,lang="en")))
-        g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/title"),
-              Literal(dsname,lang="en")))
+        g.add((URIRef(voidds), RDFS.label,Literal(dsname,lang="en")))
+        g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/title"),Literal(dsname,lang="en")))
         if pubconfig["labellang"] is not None and pubconfig["labellang"]!= "":
-            g.add((URIRef(voidds), DC.language,
-                  URIRef("http://www.lexvo.org/page/iso639-1/"+str(pubconfig["labellang"]))))
+            g.add((URIRef(voidds), DC.language,URIRef("http://www.lexvo.org/page/iso639-1/"+str(pubconfig["labellang"]))))
         g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/modified"),
               Literal(pubconfig["modtime"],datatype=XSD.dateTime)))
         if licenseuri is not None:
-            g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/license"),
-                  URIRef(licenseuri)))
+            g.add((URIRef(voidds), URIRef("http://purl.org/dc/terms/license"),URIRef(licenseuri)))
         g.add((URIRef(voidds), VOID.dataDump,
               URIRef(pubconfig["deploypath"]+"/index.ttl")))
         g.add((URIRef(voidds), FOAF.homepage,

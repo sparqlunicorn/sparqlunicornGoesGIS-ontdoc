@@ -7,6 +7,7 @@ from export.pages.owltimepage import OWLTimePage
 from rdflib import URIRef, Graph, BNode, Literal, XSD
 from rdflib.namespace import RDF
 from collections import defaultdict
+from collections import OrderedDict
 import re
 import os
 import json
@@ -57,7 +58,7 @@ class HTMLExporter():
         imageannos = []
         annobodies = []
         image3dannos = []
-        predobjmap = defaultdict(list)
+        predobjmap = OrderedDict()#defaultdict(list)
         curtypes = set()
         comment = {}
         parentclass = None
@@ -104,7 +105,7 @@ class HTMLExporter():
                         hasnonns.add(tupobjstr)
                         if nonnsmap is not None:
                             nonnsmap.setdefault(tupobjstr,set()).add(subject)
-            for tup in sorted(predobjmap):
+            for tup in predobjmap:
                 predobjtuplen=len(predobjmap[tup])
                 if self.pubconfig["metadatatable"] and tup not in DocConfig.labelproperties and DocUtils.shortenURI(tup,
                                                                                                        True) in DocConfig.metadatanamespaces:
@@ -177,11 +178,13 @@ class HTMLExporter():
                         if res["timeobj"] is not None and res["timeobj"] != []:
                             # print("RESTIMEOBJ: "+str(timeobj))
                             timeobj = res["timeobj"]
-                        labelmap.setdefault(res["label"],"")
+                        #labelmap.setdefault(res["label"],"")
                         if predobjtuplen > 1:
-                            labelmap[res["label"]] += f"<li>{res['html']}</li>"
+                            labelmap.setdefault(f'{res["label"]}<li>{res["html"]}</li>',"")
+                            #labelmap[res["label"]] += f"<li>{res['html']}</li>"
                         else:
-                            labelmap[res["label"]] += f"{res['html']}"
+                            labelmap.setdefault(f'{res["label"]}{res["html"]}', "")
+                            #labelmap[res["label"]] += f"{res['html']}"
                         itemcounter += 1
                     thetable+="".join(labelmap[lab] for lab in sorted(labelmap))
                     #for lab in sorted(labelmap):
@@ -201,7 +204,7 @@ class HTMLExporter():
                     metadatatablecontents = thetable
                 else:
                     tablecontents = thetable
-        subpredsmap = {}
+        subpredsmap = OrderedDict()
         if subpreds is not None:
             for tup in sorted(subpreds, key=lambda tup: tup[1]):
                 tupobjstr=str(tup[1])
@@ -253,11 +256,13 @@ class HTMLExporter():
                             hasnonns.add(str(item))
                         if nonns:
                             geojsonrep = res["geojson"]
-                        labelmap.setdefault(res["label"],"")
+                        #labelmap.setdefault(res["label"],"")
                         if subpredtuplen > 1:
-                            labelmap[res["label"]] += f"<li>{res['html']}</li>"
+                            labelmap.setdefault(f'{res["label"]}<li>{res["html"]}</li>', "")
+                            #labelmap[res["label"]] += f"<li>{res['html']}</li>"
                         else:
-                            labelmap[res["label"]] += f"{res['html']}"
+                            labelmap.setdefault(f'{res["label"]}{res["html"]}', "")
+                            #labelmap[res["label"]] += f"{res['html']}"
                         itemcounter += 1
                     tablecontents += "".join(labelmap[lab] for lab in sorted(labelmap))
                     #for lab in sorted(labelmap) :
@@ -290,7 +295,7 @@ class HTMLExporter():
                 try:
                     ttlf.serialize(savepath + "/index.ttl", encoding="utf-8")
                     with open(savepath + "/index.json", 'w', encoding='utf-8') as f:
-                        f.write(json.dumps(predobjmap))
+                        json.dump(predobjmap,f)
                 except Exception as e:
                     print(e)
                     print(traceback.format_exc())
@@ -461,11 +466,10 @@ class HTMLExporter():
                                                         [True, self.pubconfig["apis"]["ogcapifeatures"], self.pubconfig["apis"]["iiif"],
                                                          self.pubconfig["apis"]["ckan"]],
                                                         [
-                                                            "<a href=\"" + relpath + "/sparql.html?endpoint=" + str(
-                                                                self.pubconfig["deploypath"]) + "\">[SPARQL]</a>&nbsp;",
-                                                            "<a href=\"" + relpath + "/api/api.html\">[OGC API Features]</a>&nbsp;",
-                                                            "<a href=\"" + relpath + "/iiif/\">[IIIF]</a>&nbsp;",
-                                                            "<a href=\"" + relpath + "/api/3/\">[CKAN]</a>"
+                                                            f'<a href="{relpath}/sparql.html?endpoint="{self.pubconfig["deploypath"]}">[SPARQL]</a>&nbsp;',
+                                                            f'<a href="{relpath}/api/api.html">[OGC API Features]</a>&nbsp;',
+                                                            f'<a href="{relpath}/iiif/">[IIIF]</a>&nbsp;',
+                                                            f'<a href="{relpath}/api/3/">[CKAN]</a>'
                                                         ], "{{apis}}")
             f.write(tempfoot)
         # except Exception as inst:
@@ -669,6 +673,7 @@ class HTMLExporter():
             label = objstr
             if ttlf is not None:
                 ttlf.add((subject, URIRef(pred), object))
+            objstrrep = objstr.replace("<", "&lt").replace(">", "&gt;").replace("\"", "'")
             if isinstance(object, Literal) and object.datatype is not None:
                 res = DocUtils.replaceNameSpacesInLabel(prefixes, str(object.datatype))
                 objstring = objstr.replace("<", "&lt").replace(">", "&gt;")
@@ -676,19 +681,13 @@ class HTMLExporter():
                     objstring = f'<a href="{objstr}">{objstr}</a>'
                 elif str(object.datatype) in DocConfig.timeliteraltypes and dateprops is not None and DocUtils.shortenURI(predstr, True) not in DocConfig.metadatanamespaces and str(pred) not in dateprops:
                     dateprops.append(predstr)
-                tablecontents += f"<span itemprop=\"{predstr}\" property=\"{predstr}\" content=\""+objstr.replace("<", "&lt").replace(">", "&gt;").replace("\"", "'")+f"\" datatype=\"{object.datatype}\">{HTMLExporter.truncateValue(objstring)} <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"" + str(
+                tablecontents += f"<span itemprop=\"{predstr}\" property=\"{predstr}\" content=\"{objstrrep}\" datatype=\"{object.datatype}\">{HTMLExporter.truncateValue(objstring)} <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"" + str(
                     object.datatype) + "\">" + (res["uri"] if res is not None else DocUtils.shortenURI(
                     str(object.datatype))) + "</a>)</small></span>"
                 geojsonrep = LiteralUtils.resolveGeoLiterals(URIRef(pred), object, graph, geojsonrep, nonns, subject)
             else:
                 if object.language is not None:
-                    tablecontents += f"<span itemprop=\"{predstr}\" property=\"{predstr}\" content=\"" + objstr.replace("<", "&lt").replace(">", "&gt;").replace("\"",
-                                                                                                               "'") + "\" datatype=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\" xml:lang=\"" + str(
-                        object.language) + "\">" + HTMLExporter.truncateValue(
-                        objstr.replace("<", "&lt").replace(">",
-                                                                "&gt;")) + " <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString\">rdf:langString</a>) (<a href=\"http://www.lexvo.org/page/iso639-1/" + str(
-                        object.language) + "\" target=\"_blank\">iso6391:" + str(
-                        object.language) + "</a>)</small></span>"
+                    tablecontents += f'<span itemprop="{predstr}" property="{predstr}" content="{objstrrep} datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#langString" xml:lang="{object.language}">"{HTMLExporter.truncateValue(objstr.replace("<", "&lt").replace(">","&gt;"))} <small>(<a style="color: #666;" target="_blank" href="http://www.w3.org/1999/02/22-rdf-syntax-ns#langString">rdf:langString</a>) (<a href="http://www.lexvo.org/page/iso639-1/"{object.language}" target="_blank">iso6391:{object.language}</a>)</small></span>'
                 else:
                     tablecontents += HTMLExporter.detectStringLiteralContent(pred, object)
         return {"html": tablecontents, "geojson": geojsonrep, "foundmedia": foundmedia, "imageannos": imageannos,

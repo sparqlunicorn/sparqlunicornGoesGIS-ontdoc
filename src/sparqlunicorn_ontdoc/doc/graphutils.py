@@ -151,8 +151,7 @@ class GraphUtils:
         voidstats = {"http://rdfs.org/ns/void#classes": 0, "http://rdfs.org/ns/void#entities": 0,
                      "http://rdfs.org/ns/void#distinctObjects": 0, "http://rdfs.org/ns/void#distinctSubjects": 0,
                      "http://rdfs.org/ns/void#properties": 0, "http://rdfs.org/ns/void#triples": 0}
-        subjectstorender = set()
-        subjectstorender.add(URIRef(voidds))
+        subjectstorender = {URIRef(voidds)}
         res = GraphUtils.getPropertyRelations(graph, outpath,typeproperty,createVOWL)
         predmap=res["predmap"]
         voidstats["http://rdfs.org/ns/void#properties"] = res["preds"]

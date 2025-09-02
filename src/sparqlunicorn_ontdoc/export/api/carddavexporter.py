@@ -9,7 +9,7 @@ class CardDAVExporter:
             f.write("BEGIN:VCARD\nVERSION:4.0\n")
             f.write("PROFILE:VCARD\n")
             for key in vcard:
-                f.write(str(key).upper()+":"+str(vcard[key])+"\n")
+                f.write(f"{str(key).upper()}:{str(vcard[key])}\n")
             f.write("END:VCARD\n")
 
 

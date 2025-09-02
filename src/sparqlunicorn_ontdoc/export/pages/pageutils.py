@@ -18,13 +18,13 @@ class PageUtils:
     collectionConstraints={}
 
     def retrieveCollectionConstraints(self):
-        for type in self.pageTypes:
+        for typ in self.pageTypes:
             try:
-                if self.pageTypes[type]:
-                    for const in self.pageTypes[type].collectionConstraint():
-                        self.collectionConstraints[const]=self.pageTypes[type]
-                    for const in self.pageTypes[type].pageWidgetConstraint():
-                        self.widgetConstraints[const]=self.pageTypes[type]
+                if self.pageTypes[typ]:
+                    for const in self.pageTypes[typ].collectionConstraint():
+                        self.collectionConstraints[const]=self.pageTypes[typ]
+                    for const in self.pageTypes[typ].pageWidgetConstraint():
+                        self.widgetConstraints[const]=self.pageTypes[typ]
             except:
                 print("PageType Constraints parsing failed")
 

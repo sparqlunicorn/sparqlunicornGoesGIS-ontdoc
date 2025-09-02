@@ -12,20 +12,15 @@ class TextAnnoPage:
         for textanno in textannos:
             if isinstance(textanno, dict):
                 if "src" in textanno:
-                    f.write("<span style=\"font-weight:bold\" class=\"textanno\" start=\"" + str(
-                        textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
-                        textanno["exact"]) + "\" src=\"" + str(textanno["src"]) + "\"><mark>" + str(
-                        textanno["exact"]) + "</mark></span>")
+                    f.write(f'<span style="font-weight:bold" class="textanno" start="{textanno["start"]}" end="{textanno["end"]}" exact="{textanno["exact"]} src={textanno["src"]}"><mark>{textanno["exact"]}</mark></span>')
                 else:
-                    f.write("<span style=\"font-weight:bold\" class=\"textanno\" start=\"" + str(
-                        textanno["start"]) + "\" end=\"" + str(textanno["end"]) + "\" exact=\"" + str(
-                        textanno["exact"]) + "\"><mark>" + str(textanno["exact"]) + "</mark></span>")
+                    f.write(f'<span style="font-weight:bold" class="textanno" start="{textanno["start"]}" end="{textanno["end"]}" exact="{textanno["exact"]}"><mark>{textanno["exact"]}</mark></span>')
 
 
     @staticmethod
     def generateCollectionWidget(graph, templates, subject,prefixnamespace,outpath, f):
         print("CollectionWidget")
-        f.write("<table id=\"lexicon\">"+TextAnnoPage.tableheader+"<tbody>")
+        f.write(f"<table id=\"lexicon\">{TextAnnoPage.tableheader}<tbody>")
         for anno in graph.subjects_objects("http://www.w3.org/ns/oa#hasSelector"):
             thetype=None
             start=None

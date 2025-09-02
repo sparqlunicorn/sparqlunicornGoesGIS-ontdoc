@@ -231,7 +231,7 @@ class GraphExporter:
         for sub in subjectstorender:
             if str(sub) not in uriToNodeId:
                 uriToNodeId[str(sub)] = nodecounter
-                file.write(str(sub)+" [label=\""+str(DocUtils.shortenURI(str(sub)))+"\"]\n")
+                file.write(f'{sub} [label="{DocUtils.shortenURI(str(sub))}"]\n')
                 nodecounter += 1
             for tup in g.predicate_objects(sub):
                 if str(tup[1]) not in uriToNodeId:

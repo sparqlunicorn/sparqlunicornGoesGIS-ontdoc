@@ -245,11 +245,9 @@ class PrezExporter:
                                 str(op + "/items/"+collectionhtmlname).replace("//", "/"), outpath)
                             with open(str(op + "/items/"+collectionhtmlname), "w",encoding="utf-8"):
                                 if "nonns" in collid:
-                                    f.write(
-                                        "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + deploypath+"/"+collid+".html"+ "\" /></head></html>")
+                                    f.write(f'<html><head><meta http-equiv="refresh" content="0; url="{deploypath}/{collid}.html" /></head></html>')
                                 else:
-                                    f.write(
-                                        "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + deploypath+"/"+collid+"/"+ "\" /></head></html>")
+                                    f.write(f'<html><head><meta http-equiv="refresh" content="0; url="{deploypath}/{collid}/" /></head></html>')
                         #print("symlinks created")
                     except Exception as e:
                         print("symlink creation error")
@@ -338,7 +336,7 @@ class PrezExporter:
                                 targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.html", str(op + "/items/" + str(
                                     DocUtils.shortenURI(feat["id"])) + "/index.html").replace("//", "/"), outpath, True)
                                 with open(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"]))) + "/index.html", "w",encoding="utf-8") as f:
-                                    f.write(f"<html><head><meta http-equiv=\"refresh\" content=\"0; url={targetpath}\" /></head></html>")
+                                    f.write(f'<html><head><meta http-equiv="refresh" content="0; url={targetpath}" /></head></html>')
                             #print("symlinks created")
                         except Exception as e:
                             print("symlink creation error")

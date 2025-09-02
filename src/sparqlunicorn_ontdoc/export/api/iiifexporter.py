@@ -24,7 +24,7 @@ class IIIFAPIExporter:
                     mf=f'{outpath}/iiif/mf/{sur}/manifest.json'
                     if os.path.exists(mf) and "anno" in imagetoURI[imgpath]:
                         with open(mf, 'r', encoding="utf-8") as f:
-                            curmanifest = json.loads(f.read())
+                            curmanifest = json.load(f)
                         annocounter = 2
                         for anno in imagetoURI[imgpath]["anno"]:
                             anno["id"] = f"{imgpath}/canvas/p2/anno-{annocounter}"
@@ -35,7 +35,7 @@ class IIIFAPIExporter:
                             curmanifest["items"][0]["annotations"][0]["items"].append(anno)
                             annocounter += 1
                         with open(mf, 'w', encoding="utf-8") as f:
-                            f.write(json.dumps(curmanifest))
+                            json.dump(curmanifest,f)
 
     @staticmethod
     def generateIIIFManifest(g, outpath, deploypath, imgpaths, annos, annobodies, curind, prefixnamespace, imagetoURI, imagemetadata,metadatanamespaces, label="",
@@ -134,7 +134,7 @@ class IIIFAPIExporter:
                 curiiifmanifest["summary"] = {"en": [str(summary)]}
             os.makedirs(outpath + "/iiif/mf/" + curinduri)
             with open(outpath + "/iiif/mf/" + curinduri + "/manifest.json", "w", encoding="utf-8") as f:
-                f.write(json.dumps(curiiifmanifest))
+                json.dump(curiiifmanifest,f)
         # if annos!=None:
         #    self.generateIIIFAnnotations(self.outpath,annos,curind,next(iter(imgpaths)))
         besttype = ""
@@ -158,8 +158,8 @@ class IIIFAPIExporter:
             for imgp in imgpath["imgpath"]:
                 induri=DocUtils.shortenURI(imgpath["ind"])
                 imghtml+="<li data-groups='[\"all\",\"red\",\""+str(imgpath["class"])+"\"]' style=\"width:25%;background-color:white;border-radius:25px;\"><figure class=\"col-3@sm picture-item\"><div class=\"aspect aspect--16x9\"><div class=\"aspect__inner\">"
-                imghtml+="<a href=\""+str(deploypath)+"/"+induri+"\" target=\"_blank\"><img src=\""+str(imgp)+"\" loading=\"lazy\" class=\"imgborder\" alt=\""+str(imgpath["label"])+"\"/></a></div></div>"
-                imghtml+="<figcaption style=\"color:black\"><a href=\""+str(deploypath)+"/"+induri+"\" style=\"font-weight:bold;color:black\" target=\"_blank\">"
+                imghtml+=f'<a href={deploypath}/{induri}" target="_blank"><img src="{imgp}" loading="lazy" class="imgborder" alt="{imgpath["label"]}"/></a></div></div>'
+                imghtml+=f'<figcaption style="color:black"><a href="{deploypath}/{induri}" style="font-weight:bold;color:black" target="_blank">'
                 if imgpath["label"]!="":
                    imghtml+=str(imgpath["label"])+"</a></figcaption></figure></li>"
                 else:
@@ -204,7 +204,7 @@ class IIIFAPIExporter:
         if os.path.exists(outpath + "/iiif/collection/iiifcoll.json"):
             collections = {}
             with open(outpath+"/iiif/collection/iiifcoll.json","r",encoding="utf-8") as f:
-                collections["main"]=json.loads(f.read())
+                collections["main"]=json.load(f)
         else:
             collections = {"main": {"@context": "http://iiif.io/api/presentation/3/context.json",
                                     "id": deploypath + "/iiif/collection/iiifcoll.json", "type": "Collection",
@@ -237,13 +237,13 @@ class IIIFAPIExporter:
             if coll!="main":
                 collections["main"]["items"].append(collections[coll])
                 with open(outpath+"/iiif/collection/"+str(DocUtils.shortenURI(coll))+".json","w",encoding="utf-8") as f:
-                    f.write(json.dumps(collections[coll]))
+                    json.dump(collections[coll],f)
         with open(outpath + "/iiif/collection/iiifcoll.json", "w", encoding="utf-8") as f:
-            f.write(json.dumps(collections["main"]))
+            json.dump(collections["main"],f)
         iiifindex = """<html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"><script src="https://unpkg.com/mirador@latest/dist/mirador.min.js"></script></head><body><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500"><div id="my-mirador"/><script type="text/javascript">var mirador = Mirador.viewer({"id": "my-mirador","manifests": {"collection/iiifcoll.json": {"provider": "Harvard University"}},"windows": [{"loadedManifest": "collection/iiifcoll.json","canvasIndex": 2,"thumbnailNavigationPosition": 'far-bottom'}]});</script></body></html>"""
         with open(outpath + "/iiif/index.html", "w", encoding="utf-8") as f:
             f.write(iiifindex)
         with open(outpath + "/iiif/api.html", "w", encoding="utf-8") as f:
             f.write(apihtml)
         with open(outpath + "/iiif/api.json", "w", encoding="utf-8") as f:
-            f.write(json.dumps(apijson))
+            json.dump(apijson,f)
