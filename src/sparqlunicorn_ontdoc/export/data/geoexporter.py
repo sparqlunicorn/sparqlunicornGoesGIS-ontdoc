@@ -138,7 +138,7 @@ class GeoExporter:
                         f.write("</tr>\n")
                     f.write("</tbody>\n</table>\n</properties>\n")
                     f.write("<geometry>\n")
-                    f.write("<"+str(typeToGeom[res]["type"])+">\n")
+                    f.write(f'<{typeToGeom[res]["type"]}>\n')
                     f.write("<coordinates>\n")
                     f.write(GeoExporter.geometryToCoordinateList(typeToGeom[res]))
                     f.write("</coordinates>\n")
@@ -169,6 +169,6 @@ class GeoExporter:
         for type in typeToFields:
             with open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
                 type) + "." + formatt, "w", encoding="utf-8") as f:
-                f.write(str(typeToGeom[type]["type"])+"("+str(typeToGeom[type]["coordinates"])+")\n")
+                f.write(f'{typeToGeom[type]["type"]}({typeToGeom[type]["coordinates"]})\n')
 
         return None

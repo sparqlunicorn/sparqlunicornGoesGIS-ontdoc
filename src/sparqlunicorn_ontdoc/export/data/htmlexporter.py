@@ -178,13 +178,11 @@ class HTMLExporter():
                         if res["timeobj"] is not None and res["timeobj"] != []:
                             # print("RESTIMEOBJ: "+str(timeobj))
                             timeobj = res["timeobj"]
-                        #labelmap.setdefault(res["label"],"")
+                        labelmap.setdefault(res["label"],"")
                         if predobjtuplen > 1:
-                            labelmap.setdefault(f'{res["label"]}<li>{res["html"]}</li>',"")
-                            #labelmap[res["label"]] += f"<li>{res['html']}</li>"
+                            labelmap[res["label"]] += f"<li>{res['html']}</li>"
                         else:
-                            labelmap.setdefault(f'{res["label"]}{res["html"]}', "")
-                            #labelmap[res["label"]] += f"{res['html']}"
+                            labelmap[res["label"]] += f"{res['html']}"
                         itemcounter += 1
                     thetable+="".join(labelmap[lab] for lab in sorted(labelmap))
                     #for lab in sorted(labelmap):
@@ -256,13 +254,11 @@ class HTMLExporter():
                             hasnonns.add(str(item))
                         if nonns:
                             geojsonrep = res["geojson"]
-                        #labelmap.setdefault(res["label"],"")
+                        labelmap.setdefault(res["label"],"")
                         if subpredtuplen > 1:
-                            labelmap.setdefault(f'{res["label"]}<li>{res["html"]}</li>', "")
-                            #labelmap[res["label"]] += f"<li>{res['html']}</li>"
+                            labelmap[res["label"]] += f"<li>{res['html']}</li>"
                         else:
-                            labelmap.setdefault(f'{res["label"]}{res["html"]}', "")
-                            #labelmap[res["label"]] += f"{res['html']}"
+                            labelmap[res["label"]] += f"{res['html']}"
                         itemcounter += 1
                     tablecontents += "".join(labelmap[lab] for lab in sorted(labelmap))
                     #for lab in sorted(labelmap) :
