@@ -211,40 +211,40 @@ class OGCAPIFeaturesExporter:
                     f.write(f'<html><head><meta name="viewport" content="width=device-width, initial-scale=1" /></head><body><h1>{featurecollectionspaths[coll]["name"]}</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>{curcollrow}</tbody></table></html>')
                 collectiontable += curcollrow
                 if os.path.exists(coll):
-                    try:
-                        if os.path.exists(coll.replace("//", "/")):
-                            targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"),
-                                                                      str(op + "/items/index.json").replace("//", "/"),
-                                                                      outpath)
-                            p = Path(str(op + "/items/index.json").replace("//", "/"))
-                            p.symlink_to(targetpath)
-                        if os.path.exists(coll.replace("//", "/").replace("index.geojson", "index.ttl").replace(
+                    #try:
+                    if os.path.exists(coll.replace("//", "/")):
+                        targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"),
+                                                                  str(op + "/items/index.json").replace("//", "/"),
+                                                                  outpath)
+                        p = Path(str(op + "/items/index.json").replace("//", "/"))
+                        p.symlink_to(targetpath)
+                    if os.path.exists(coll.replace("//", "/").replace("index.geojson", "index.ttl").replace(
+                            "nonns_" + featurecollectionspaths[coll]["id"] + ".geojson",
+                            "nonns_" + featurecollectionspaths[coll]["id"] + ".ttl")):
+                        targetpath = DocUtils.generateRelativeSymlink(
+                            coll.replace("//", "/").replace("index.geojson", "index.ttl").replace(
                                 "nonns_" + featurecollectionspaths[coll]["id"] + ".geojson",
-                                "nonns_" + featurecollectionspaths[coll]["id"] + ".ttl")):
-                            targetpath = DocUtils.generateRelativeSymlink(
-                                coll.replace("//", "/").replace("index.geojson", "index.ttl").replace(
-                                    "nonns_" + featurecollectionspaths[coll]["id"] + ".geojson",
-                                    "nonns_" + featurecollectionspaths[coll]["id"] + ".ttl"),
-                                str(op + "/items/index.ttl").replace("//", "/"), outpath)
-                            p = Path(str(op + "/items/index.ttl").replace("//", "/"))
-                            p.symlink_to(targetpath)
-                        if os.path.exists(coll.replace("//", "/").replace("index.geojson", "index.html").replace(
+                                "nonns_" + featurecollectionspaths[coll]["id"] + ".ttl"),
+                            str(op + "/items/index.ttl").replace("//", "/"), outpath)
+                        p = Path(str(op + "/items/index.ttl").replace("//", "/"))
+                        p.symlink_to(targetpath)
+                    if os.path.exists(coll.replace("//", "/").replace("index.geojson", "index.html").replace(
+                            "nonns_" + featurecollectionspaths[coll]["id"] + ".geojson",
+                            "nonns_" + featurecollectionspaths[coll]["id"] + ".html")):
+                        targetpath = DocUtils.generateRelativeSymlink(
+                            coll.replace("//", "/").replace("index.geojson", "index.html").replace(
                                 "nonns_" + featurecollectionspaths[coll]["id"] + ".geojson",
-                                "nonns_" + featurecollectionspaths[coll]["id"] + ".html")):
-                            targetpath = DocUtils.generateRelativeSymlink(
-                                coll.replace("//", "/").replace("index.geojson", "index.html").replace(
-                                    "nonns_" + featurecollectionspaths[coll]["id"] + ".geojson",
-                                    "nonns_" + featurecollectionspaths[coll]["id"] + ".html"),
-                                str(op + "/items/"+collectionhtmlname).replace("//", "/"), outpath)
-                            with open(str(op + "/items/"+collectionhtmlname), "w",encoding="utf-8"):
-                                if "nonns" in collid:
-                                    f.write(f'<html><head><meta http-equiv="refresh" content="0; url="{deploypath}/{collid}.html" /></head></html>')
-                                else:
-                                    f.write(f'<html><head><meta http-equiv="refresh" content="0; url="{deploypath}/{collid}/" /></head></html>')
+                                "nonns_" + featurecollectionspaths[coll]["id"] + ".html"),
+                            str(op + "/items/"+collectionhtmlname).replace("//", "/"), outpath)
+                        with open(str(op + "/items/"+collectionhtmlname), "w",encoding="utf-8"):
+                            if "nonns" in collid:
+                                f.write(f'<html><head><meta http-equiv="refresh" content="0; url="{deploypath}/{collid}.html" /></head></html>')
+                            else:
+                                f.write(f'<html><head><meta http-equiv="refresh" content="0; url="{deploypath}/{collid}/" /></head></html>')
                         #print("symlinks created")
-                    except Exception as e:
-                        print("symlink creation error")
-                        print(e)
+                    #except Exception as e:
+                    #    print("symlink creation error")
+                    #    print(e)
                     apijson["paths"][str("/collections/" + str(
                         coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[
                         1:]) + "/items/index.json").replace("//", "/")] = {"get": {"tags": ["Data"],
@@ -304,29 +304,29 @@ class OGCAPIFeaturesExporter:
 
                     for feat in curcoll["features"]:
                         featpath = feat["id"].replace(prefixnamespace, "").replace("//", "/")
-                        try:
-                            os.makedirs(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"]))))
-                            #print("CHECKPATH: " + str(
-                            #    str(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.json").replace("//", "/")))
-                            if os.path.exists(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.json"):
-                                targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.json", str(op + "/items/" + str(
-                                    DocUtils.shortenURI(feat["id"])) + "/index.json").replace("//", "/"), outpath, True)
-                                p = Path(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"])) + "/index.json").replace("//", "/"))
-                                p.symlink_to(targetpath)
-                            if os.path.exists(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.ttl"):
-                                targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.ttl", str(op + "/items/" + str(
-                                    DocUtils.shortenURI(feat["id"])) + "/index.ttl").replace("//", "/"), outpath, True)
-                                p = Path(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"])) + "/index.ttl").replace("//", "/"))
-                                p.symlink_to(targetpath)
-                            if os.path.exists(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.html"):
-                                targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.html", str(op + "/items/" + str(
-                                    DocUtils.shortenURI(feat["id"])) + "/index.html").replace("//", "/"), outpath, True)
-                                with open(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"]))) + "/index.html", "w",encoding="utf-8") as f:
-                                    f.write(f"<html><head><meta http-equiv=\"refresh\" content=\"0; url={targetpath}\" /></head></html>")
+                        #try:
+                        os.makedirs(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"]))))
+                        #print("CHECKPATH: " + str(
+                        #    str(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.json").replace("//", "/")))
+                        if os.path.exists(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.json"):
+                            targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.json", str(op + "/items/" + str(
+                                DocUtils.shortenURI(feat["id"])) + "/index.json").replace("//", "/"), outpath, True)
+                            p = Path(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"])) + "/index.json").replace("//", "/"))
+                            p.symlink_to(targetpath)
+                        if os.path.exists(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.ttl"):
+                            targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.ttl", str(op + "/items/" + str(
+                                DocUtils.shortenURI(feat["id"])) + "/index.ttl").replace("//", "/"), outpath, True)
+                            p = Path(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"])) + "/index.ttl").replace("//", "/"))
+                            p.symlink_to(targetpath)
+                        if os.path.exists(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.html"):
+                            targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.html", str(op + "/items/" + str(
+                                DocUtils.shortenURI(feat["id"])) + "/index.html").replace("//", "/"), outpath, True)
+                            with open(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"]))) + "/index.html", "w",encoding="utf-8") as f:
+                                f.write(f"<html><head><meta http-equiv=\"refresh\" content=\"0; url={targetpath}\" /></head></html>")
                             #print("symlinks created")
-                        except Exception as e:
-                            print("symlink creation error")
-                            print(e)
+                        #except Exception as e:
+                        #    print("symlink creation error")
+                        #    print(e)
                     if mergeJSON:
                         result.append(curcoll)
             collectiontable += "</tbody></table>"
