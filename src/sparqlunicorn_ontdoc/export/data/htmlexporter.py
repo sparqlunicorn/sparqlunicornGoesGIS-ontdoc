@@ -719,7 +719,7 @@ class HTMLExporter():
         else:
             res = DocUtils.replaceNameSpacesInLabel(prefixes, tup)
             tablecontents+= f"<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"{tup}\">{label} "+("<span style=\"color: #666;\">(" + res["uri"] + ")</span>" if res["uri"]!="" else "")+"</a> </span>"
-        return tablecontents+f'<td class="property">{" of" if reverse else ""}</td>'
+        return tablecontents+f'{" of" if reverse else ""}</td>'
         #if reverse:
         #    tablecontents += " of"
         #tablecontents += "</td>"
