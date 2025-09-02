@@ -58,7 +58,7 @@ class DocUtils:
         files=[]
         for file in os.listdir(directory):
             filename = os.fsdecode(file)
-            if filename.endswith(".ttl") or filename.endswith(".owl") or filename.endswith("n3") or filename.endswith(".nt"):
+            if filename.endswith((".ttl",".owl",".n3",".nt")):
                 files.append(filename)
         return files
 
@@ -87,13 +87,13 @@ class DocUtils:
         if "/*" not in thepath:
             result.append(thepath)
             return result
-        print(thepath)
+        #print(thepath)
         normpath = thepath.replace("*", "")
         if os.path.exists(normpath):
             files = os.listdir(normpath)
             for file in files:
-                print(file)
-                if file.endswith(".ttl") or file.endswith(".owl") or file.endswith("n3") or file.endswith(".nt"):
+                #print(file)
+                if file.endswith((".ttl",".owl",".n3",".nt")):
                     result.append(normpath + file)
         return result
 
@@ -111,6 +111,8 @@ class DocUtils:
 
     @staticmethod
     def checkDepthFromPath(savepath,baseurl,subject):
+        return subject.replace(baseurl, "").count("/")+1
+        """
         if savepath.endswith("/"):
             checkdepth = subject.replace(baseurl, "").count("/")
         else:
@@ -119,6 +121,7 @@ class DocUtils:
         #checkdepth+=1
         #QgsMessageLog.logMessage("Checkdepth: " + str(checkdepth))
         return checkdepth+1
+        """
 
     @staticmethod
     def printExecutionStats(timeexec):
@@ -178,7 +181,7 @@ class DocUtils:
         #for i in range(0, checkdepth):
         #    rellink = "../" + rellink
         if withindex:
-            rellink += "/index.html"
+            return f'{rellink}/index.html'
         #QgsMessageLog.logMessage("Relative Link from Given Depth: " + rellink,"OntdocGeneration", Qgis.Info)
         return rellink
 

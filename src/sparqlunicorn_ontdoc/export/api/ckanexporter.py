@@ -81,7 +81,7 @@ class CKANExporter:
                             "application/json": {"schema": {"example": None}, "example": None},
                             "text/json": {"schema": {"example": None}, "example": None}}}}}
         with open(outpath + "/api/"+str(version)+"/api.json", "w",encoding="utf-8") as f:
-            f.write(json.dumps(ckanopenapi))
+            json.dump(ckanopenapi,f)
         with open(outpath + "/api/"+str(version)+"/index.html", "w",encoding="utf-8") as f:
             f.write(ckanapihtml)
         with open(outpath + "/api/"+str(version)+"/action/group_list/index.json", "w",encoding="utf-8") as f:
@@ -101,12 +101,12 @@ class CKANExporter:
                                     os.makedirs(thepath)
                         groupdesc={"success":True,"result":{"description":theid,"display_name":item["text"],"name":item["text"],"title":item["text"],"type":"group"}}
                         with open(thepath+"/index.json", 'w') as fl:
-                            fl.write(json.dumps(groupdesc))
+                            json.dump(groupdesc,fl)
                 f.write(json.dumps({"success": True, "result": classes}))
             else:
                 f.write(json.dumps({"success": True, "result": []}))
         with open(outpath + "/api/"+str(version)+"/action/tag_list/index.json", "w",encoding="utf-8") as f:
-            f.write(json.dumps({"success": True, "result": ["ttl", "json", "geojson", "html"]}))
+            json.dump({"success": True, "result": ["ttl", "json", "geojson", "html"]},f)
         colls = []
         for coll in featurecollectionspaths:
             op = outpath + "/dataset/" + coll.replace(outpath, "").replace("index.geojson", "")
@@ -122,7 +122,7 @@ class CKANExporter:
                 os.makedirs(op)
             dataset={"success":True,"result":{"id":curcollname,"type":"dataset","num_resources":3,"title":curcollname,"license_id":license,"license_title":license,"name":curcollname,"notes":"","tags":[],"groups":[],"resources":[{"name":curcollname+" (text/ttl)","format":"TTL","id":curcollname,"package_id":curcollname,"mimetype":"text/ttl","resource_type":"file","url":deploypath+"/dataset/"+curcollname+".ttl","state":"active","url_type":""},{"name":curcollname+" (application/json)","id":curcollname,"format":"JSON","package_id":curcollname,"mimetype":"application/json","resource_type":"file","url":deploypath+"/dataset/"+curcollname+".json","state":"active","url_type":""},{"name":curcollname+" (text/html)","id":curcollname,"format":"HTML","package_id":curcollname,"mimetype":"text/html","resource_type":"file","url":deploypath+"/dataset/"+curcollname+".html","state":"active","url_type":""}]}}
             with open(outpath + "/dataset/"+curcollname+"_", "w",encoding="utf-8") as f:
-                f.write(json.dumps(dataset))
+                json.dump(dataset,f)
             try:
                 if not os.path.exists(str(op + ".json").replace("//", "/")):
                     targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"), str(op + ".json"),
@@ -150,4 +150,4 @@ class CKANExporter:
                 print("Symlink creation might not be allowed")
             colls.append(dataset["result"])
         with open(outpath + "/api/"+str(version)+"/action/package_list/index.json", "w", encoding="utf-8") as f:
-            f.write(json.dumps({"success": True, "result":{"count": len(colls), "results":colls}}))
+            json.dump({"success": True, "result":{"count": len(colls), "results":colls}},f)

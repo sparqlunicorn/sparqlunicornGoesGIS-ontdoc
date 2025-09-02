@@ -110,17 +110,11 @@ class HTMLExporter():
                                                                                                        True) in DocConfig.metadatanamespaces:
                     thetable = metadatatablecontents
                     metadatatablecontentcounter += 1
-                    if metadatatablecontentcounter % 2 == 0:
-                        thetable += "<tr class=\"odd\">"
-                    else:
-                        thetable += "<tr class=\"even\">"
+                    thetable += f'<tr class="{"odd" if metadatatablecontentcounter % 2 == 0 else "even"}">'
                 else:
                     thetable = tablecontents
                     tablecontentcounter += 1
-                    if tablecontentcounter % 2 == 0:
-                        thetable += "<tr class=\"odd\">"
-                    else:
-                        thetable += "<tr class=\"even\">"
+                    thetable+=f'<tr class="{"odd" if tablecontentcounter % 2 == 0 else "even"}">'
                 if tup == self.typeproperty:
                     for tp in predobjmap[tup]:
                         tpstr=str(tp)
@@ -281,10 +275,8 @@ class HTMLExporter():
         if self.pubconfig["licenseuri"] is not None:
             ttlf.add((subject, URIRef("http://purl.org/dc/elements/1.1/license"), URIRef(self.pubconfig["licenseuri"])))
         if self.pubconfig["apis"]["solidexport"] is not None:
-            ttlf.add((subject, RDF.type,
-                      URIRef("http://www.w3.org/ns/ldp#Resource")))
-            ttlf.add((subject, RDF.type,
-                      URIRef("https://www.iana.org/assignments/media-types/text/turtle#Resource")))
+            ttlf.add((subject, RDF.type,URIRef("http://www.w3.org/ns/ldp#Resource")))
+            ttlf.add((subject, RDF.type,URIRef("https://www.iana.org/assignments/media-types/text/turtle#Resource")))
         nonnslink = ""
         if nonns:
             if "http:" in savepath:
@@ -320,7 +312,7 @@ class HTMLExporter():
                 foundlabel = DocUtils.shortenURI(str(subject))
             f.write(DocUtils.replaceStandardVariables(self.templates["htmltemplate"], subject, checkdepth, "false",self.pubconfig).replace(
                 "{{iconprefixx}}", (relpath + "icons/" if self.pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",baseurl).replace(
-                "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace(
+                "{{relativepath}}", relpath).replace(
                 "{{relativedepth}}", str(checkdepth)).replace("{{prefixpath}}", self.pubconfig["prefixns"]).replace(
                 "{{toptitle}}", foundlabel).replace("{{startscriptpath}}", startscriptlink).replace("{{epsgdefspath}}", epsgdefslink).replace(
                 "{{bibtex}}", itembibtex).replace("{{vowlpath}}", vowlresultlink).replace("{{proprelationpath}}",proprelationslink).replace(
@@ -464,19 +456,16 @@ class HTMLExporter():
                 myexports).replace(
                 "{{license}}", curlicense).replace("{{bibtex}}", "").replace("{{stats}}", "")
             tempfoot=DocUtils.replaceCitationLink(tempfoot,foundlabel,subject,self.pubconfig)
+            relpath=DocUtils.generateRelativePathFromGivenDepth(checkdepth)
             tempfoot = DocUtils.conditionalArrayReplace(tempfoot,
                                                         [True, self.pubconfig["apis"]["ogcapifeatures"], self.pubconfig["apis"]["iiif"],
                                                          self.pubconfig["apis"]["ckan"]],
                                                         [
-                                                            "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
-                                                                checkdepth) + "/sparql.html?endpoint=" + str(
+                                                            "<a href=\"" + relpath + "/sparql.html?endpoint=" + str(
                                                                 self.pubconfig["deploypath"]) + "\">[SPARQL]</a>&nbsp;",
-                                                            "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
-                                                                checkdepth) + "/api/api.html\">[OGC API Features]</a>&nbsp;",
-                                                            "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
-                                                                checkdepth) + "/iiif/\">[IIIF]</a>&nbsp;",
-                                                            "<a href=\"" + DocUtils.generateRelativePathFromGivenDepth(
-                                                                checkdepth) + "/api/3/\">[CKAN]</a>"
+                                                            "<a href=\"" + relpath + "/api/api.html\">[OGC API Features]</a>&nbsp;",
+                                                            "<a href=\"" + relpath + "/iiif/\">[IIIF]</a>&nbsp;",
+                                                            "<a href=\"" + relpath + "/api/3/\">[CKAN]</a>"
                                                         ], "{{apis}}")
             f.write(tempfoot)
         # except Exception as inst:
@@ -684,7 +673,7 @@ class HTMLExporter():
                 res = DocUtils.replaceNameSpacesInLabel(prefixes, str(object.datatype))
                 objstring = objstr.replace("<", "&lt").replace(">", "&gt;")
                 if object.datatype == XSD.anyURI:
-                    objstring = f"<a href=\"{objstr}\">{objstr}</a>"
+                    objstring = f'<a href="{objstr}">{objstr}</a>'
                 elif str(object.datatype) in DocConfig.timeliteraltypes and dateprops is not None and DocUtils.shortenURI(predstr, True) not in DocConfig.metadatanamespaces and str(pred) not in dateprops:
                     dateprops.append(predstr)
                 tablecontents += f"<span itemprop=\"{predstr}\" property=\"{predstr}\" content=\""+objstr.replace("<", "&lt").replace(">", "&gt;").replace("\"", "'")+f"\" datatype=\"{object.datatype}\">{HTMLExporter.truncateValue(objstring)} <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"" + str(
@@ -712,11 +701,8 @@ class HTMLExporter():
             return ["", None]
         if license.startswith("CC"):
             spl = license.split(" ")
-            res = """<span style="float:right;margin-left:auto;margin-right:0px;text-align:right">This work is released under <a rel="license" target="_blank" href="http://creativecommons.org/licenses/""" + str(
-                spl[1]).lower() + "/" + str(spl[2]) + """/">
-            <img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/""" + str(
-                spl[1]).lower() + """/""" + str(spl[2]) + """/80x15.png"/></a></span>"""
-            licenseuri = "http://creativecommons.org/licenses/" + str(spl[1]).lower() + "/" + str(spl[2])
+            res = f'<span style="float:right;margin-left:auto;margin-right:0px;text-align:right">This work is released under <a rel="license" target="_blank" href="http://creativecommons.org/licenses/{str(spl[1]).lower()}/{spl[2]}/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/{str(spl[1]).lower()}/{spl[2]}/80x15.png"/></a></span>'
+            licenseuri = f'http://creativecommons.org/licenses/"{str(spl[1]).lower()}/{spl[2]}'
             return [res, licenseuri]
         else:
             return ["""All rights reserved.""", None]
@@ -724,19 +710,20 @@ class HTMLExporter():
     @staticmethod
     def formatPredicate(tup, baseurl, checkdepth, tablecontents, graph, reverse, labellang, prefixes):
         label = DocUtils.getLabelForObject(URIRef(str(tup)), graph, None, labellang)
-        tablecontents += "<td class=\"property\">"
-        if reverse:
-            tablecontents += "Is "
+        tablecontents += f'<td class="property">{"Is " if reverse else ""}'
+        #if reverse:
+        #    tablecontents += "Is "
         if baseurl in str(tup):
             rellink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, str(tup), True)
             tablecontents += f"<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"{rellink}\">{label}</a></span>"
         else:
             res = DocUtils.replaceNameSpacesInLabel(prefixes, tup)
-            tablecontents += f"<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"{tup}\">{label} "+("<span style=\"color: #666;\">(" + res["uri"] + ")</span>" if res["uri"]!="" else "")+"</a> </span>"
-        if reverse:
-            tablecontents += " of"
+            tablecontents+= f"<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"{tup}\">{label} "+("<span style=\"color: #666;\">(" + res["uri"] + ")</span>" if res["uri"]!="" else "")+"</a> </span>"
+        return f'<td class="property">{" of" if reverse else ""}</td>'
+        #if reverse:
+        #    tablecontents += " of"
         #tablecontents += "</td>"
-        return tablecontents+"</td>"
+        #return tablecontents+"</td>"
 
     @staticmethod
     def truncateValue(value, limit=150):
@@ -747,11 +734,11 @@ class HTMLExporter():
     @staticmethod
     def detectStringLiteralContent(pred, object):
         if object.startswith("http"):
-            return f"<span><a itemprop=\"{pred}\" property=\"{pred}\" target=\"_blank\" href=\"{object}\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">{object}</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
+            return f'<span><a itemprop="{pred}" property="{pred}" target="_blank" href="{object}" datatype="http://www.w3.org/2001/XMLSchema#string">{object}</a> <small>(<a style="color: #666;" target="_blank" href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>)</small></span>'
         elif object.startswith("www."):
-            return f"<span><a itemprop=\"{pred}\" property=\"{pred}\" target=\"_blank\" href=\"http://{object}\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">http://{object}</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
+            return f'<span><a itemprop="{pred}" property="{pred}" target="_blank" href="http://{object}" datatype="http://www.w3.org/2001/XMLSchema#string">http://{object}</a> <small>(<a style="color: #666;" target="_blank" href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>)</small></span>'
         elif re.search(r'(10[.][0-9]{2,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)', str(object)):
-            return f"<span><a itemprop=\"{pred}\" property=\"{pred}\" href=\"https://www.doi.org/{object}\" datatype=\"http://www.w3.org/2001/XMLSchema#anyURI\">{object}</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#anyURI\">xsd:anyURI</a>)</small></span>"
+            return f'<span><a itemprop="{pred}" property="{pred}" href="https://www.doi.org/{object}" datatype="http://www.w3.org/2001/XMLSchema#anyURI">{object}</a> <small>(<a style="color: #666;" target="_blank" href="http://www.w3.org/2001/XMLSchema#anyURI">xsd:anyURI</a>)</small></span>'
         elif re.search(r'[\w.]+\@[\w.]+', object):
             return f"<span><a itemprop=\"{pred}\" property=\"{pred}\" href=\"mailto:{object}\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">mailto:{object}</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
         return f"<span property=\"{pred}\" content=\""+str(object).replace("<", "&lt").replace(">","&gt;").replace("\"", "'") + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">" + str(object).replace("<","&lt").replace(">","&gt;")+" <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"

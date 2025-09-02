@@ -8,9 +8,10 @@ class ClassTreeUtils:
 
 
     @staticmethod
-    def getClassTree(graph, uritolabel, classidset, uritotreeitem, typeproperty, prefixes, preparedclassquery, instancecount, outpath,
+    def getClassTree(graph, uritolabel, uritotreeitem, typeproperty, prefixes, preparedclassquery, instancecount, outpath,
                      pubconfig):
         results = graph.query(preparedclassquery)
+        classidset=set()
         ldcontext = {"@context": {
             "@version": 1.1,
             "foaf": "http://xmlns.com/foaf/0.1/",
@@ -47,8 +48,8 @@ class ClassTreeUtils:
                 "instance": {"icon": "https://cdn.jsdelivr.net/gh/i3mainz/geopubby@master/public/icons/instance.png"},
                 "geoinstance": {
                     "icon": "https://cdn.jsdelivr.net/gh/i3mainz/geopubby@master/public/icons/geoinstance.png"}
-            }, "core": {"themes": {"responsive": True}, "check_callback": True, "data": []}}
-        tree["@context"] = ldcontext["@context"]
+            }, "core": {"themes": {"responsive": True}, "check_callback": True, "data": []},
+                "@context": ldcontext["@context"]}
         result = []
         ress = {}
         for res in results:
@@ -82,10 +83,6 @@ class ClassTreeUtils:
                 else:
                     result.append({"id": objstr, "parent": cls, "type": "class", "text": restext, "data": {"from":{},"to":{}}})
                 uritotreeitem.setdefault(objstr, []).append(result[-1])
-                # if objstr not in uritotreeitem:
-                #    uritotreeitem[objstr] = []
-                # uritotreeitem[objstr].append(result[-1])
-                # classidset.add(str(obj))
             # print(ress[cls])
             res = DocUtils.replaceNameSpacesInLabel(prefixes, clsstr)
             if ress[cls]["super"] is None:
@@ -116,9 +113,6 @@ class ClassTreeUtils:
                     else:
                         result.append({"id": cls, "parent": ress[cls]["super"], "type": "class", "text": restext, "data": {"from":{},"to":{}}})
                     uritotreeitem.setdefault(cls, []).append(result[-1])
-                    # if clsstr not in uritotreeitem:
-                    #    uritotreeitem[clsstr] = []
-                    #    uritotreeitem[clsstr].append(result[-1])
                 else:
                     uritotreeitem[cls][-1]["parent"] = ress[cls]["super"]
                 ressuperstr = str(ress[cls]["super"])
@@ -137,7 +131,7 @@ class ClassTreeUtils:
                 classidset.add(ressuperstr)
             classidset.add(clsstr)
         tree["core"]["data"] = result
-        return [tree, uritotreeitem, classidset]
+        return [tree, uritotreeitem, len(classidset)]
 
     @staticmethod
     def assignGeoClassesToTree(tree):

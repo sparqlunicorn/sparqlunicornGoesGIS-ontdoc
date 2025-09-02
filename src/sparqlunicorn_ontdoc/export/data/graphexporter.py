@@ -271,7 +271,7 @@ class GraphExporter:
                     edges += f"<edge value=\"{tup[0]}\" id=\"{edgecounter}\" source=\"{uriToNodeId[str(sub)]}\" target=\"{uriToNodeId[str(tup[1])]}\" label=\"{DocUtils.shortenURI(str(tup[0]))}\"/>\n"
                 else:
                     if str(tup[1]) not in uriToNodeId:
-                        file.write("<node id=\"" + str(nodecounter) + "\" value=\""+str(tup[1])+"\" label=\"" + str(DocUtils.shortenURI(str(tup[1])) + "\">\n"))
+                        file.write(f'<node id="{nodecounter}" value="{tup[1]}" label="{DocUtils.shortenURI(str(tup[1]))}">\n')
                         if str(tup[0]) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":
                             file.write("<viz:color r=\"255\" g=\"165\" b=\"0\"/>\n")
                         else:

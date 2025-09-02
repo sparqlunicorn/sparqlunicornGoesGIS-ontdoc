@@ -6,20 +6,20 @@ from pathlib import Path
 from doc.docutils import DocUtils
 
 
-class StacAPIExporter:
+class PrezExporter:
 
     @staticmethod
-    def generateOGCAPIFeaturesPages(outpath,deploypath, featurecollectionspaths, prefixnamespace, ogcapi, mergeJSON):
-        apihtml = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><metaname=\"description\" content=\"SwaggerUI\"/><title>SwaggerUI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css\" /></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js\" crossorigin></script><script>const swaggerUrl = \"" + str(
+    def generatePrezPages(outpath,deploypath, featurecollectionspaths, prefixnamespace, ogcapi, mergeJSON, contentnegotiation=False):
+        apihtml = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><metaname=\"description\" content=\"SwaggerUI\"/><title>SwaggerUI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist/swagger-ui.css\" /></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js\" crossorigin></script><script>const swaggerUrl = \"" + str(
             deploypath) + "/api/index.json\"; const apiUrl = \"" + str(
             deploypath) + "/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
-        apijson = {"openapi": "3.0.1", "stac_version":"1.0.0", "info": {"title": str(deploypath) + " Feature Collections",
+        collectionhtmlname="indexc.html"
+        if contentnegotiation:
+            collectionhtmlname="index.html"
+        apijson = {"openapi": "3.0.1", "info": {"title": str(deploypath) + " Feature Collections",
                                                 "description": "Feature Collections of " + str(deploypath)},
                    "servers": [{"url": str(deploypath)}], "paths": {}}
-        conformancejson = {"conformsTo": ["https://api.statspec.org/v1.0.0/core",
-                                          "https://api.statspec.org/v1.0.0/ogcapi-features",
-                                          "https://api.statspec.org/v1.0.0/collections",
-                                          "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core",
+        conformancejson = {"conformsTo": ["http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core",
                                           "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html",
                                           "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30",
                                           "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson"]}
@@ -41,8 +41,7 @@ class StacAPIExporter:
                                                                                          "namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
                                                      "description": {"type": "string", "xml": {"name": "Description",
                                                                                                "namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
-                                                     "links": {"type": "array", "xml": {"name": "link",
-                                                                                        "namespace": "http://www.w3.org/2005/Atom"},
+                                                     "links": {"type": "array", "xml": {"name": "link","namespace": "http://www.w3.org/2005/Atom"},
                                                                "items": {"$ref": "#/components/schemas/Link"}},
                                                      "extent": {"$ref": "#/components/schemas/Extent"},
                                                      "itemType": {"type": "string"},
@@ -50,8 +49,7 @@ class StacAPIExporter:
                                                      "storageCrs": {"type": "string"}}, "xml": {"name": "Collection",
                                                                                                 "namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
                                                  "Collections": {"type": "object", "properties": {
-                                                     "links": {"type": "array", "xml": {"name": "link",
-                                                                                        "namespace": "http://www.w3.org/2005/Atom"},
+                                                     "links": {"type": "array", "xml": {"name": "link","namespace": "http://www.w3.org/2005/Atom"},
                                                                "items": {"$ref": "#/components/schemas/Link"}},
                                                      "collections": {"type": "array", "xml": {"name": "Collection",
                                                                                               "namespace": "http://www.opengis.net/ogcapi-features-1/1.0"},
@@ -69,8 +67,7 @@ class StacAPIExporter:
                                                      "rel": {"type": "string", "xml": {"attribute": True}},
                                                      "type": {"type": "string", "xml": {"attribute": True}},
                                                      "title": {"type": "string", "xml": {"attribute": True}}},
-                                                          "xml": {"name": "link",
-                                                                  "namespace": "http://www.w3.org/2005/Atom"}},
+                                                          "xml": {"name": "link","namespace": "http://www.w3.org/2005/Atom"}},
                                                  "Spatial": {"type": "object", "properties": {"bbox": {"type": "array",
                                                                                                        "items": {
                                                                                                            "type": "array",
@@ -78,18 +75,14 @@ class StacAPIExporter:
                                                                                                                "type": "number",
                                                                                                                "format": "double"}}},
                                                                                               "crs": {"type": "string",
-                                                                                                      "xml": {
-                                                                                                          "attribute": True}}},
-                                                             "xml": {"name": "SpatialExtent",
-                                                                     "namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
+                                                                                                      "xml": {"attribute": True}}},
+                                                             "xml": {"name": "SpatialExtent","namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
                                                  "Temporal": {"type": "object", "properties": {
-                                                     "interval": {"type": "array",
-                                                                  "items": {"type": "string", "format": "date-time"}},
+                                                     "interval": {"type": "array","items": {"type": "string", "format": "date-time"}},
                                                      "trs": {"type": "string", "xml": {"attribute": True}}},
-                                                              "xml": {"name": "TemporalExtent",
-                                                                      "namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
+                                                              "xml": {"name": "TemporalExtent","namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
                                                  "LandingPage": {"type": "object"}}}
-            landingpagejson = {"stac_version":"1.0.0","title": "Landing Page", "description": "Landing Page", "conformsTo":conformancejson,"type":"Catalog","links": [{
+            landingpagejson = {"title": "Landing Page", "description": "Landing Page", "links": [{
                 "href": str(deploypath) + "/index.json",
                 "rel": "self",
                 "type": "application/json",
@@ -105,7 +98,7 @@ class StacAPIExporter:
                 "type": "application/json",
                 "title": "Supported Feature Collections as JSON"
             }, {
-                "href": str(deploypath) + "/collections/indexc.html",
+                "href": str(deploypath) + "/collections/"+collectionhtmlname,
                 "rel": "data",
                 "type": "text/html",
                 "title": "Supported Feature Collections as HTML"
@@ -135,9 +128,9 @@ class StacAPIExporter:
                  "title": "this document as JSON"},
                 {"href": outpath + "collections/index.html", "rel": "self", "type": "text/html",
                  "title": "this document as HTML"}]}
-            collectionshtml = "<html><head></head><body><header><h1>Collections of " + str(
-                deploypath) + "</h1></head>{{collectiontable}}<footer><a href=\"index.json\">This page as JSON</a></footer></body></html>"
-            collectiontable = "<table><thead><th>Collection</th><th>Links</th></thead><tbody>"
+            collectionshtml = "<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><link rel=\"stylesheet\" href=\"../style.css\"/><link rel=\"stylesheet\" href=\"https://cdn.datatables.net/2.2.1/css/dataTables.dataTables.css\" /><script src=\"https://code.jquery.com/jquery-3.7.1.js\"></script><script src=\"https://cdn.datatables.net/2.2.1/js/dataTables.js\"></script></head><body><header id=\"header\"><h1 id=\"title\">Collections of " + str(
+                deploypath) + "</h1></header>{{collectiontable}}<footer id=\"footer\"><a href=\"../\">Landing page</a>&nbsp;<a href=\"index.json\">This page as JSON</a></footer><script>$(document).ready( function () {$('#collectiontable').DataTable();} );</script></body></html>"
+            collectiontable = "<table id=\"collectiontable\"><thead><th>Collection</th><th>#Features</th><th>Links</th></thead><tbody>"
             apijson["paths"]["/collections"] = {"get": {"tags": ["Collections"], "summary": "describes collections",
                                                         "description": "Describes all collections provided by this service",
                                                         "operationId": "collections", "parameters": [], "responses": {
@@ -173,8 +166,9 @@ class StacAPIExporter:
                 if opwebcoll.endswith("/"):
                     opwebcoll = opwebcoll[0:-1]
                 opwebcoll = opwebcoll.replace("//", "/")
+                collid=coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]
                 collectionsjson["collections"].append(
-                    {"stac_version":"1.0.0","stac_extensions":[],"id": coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:],"type":"Collection",
+                    {"id": collid,
                      "title": featurecollectionspaths[coll]["name"], "links": [
                         {"href": str(opweb.replace(".geojson", "") + "/index.json").replace("//", "/"),
                          "rel": "collection", "type": "application/json", "title": "Collection as JSON"},
@@ -183,13 +177,12 @@ class StacAPIExporter:
                         {"href": str(opweb.replace(".geojson", "") + "/index.ttl").replace("//", "/"),
                          "rel": "collection", "type": "text/ttl", "title": "Collection as TTL"}]})
                 currentcollection = {"title": featurecollectionspaths[coll]["name"],
-                                     "id": coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson",
-                                                                                                          "")[1:],
+                                     "id": collid,
                                      "links": [], "itemType": "feature"}
                 currentcollection["links"] = [
                     {"href": opwebcoll + "/items/index.json", "rel": "items", "type": "application/json",
                      "title": "Collection as JSON"},
-                    {"href": opwebcoll + "/items/indexc.html", "rel": "items", "type": "text/html",
+                    {"href": opwebcoll + "/items/"+collectionhtmlname, "rel": "items", "type": "text/html",
                      "title": "Collection as HTML"},
                     {"href": opwebcoll + "/items/index.ttl", "rel": "collection", "type": "text/ttl",
                      "title": "Collection as TTL"}]
@@ -211,17 +204,18 @@ class StacAPIExporter:
                         "/"), "operationId": "collection-" + str(
                         coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]),
                             "parameters": [], "responses": {"default": {"description": "default response", "content": {
-                            "application/json": {"schema": {"$ref": "#/components/schemas/Collections"},
-                                                 "example": None}}}}}}
-                curcollrow = "<tr><td><a href=\"" + opweb.replace(".geojson", "") + "/items/indexc.html\">" + str(
-                    featurecollectionspaths[coll]["name"]) + "</a></td><td><a href=\"" + opweb.replace(".geojson",
-                                                                                                       "") + "/items/indexc.html\">[Collection as HTML]</a>&nbsp;<a href=\"" + opweb.replace(
+                            "application/json": {"schema": {"$ref": "#/components/schemas/Collections"},"example": None}}}}}}
+                curcollrow = "<tr><td><a href=\"" + opweb.replace(".geojson", "") + "/items/"+collectionhtmlname+"\">" + str(
+                    featurecollectionspaths[coll]["name"]) + "</a></td><td>"+str(len(curcoll["features"]))+"</td><td><a href=\"" + opweb.replace(".geojson",
+                                                                                                       "") + "/items/"+collectionhtmlname+"\">[Collection as HTML]</a>&nbsp;<a href=\"" + opweb.replace(
                     ".geojson", "") + "/items/\">[Collection as JSON]</a>&nbsp;<a href=\"" + opweb.replace(".geojson",
                                                                                                            "") + "/items/index.ttl\">[Collection as TTL]</a></td></tr>"
                 with open(op + "index.json", "w", encoding="utf-8") as f:
-                    json.dump(currentcollection,f)
-                with open(op + "indexc.html", "w", encoding="utf-8") as f:
-                    f.write(f'<html><head></head><body><h1>{featurecollectionspaths[coll]["name"]}</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>{curcollrow}</tbody></table></html>')
+                    f.write(json.dumps(currentcollection))
+                with open(op + collectionhtmlname, "w", encoding="utf-8") as f:
+                    f.write("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /></head><body><h1>" + featurecollectionspaths[coll][
+                        "name"] + "</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>" + str(
+                        curcollrow) + "</tbody></table></html>")
                 collectiontable += curcollrow
                 if os.path.exists(coll):
                     try:
@@ -248,9 +242,14 @@ class StacAPIExporter:
                                 coll.replace("//", "/").replace("index.geojson", "index.html").replace(
                                     "nonns_" + featurecollectionspaths[coll]["id"] + ".geojson",
                                     "nonns_" + featurecollectionspaths[coll]["id"] + ".html"),
-                                str(op + "/items/indexc.html").replace("//", "/"), outpath)
-                            with open(str(op + "/items/indexc.html"), "w",encoding="utf-8") as f:
-                                f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + targetpath + "\" /></head></html>")
+                                str(op + "/items/"+collectionhtmlname).replace("//", "/"), outpath)
+                            with open(str(op + "/items/"+collectionhtmlname), "w",encoding="utf-8"):
+                                if "nonns" in collid:
+                                    f.write(
+                                        "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + deploypath+"/"+collid+".html"+ "\" /></head></html>")
+                                else:
+                                    f.write(
+                                        "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + deploypath+"/"+collid+"/"+ "\" /></head></html>")
                         #print("symlinks created")
                     except Exception as e:
                         print("symlink creation error")
@@ -338,10 +337,8 @@ class StacAPIExporter:
                             if os.path.exists(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.html"):
                                 targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.html", str(op + "/items/" + str(
                                     DocUtils.shortenURI(feat["id"])) + "/index.html").replace("//", "/"), outpath, True)
-                                f = open(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"]))) + "/index.html", "w",encoding="utf-8")
-                                f.write(
-                                    "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + targetpath + "\" /></head></html>")
-                                f.close()
+                                with open(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"]))) + "/index.html", "w",encoding="utf-8") as f:
+                                    f.write(f"<html><head><meta http-equiv=\"refresh\" content=\"0; url={targetpath}\" /></head></html>")
                             #print("symlinks created")
                         except Exception as e:
                             print("symlink creation error")
@@ -355,14 +352,14 @@ class StacAPIExporter:
                 # shutil.move(coll, op+"/items/index.json")
         if ogcapi:
             with open(outpath + "/index.json", "w", encoding="utf-8") as f:
-                json.dump(landingpagejson,f)
+                f.write(json.dumps(landingpagejson))
             with open(outpath + "/api/index.json", "w", encoding="utf-8") as f:
-                json.dump(apijson,f)
+                f.write(json.dumps(apijson))
             with open(outpath + "/api/api.html", "w", encoding="utf-8") as f:
                 f.write(apihtml)
-            with open(outpath + "/collections/indexc.html", "w", encoding="utf-8") as f:
+            with open(outpath + "/collections/"+collectionhtmlname, "w", encoding="utf-8") as f:
                 f.write(collectionshtml.replace("{{collectiontable}}", collectiontable))
             with open(outpath + "/collections/index.json", "w", encoding="utf-8") as f:
-                json.dump(collectionsjson,f)
+                f.write(json.dumps(collectionsjson))
             with open(outpath + "/conformance/index.json", "w", encoding="utf-8") as f:
-                json.dump(conformancejson,f)
+                f.write(json.dumps(conformancejson))

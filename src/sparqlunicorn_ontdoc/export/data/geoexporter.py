@@ -155,10 +155,9 @@ class GeoExporter:
         typeToRes=res[1]
         typeToGeom=res[2]
         for type in typeToFields:
-            f = open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
-                type) + "." + formatt, "w", encoding="utf-8")
-            f.write("geo:"+str(typeToGeom[type]["coordinates"]).replace("[","").replace("]","")+"\n")
-            f.close()
+            with open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
+                type) + "." + formatt, "w", encoding="utf-8") as f:
+                f.write("geo:"+str(typeToGeom[type]["coordinates"]).replace("[","").replace("]","")+"\n")
         return None
 
     @staticmethod
@@ -168,8 +167,8 @@ class GeoExporter:
         typeToRes=res[1]
         typeToGeom=res[2]
         for type in typeToFields:
-            f = open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
-                type) + "." + formatt, "w", encoding="utf-8")
-            f.write(str(typeToGeom[type]["type"])+"("+str(typeToGeom[type]["coordinates"])+")\n")
-            f.close()
+            with open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
+                type) + "." + formatt, "w", encoding="utf-8") as f:
+                f.write(str(typeToGeom[type]["type"])+"("+str(typeToGeom[type]["coordinates"])+")\n")
+
         return None

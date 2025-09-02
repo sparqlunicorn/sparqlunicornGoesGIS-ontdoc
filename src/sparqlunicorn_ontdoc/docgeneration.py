@@ -136,42 +136,44 @@ class OntDocGeneration:
         self.exectimes["Graph Analysis"]={"time":end-start}
         if not self.pubconfig["apis"]["iiif"]:
             self.pubconfig["apis"]["iiif"]=res["iiif"]
-        if os.path.exists(outpath + self.pubconfig["corpusid"] + '_search.js'):
+        searchjspath=outpath + self.pubconfig["corpusid"] + '_search.js'
+        classtreepath=outpath + self.pubconfig["corpusid"] + '_classtree.js'
+        if os.path.exists(searchjspath):
             try:
-                with open(outpath + self.pubconfig["corpusid"] + '_search.js', 'r', encoding='utf-8') as f:
+                with open(searchjspath, 'r', encoding='utf-8') as f:
                     data = json.loads(f.read().replace("var search=", ""))
                     for key in data:
                         labeltouri[key] = data[key]
             except Exception as e:
                 print("Exception occurred " + str(e))
                 print(traceback.format_exc())
-        with open(outpath + self.pubconfig["corpusid"] + '_search.js', 'w', encoding='utf-8') as f:
+        with open(searchjspath, 'w', encoding='utf-8') as f:
             f.write("var search=" + json.dumps(labeltouri, indent=2, sort_keys=True))
         if self.pubconfig["offlinecompat"]:
             if os.path.exists(outpath + "icons/"):
                 shutil.rmtree(outpath + "icons/")
             shutil.copytree(templatepath + "/" + self.templatename + "/icons/", outpath + "icons/")
         prevtree = []
-        if os.path.exists(outpath + self.pubconfig["corpusid"] + '_classtree.js'):
+        if os.path.exists(classtreepath):
             try:
-                with open(outpath + self.pubconfig["corpusid"] + '_classtree.js', 'r', encoding='utf-8') as f:
+                with open(classtreepath, 'r', encoding='utf-8') as f:
                     prevtree = json.loads(f.read().replace("var tree=", ""))["core"]["data"]
             except Exception as e:
                 print("Exception occurred " + str(e))
-        classidset = set()
+        #classidset = set()
         start=time.time()
-        clsress = ClassTreeUtils.getClassTree(self.graph, uritolabel, classidset, uritotreeitem,self.typeproperty,self.pubconfig["prefixes"],self.preparedclassquery,res["instancecount"],self.pubconfig["outpath"],self.pubconfig)
+        clsress = ClassTreeUtils.getClassTree(self.graph, uritolabel, uritotreeitem,self.typeproperty,self.pubconfig["prefixes"],self.preparedclassquery,res["instancecount"],self.pubconfig["outpath"],self.pubconfig)
         end=time.time()
-        self.exectimes["Class Tree Generation"]={"time":end-start,"items":len(clsress[2])}
-        print(f"Class Tree Generation time for {len(clsress[2])} classes: {end-start} seconds")
+        self.exectimes["Class Tree Generation"]={"time":end-start,"items":clsress[2]}
+        print(f"Class Tree Generation time for {clsress[2]} classes: {end-start} seconds")
         tree=clsress[0]
         uritotreeitem=clsress[1]
-        classidset=clsress[2]
+        numclasses=clsress[2]
         #print(str(tree))
         for tr in prevtree:
-            if tr["id"] not in classidset:
+            if tr["id"] not in uritotreeitem:
                 tree["core"]["data"].append(tr)
-        res["voidstats"]["http://rdfs.org/ns/void#classes"] = len(classidset)
+        res["voidstats"]["http://rdfs.org/ns/void#classes"] = numclasses
         res["voidstats"]["http://rdfs.org/ns/void#triples"] = len(self.graph)
         start=time.time()
         voidgraph = VoidExporter.createVoidDataset(self.pubconfig, self.pubconfig["licenseuri"],
@@ -181,8 +183,8 @@ class OntDocGeneration:
         self.graph += voidgraph["graph"]
         subjectstorender = voidgraph["subjects"]
         end=time.time()
-        self.exectimes["Void stats generation"]={"time":end-start,"items":len(classidset)}
-        print(f"Void stats generation time for {len(classidset)} classes: {end-start} seconds")
+        self.exectimes["Void stats generation"]={"time":end-start,"items":numclasses}
+        print(f"Void stats generation time for {numclasses} classes: {end-start} seconds")
         with open(outpath + "style.css", 'w', encoding='utf-8') as f:
             f.write(templates["style"])
         with open(outpath + "startscripts.js", 'w', encoding='utf-8') as f:
@@ -572,7 +574,7 @@ def main():
         "display": "standalone"
     }
     with open(outpath[0] + "/manifest.json", "w", encoding="utf-8") as f:
-        f.write(json.dumps(manifest))
+        json.dump(manifest,f)
     if not os.path.exists(outpath[0] + '/index.html'):
         with open(outpath[0] + "/index.html", "w", encoding="utf-8") as indexf:
             nonnslink = ""

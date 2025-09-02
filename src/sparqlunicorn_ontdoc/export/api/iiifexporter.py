@@ -21,8 +21,9 @@ class IIIFAPIExporter:
                     # print(ur)
                     sur = DocUtils.shortenURI(ur)
                     # print("Getting "+outpath+"/iiif/mf/"+sur+"/manifest.json")
-                    if os.path.exists(outpath + "/iiif/mf/" + sur + "/manifest.json") and "anno" in imagetoURI[imgpath]:
-                        with open(outpath + "/iiif/mf/" + sur + "/manifest.json", 'r', encoding="utf-8") as f:
+                    mf=f'{outpath}/iiif/mf/{sur}/manifest.json'
+                    if os.path.exists(mf) and "anno" in imagetoURI[imgpath]:
+                        with open(mf, 'r', encoding="utf-8") as f:
                             curmanifest = json.loads(f.read())
                         annocounter = 2
                         for anno in imagetoURI[imgpath]["anno"]:
@@ -33,7 +34,7 @@ class IIIFAPIExporter:
                                 anno["body"] += imagetoURI[imgpath]["uri"]["bodies"]
                             curmanifest["items"][0]["annotations"][0]["items"].append(anno)
                             annocounter += 1
-                        with open(outpath + "/iiif/mf/" + sur + "/manifest.json", 'w', encoding="utf-8") as f:
+                        with open(mf, 'w', encoding="utf-8") as f:
                             f.write(json.dumps(curmanifest))
 
     @staticmethod
@@ -45,7 +46,8 @@ class IIIFAPIExporter:
         #print(outpath)
         #print(curind)
         #print(DocUtils.shortenURI(curind))
-        if not os.path.exists(outpath + "/iiif/mf/" + DocUtils.shortenURI(curind) + "/manifest.json"):
+        curinduri = DocUtils.shortenURI(curind)
+        if not os.path.exists(outpath + "/iiif/mf/" + curinduri + "/manifest.json"):
             if not os.path.exists(outpath + "/iiif/mf/"):
                 os.makedirs(outpath + "/iiif/mf/")
             if not os.path.exists(outpath + "/iiif/images/"):
@@ -55,16 +57,16 @@ class IIIFAPIExporter:
             #print(label)
             if label != "":
                 curiiifmanifest = {"@context": "http://iiif.io/api/presentation/3/context.json",
-                                   "id": deploypath + "/iiif/mf/" + DocUtils.shortenURI(curind) + "/manifest.json",
+                                   "id": deploypath + "/iiif/mf/" + curinduri + "/manifest.json",
                                    "type": "Manifest",
-                                   "label": {"en": [str(label) + " (" + DocUtils.shortenURI(curind) + ")"]}, "homepage": [
+                                   "label": {"en": [str(label) + " (" + curinduri + ")"]}, "homepage": [
                         {"id": str(curind).replace(prefixnamespace, deploypath + "/"), "type": "Text",
                          "label": {"en": [str(curind).replace(prefixnamespace, deploypath + "/")]},
                          "format": "text/html", "language": ["en"]}], "metadata": [], "items": []}
             else:
                 curiiifmanifest = {"@context": "http://iiif.io/api/presentation/3/context.json",
-                                   "id": deploypath + "/iiif/mf/" + DocUtils.shortenURI(curind) + "/manifest.json",
-                                   "type": "Manifest", "label": {"en": [DocUtils.shortenURI(curind)]}, "homepage": [
+                                   "id": deploypath + "/iiif/mf/" + curinduri + "/manifest.json",
+                                   "type": "Manifest", "label": {"en": [curinduri]}, "homepage": [
                         {"id": str(curind).replace(prefixnamespace, deploypath + "/"), "type": "Text",
                          "label": {"en": [str(curind).replace(prefixnamespace, deploypath + "/")]},
                          "format": "text/html", "language": ["en"]}], "metadata": [], "items": []}
@@ -72,9 +74,9 @@ class IIIFAPIExporter:
             for imgpath in imgpaths:
                 pcstr=str(pagecounter)
                 if imgpath.startswith("<svg") and "http" not in imgpath:
-                    with open(outpath + "/iiif/svg/" + DocUtils.shortenURI(curind) + "_" + pcstr + ".svg", "w", encoding="utf-8") as f:
+                    with open(outpath + "/iiif/svg/" + curinduri + "_" + pcstr + ".svg", "w", encoding="utf-8") as f:
                         f.write(str(imgpath).replace("<svg","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" "))
-                    imgpath = f"{deploypath}/iiif/svg/{DocUtils.shortenURI(curind)}_{pcstr}.svg"
+                    imgpath = f"{deploypath}/iiif/svg/{curinduri}_{pcstr}.svg"
                 if imgpath not in imagetoURI:
                     imagetoURI[imgpath] = {}
                 if "anno" not in imagetoURI[imgpath]:
@@ -130,8 +132,8 @@ class IIIFAPIExporter:
             # print(curiiifmanifest["metadata"])
             if summary is not None and summary != "" and summary != {}:
                 curiiifmanifest["summary"] = {"en": [str(summary)]}
-            os.makedirs(outpath + "/iiif/mf/" + DocUtils.shortenURI(curind))
-            with open(outpath + "/iiif/mf/" + DocUtils.shortenURI(curind) + "/manifest.json", "w", encoding="utf-8") as f:
+            os.makedirs(outpath + "/iiif/mf/" + curinduri)
+            with open(outpath + "/iiif/mf/" + curinduri + "/manifest.json", "w", encoding="utf-8") as f:
                 f.write(json.dumps(curiiifmanifest))
         # if annos!=None:
         #    self.generateIIIFAnnotations(self.outpath,annos,curind,next(iter(imgpaths)))
@@ -143,7 +145,7 @@ class IIIFAPIExporter:
                 break
         if besttype == "" and len(thetypes) > 0:
             besttype = next(iter(thetypes))
-        return {"url": f"{outpath}/iiif/mf/{DocUtils.shortenURI(curind)}/manifest.json", "imgpath": list(imgpaths.keys()), "label": str(label),
+        return {"url": f"{outpath}/iiif/mf/{curinduri}/manifest.json", "imgpath": list(imgpaths.keys()), "label": str(label),
                 "class": besttype,"ind":curind}
 
     @staticmethod

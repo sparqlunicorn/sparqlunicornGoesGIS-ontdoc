@@ -14,6 +14,8 @@ class OGCAPIFeaturesExporter:
             deploypath) + "/api/index.json\"; const apiUrl = \"" + str(
             deploypath) + "/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
         collectionhtmlname="indexc.html"
+        collectiontable=""
+        collectionsjson={}
         if contentnegotiation:
             collectionhtmlname="index.html"
         apijson = {"openapi": "3.0.1", "info": {"title": str(deploypath) + " Feature Collections",
@@ -139,14 +141,10 @@ class OGCAPIFeaturesExporter:
                         "text/ttl": {"schema": {}}, "text/html": {"schema": {}}}}}}}
             if outpath.endswith("/"):
                 outpath = outpath[0:-1]
-            if not os.path.exists(outpath + "/api/"):
-                os.makedirs(outpath + "/api/")
-            if not os.path.exists(outpath + "/license/"):
-                os.makedirs(outpath + "/license/")
-            if not os.path.exists(outpath + "/collections/"):
-                os.makedirs(outpath + "/collections/")
-            if not os.path.exists(outpath + "/conformance/"):
-                os.makedirs(outpath + "/conformance/")
+            os.makedirs(outpath + "/api/",exist_ok=True)
+            os.makedirs(outpath + "/license/",exist_ok=True)
+            os.makedirs(outpath + "/collections/",exist_ok=True)
+            os.makedirs(outpath + "/conformance/",exist_ok=True)
         result = list()
         for coll in featurecollectionspaths:
             curcoll = None
@@ -157,10 +155,8 @@ class OGCAPIFeaturesExporter:
                 op = outpath + "/collections/" + coll.replace(outpath, "").replace("index.geojson", "") + "/"
                 op = op.replace(".geojson", "")
                 op = op.replace("//", "/")
-                if not os.path.exists(op):
-                    os.makedirs(op)
-                if not os.path.exists(op + "/items/"):
-                    os.makedirs(op + "/items/")
+                os.makedirs(op,exist_ok=True)
+                os.makedirs(op + "/items/",exist_ok=True)
                 opweb = op.replace(outpath, deploypath)
                 opwebcoll = opweb
                 if opwebcoll.endswith("/"):
@@ -176,8 +172,7 @@ class OGCAPIFeaturesExporter:
                          "type": "text/html", "title": "Collection as HTML"},
                         {"href": str(opweb.replace(".geojson", "") + "/index.ttl").replace("//", "/"),
                          "rel": "collection", "type": "text/ttl", "title": "Collection as TTL"}]})
-                currentcollection = {"title": featurecollectionspaths[coll]["name"],
-                                     "id": collid,
+                currentcollection = {"title": featurecollectionspaths[coll]["name"],"id": collid,
                                      "links": [], "itemType": "feature"}
                 currentcollection["links"] = [
                     {"href": opwebcoll + "/items/index.json", "rel": "items", "type": "application/json",
@@ -211,11 +206,9 @@ class OGCAPIFeaturesExporter:
                     ".geojson", "") + "/items/\">[Collection as JSON]</a>&nbsp;<a href=\"" + opweb.replace(".geojson",
                                                                                                            "") + "/items/index.ttl\">[Collection as TTL]</a></td></tr>"
                 with open(op + "index.json", "w", encoding="utf-8") as f:
-                    f.write(json.dumps(currentcollection))
+                    json.dump(currentcollection,f)
                 with open(op + collectionhtmlname, "w", encoding="utf-8") as f:
-                    f.write("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /></head><body><h1>" + featurecollectionspaths[coll][
-                        "name"] + "</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>" + str(
-                        curcollrow) + "</tbody></table></html>")
+                    f.write(f'<html><head><meta name="viewport" content="width=device-width, initial-scale=1" /></head><body><h1>{featurecollectionspaths[coll]["name"]}</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>{curcollrow}</tbody></table></html>')
                 collectiontable += curcollrow
                 if os.path.exists(coll):
                     try:
@@ -345,21 +338,21 @@ class OGCAPIFeaturesExporter:
                             print(e)
                     if mergeJSON:
                         result.append(curcoll)
-        collectiontable += "</tbody></table>"
+            collectiontable += "</tbody></table>"
         if mergeJSON:
             with open(outpath + "/features.js", 'w', encoding="utf-8") as output_file:
                 output_file.write("var featurecolls=" + json.dumps(result))
                 # shutil.move(coll, op+"/items/index.json")
         if ogcapi:
             with open(outpath + "/index.json", "w", encoding="utf-8") as f:
-                f.write(json.dumps(landingpagejson))
+                json.dump(landingpagejson,f)
             with open(outpath + "/api/index.json", "w", encoding="utf-8") as f:
-                f.write(json.dumps(apijson))
+                json.dump(apijson,f)
             with open(outpath + "/api/api.html", "w", encoding="utf-8") as f:
                 f.write(apihtml)
             with open(outpath + "/collections/"+collectionhtmlname, "w", encoding="utf-8") as f:
                 f.write(collectionshtml.replace("{{collectiontable}}", collectiontable))
             with open(outpath + "/collections/index.json", "w", encoding="utf-8") as f:
-                f.write(json.dumps(collectionsjson))
+                json.dump(collectionsjson,f)
             with open(outpath + "/conformance/index.json", "w", encoding="utf-8") as f:
-                f.write(json.dumps(conformancejson))
+                json.dump(conformancejson,f)
