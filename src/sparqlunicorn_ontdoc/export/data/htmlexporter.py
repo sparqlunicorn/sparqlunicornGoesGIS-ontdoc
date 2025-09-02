@@ -87,7 +87,7 @@ class HTMLExporter():
             for tup in sorted(predobjs, key=lambda tup: tup[0]):
                 tupobjstr = str(tup[1])
                 tuppredstr = str(tup[0])
-                predobjmap[tuppredstr].append(tup[1])
+                predobjmap.setdefault(tuppredstr,[]).append(tup[1])
                 if parentclass is not None:
                     if tuppredstr not in uritotreeitem[parentclass][-1]["data"]["to"]:
                         uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr] = {}
