@@ -236,7 +236,7 @@ class OGCAPIFeaturesExporter:
                                 "nonns_" + featurecollectionspaths[coll]["id"] + ".geojson",
                                 "nonns_" + featurecollectionspaths[coll]["id"] + ".html"),
                             str(op + "/items/"+collectionhtmlname).replace("//", "/"), outpath)
-                        with open(str(op + "/items/"+collectionhtmlname), "w",encoding="utf-8"):
+                        with open(str(op + "/items/"+collectionhtmlname), "w",encoding="utf-8") as f:
                             if "nonns" in collid:
                                 f.write(f'<html><head><meta http-equiv="refresh" content="0; url="{deploypath}/{collid}.html" /></head></html>')
                             else:
