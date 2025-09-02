@@ -238,11 +238,9 @@ class OGCAPIFeaturesExporter:
                                 str(op + "/items/"+collectionhtmlname).replace("//", "/"), outpath)
                             with open(str(op + "/items/"+collectionhtmlname), "w",encoding="utf-8"):
                                 if "nonns" in collid:
-                                    f.write(
-                                        "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + deploypath+"/"+collid+".html"+ "\" /></head></html>")
+                                    f.write(f'<html><head><meta http-equiv="refresh" content="0; url="{deploypath}/{collid}.html" /></head></html>')
                                 else:
-                                    f.write(
-                                        "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + deploypath+"/"+collid+"/"+ "\" /></head></html>")
+                                    f.write(f'<html><head><meta http-equiv="refresh" content="0; url="{deploypath}/{collid}/" /></head></html>')
                         #print("symlinks created")
                     except Exception as e:
                         print("symlink creation error")
@@ -251,19 +249,16 @@ class OGCAPIFeaturesExporter:
                         coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[
                         1:]) + "/items/index.json").replace("//", "/")] = {"get": {"tags": ["Data"],
                                                                                    "summary": "retrieves features of collection " + str(
-                                                                                       coll.replace(outpath,
-                                                                                                    "").replace(
+                                                                                       coll.replace(outpath,"").replace(
                                                                                            "index.geojson", "").replace(
                                                                                            ".geojson", "")[1:]).rstrip(
                                                                                        "/"),
                                                                                    "description": "Retrieves features of collection  " + str(
-                                                                                       coll.replace(outpath,
-                                                                                                    "").replace(
+                                                                                       coll.replace(outpath,"").replace(
                                                                                            "index.geojson", "").replace(
                                                                                            ".geojson", "")[1:]),
                                                                                    "operationId": "features-" + str(
-                                                                                       coll.replace(outpath,
-                                                                                                    "").replace(
+                                                                                       coll.replace(outpath,"").replace(
                                                                                            "index.geojson", "").replace(
                                                                                            ".geojson", "")[1:]),
                                                                                    "parameters": [], "responses": {
@@ -271,26 +266,22 @@ class OGCAPIFeaturesExporter:
                                         "content": {"application/geo+json": {"example": None}},
                                         "text/ttl": {"schema": {"example": None}, "example": None},
                                         "text/html": {"schema": {"example": None}, "example": None}}}}}
-                    apijson["paths"][str("/collections/" + str(
-                        coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[
+                    apijson["paths"][str("/collections/" + str(coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[
                         1:]) + "/items/{featureId}/index.json").replace("//", "/")] = {"get": {"tags": ["Data"],
                                                                                                "summary": "retrieves feature of collection " + str(
-                                                                                                   coll.replace(outpath,
-                                                                                                                "").replace(
+                                                                                                   coll.replace(outpath,"").replace(
                                                                                                        "index.geojson",
                                                                                                        "").replace(
                                                                                                        ".geojson", "")[
                                                                                                    1:]).rstrip("/"),
                                                                                                "description": "Retrieves one single feature of the collection with the id " + str(
-                                                                                                   coll.replace(outpath,
-                                                                                                                "").replace(
+                                                                                                   coll.replace(outpath,"").replace(
                                                                                                        "index.geojson",
                                                                                                        "").replace(
                                                                                                        ".geojson", "")[
                                                                                                    1:]),
                                                                                                "operationId": "feature-" + str(
-                                                                                                   coll.replace(outpath,
-                                                                                                                "").replace(
+                                                                                                   coll.replace(outpath,"").replace(
                                                                                                        "index.geojson",
                                                                                                        "").replace(
                                                                                                        ".geojson", "")[

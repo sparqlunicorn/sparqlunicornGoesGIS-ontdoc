@@ -702,7 +702,7 @@ class HTMLExporter():
         if license.startswith("CC"):
             spl = license.split(" ")
             res = f'<span style="float:right;margin-left:auto;margin-right:0px;text-align:right">This work is released under <a rel="license" target="_blank" href="http://creativecommons.org/licenses/{str(spl[1]).lower()}/{spl[2]}/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/{str(spl[1]).lower()}/{spl[2]}/80x15.png"/></a></span>'
-            licenseuri = f'http://creativecommons.org/licenses/"{str(spl[1]).lower()}/{spl[2]}'
+            licenseuri = f'http://creativecommons.org/licenses/{str(spl[1]).lower()}/{spl[2]}'
             return [res, licenseuri]
         else:
             return ["""All rights reserved.""", None]
