@@ -1,5 +1,7 @@
 from rdflib import URIRef, Literal
 import os
+from os import mkdir
+from os import path
 import re
 import shutil
 import urllib.request
@@ -91,10 +93,11 @@ class DocUtils:
         normpath = thepath.replace("*", "")
         if os.path.exists(normpath):
             files = os.listdir(normpath)
-            for file in files:
+            result=[normpath + file for file in files if file.endswith((".ttl",".owl",".n3",".nt"))]
+            #for file in files:
                 #print(file)
-                if file.endswith((".ttl",".owl",".n3",".nt")):
-                    result.append(normpath + file)
+            #    if file.endswith((".ttl",".owl",".n3",".nt")):
+            #        result.append(normpath + file)
         return result
 
 

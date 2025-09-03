@@ -21,7 +21,7 @@ class LiteralUtils:
                     geojsonrep = {"type": "Point", "coordinates": [float(str(othervalue)), float(str(object))]}
                 else:
                     geojsonrep = {"type": "Point", "coordinates": [float(str(object)), float(str(othervalue))]}
-            elif (str(pred) in DocConfig.geoproperties or str(object.datatype) in DocConfig.geoliteraltypes):
+            elif str(pred) in DocConfig.geoproperties or str(object.datatype) in DocConfig.geoliteraltypes:
                 geojsonrep = LiteralUtils.processLiteral(str(object), str(object.datatype), "")
         elif isinstance(object, URIRef) and nonns:
             for pobj in graph.predicate_objects(object):

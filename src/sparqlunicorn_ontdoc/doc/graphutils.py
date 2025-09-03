@@ -33,7 +33,8 @@ class GraphUtils:
         classToInstances = defaultdict(set)
         classToGeoColl = defaultdict(int)
         classToFColl = defaultdict(int)
-        for tup in graph.subject_objects(URIRef(typeproperty)):
+        tprop=URIRef(typeproperty)
+        for tup in graph.subject_objects(tprop):
             tuppredstr=str(tup[0])
             tupobjstr=str(tup[1])
             if namespace in tuppredstr:
@@ -49,26 +50,27 @@ class GraphUtils:
                     classToGeoColl[tupobjstr] += 1
                 if isfeature:
                     classToFColl[tupobjstr] += 1
+        collrelprop = "http://www.w3.org/2000/01/rdf-schema#member"
+        collcls=URIRef(collectionClass)
         for cls in classToInstances:
-            colluri = namespace + DocUtils.shortenURI(cls) + "_collection"
-            collrelprop = "http://www.w3.org/2000/01/rdf-schema#member"
+            colluri = URIRef(namespace + DocUtils.shortenURI(cls) + "_collection")
             if classToFColl[cls] == len(classToInstances[cls]):
                 graph.add((URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection"),
                            RDFS.subClassOf,
-                           URIRef(collectionClass)))
+                           collcls))
                 graph.add((URIRef("http://www.opengis.net/ont/geosparql#FeatureCollection"),
                            RDFS.subClassOf,
                            URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection")))
-                graph.add((URIRef(colluri), URIRef(typeproperty),
+                graph.add((colluri, tprop,
                            URIRef("http://www.opengis.net/ont/geosparql#FeatureCollection")))
             elif classToGeoColl[cls] == len(classToInstances[cls]):
                 graph.add((URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection"),
                            RDFS.subClassOf,
-                           URIRef(collectionClass)))
+                           collcls))
                 graph.add((URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection"),
                            RDFS.subClassOf,
                            URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection")))
-                graph.add((URIRef(colluri), URIRef(typeproperty),
+                graph.add((colluri, tprop,
                            URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection")))
             elif cls in DocConfig.classToCollectionClass:
                 if "super" in DocConfig.classToCollectionClass[cls]:
@@ -77,21 +79,20 @@ class GraphUtils:
                                URIRef(DocConfig.classToCollectionClass[cls]["super"])))
                     graph.add((URIRef(DocConfig.classToCollectionClass[cls]["super"]),
                                RDFS.subClassOf,
-                               URIRef(collectionClass)))
+                               collcls))
                 else:
                     graph.add((URIRef(DocConfig.classToCollectionClass[cls]["class"]),
                                RDFS.subClassOf,
-                               URIRef(collectionClass)))
-                graph.add((URIRef(colluri), URIRef(typeproperty),
+                               collcls))
+                graph.add((colluri, tprop,
                            URIRef(DocConfig.classToCollectionClass[cls]["class"])))
                 collrelprop = DocConfig.classToCollectionClass[cls]["prop"]
             else:
-                graph.add((URIRef(colluri), URIRef(typeproperty),
-                           URIRef(collectionClass)))
-            graph.add((URIRef(colluri), RDFS.label,
+                graph.add((colluri, tprop,collcls))
+            graph.add((colluri, RDFS.label,
                        Literal(str(DocUtils.shortenURI(cls)) + " Instances Collection", lang="en")))
             for instance in classToInstances[cls]:
-                graph.add((URIRef(colluri), URIRef(collrelprop), URIRef(instance)))
+                graph.add((colluri, URIRef(collrelprop), URIRef(instance)))
         return graph
 
     @staticmethod
@@ -141,7 +142,8 @@ class GraphUtils:
             predicatelength += len(str(pred))
         VOWLExporter.convertOWL2MiniVOWL(graph, outpath, "minivowl_result.js", predicates)
         with open(outpath + "proprelations.js", 'w', encoding='utf-8') as f:
-            f.write("var proprelations=" + json.dumps(predicates))
+            f.write("var proprelations=")
+            json.dump(predicates,f)
         return {"preds": predicatecounter, "avgpredlen": str(int(DocUtils.zero_div(predicatelength,predicatecounter))),
                 "predclasses": predicateClasses, "objs": len(objects), "predmap": predicates}
 
