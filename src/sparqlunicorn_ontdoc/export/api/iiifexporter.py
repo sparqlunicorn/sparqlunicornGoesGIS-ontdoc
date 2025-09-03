@@ -74,7 +74,7 @@ class IIIFAPIExporter:
             for imgpath in imgpaths:
                 pcstr=str(pagecounter)
                 if imgpath.startswith("<svg") and "http" not in imgpath:
-                    with open(outpath + "/iiif/svg/" + curinduri + "_" + pcstr + ".svg", "w", encoding="utf-8") as f:
+                    with open(f"{outpath}/iiif/svg/{curinduri}_{pcstr}.svg", "w", encoding="utf-8") as f:
                         f.write(str(imgpath).replace("<svg","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" "))
                     imgpath = f"{deploypath}/iiif/svg/{curinduri}_{pcstr}.svg"
                 if imgpath not in imagetoURI:
@@ -112,7 +112,7 @@ class IIIFAPIExporter:
                     width = imagetoURI[imgpath]["width"]
                 curitem = {"id": imgpath + "/canvas/p" + pcstr, "height": height, "width": width,
                            "type": "Canvas",
-                           "label": {"en": [str(label) + " " + str(maintype) + " " + str(pagecounter + 1)]}, "items": [
+                           "label": {"en": [f'{label} {maintype} {pagecounter + 1}']}, "items": [
                         {"id": imgpath + "/canvas/p" + pcstr + "/1", "type": "AnnotationPage", "items": [
                             {"id": imgpath + "/annotation/p" + pcstr + "/1", "type": "Annotation",
                              "motivation": "painting",

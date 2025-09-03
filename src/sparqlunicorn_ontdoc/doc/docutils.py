@@ -356,13 +356,13 @@ class DocUtils:
                 match = match.replace("\"", "")
                 try:
                     g = urllib.request.urlopen(match.replace("\"", ""))
-                    with open(outpath + str(os.sep) + "js" + str(os.sep) + match[match.rfind("/") + 1:], 'b+w') as f:
+                    with open(f'{outpath}{os.sep}js{os.sep}{match[match.rfind("/") + 1:]}', 'b+w') as f:
                         f.write(g.read())
                 except Exception as e:
                     print(e)
                     thepath=f"{templatepath}/{templatename}/js/lib/{match[match.rfind('/') + 1:]}"
                     if os.path.exists(thepath):
-                        shutil.copy(thepath,outpath + str(os.sep) + "js" + str(os.sep) + match[match.rfind("/") + 1:])
+                        shutil.copy(thepath,f'{outpath}{os.sep}js{os.sep}{match[match.rfind("/") + 1:]}')
                 myhtmltemplate = myhtmltemplate.replace(match, "{{relativepath}}js/" + match[match.rfind("/") + 1:])
         matched = re.findall(r'href="(http.*.css)"', myhtmltemplate)
         for match in matched:
@@ -371,12 +371,12 @@ class DocUtils:
             match = match.replace(">", "")
             try:
                 g = urllib.request.urlopen(match.replace("\"", ""))
-                with open(outpath + str(os.sep) + "css" + str(os.sep) + match[match.rfind("/") + 1:], 'b+w') as f:
+                with open(f'{outpath}{os.sep}css{os.sep}{match[match.rfind("/") + 1:]}', 'b+w') as f:
                     f.write(g.read())
             except Exception as e:
                 thepath=f"{templatepath}/{templatename}/css/lib/{match[match.rfind('/') + 1:]}"
                 if os.path.exists(thepath):
-                    shutil.copy(thepath,outpath + str(os.sep) + "css" + str(os.sep) + match[match.rfind("/") + 1:])
+                    shutil.copy(thepath,f'{outpath}{os.sep}css{os.sep}{match[match.rfind("/") + 1:]}')
             myhtmltemplate = myhtmltemplate.replace(match, "{{relativepath}}css/" + match[match.rfind("/") + 1:])
         return myhtmltemplate
 

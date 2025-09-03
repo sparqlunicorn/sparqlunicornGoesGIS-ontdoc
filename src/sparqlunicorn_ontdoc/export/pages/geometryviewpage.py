@@ -77,11 +77,13 @@ class GeometryViewPage:
                 dateatt=[]
                 properties = {}
                 for geoinstance in graph.predicate_objects(memberid, True):
+                    geoinstance0str=str(geoinstance[0])
+                    geoinstance1str = str(geoinstance[1])
                     if isinstance(geoinstance[1], Literal) and (
-                            str(geoinstance[0]) in DocConfig.geoproperties or str(geoinstance[1].datatype) in DocConfig.geoliteraltypes):
-                        geojsonrep = LiteralUtils.processLiteral(str(geoinstance[1]), str(geoinstance[1].datatype), "")
+                            geoinstance0str in DocConfig.geoproperties or str(geoinstance[1].datatype) in DocConfig.geoliteraltypes):
+                        geojsonrep = LiteralUtils.processLiteral(geoinstance1str, str(geoinstance[1].datatype), "")
                         uritotreeitem[str(subject)][-1]["type"] = "geocollection"
-                    elif str(geoinstance[0]) in DocConfig.geopointerproperties:
+                    elif geoinstance0str in DocConfig.geopointerproperties:
                         uritotreeitem[str(subject)][-1]["type"] = "featurecollection"
                         for geotup in graph.predicate_objects(geoinstance[1], True):
                             if isinstance(geotup[1], Literal) and (str(geotup[0]) in DocConfig.geoproperties or str(
@@ -89,7 +91,7 @@ class GeometryViewPage:
                                 geojsonrep = LiteralUtils.processLiteral(str(geotup[1]), str(geotup[1].datatype), "")
                                 break
                     else:
-                        if str(geoinstance[0]) in DocConfig.timepointerproperties:
+                        if geoinstance0str in DocConfig.timepointerproperties:
                             timeobj=OWLTimePage.resolveTimeLiterals(geoinstance[0],geoinstance[1],graph)
                             for key in timeobj:
                                 dateatt.append(key)
@@ -98,16 +100,16 @@ class GeometryViewPage:
                             foundunit=None
                             foundval=None
                             #print("RESOLVE UNIT FROM: "+str(geoinstance[1]))
-                            res=DocUtils.resolveUnitValue(graph,geoinstance[1],None,str(geoinstance[1]),foundunit,foundval)
+                            res=DocUtils.resolveUnitValue(graph,geoinstance[1],None,geoinstance1str,foundunit,foundval)
                             foundval=res[0]
                             foundunit=res[1]
                             #print("FOUNDVAL: "+str(foundval)+" FOUNDUNIT: "+str(foundunit))
                             if foundval is not None:
-                                properties[str(geoinstance[0])+".value"]=foundval
+                                properties[geoinstance0str+".value"]=foundval
                             if foundunit is not None:
-                                properties[str(geoinstance[0]) + ".unit"] = foundunit
+                                properties[geoinstance0str + ".unit"] = foundunit
                         else:
-                            properties[str(geoinstance[0])]=str(geoinstance[1])
+                            properties[geoinstance0str]=geoinstance1str
                     #print(geojsonrep)
                 if geojsonrep is not None and geojsonrep!= "" and isinstance(geojsonrep,dict) and "coordinates" in geojsonrep and len(geojsonrep["coordinates"]) > 0:
                     if uritotreeitem is not None and memberidstr in uritotreeitem:
@@ -138,8 +140,7 @@ class GeometryViewPage:
         if len(featcoll["features"]) > 0:
             featcoll["numberMatched"] = len(featcoll["features"])
             featcoll["numberReturned"] = len(featcoll["features"])
-            geomcoll=shapely.geometry.GeometryCollection(
-                [shapely.geometry.shape(feature["geometry"]) for feature in featcoll["features"]])
+            geomcoll=shapely.geometry.GeometryCollection([shapely.geometry.shape(feature["geometry"]) for feature in featcoll["features"]])
             featcoll["bbox"]=geomcoll.bounds
             if geomcoll.has_z:
                 self.createSVGFromWKT(templates,featcoll,f)
@@ -184,7 +185,7 @@ class GeometryViewPage:
                     featurecollectionspaths[parameters.get("completesavepath", "").replace(".html", ".geojson")] = {
                         "name": featcoll["name"],
                         "id": featcoll["id"]}
-                    fgeo.write(json.dumps(featcoll))
+                    json.dump(featcoll,fgeo)
         return geocache
 
     def generatePageView(self,headertemplate,footertemplate,g,f):

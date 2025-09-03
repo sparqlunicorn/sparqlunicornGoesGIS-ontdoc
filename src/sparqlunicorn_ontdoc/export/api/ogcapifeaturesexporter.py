@@ -18,7 +18,7 @@ class OGCAPIFeaturesExporter:
         collectionsjson={}
         if contentnegotiation:
             collectionhtmlname="index.html"
-        apijson = {"openapi": "3.0.1", "info": {"title": str(deploypath) + " Feature Collections",
+        apijson = {"openapi": "3.0.1", "info": {"title": f"{deploypath} Feature Collections",
                                                 "description": f"Feature Collections of {deploypath}"},
                    "servers": [{"url": str(deploypath)}], "paths": {}}
         conformancejson = {"conformsTo": ["http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core",
@@ -176,7 +176,7 @@ class OGCAPIFeaturesExporter:
                 currentcollection["links"] = [
                     {"href": opwebcoll + "/items/index.json", "rel": "items", "type": "application/json",
                      "title": "Collection as JSON"},
-                    {"href": opwebcoll + "/items/"+collectionhtmlname, "rel": "items", "type": "text/html",
+                    {"href": f"{opwebcoll}/items/{collectionhtmlname}", "rel": "items", "type": "text/html",
                      "title": "Collection as HTML"},
                     {"href": opwebcoll + "/items/index.ttl", "rel": "collection", "type": "text/ttl",
                      "title": "Collection as TTL"}]

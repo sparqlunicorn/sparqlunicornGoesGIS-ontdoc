@@ -653,9 +653,7 @@ class HTMLExporter():
                 if bibtex is not None:
                     tablecontents += f"<details><summary>[BIBTEX]</summary><pre>{bibtex}</pre></details>"
                 if generatePagesForNonNS:
-                    rellink = DocUtils.generateRelativeLinkFromGivenDepth(str(baseurl), checkdepth,
-                                                                          str(baseurl) + "nonns_" + DocUtils.shortenURI(
-                                                                              objstr.replace(":", "_")), False)
+                    rellink = DocUtils.generateRelativeLinkFromGivenDepth(str(baseurl), checkdepth,f'{baseurl}nonns_{DocUtils.shortenURI(objstr.replace(":", "_"))}', False)
                     tablecontents += f" <a href=\"{rellink}.html\">[x]</a>"
             if unitlabel:
                 tablecontents += f" <span style=\"font-weight:bold\">[{unitlabel}]</span>"

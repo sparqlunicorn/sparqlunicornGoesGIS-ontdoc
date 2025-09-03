@@ -1,5 +1,5 @@
 from rdflib import Graph, URIRef
-from rdflib.namespace import RDFS,OWL
+from rdflib.namespace import RDFS,OWL,RDF
 import json
 
 class VOWLExporter:
@@ -75,7 +75,7 @@ class VOWLExporter:
                         links.append({"source":nodeuriToId[node],"target":nodeuriToId[str(predobj[1])],"valueTo": VOWLExporter.getIRILabel(str(predobj[0])), "propertyTo":("class" if isinstance(predobj[1], URIRef) else "datatype"), "uriTo":(str(predobj[1]) if isinstance(predobj[1], URIRef) else predobj[1].datatype)})
         minivowlresult["nodes"]=nodes
         minivowlresult["links"] = links
-        with open(outpath + "/"+str(outfile), "w",encoding="utf-8") as f:
+        with open(f'{outpath}/{outfile}', "w",encoding="utf-8") as f:
             f.write("var minivowlresult=")
             json.dump(minivowlresult,f, indent=1)
         return minivowlresult

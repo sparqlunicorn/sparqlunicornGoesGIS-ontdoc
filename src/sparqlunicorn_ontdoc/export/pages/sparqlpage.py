@@ -36,7 +36,9 @@ class SPARQLPage():
             "{{versionurl}}", DocConfig.versionurl).replace("{{version}}", DocConfig.version).replace("{{bibtex}}",
                                                                                                       "").replace(
             "{{proprelationpath}}", "proprelations.js")
-        sparqlhtml += templates["sparqltemplate"]
+        f.write(sparqlhtml)
+        f.write(templates["sparqltemplate"])
+        #sparqlhtml += templates["sparqltemplate"]
         tempfoot = DocUtils.replaceStandardVariables(templates["footer"], "", "0", "false",pubconfig).replace("{{license}}",
                                                                                                 curlicense).replace(
             "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "").replace("{{citationlink}}","").replace("{{stats}}",
@@ -49,5 +51,5 @@ class SPARQLPage():
                                                         f"<a href=\"{pubconfig['deploypath']}/iiif/\">[IIIF]</a>&nbsp;",
                                                         f"<a href=\"{pubconfig['deploypath']}/api/3/\">[CKAN]</a>"
                                                     ], "{{apis}}")
-        sparqlhtml += tempfoot
-        f.write(sparqlhtml)
+        f.write(tempfoot)
+        #f.write(sparqlhtml)

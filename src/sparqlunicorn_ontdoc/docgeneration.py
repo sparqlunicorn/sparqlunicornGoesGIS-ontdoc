@@ -127,8 +127,8 @@ class OntDocGeneration:
             logoname=self.pubconfig["logourl"]
             if not os.path.isdir(outpath + "/logo/"):
                 os.mkdir(outpath + "/logo/")
-            shutil.copy(logoname, outpath + "/logo/logo." + logoname[logoname.rfind("."):])
-            self.pubconfig["logourl"] = outpath + "/logo/logo." + logoname[logoname.rfind("."):]
+            shutil.copy(logoname, f'{outpath}/logo/logo.{logoname[logoname.rfind("."):]}')
+            self.pubconfig["logourl"] = f'{outpath}/logo/logo.{logoname[logoname.rfind("."):]}'
         DocUtils.updateProgressBar(0, 1, "Creating classtree and search index")
         start=time.time()
         res=GraphUtils.analyzeGraph(self.graph, prefixnamespace, self.typeproperty, voidds, labeltouri, uritolabel, self.pubconfig["outpath"], self.pubconfig["createvowl"])
@@ -137,8 +137,8 @@ class OntDocGeneration:
         self.exectimes["Graph Analysis"]={"time":end-start}
         if not self.pubconfig["apis"]["iiif"]:
             self.pubconfig["apis"]["iiif"]=res["iiif"]
-        searchjspath=outpath + self.pubconfig["corpusid"] + '_search.js'
-        classtreepath=outpath + self.pubconfig["corpusid"] + '_classtree.js'
+        searchjspath=f'{outpath}{self.pubconfig["corpusid"]}_search.js'
+        classtreepath=f'{outpath}{self.pubconfig["corpusid"]}_classtree.js'
         if os.path.exists(searchjspath):
             try:
                 with open(searchjspath, 'r', encoding='utf-8') as f:
@@ -154,7 +154,7 @@ class OntDocGeneration:
         if self.pubconfig["offlinecompat"]:
             if os.path.exists(outpath + "icons/"):
                 shutil.rmtree(outpath + "icons/")
-            shutil.copytree(templatepath + "/" + self.templatename + "/icons/", outpath + "icons/")
+            shutil.copytree(f"{templatepath}/{self.templatename}/icons/", outpath + "icons/")
         prevtree = []
         if os.path.exists(classtreepath):
             try:
@@ -210,7 +210,7 @@ class OntDocGeneration:
             #        print(traceback.format_exc())
             res = self.htmlexporter.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace,
                                   self.graph.subject_predicates(subj),
-                                  self.graph, str(self.pubconfig["corpusid"]) + "_search.js", str(self.pubconfig["corpusid"]) + "_classtree.js",
+                                  self.graph, f'{self.pubconfig["corpusid"]}_search.js', f'{self.pubconfig["corpusid"]}_classtree.js',
                                   uritotreeitem, curlicense, subjectstorender, postprocessing, nonnsmap)
             postprocessing = res[0]
             nonnsmap = res[1]
@@ -237,7 +237,7 @@ class OntDocGeneration:
             #        print(traceback.format_exc())
             self.htmlexporter.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace,
                             self.graph.subject_predicates(subj),
-                            self.graph, str(self.pubconfig["corpusid"]) + "_search.js", str(self.pubconfig["corpusid"]) + "_classtree.js", uritotreeitem,
+                            self.graph, f'{self.pubconfig["corpusid"]}_search.js', f'{self.pubconfig["corpusid"]}_classtree.js', uritotreeitem,
                             curlicense, subjectstorender, postprocessing)
             subtorencounter += 1
             if subtorencounter % 250 == 0:
@@ -255,10 +255,10 @@ class OntDocGeneration:
             end=time.time()
             self.exectimes["NonNS Pages"] = {"time": end - start,"items":len(nonnsmap)}
             print("NonNS Page Generation time "+str(end-start)+" seconds")
-        with open(outpath + self.pubconfig["corpusid"] + "_classtree.js", 'w', encoding='utf-8') as f:
+        with open(classtreepath, 'w', encoding='utf-8') as f:
             f.write("var tree=")
             json.dump(tree,f, indent=2)
-        with open(outpath +  self.pubconfig["corpusid"] + '_search.js', 'w', encoding='utf-8') as f:
+        with open(searchjspath, 'w', encoding='utf-8') as f:
             f.write("var search=")
             json.dump(labeltouri,f, indent=2, sort_keys=True)
         if self.htmlexporter.has3d:

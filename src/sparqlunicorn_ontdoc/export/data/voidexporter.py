@@ -20,15 +20,12 @@ class VoidExporter:
             dsname="dataset"
         dsname=dsname.replace(" ","_")
         voidds=URIRef(pubconfig["prefixns"]+dsname)
+        pcrep=URIRef(pubconfig["repository"])
         if pubconfig["repository"] is not None and pubconfig["repository"]!= "" and pubconfig["repository"].startswith("http"):
-            g.add((URIRef(pubconfig["repository"]), RDF.type,
-                   URIRef("http://www.w3.org/ns/adms#AssetRepository")))
-            g.add((URIRef(pubconfig["repository"]), DCAT.accessURL,
-                   Literal(str(pubconfig["repository"]),datatype=XSD.anyURI)))
-            g.add((URIRef(pubconfig["repository"]), DCAT.dataset,
-                   voidds))
-            g.add((URIRef(pubconfig["repository"]), RDFS.label,
-                   Literal("Repository for "+str(dsname), lang="en")))
+            g.add((pcrep, RDF.type,URIRef("http://www.w3.org/ns/adms#AssetRepository")))
+            g.add((pcrep, DCAT.accessURL,Literal(str(pubconfig["repository"]),datatype=XSD.anyURI)))
+            g.add((pcrep, DCAT.dataset,voidds))
+            g.add((pcrep, RDFS.label,Literal(f"Repository for {dsname}", lang="en")))
         g.add((voidds, RDF.type,VOID.Dataset))
         g.add((voidds, RDF.type, URIRef("http://www.w3.org/ns/adms#Asset")))
         g.add((voidds, RDFS.label,Literal(dsname,lang="en")))

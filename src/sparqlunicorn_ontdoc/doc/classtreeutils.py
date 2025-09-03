@@ -119,7 +119,7 @@ class ClassTreeUtils:
                     clsres = DocUtils.replaceNameSpacesInLabel(prefixes, ressuperstr)
                     if clsres is not None:
                         theitem = {"id": ressuperstr, "parent": "#", "type": "class",
-                                   "text": DocUtils.shortenURI(ressuperstr) + " (" + clsres["uri"] + ")", "data": {"from":{},"to":{}}}
+                                   "text": f'{DocUtils.shortenURI(ressuperstr)} ({clsres["uri"]})', "data": {"from":{},"to":{}}}
                     else:
                         theitem = {"id": ressuperstr, "parent": "#", "type": "class",
                                    "text": DocUtils.shortenURI(ressuperstr), "data": {"from":{},"to":{}}}

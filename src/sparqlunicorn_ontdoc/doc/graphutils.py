@@ -178,7 +178,7 @@ class GraphUtils:
         voidds=URIRef(voidds)
         for sub in graph.subjects(None, None, True):
             substr=str(sub)
-            if (prefixnamespace in sub and (isinstance(sub, URIRef)) or isinstance(sub, BNode)):
+            if prefixnamespace in sub and (isinstance(sub, URIRef)) or isinstance(sub, BNode):
                 subjectstorender.add(sub)
                 label = DocUtils.shortenURI(substr)
                 restriction = False
