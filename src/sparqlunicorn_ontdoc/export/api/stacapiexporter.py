@@ -351,7 +351,8 @@ class StacAPIExporter:
         collectiontable += "</tbody></table>"
         if mergeJSON:
             with open(outpath + "/features.js", 'w', encoding="utf-8") as output_file:
-                output_file.write("var featurecolls=" + json.dumps(result))
+                output_file.write("var featurecolls=")
+                json.dump(result,output_file)
                 # shutil.move(coll, op+"/items/index.json")
         if ogcapi:
             with open(outpath + "/index.json", "w", encoding="utf-8") as f:

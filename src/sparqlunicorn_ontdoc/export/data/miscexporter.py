@@ -12,16 +12,17 @@ class MiscExporter:
         subjectsToType={}
         typeToFields={}
         for sub in subjectstorender:
-            typeToFields[str(sub)]=set()
+            substr=str(sub)
+            typeToFields[substr]=set()
             for tup in g.predicate_objects(sub):
                 if str(tup[0])=="http://www.w3.org/1999/02/22-rdf-syntax-ns#type":
-                    subjectsToType[str(sub)]=str(tup[1])
-                typeToFields[str(sub)].add(str(tup[0]))
-            if str(sub) in subjectsToType:
-                if subjectsToType[str(sub)] not in typeToFields:
-                    typeToFields[subjectsToType[str(sub)]]=set()
-                typeToFields[subjectsToType[str(sub)]]=typeToFields[subjectsToType[str(sub)]].union(typeToFields[str(sub)])
-                del typeToFields[str(sub)]
+                    subjectsToType[substr]=str(tup[1])
+                typeToFields[substr].add(str(tup[0]))
+            if substr in subjectsToType:
+                if subjectsToType[substr] not in typeToFields:
+                    typeToFields[subjectsToType[substr]]=set()
+                typeToFields[subjectsToType[substr]]=typeToFields[subjectsToType[substr]].union(typeToFields[substr])
+                del typeToFields[substr]
         return [subjectsToType,typeToFields]
 
     @staticmethod

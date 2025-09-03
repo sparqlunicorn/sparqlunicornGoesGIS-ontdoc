@@ -3,6 +3,7 @@ from sys import prefix
 
 from rdflib import Graph
 from rdflib import URIRef, Literal, BNode
+from rdflib.namespace import RDF
 from rdflib.plugins.sparql import prepareQuery
 from urllib.request import urlopen
 
@@ -148,7 +149,8 @@ class OntDocGeneration:
                 print("Exception occurred " + str(e))
                 print(traceback.format_exc())
         with open(searchjspath, 'w', encoding='utf-8') as f:
-            f.write("var search=" + json.dumps(labeltouri, indent=2, sort_keys=True))
+            f.write("var search=")
+            json.dump(labeltouri,f, sort_keys=True)
         if self.pubconfig["offlinecompat"]:
             if os.path.exists(outpath + "icons/"):
                 shutil.rmtree(outpath + "icons/")
@@ -254,9 +256,11 @@ class OntDocGeneration:
             self.exectimes["NonNS Pages"] = {"time": end - start,"items":len(nonnsmap)}
             print("NonNS Page Generation time "+str(end-start)+" seconds")
         with open(outpath + self.pubconfig["corpusid"] + "_classtree.js", 'w', encoding='utf-8') as f:
-            f.write("var tree=" + json.dumps(tree, indent=2))
+            f.write("var tree=")
+            json.dump(tree,f, indent=2)
         with open(outpath +  self.pubconfig["corpusid"] + '_search.js', 'w', encoding='utf-8') as f:
-            f.write("var search=" + json.dumps(labeltouri, indent=2, sort_keys=True))
+            f.write("var search=")
+            json.dump(labeltouri,f, sort_keys=True)
         if self.htmlexporter.has3d:
             if not os.path.exists(outpath + "/js"):
                 os.makedirs(outpath + "/js")
@@ -554,13 +558,13 @@ def main():
         for sub in subrend:
             for predobj in g.predicate_objects(sub):
                 resg.add((sub, predobj[0], predobj[1]))
-                if args.solidexport:
-                    resg.add((sub, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                              URIRef("http://www.w3.org/ns/ldp#Container")))
-                    resg.add((sub, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                              URIRef("http://www.w3.org/ns/ldp#BasicContainer")))
-                    resg.add((sub, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                              URIRef("http://www.w3.org/ns/ldp#Resource")))
+            if args.solidexport:
+                resg.add((sub, RDF.type,
+                          URIRef("http://www.w3.org/ns/ldp#Container")))
+                resg.add((sub, RDF.type,
+                          URIRef("http://www.w3.org/ns/ldp#BasicContainer")))
+                resg.add((sub, RDF.type,
+                          URIRef("http://www.w3.org/ns/ldp#Resource")))
         resg.serialize(outpath[0] + '/index.ttl')
     manifest={
         "lang": "en-us",

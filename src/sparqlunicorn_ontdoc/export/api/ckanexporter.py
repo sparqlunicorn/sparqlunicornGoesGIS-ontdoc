@@ -52,7 +52,7 @@ class CKANExporter:
             print(e)
             print("Symlink creation might not be allowed")
         with open(outpath + "/api/"+str(version)+"/index.json", "w",encoding="utf-8") as f:
-            f.write(json.dumps({"version": int(version)}))
+            json.dump({"version": int(version)},f)
         ckanopenapi["paths"]["/api/"+str(version)+"/action/group_list/"] = {"get": {"tags": ["CKAN"],
                                                                        "summary": "Retrieves the group list of this CKAN API",
                                                                        "description": "Retrieves the group list of this CKAN API",
@@ -102,9 +102,11 @@ class CKANExporter:
                         groupdesc={"success":True,"result":{"description":theid,"display_name":item["text"],"name":item["text"],"title":item["text"],"type":"group"}}
                         with open(thepath+"/index.json", 'w') as fl:
                             json.dump(groupdesc,fl)
-                f.write(json.dumps({"success": True, "result": classes}))
+                json.dump({"success": True, "result": classes},f)
+                #f.write(json.dumps({"success": True, "result": classes}))
             else:
-                f.write(json.dumps({"success": True, "result": []}))
+                json.dump({"success": True, "result": []},f)
+                #f.write(json.dumps({"success": True, "result": []}))
         with open(outpath + "/api/"+str(version)+"/action/tag_list/index.json", "w",encoding="utf-8") as f:
             json.dump({"success": True, "result": ["ttl", "json", "geojson", "html"]},f)
         colls = []

@@ -17,11 +17,12 @@ class GraphExporter:
         if subjectstorender is None:
             subjectstorender = g.subjects(None,None,True)
         for sub in subjectstorender:
-            if str(sub) not in uriToNodeId:
-                uriToNodeId[str(sub)] = nodecounter
-                file.write("CREATE ( " + str(DocUtils.shortenURI(str(sub))) + "{ _id:'" + str(
-                    DocUtils.shortenURI(str(sub))) + "', _uri:'" + str(sub) + "', rdfs_label:'" + str(
-                    DocUtils.shortenURI(str(sub))) + "' })\n")
+            substr=str(sub)
+            if substr not in uriToNodeId:
+                uriToNodeId[substr] = nodecounter
+                file.write("CREATE ( " + str(DocUtils.shortenURI(substr)) + "{ _id:'" + str(
+                    DocUtils.shortenURI(substr)) + "', _uri:'" + substr + "', rdfs_label:'" + str(
+                    DocUtils.shortenURI(substr)) + "' })\n")
                 nodecounter += 1
             for tup in g.predicate_objects(sub):
                 if str(tup[1]) not in uriToNodeId:
@@ -30,7 +31,7 @@ class GraphExporter:
                         DocUtils.shortenURI(str(tup[1]))) + "' })\n")
                     uriToNodeId[str(tup[1])] = nodecounter
                     nodecounter += 1
-                tgfresedges += f"({uriToNodeId[str(sub)]})-[:{DocUtils.shortenURI(str(tup[1]))}]->({DocUtils.shortenURI(str(tup[0]))}),\n"
+                tgfresedges += f"({uriToNodeId[substr]})-[:{DocUtils.shortenURI(str(tup[1]))}]->({DocUtils.shortenURI(str(tup[0]))}),\n"
         file.write("\n\nCREATE ")
         file.write(tgfresedges[0:-2] + "\n")
         return None
@@ -255,7 +256,7 @@ class GraphExporter:
         for sub in subjectstorender:
             if str(sub) not in uriToNodeId:
                 uriToNodeId[str(sub)] = nodecounter
-                file.write("<node id=\""+str(nodecounter)+"\" value=\""+str(sub)+"\" label=\""+str(DocUtils.shortenURI(str(sub)))+"\"><viz:color r=\"128\" g=\"0\" b=\"128\"/></node>\n")
+                file.write(f'<node id="{nodecounter}" value="{sub}" label="{DocUtils.shortenURI(str(sub))}"><viz:color r=\"128\" g=\"0\" b=\"128\"/></node>\n')
                 nodecounter += 1
             for tup in g.predicate_objects(sub):
                 if isinstance(tup[1],Literal):
