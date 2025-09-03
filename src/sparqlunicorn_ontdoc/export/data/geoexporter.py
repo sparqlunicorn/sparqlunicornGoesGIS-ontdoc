@@ -8,11 +8,12 @@ class GeoExporter:
 
     @staticmethod
     def filterGeoClasses(classlist):
-        geoclasslist=set()
-        for cls in classlist:
-            if classlist[cls]["item"]["type"]=="geoclass":
-                geoclasslist.add(classlist[cls]["item"]["id"])
-        return geoclasslist
+        #geoclasslist=set()
+        #for cls in classlist:
+        #    if classlist[cls]["item"]["type"]=="geoclass":
+        #        geoclasslist.add(classlist[cls]["item"]["id"])
+        return {classlist[cls]["item"]["id"] for cls in classlist if classlist[cls]["item"]["type"]=="geoclass"}
+        #geoclasslist
 
 
     @staticmethod
@@ -38,7 +39,7 @@ class GeoExporter:
                 if str(tup[0])=="http://www.w3.org/1999/02/22-rdf-syntax-ns#type" and str(tup[1]) in geoclasslist:
                     subjectsToType[substr]=str(tup[1])
                 typeToFields[substr].add(str(tup[0]))
-            if str(sub) in subjectsToType:
+            if substr in subjectsToType:
                 if subjectsToType[substr] not in typeToFields:
                     typeToFields[subjectsToType[substr]]=set()
                 typeToFields[subjectsToType[substr]]=typeToFields[subjectsToType[substr]].union(typeToFields[substr])

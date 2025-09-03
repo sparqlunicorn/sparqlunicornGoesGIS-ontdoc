@@ -170,5 +170,6 @@ class VOWLExporter:
         vowlresult["class"]=classes
         vowlresult["classAttribute"]=classAttributes
         with open(outpath+"/vowl_result.js","w",encoding="utf-8") as f:
-            f.write("var vowlresult="+json.dumps(vowlresult,indent=1))
+            f.write("var vowlresult=")
+            json.dump(vowlresult,f,indent=1)
         return vowlresult
