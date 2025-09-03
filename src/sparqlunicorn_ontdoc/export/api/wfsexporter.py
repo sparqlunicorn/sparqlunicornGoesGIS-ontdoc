@@ -102,7 +102,7 @@ class WFSExporter:
                 #    ".geojson", "") + "/items/\">[Collection as JSON]</a>&nbsp;<a href=\"" + opweb.replace(".geojson",
                 #                                                                                           "") + "/items/index.ttl\">[Collection as TTL]</a></td></tr>"
                 with open(op + "/index.json", "w", encoding="utf-8") as f:
-                    f.write(json.dumps(currentcollection))
+                    json.dump(currentcollection,f)
                 with open(op + "/indexc.html", "w", encoding="utf-8") as f:
                     f.write("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /></head><body><h1>" + featurecollectionspaths[coll][
                         "name"] + "</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>" #+ str(curcollrow)
