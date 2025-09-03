@@ -111,7 +111,7 @@ class CKANExporter:
             json.dump({"success": True, "result": ["ttl", "json", "geojson", "html"]},f)
         colls = []
         for coll in featurecollectionspaths:
-            op = outpath + "/dataset/" + coll.replace(outpath, "").replace("index.geojson", "")
+            op = f'{outpath}/dataset/{coll.replace(outpath, "").replace("index.geojson", "")}'
             op = op.replace(".geojson", "")
             op = op.replace("//", "/")
             curcollname=coll.replace(outpath, "").replace("index.geojson", "")
@@ -127,29 +127,28 @@ class CKANExporter:
                 json.dump(dataset,f)
             try:
                 if not os.path.exists(str(op + ".json").replace("//", "/")):
-                    targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"), str(op + ".json"),
-                                                              outpath)
+                    targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"), str(op + ".json"),outpath)
                     p = Path(str(op + ".json").replace("//", "/"))
                     p.symlink_to(targetpath)
-                    p = Path(outpath + "/api/"+str(version)+"/action/package_show?id="+str(curcollname)+".json")
+                    p = Path(f"{outpath}/api/{version}/action/package_show?id={curcollname}.json")
                     p.symlink_to("../../"+targetpath)
                 if not os.path.exists(str(op + ".ttl").replace("//", "/")):
                     targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"), str(op + ".ttl"),
                                                               outpath)
                     p = Path(str(op + ".ttl").replace("//", "/"))
                     p.symlink_to(targetpath)
-                    p = Path(outpath + "/api/"+str(version)+"/action/package_show?id="+str(curcollname)+".ttl")
+                    p = Path(f"{outpath}/api/{version}/action/package_show?id={curcollname}.ttl")
                     p.symlink_to("../../"+targetpath)
                 if not os.path.exists(str(op + ".html").replace("//", "/")):
                     targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"), str(op + ".html"),
                                                               outpath)
                     p = Path(str(op + ".html").replace("//", "/"))
                     p.symlink_to(targetpath)
-                    p = Path(outpath + "/api/"+str(version)+"/action/package_show?id="+str(curcollname)+".html")
+                    p = Path(f"{outpath}/api/{version}/action/package_show?id={curcollname}.html")
                     p.symlink_to("../../"+targetpath)
             except Exception as e:
                 print(e)
                 print("Symlink creation might not be allowed")
             colls.append(dataset["result"])
-        with open(outpath + "/api/"+str(version)+"/action/package_list/index.json", "w", encoding="utf-8") as f:
+        with open(f"{outpath}/api/{version}/action/package_list/index.json", "w", encoding="utf-8") as f:
             json.dump({"success": True, "result":{"count": len(colls), "results":colls}},f)

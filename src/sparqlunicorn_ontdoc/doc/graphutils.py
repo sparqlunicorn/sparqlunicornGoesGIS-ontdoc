@@ -1,5 +1,5 @@
 from rdflib import URIRef, BNode, Literal
-from rdflib.namespace import RDF, RDFS, OWL, SKOS, VOID
+from rdflib.namespace import RDF, RDFS, OWL, SKOS, VOID, GEO
 from doc.docutils import DocUtils
 from doc.docconfig import DocConfig
 import json
@@ -53,7 +53,7 @@ class GraphUtils:
         collrelprop = "http://www.w3.org/2000/01/rdf-schema#member"
         collcls=URIRef(collectionClass)
         for cls in classToInstances:
-            colluri = URIRef(namespace + DocUtils.shortenURI(cls) + "_collection")
+            colluri = URIRef(f"{namespace}{DocUtils.shortenURI(cls)}_collection")
             if classToFColl[cls] == len(classToInstances[cls]):
                 graph.add((URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection"),
                            RDFS.subClassOf,
@@ -89,8 +89,7 @@ class GraphUtils:
                 collrelprop = DocConfig.classToCollectionClass[cls]["prop"]
             else:
                 graph.add((colluri, tprop,collcls))
-            graph.add((colluri, RDFS.label,
-                       Literal(str(DocUtils.shortenURI(cls)) + " Instances Collection", lang="en")))
+            graph.add((colluri, RDFS.label,Literal(f"{DocUtils.shortenURI(cls)} Instances Collection", lang="en")))
             for instance in classToInstances[cls]:
                 graph.add((colluri, URIRef(collrelprop), URIRef(instance)))
         return graph
@@ -98,8 +97,9 @@ class GraphUtils:
     @staticmethod
     def addAdditionalTriplesForInd(graph, ind, tobeaddedPerInd):
         for prop in tobeaddedPerInd:
+            propp = URIRef(prop)
             if "value" in tobeaddedPerInd[prop] and "uri" in tobeaddedPerInd[prop]:
-                graph.add((ind, URIRef(prop), URIRef(str(tobeaddedPerInd[prop]["value"]))))
+                graph.add((ind, propp, URIRef(str(tobeaddedPerInd[prop]["value"]))))
                 graph.add((URIRef(str(tobeaddedPerInd[prop]["value"])),
                            RDF.type,
                            URIRef(str(tobeaddedPerInd[prop]["uri"]))))
@@ -108,12 +108,11 @@ class GraphUtils:
                            URIRef(str(tobeaddedPerInd[prop]["value"]))))
             elif "value" in tobeaddedPerInd[prop] and not tobeaddedPerInd[prop]["value"].startswith("http"):
                 if "type" in tobeaddedPerInd[prop]:
-                    graph.add((ind, URIRef(prop),
-                               Literal(tobeaddedPerInd[prop]["value"], datatype=tobeaddedPerInd[prop]["type"])))
+                    graph.add((ind, propp,Literal(tobeaddedPerInd[prop]["value"], datatype=tobeaddedPerInd[prop]["type"])))
                 elif "value" in tobeaddedPerInd[prop]:
-                    graph.add((ind, URIRef(prop), Literal(tobeaddedPerInd[prop]["value"])))
+                    graph.add((ind, propp, Literal(tobeaddedPerInd[prop]["value"])))
             elif "value" in tobeaddedPerInd[prop] and "uri" not in tobeaddedPerInd[prop]:
-                graph.add((ind, URIRef(prop), URIRef(str(tobeaddedPerInd[prop]["value"]))))
+                graph.add((ind, propp, URIRef(str(tobeaddedPerInd[prop]["value"]))))
 
     @staticmethod
     def getPropertyRelations(graph, outpath,typeproperty,createVOWL):
@@ -176,20 +175,22 @@ class GraphUtils:
         objectcounter = 0
         imgcounter= 0
         geocounter= 0
+        voidds=URIRef(voidds)
         for sub in graph.subjects(None, None, True):
+            substr=str(sub)
             if (prefixnamespace in sub and (isinstance(sub, URIRef)) or isinstance(sub, BNode)):
                 subjectstorender.add(sub)
-                label = DocUtils.shortenURI(str(sub))
+                label = DocUtils.shortenURI(substr)
                 restriction = False
-                ns = DocUtils.shortenURI(str(sub), True)
+                ns = DocUtils.shortenURI(substr, True)
                 #nscount.setdefault(ns,0)
                 nscount[ns] += 1
-                graph.add((sub, VOID.inDataset,URIRef(voidds)))
+                graph.add((sub, VOID.inDataset,voidds))
                 if isinstance(sub, BNode):
-                    blanknodes.add(str(sub))
+                    blanknodes.add(substr)
                 irirefs += 1
                 subjectcounter += 1
-                subjectlength += len(str(sub))
+                subjectlength += len(substr)
                 for tup in graph.predicate_objects(sub):
                     tuppredstr=str(tup[0])
                     tupobjstr = str(tup[1])
@@ -217,8 +218,8 @@ class GraphUtils:
                         #nscount.setdefault(ns, 0)
                         nscount[ns] += 1
                     if tuppredstr in DocConfig.labelproperties:
-                        labeltouri[tupobjstr] = str(sub)
-                        uritolabel[str(sub)] = {"label": tupobjstr}
+                        labeltouri[tupobjstr] = substr
+                        uritolabel[substr] = {"label": tupobjstr}
                         label = tupobjstr
                     elif tuppredstr == typeproperty:
                         #instancecount.setdefault(tupobjstr, 0)

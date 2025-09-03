@@ -47,18 +47,11 @@ class GraphExporter:
             subjectstorender = g.subjects(None,None,True)
         addednodes = set()
         for sub in subjectstorender:
-            file.write("<node id=\"" + str(sub) + "\" uri=\"" + str(
-                sub) + "\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#800080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">" + str(
-                DocUtils.shortenURI(sub)) + "</y:NodeLabel></y:ShapeNode></data></node>\n")
+            file.write(f'<node id="{sub}" uri="{sub}"><data key="nodekey"><y:ShapeNode><y:Shape shape="ellipse"></y:Shape><y:Fill color="#800080" transparent="false"></y:Fill><y:NodeLabel alignment="center" fontSize="12" fontStyle="plain" hasText="true" visible="true" width="4.0">{DocUtils.shortenURI(sub)}</y:NodeLabel></y:ShapeNode></data></node>\n')
             for tup in g.predicate_objects(sub):
                 if isinstance(tup[1], Literal):
-                    file.write("<node id=\"literal" + str(literalcounter) + "\" uri=\"literal" + str(
-                        literalcounter) + "\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#008000\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\"><![CDATA[" + str(
-                        tup[1]) + "]]></y:NodeLabel></y:ShapeNode></data></node>\n")
-                    file.write("<edge id=\"e" + str(edgecounter) + "\" uri=\"" + str(tup[0]) + "\" source=\"" + str(
-                        sub) + "\" target=\"literal" + str(
-                        literalcounter) + "\"><data key=\"edgekey\"><y:PolyLineEdge><y:EdgeLabel alignment=\"center\" configuration=\"AutoFlippingLabel\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">" + str(
-                        DocUtils.shortenURI(str(tup[0]))) + "</y:EdgeLabel></y:PolyLineEdge></data></edge>\n")
+                    file.write(f'<node id="literal{literalcounter}" uri="literal{literalcounter}"><data key="nodekey"><y:ShapeNode><y:Shape shape="ellipse"></y:Shape><y:Fill color="#008000" transparent="false"></y:Fill><y:NodeLabel alignment="center" fontSize="12" fontStyle="plain" hasText="true" visible="true" width="4.0"><![CDATA[{tup[1]}]]></y:NodeLabel></y:ShapeNode></data></node>\n')
+                    file.write(f'<edge id="e{edgecounter}" uri="{tup[0]}" source="{sub}" target="literal{literalcounter}"><data key="edgekey"><y:PolyLineEdge><y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" fontSize="12" fontStyle="plain" hasText="true" visible="true" width="4.0">{DocUtils.shortenURI(str(tup[0]))}</y:EdgeLabel></y:PolyLineEdge></data></edge>\n')
                     literalcounter += 1
                 else:
                     if tup[1] not in subjectstorender and str(tup[1]) not in addednodes:
@@ -135,16 +128,17 @@ class GraphExporter:
             subjectstorender = list(g.subjects(None,None,True))
         file.write("vertices "+str(len(subjectstorender))+"\n")
         for sub in subjectstorender:
-            if str(sub) not in uriToNodeId:
-                uriToNodeId[str(sub)] = nodecounter
-                file.write(str(nodecounter) + sepchar +"\""+ DocUtils.shortenURI(str(sub)) + "\"\n")
+            substr=str(sub)
+            if substr not in uriToNodeId:
+                uriToNodeId[substr] = nodecounter
+                file.write(f'{nodecounter}{sepchar}"{DocUtils.shortenURI(substr)}"\n')
                 nodecounter += 1
             for tup in g.predicate_objects(sub):
                 if str(tup[1]) not in uriToNodeId:
                     file.write(str(nodecounter) + sepchar +"\""+ DocUtils.shortenURI(str(tup[1])) + "\"\n")
                     uriToNodeId[str(tup[1])] = nodecounter
                     nodecounter += 1
-                tgfresedges += str(sub) + sepchar + str(tup[1])+ "\n"
+                tgfresedges += f'{substr}{sepchar}{tup[1]}\n'
         file.write("\n*arcs\n")
         file.write(tgfresedges)
         return None
@@ -159,8 +153,9 @@ class GraphExporter:
             subjectstorender = g.subjects(None,None,True)
         file.write("(tlp \"2.0\"\nnodes(")
         for sub in subjectstorender:
-            if str(sub) not in uriToNodeId:
-                uriToNodeId[str(sub)] = nodecounter
+            substr=str(sub)
+            if substr not in uriToNodeId:
+                uriToNodeId[substr] = nodecounter
                 file.write(str(nodecounter)+" ")
                 nodecounter += 1
             for tup in g.predicate_objects(sub):
@@ -168,7 +163,7 @@ class GraphExporter:
                     file.write(str(nodecounter)+" ")
                     uriToNodeId[str(tup[1])] = nodecounter
                     nodecounter += 1
-                tgfresedges += f"(edge {edgecounter} {uriToNodeId[str(sub)]} {uriToNodeId[str(tup[1])]})\n"
+                tgfresedges += f"(edge {edgecounter} {uriToNodeId[substr]} {uriToNodeId[str(tup[1])]})\n"
                 edgecounter+=1
         file.write(")\n")
         file.write(tgfresedges)

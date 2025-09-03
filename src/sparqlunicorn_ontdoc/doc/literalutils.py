@@ -10,10 +10,11 @@ class LiteralUtils:
 
     @staticmethod
     def resolveGeoLiterals(pred, object, graph, geojsonrep, nonns, subject=None):
+        predstr=str(pred)
         if isinstance(object, Literal):
-            if subject is not None and (str(pred) in DocConfig.geopairproperties):
-                pairprop = DocConfig.geopairproperties[str(pred)]["pair"]
-                latorlong = DocConfig.geopairproperties[str(pred)]["islong"]
+            if subject is not None and (predstr in DocConfig.geopairproperties):
+                pairprop = DocConfig.geopairproperties[predstr]["pair"]
+                latorlong = DocConfig.geopairproperties[predstr]["islong"]
                 othervalue = ""
                 for obj in graph.objects(subject, URIRef(pairprop)):
                     othervalue = str(obj)
@@ -21,7 +22,7 @@ class LiteralUtils:
                     geojsonrep = {"type": "Point", "coordinates": [float(str(othervalue)), float(str(object))]}
                 else:
                     geojsonrep = {"type": "Point", "coordinates": [float(str(object)), float(str(othervalue))]}
-            elif str(pred) in DocConfig.geoproperties or str(object.datatype) in DocConfig.geoliteraltypes:
+            elif predstr in DocConfig.geoproperties or str(object.datatype) in DocConfig.geoliteraltypes:
                 geojsonrep = LiteralUtils.processLiteral(str(object), str(object.datatype), "")
         elif isinstance(object, URIRef) and nonns:
             for pobj in graph.predicate_objects(object):
@@ -41,7 +42,7 @@ class LiteralUtils:
                     curcrs = crsuri[crsuri.rfind('/') + 1:]
                     literal = literal[literal.rfind('>') + 1:].strip()
                 shapelygeom = shapely.wkt.loads(literal)
-                thejson = json.loads(json.dumps(shapely.geometry.mapping(shapelygeom), indent=2))
+                thejson = shapely.geometry.mapping(shapelygeom)#json.loads(json.dumps(shapely.geometry.mapping(shapelygeom), indent=2))
                 if curcrs is not None:
                     thejson["crs"] = curcrs
                 return thejson

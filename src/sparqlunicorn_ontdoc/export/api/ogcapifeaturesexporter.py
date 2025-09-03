@@ -19,7 +19,7 @@ class OGCAPIFeaturesExporter:
         if contentnegotiation:
             collectionhtmlname="index.html"
         apijson = {"openapi": "3.0.1", "info": {"title": str(deploypath) + " Feature Collections",
-                                                "description": "Feature Collections of " + str(deploypath)},
+                                                "description": f"Feature Collections of {deploypath}"},
                    "servers": [{"url": str(deploypath)}], "paths": {}}
         conformancejson = {"conformsTo": ["http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core",
                                           "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html",
@@ -85,32 +85,32 @@ class OGCAPIFeaturesExporter:
                                                               "xml": {"name": "TemporalExtent","namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
                                                  "LandingPage": {"type": "object"}}}
             landingpagejson = {"title": "Landing Page", "description": "Landing Page", "links": [{
-                "href": str(deploypath) + "/index.json",
+                "href": f"{deploypath}/index.json",
                 "rel": "self",
                 "type": "application/json",
                 "title": "this document as JSON"
             }, {
-                "href": str(deploypath) + "/index.html",
+                "href": f"{deploypath}/index.html",
                 "rel": "alternate",
                 "type": "text/html",
                 "title": "this document as HTML"
             }, {
-                "href": str(deploypath) + "/collections/",
+                "href": f"{deploypath}/collections/",
                 "rel": "data",
                 "type": "application/json",
                 "title": "Supported Feature Collections as JSON"
             }, {
-                "href": str(deploypath) + "/collections/"+collectionhtmlname,
+                "href": f"{deploypath}/collections/{collectionhtmlname}",
                 "rel": "data",
                 "type": "text/html",
                 "title": "Supported Feature Collections as HTML"
-            }, {"href": str(deploypath) + "/api/index.json", "rel": "service-desc",
+            }, {"href": f"{deploypath}/api/index.json", "rel": "service-desc",
                 "type": "application/vnd.oai.openapi+json;version=3.0", "title": "API definition"},
-                {"href": str(deploypath) + "/api", "rel": "service-desc", "type": "text/html",
+                {"href": f"{deploypath}/api", "rel": "service-desc", "type": "text/html",
                  "title": "API definition as HTML"},
-                {"href": str(deploypath) + "/conformance", "rel": "conformance", "type": "application/json",
+                {"href": f"{deploypath}/conformance", "rel": "conformance", "type": "application/json",
                  "title": "OGC API conformance classes as Json"},
-                {"href": str(deploypath) + "/conformance", "rel": "conformance", "type": "text/html",
+                {"href": f"{deploypath}/conformance", "rel": "conformance", "type": "text/html",
                  "title": "OGC API conformance classes as HTML"}]}
 
             apijson["paths"]["/"] = {"get": {"tags": ["Capabilities"], "summary": "landing page",
@@ -152,7 +152,7 @@ class OGCAPIFeaturesExporter:
                 with open(coll, 'r', encoding="utf-8") as infile:
                     curcoll = json.load(infile)
             if ogcapi:
-                op = outpath + "/collections/" + coll.replace(outpath, "").replace("index.geojson", "") + "/"
+                op = f'{outpath}/collections/{coll.replace(outpath, "").replace("index.geojson", "")}/'
                 op = op.replace(".geojson", "")
                 op = op.replace("//", "/")
                 os.makedirs(op,exist_ok=True)
@@ -199,11 +199,8 @@ class OGCAPIFeaturesExporter:
                         coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]),
                             "parameters": [], "responses": {"default": {"description": "default response", "content": {
                             "application/json": {"schema": {"$ref": "#/components/schemas/Collections"},"example": None}}}}}}
-                curcollrow = "<tr><td><a href=\"" + opweb.replace(".geojson", "") + "/items/"+collectionhtmlname+"\">" + str(
-                    featurecollectionspaths[coll]["name"]) + "</a></td><td>"+str(len(curcoll["features"]))+"</td><td><a href=\"" + opweb.replace(".geojson",
-                                                                                                       "") + "/items/"+collectionhtmlname+"\">[Collection as HTML]</a>&nbsp;<a href=\"" + opweb.replace(
-                    ".geojson", "") + "/items/\">[Collection as JSON]</a>&nbsp;<a href=\"" + opweb.replace(".geojson",
-                                                                                                           "") + "/items/index.ttl\">[Collection as TTL]</a></td></tr>"
+                opwebrep=opweb.replace(".geojson","")
+                curcollrow = f'<tr><td><a href="{opwebrep}/items/{collectionhtmlname}">"{featurecollectionspaths[coll]["name"]}</a></td><td>{len(curcoll["features"])}</td><td><a href="{opwebrep}/items/{collectionhtmlname}">[Collection as HTML]</a>&nbsp;<a href="{opwebrep}/items/">[Collection as JSON]</a>&nbsp;<a href="{opwebrep}/items/index.ttl">[Collection as TTL]</a></td></tr>'
                 with open(op + "index.json", "w", encoding="utf-8") as f:
                     json.dump(currentcollection,f)
                 with open(op + collectionhtmlname, "w", encoding="utf-8") as f:
@@ -304,7 +301,7 @@ class OGCAPIFeaturesExporter:
                     for feat in curcoll["features"]:
                         featpath = feat["id"].replace(prefixnamespace, "").replace("//", "/")
                         try:
-                            os.makedirs(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"]))))
+                            os.makedirs(f'{op}/items/{DocUtils.shortenURI(feat["id"])}')
                             #print("CHECKPATH: " + str(
                             #    str(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.json").replace("//", "/")))
                             if os.path.exists(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.json"):
@@ -320,7 +317,7 @@ class OGCAPIFeaturesExporter:
                             if os.path.exists(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.html"):
                                 targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.html", str(op + "/items/" + str(
                                     DocUtils.shortenURI(feat["id"])) + "/index.html").replace("//", "/"), outpath, True)
-                                with open(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"]))) + "/index.html", "w",encoding="utf-8") as f:
+                                with open(f'{op}/items/{DocUtils.shortenURI(feat["id"])}/index.html', "w",encoding="utf-8") as f:
                                     f.write(f"<html><head><meta http-equiv=\"refresh\" content=\"0; url={targetpath}\" /></head></html>")
                                 #print("symlinks created")
                         except Exception as e:
@@ -330,20 +327,20 @@ class OGCAPIFeaturesExporter:
                         result.append(curcoll)
             collectiontable += "</tbody></table>"
         if mergeJSON:
-            with open(outpath + "/features.js", 'w', encoding="utf-8") as output_file:
+            with open(f"{outpath}/features.js", 'w', encoding="utf-8") as output_file:
                 output_file.write("var featurecolls=")
                 json.dump(result,output_file)
                 # shutil.move(coll, op+"/items/index.json")
         if ogcapi:
-            with open(outpath + "/index.json", "w", encoding="utf-8") as f:
+            with open(f"{outpath}/index.json", "w", encoding="utf-8") as f:
                 json.dump(landingpagejson,f)
-            with open(outpath + "/api/index.json", "w", encoding="utf-8") as f:
+            with open(f"{outpath}/api/index.json", "w", encoding="utf-8") as f:
                 json.dump(apijson,f)
-            with open(outpath + "/api/api.html", "w", encoding="utf-8") as f:
+            with open(f"{outpath}/api/api.html", "w", encoding="utf-8") as f:
                 f.write(apihtml)
-            with open(outpath + "/collections/"+collectionhtmlname, "w", encoding="utf-8") as f:
+            with open(f"{outpath}/collections/"+collectionhtmlname, "w", encoding="utf-8") as f:
                 f.write(collectionshtml.replace("{{collectiontable}}", collectiontable))
-            with open(outpath + "/collections/index.json", "w", encoding="utf-8") as f:
+            with open(f"{outpath}/collections/index.json", "w", encoding="utf-8") as f:
                 json.dump(collectionsjson,f)
-            with open(outpath + "/conformance/index.json", "w", encoding="utf-8") as f:
+            with open(f"{outpath}/conformance/index.json", "w", encoding="utf-8") as f:
                 json.dump(conformancejson,f)

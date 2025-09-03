@@ -703,17 +703,17 @@ class HTMLExporter():
             return ["""All rights reserved.""", None]
 
     @staticmethod
-    def formatPredicate(tup, baseurl, checkdepth, graph, reverse, labellang, prefixes):
-        label = DocUtils.getLabelForObject(URIRef(str(tup)), graph, None, labellang)
+    def formatPredicate(tupstr, baseurl, checkdepth, graph, reverse, labellang, prefixes):
+        label = DocUtils.getLabelForObject(URIRef(tupstr), graph, None, labellang)
         tablecontents = f'<td class="property">{"Is " if reverse else ""}'
         #if reverse:
         #    tablecontents += "Is "
-        if baseurl in str(tup):
-            rellink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, str(tup), True)
+        if baseurl in tupstr:
+            rellink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, tupstr, True)
             tablecontents += f"<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"{rellink}\">{label}</a></span>"
         else:
-            res = DocUtils.replaceNameSpacesInLabel(prefixes, tup)
-            tablecontents+= f"<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"{tup}\">{label} "+("<span style=\"color: #666;\">(" + res["uri"] + ")</span>" if res["uri"]!="" else "")+"</a> </span>"
+            res = DocUtils.replaceNameSpacesInLabel(prefixes, tupstr)
+            tablecontents+= f"<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"{tupstr}\">{label} "+("<span style=\"color: #666;\">(" + res["uri"] + ")</span>" if res["uri"]!="" else "")+"</a> </span>"
         return tablecontents+f'{" of" if reverse else ""}</td>'
         #if reverse:
         #    tablecontents += " of"

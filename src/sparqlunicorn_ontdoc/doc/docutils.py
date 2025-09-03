@@ -1,7 +1,5 @@
 from rdflib import URIRef, Literal
 import os
-from os import mkdir
-from os import path
 import re
 import shutil
 import urllib.request
@@ -17,8 +15,7 @@ class DocUtils:
         return y and x/y or 0
 
     @staticmethod
-    def updateProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█',
-                          printEnd="\r"):
+    def updateProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█',printEnd="\r"):
         """
         Call in a loop to create terminal progress bar
         @params:
@@ -210,11 +207,12 @@ class DocUtils:
                 foundval = tupobjstr
         else:
             for valtup in graph.predicate_objects(obj):
-                if str(valtup[0]) in DocConfig.unitproperties:
+                valtup0str=str(valtup[0])
+                if valtup0str in DocConfig.unitproperties:
                     foundunit = str(valtup[1])
-                elif str(valtup[0]) in DocConfig.valueproperties and isinstance(valtup[1], Literal):
+                elif valtup0str in DocConfig.valueproperties and isinstance(valtup[1], Literal):
                     foundval = str(valtup[1])
-                elif str(valtup[0]) in DocConfig.strictvalueproperties and isinstance(valtup[1], URIRef):
+                elif valtup0str in DocConfig.strictvalueproperties and isinstance(valtup[1], URIRef):
                     #print("Valtup[1]: " + str(valtup[1]))
                     for tup2 in graph.predicate_objects(valtup[1]):
                         #print("Tup2: " + str(tup2))
@@ -279,32 +277,32 @@ class DocUtils:
     def processSubjectPath(outpath,paths,path,graph):
         if "/" in path:
             addpath = ""
-            try:
-                #os.makedirs(outpath+path,True)
-                for pathelem in path.split("/"):
-                    addpath += pathelem + "/"
-                    if not os.path.exists(outpath + addpath):
-                        os.mkdir(outpath + addpath)
-                paths.setdefault(outpath + path[0:path.rfind('/')] + "/",[]).append(addpath[0:addpath.rfind('/')])
-                #if outpath + path[0:path.rfind('/')] + "/" not in paths:
-                #    paths[outpath + path[0:path.rfind('/')] + "/"] = []
-                #paths[outpath + path[0:path.rfind('/')] + "/"].append(addpath[0:addpath.rfind('/')])
-            except Exception as e:
-                print(e)
+            #try:
+            os.makedirs(outpath+path,exist_ok=True)
+            #for pathelem in path.split("/"):
+            #    addpath += pathelem + "/"
+            #    if not os.path.exists(outpath + addpath):
+            #        os.mkdir(outpath + addpath)
+            paths.setdefault(outpath + path[0:path.rfind('/')] + "/",[]).append(path[0:path.rfind('/')])
+            #if outpath + path[0:path.rfind('/')] + "/" not in paths:
+            #    paths[outpath + path[0:path.rfind('/')] + "/"] = []
+            #paths[outpath + path[0:path.rfind('/')] + "/"].append(addpath[0:addpath.rfind('/')])
+            #except Exception as e:
+            #    print(e)
         else:
+            #try:
+            os.makedirs(outpath+path,exist_ok=True)
+            #if not os.path.exists(outpath + path):
+            #    os.mkdir(outpath + path)
+            paths.setdefault(outpath,[]).append(path + "/index.html")
+            #if outpath not in paths:
+            #    paths[outpath] = []
+            #paths[outpath].append(path + "/index.html")
+            #except Exception as e:
+            #    print(e)
+        if os.path.exists(f"{outpath}{path}/index.ttl"):
             try:
-                #os.makedirs(outpath+path,True)
-                if not os.path.exists(outpath + path):
-                    os.mkdir(outpath + path)
-                paths.setdefault(outpath,[]).append(path + "/index.html")
-                #if outpath not in paths:
-                #    paths[outpath] = []
-                #paths[outpath].append(path + "/index.html")
-            except Exception as e:
-                print(e)
-        if os.path.exists(outpath + path + "/index.ttl"):
-            try:
-                graph.parse(outpath + path + "/index.ttl")
+                graph.parse(f"{outpath}{path}/index.ttl")
             except Exception as e:
                 print(e)
         return paths
@@ -314,11 +312,9 @@ class DocUtils:
         nsuri=DocUtils.shortenURI(uri,True)
         if nsuri in prefixes["reversed"]:
             if nsuri==uri and nsuri in prefixes["nstolabel"]:
-                return {"uri": prefixes["nstolabel"][nsuri]+" ("+str(prefixes["reversed"][nsuri])+":)",
-                        "ns": prefixes["reversed"][nsuri]}
+                return {"uri": f'{prefixes["nstolabel"][nsuri]} ({prefixes["reversed"][nsuri]}:)',"ns": prefixes["reversed"][nsuri]}
             else:
-                return {"uri": str(prefixes["reversed"][nsuri]) + ":" + str(uri.replace(nsuri, "")),
-                    "ns": prefixes["reversed"][nsuri]}
+                return {"uri": f'{prefixes["reversed"][nsuri]}:{uri.replace(nsuri, "")}',"ns": prefixes["reversed"][nsuri]}
         return {"uri": DocUtils.shortenURI(uri),"ns": ""}
 
     @staticmethod
@@ -348,13 +344,13 @@ class DocUtils:
                     m = m.replace(">", "")
                     try:
                         g = urllib.request.urlopen(m.replace("\"", ""))
-                        with open(outpath + str(os.sep) + "js" + str(os.sep) + m[m.rfind("/") + 1:], 'b+w') as f:
+                        with open(f'{outpath}{os.sep}js{os.sep}{m[m.rfind("/") + 1:]}', 'b+w') as f:
                             f.write(g.read())
                     except Exception as e:
                         print(e)
                         thepath=f"{templatepath}/{templatename}/js/lib/{m[m.rfind('/') + 1:]}"
                         if os.path.exists(thepath):
-                            shutil.copy(thepath,outpath + str(os.sep) + "js" + str(os.sep) + m[m.rfind("/") + 1:])
+                            shutil.copy(thepath,f'{outpath}{os.sep}js{os.sep}{m[m.rfind("/") + 1:]}')
                     myhtmltemplate = myhtmltemplate.replace(m, "{{relativepath}}js/" + m[m.rfind("/") + 1:])
             else:
                 match = match.replace("\"", "")

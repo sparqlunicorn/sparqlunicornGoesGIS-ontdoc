@@ -49,14 +49,15 @@ class VoidExporter:
               URIRef(pubconfig["deploypath"]+"/index.html")))
         g.add((voidds, VOID.dataDump,
               URIRef(pubconfig["deploypath"]+"/index.ttl")))
+        voiddistttl=URIRef(f"{voidds}_dist_ttl")
         g.add((voidds, DCAT.distribution,
-               URIRef(str(voidds)+"_dist_ttl")))
-        g.add((URIRef(str(voidds) + "_dist_ttl"), RDF.type, URIRef("http://www.w3.org/ns/adms#AssetDistribution")))
-        g.add((URIRef(str(voidds)+"_dist_ttl"), RDFS.label,
+               voiddistttl))
+        g.add((voiddistttl, RDF.type, URIRef("http://www.w3.org/ns/adms#AssetDistribution")))
+        g.add((voiddistttl, RDFS.label,
                Literal(dsname+" TTL Distribution",lang="en")))
-        g.add((URIRef(str(voidds)+"_dist_ttl"), DCAT.downloadURL,
+        g.add((voiddistttl, DCAT.downloadURL,
                Literal(pubconfig["deploypath"]+"/index.ttl",datatype=XSD.anyURI)))
-        g.add((URIRef(str(voidds)+"_dist_ttl"), DCAT.mediaType,
+        g.add((voiddistttl, DCAT.mediaType,
                URIRef("http://www.w3.org/ns/formats/Turtle")))
         g.add((voidds, VOID.feature,
               URIRef("http://www.w3.org/ns/formats/Turtle")))
@@ -67,63 +68,66 @@ class VoidExporter:
             g.add((voidds, VOID.exampleResource, URIRef(pubconfig["startconcept"].replace("index.html",""))))
         for stat in stats:
             g.add((voidds, URIRef(stat),Literal(stats[stat], datatype=XSD.integer)))
-        g.add((voidds, VOID.uriSpace,
-              Literal(pubconfig["prefixns"],datatype=XSD.string)))
-        g.add((voidds, VANN.preferredNamespaceUri,
-               Literal(pubconfig["prefixns"], datatype=XSD.anyURI)))
-        g.add((voidds, VANN.preferredNamespacePrefix,
-               Literal(pubconfig["namespaceshort"], datatype=XSD.string)))
+        g.add((voidds, VOID.uriSpace,Literal(pubconfig["prefixns"],datatype=XSD.string)))
+        g.add((voidds, VANN.preferredNamespaceUri,Literal(pubconfig["prefixns"], datatype=XSD.anyURI)))
+        g.add((voidds, VANN.preferredNamespacePrefix,Literal(pubconfig["namespaceshort"], datatype=XSD.string)))
+        dcsub = URIRef("http://purl.org/dc/terms/subject")
+        voafd=URIRef("http://purl.org/vocommons/voaf#inDataset")
+        voafocc=URIRef("http://purl.org/vocommons/voaf#occurrences")
+        voafusage=URIRef("http://purl.org/vocommons/voaf#usageInDataset")
+        voafVocab=URIRef("http://purl.org/vocommons/voaf#Vocabulary")
+        voidc=URIRef("http://rdfs.org/ns/void#class")
+        dsocc=URIRef("http://purl.org/vocommons/voaf#DatasetOccurrence")
         for ns_prefix, namespace in g.namespaces():
             thens=URIRef(namespace)
             g.add((voidds, VOID.vocabulary,thens))
-            g.add((thens, RDF.type, URIRef("http://purl.org/vocommons/voaf#Vocabulary")))
+            g.add((thens, RDF.type, voafVocab))
             if "nstolabel" in pubconfig["prefixes"] and str(namespace) in pubconfig["prefixes"]["nstolabel"]:
                 g.add((thens, RDFS.label,
                        Literal(pubconfig["prefixes"]["nstolabel"][str(namespace)],lang="en")))
             else:
-                g.add((thens, RDFS.label,
-                       Literal(str(ns_prefix)+" Vocabulary",lang="en")))
+                g.add((thens, RDFS.label,Literal(f"{ns_prefix} Vocabulary",lang="en")))
             g.add((thens, VANN.preferredNamespaceUri,
                    Literal(namespace,datatype=XSD.anyURI)))
             g.add((thens, VANN.preferredNamespacePrefix,
                    Literal(ns_prefix,datatype=XSD.string)))
-            g.add((URIRef(pubconfig["prefixns"]+str(ns_prefix)+"_"+str(dsname)+"_occ"), RDF.type,
-                   URIRef("http://purl.org/vocommons/voaf#DatasetOccurrence")))
-            g.add((URIRef(pubconfig["prefixns"]+str(ns_prefix)+"_"+str(dsname)+"_occ"), RDFS.label,
-                   Literal("Occurrences of vocabulary "+str(namespace)+" in "+dsname)))
+            g.add((URIRef(f'{pubconfig["prefixns"]}{ns_prefix}_{dsname}_occ'), RDF.type,
+                   dsocc))
+            g.add((URIRef(f'{pubconfig["prefixns"]}{ns_prefix}_{dsname}_occ'), RDFS.label,
+                   Literal(f"Occurrences of vocabulary {namespace} in {dsname}")))
             if nscount is not None and str(namespace) in nscount:
-                g.add((URIRef(pubconfig["prefixns"]+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://purl.org/vocommons/voaf#occurrences"),
+                g.add((URIRef(f'{pubconfig["prefixns"]}{ns_prefix}_{dsname}_occ'), voafocc,
                        Literal(str(nscount[str(namespace)]),datatype=XSD.integer)))
-            g.add((thens, URIRef("http://purl.org/vocommons/voaf#usageInDataset"), URIRef(namespace+"_"+str(dsname)+"_occ")))
-            g.add((URIRef(pubconfig["prefixns"]+str(ns_prefix)+"_"+str(dsname)+"_occ"), URIRef("http://purl.org/vocommons/voaf#inDataset"), voidds))
+            g.add((thens, voafusage, URIRef(f"{namespace}_{dsname}_occ")))
+            g.add((URIRef(f'{pubconfig["prefixns"]}{ns_prefix}_{dsname}_occ'), voafd, voidds))
             if str(namespace) in DocConfig.namespaceToTopic:
                 for entry in DocConfig.namespaceToTopic[str(namespace)]:
                     g.add((voidds, DCAT.keyword, Literal(DocUtils.shortenURI(entry["uri"]).replace("_"," "),lang="en")))
-                    g.add((voidds, URIRef("http://purl.org/dc/terms/subject"),URIRef(entry["uri"])))
+                    g.add((voidds, dcsub,URIRef(entry["uri"])))
                     g.add((URIRef(entry["uri"]),RDFS.label,Literal(entry["label"],lang="en")))
         for pred in propstats:
-            cururi=URIRef(str(voidds)+"_"+DocUtils.shortenURI(pred))
+            cururi=URIRef(f'{voidds}_{DocUtils.shortenURI(pred)}')
             g.add((voidds,VOID.propertyPartition,cururi))
             g.add((cururi, RDF.type,VOID.Dataset))
-            g.add((cururi, RDFS.label,Literal("Property Partition: " + str(DocUtils.shortenURI(pred)), lang="en")))
+            g.add((cururi, RDFS.label,Literal(f"Property Partition: {DocUtils.shortenURI(pred)}", lang="en")))
             g.add((cururi,VOID.property,URIRef(pred)))
             g.add((cururi,VOID.triples,Literal(str(propstats[pred]["triples"]),datatype=XSD.integer)))
             subjectstorender.add(cururi)
         for item in classtree["core"]["data"]:
             if item["type"]=="class":
-                cururi = URIRef(str(voidds) +"_"+ DocUtils.shortenURI(item["id"]))
+                cururi = URIRef(f'{voidds}_{DocUtils.shortenURI(item["id"])}')
                 g.add((voidds, VOID.classPartition, cururi))
                 g.add((cururi, RDF.type,VOID.Dataset))
-                g.add((cururi, RDFS.label,Literal("Class Partition: " + str(DocUtils.shortenURI(item["id"])),lang="en")))
-                g.add((cururi, URIRef("http://rdfs.org/ns/void#class"), URIRef(item["id"])))
+                g.add((cururi, RDFS.label,Literal(f'Class Partition: {DocUtils.shortenURI(item["id"])}',lang="en")))
+                g.add((cururi, voidc, URIRef(item["id"])))
                 if item["id"] in objectmap:
                     g.add((cururi, VOID.entities,Literal(str(objectmap[item["id"]]), datatype=XSD.integer)))
                 #subjectstorender.add(URIRef(cururi))
         for prop in nonnscount:
             for ns in nonnscount[prop]:
-                cururi=URIRef(str(voidds)+"_"+ns.replace("http://","").replace("https://","").replace("/","_").replace("#","_"))
+                cururi=URIRef(f'{voidds}_{ns.replace("http://","").replace("https://","").replace("/","_").replace("#","_")}')
                 g.add((cururi, RDF.type,VOID.Linkset))
-                g.add((cururi, RDFS.label,Literal("Linkset: "+str(DocUtils.shortenURI(str(voidds)))+" - "+str(DocUtils.getLabelForObject(URIRef(ns),g,pubconfig["prefixes"])),lang="en")))
+                g.add((cururi, RDFS.label,Literal(f'Linkset: {DocUtils.shortenURI(str(voidds))} - {DocUtils.getLabelForObject(URIRef(ns),g,pubconfig["prefixes"])}',lang="en")))
                 g.add((cururi, VOID.subjectsTarget,voidds))
                 g.add((cururi, VOID.objectsTarget,URIRef(ns)))
                 g.add((cururi, VOID.linkPredicate,URIRef(prop)))
@@ -134,8 +138,8 @@ class VoidExporter:
 
     @staticmethod
     def toHTML(stats,deploypath):
-        result="<details><summary>Dataset Statistics <a href=\""+str(deploypath)+"/void.ttl"+"\" target=\"_blank\">[VOID]</a></summary><table border=\"1\"><thead><th>Property</th><th>Value</th></thead><tbody>"
+        result=f'<details><summary>Dataset Statistics <a href="{deploypath}/void.ttl" target="_blank">[VOID]</a></summary><table border="1"><thead><th>Property</th><th>Value</th></thead><tbody>'
         for stat in stats:
-            result+="<tr><td><a href=\""+str(stat)+"\" target=\"_blank\">"+str(DocUtils.shortenURI(stat))+"</a></td><td><span property=\""+str(stat)+"\" content=\""+str(stats[stat])+"\" datatype=\"http://www.w3.org/2001/XMLSchema#integer\">"+str(stats[stat])+"</span>&nbsp;<a href=\"http://www.w3.org/2001/XMLSchema#integer\" style=\"color:#666;\"><small>(xsd:integer)</small></a></td></tr>"
+            result+=f'<tr><td><a href="{stat}" target="_blank">"{DocUtils.shortenURI(stat)}</a></td><td><span property="{stat}" content="{stats[stat]}" datatype="http://www.w3.org/2001/XMLSchema#integer">"{stats[stat]}</span>&nbsp;<a href="http://www.w3.org/2001/XMLSchema#integer" style="color:#666;"><small>(xsd:integer)</small></a></td></tr>'
         result+="</tbody></table></details>"
         return result

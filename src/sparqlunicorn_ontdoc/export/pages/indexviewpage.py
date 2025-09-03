@@ -46,18 +46,22 @@ class IndexViewPage:
                         subgraph.add((sub, tup[0], tup[1]))
                         if apis["solidexport"]:
                             subgraph.add((URIRef(sub.replace("nslink", "")),
-                                          RDF.type,URIRef("http://www.w3.org/ns/ldp#Container")))
+                                          RDF.type,
+                                          URIRef("http://www.w3.org/ns/ldp#Container")))
                             subgraph.add((URIRef(sub.replace("nslink", "")),
-                                          RDF.type,URIRef("http://www.w3.org/ns/ldp#BasicContainer")))
+                                          RDF.type,
+                                          URIRef("http://www.w3.org/ns/ldp#BasicContainer")))
                             subgraph.add((URIRef(sub.replace("nslink", "")),
-                                          RDF.type,URIRef("http://www.w3.org/ns/ldp#Resource")))
+                                          RDF.type,
+                                          URIRef("http://www.w3.org/ns/ldp#Resource")))
             for ex in pubconfig["exports"]:
                 if ex in ExporterUtils.exportToFunction:
                     if ex not in ExporterUtils.rdfformats:
-                        with open(path + "index." + str(ex), 'w', encoding='utf-8') as f:
+                        with open(f'{path}index.{ex}', 'w', encoding='utf-8') as f:
                             ExporterUtils.exportToFunction[ex](subgraph, f, subjectstorender, classlist, ex)
                     else:
-                        ExporterUtils.exportToFunction[ex](subgraph, path + "index." + str(ex), subjectstorender,classlist, ex)
+                        ExporterUtils.exportToFunction[ex](subgraph, path + "index." + str(ex), subjectstorender,
+                                                           classlist, ex)
             relpath = DocUtils.generateRelativePathFromGivenDepth(checkdepth)
             with open(path + "index.html", 'w', encoding='utf-8') as f:
                 #print("RELPATH: " + str(relpath))
@@ -81,34 +85,24 @@ class IndexViewPage:
                 f.write("<p property=\"http://rdfs.org/ns/void#feature\" resource=\"http://www.w3.org/ns/formats/Turtle\">This page shows information about linked data resources in <span property=\"http://rdfs.org/ns/void#feature\" resource=\"http://www.w3.org/ns/formats/RDFa\">HTML</span>. Choose the classtree navigation or search to browse the data</p>" + templates["vowltemplate"].replace("{{vowlpath}}", "minivowl_result.js"))
                 if pubconfig["startconcept"] is not None and path == pubconfig["outpath"] and pubconfig["startconcept"] in uritotreeitem:
                     startconcept=pubconfig["startconcept"]
-                    f.write("<p>Start exploring the graph here: <img src=\"" + \
-                                 tree["types"][uritotreeitem[startconcept][-1]["type"]][
-                                     "icon"] + "\" height=\"25\" width=\"25\" alt=\"" + \
-                                 uritotreeitem[startconcept][-1][
-                                     "type"] + "\"/><a property=\"http://rdfs.org/ns/void#rootResource\" resource=\"" + str(
-                        startconcept) + "\" href=\"" + DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixns"], 0,
-                                                                                                   str(startconcept),
-                                                                                                   True) + "\">" + DocUtils.shortenURI(
-                        startconcept) + "</a></p>")
-                f.write("<table about=\"" + str(
-                    voidds) + "\" typeof=\"http://rdfs.org/ns/void#Dataset\" property=\"http://rdfs.org/ns/void#dataDump\" resource=\"" + str(
-                    pubconfig["deploypath"] + "/index.ttl") + "\" class=\"description\" style =\"height: 100%; overflow: auto\" border=1 id=indextable><thead><tr><th>Class</th><th>Number of instances</th><th>Instance Example</th></tr></thead><tbody>")
+                    f.write(f'<p>Start exploring the graph here: <img src="{tree["types"][uritotreeitem[startconcept][-1]["type"]]["icon"]}" height="25" width="25" alt="{uritotreeitem[startconcept][-1]["type"]}"/><a property="http://rdfs.org/ns/void#rootResource" resource="{startconcept}" href="{DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixns"], 0,str(startconcept), True)}">{DocUtils.shortenURI(startconcept)}</a></p>')
+                f.write(f'<table about="{voidds}" typeof="http://rdfs.org/ns/void#Dataset" property="http://rdfs.org/ns/void#dataDump" resource="{pubconfig["deploypath"]}/index.ttl" class="description" style ="height: 100%; overflow: auto" border=1 id=indextable><thead><tr><th>Class</th><th>Number of instances</th><th>Instance Example</th></tr></thead><tbody>')
                 for item in tree["core"]["data"]:
                     if (item["type"] == "geoclass" or item["type"] == "class" or item["type"] == "featurecollection" or
                         item["type"] == "geocollection") and "instancecount" in item and item["instancecount"] > 0:
                         exitem = None
-                        exitemlabel=""
+                        #exitemlabel=""
                         for item2 in tree["core"]["data"]:
                             if item2["parent"] == item["id"] and (item2["type"] == "instance" or item2["type"] == "geoinstance") and nslink in item2["id"]:
                                 exitem = f"<td><img src=\"{tree['types'][item2['type']]['icon']}\" height=\"25\" width=\"25\" alt=\"{item2['type']}\"/><a property=\"http://rdfs.org/ns/void#exampleResource\" resource=\"" + str(
                                     DocUtils.shortenURI(str(item2["id"]))) + "\" href=\"" + DocUtils.generateRelativeLinkFromGivenDepth(
                                     pubconfig["prefixns"], checkdepth, str(re.sub("_suniv[0-9]+_", "", item2["id"])),True) + "\">"
                                 if "[" in item2["text"]:
-                                    exitem+=str(item2["text"])[0:str(item2["text"]).rfind("[")] + "</a></td>"
-                                    exitemlabel=str(item2["text"])[0:str(item2["text"]).rfind("[")]
+                                    exitem+=f'{str(item2["text"])[0:str(item2["text"]).rfind("[")]}</a></td>'
+                                    #exitemlabel=str(item2["text"])[0:str(item2["text"]).rfind("[")]
                                 else:
-                                    exitem+=str(item2["text"]) + "</a></td>"
-                                    exitemlabel=str(item2["text"])
+                                    exitem+=f'{item2["text"]}</a></td>'
+                                    #exitemlabel=str(item2["text"])
                                 break
                         if exitem is not None:
                             if pubconfig["createCollections"]:

@@ -13,8 +13,8 @@ class StacAPIExporter:
         apihtml = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><metaname=\"description\" content=\"SwaggerUI\"/><title>SwaggerUI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css\" /></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js\" crossorigin></script><script>const swaggerUrl = \"" + str(
             deploypath) + "/api/index.json\"; const apiUrl = \"" + str(
             deploypath) + "/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
-        apijson = {"openapi": "3.0.1", "stac_version":"1.0.0", "info": {"title": str(deploypath) + " Feature Collections",
-                                                "description": "Feature Collections of " + str(deploypath)},
+        apijson = {"openapi": "3.0.1", "stac_version":"1.0.0", "info": {"title": f"{deploypath} Feature Collections",
+                                                "description": f"Feature Collections of {deploypath}"},
                    "servers": [{"url": str(deploypath)}], "paths": {}}
         conformancejson = {"conformsTo": ["https://api.statspec.org/v1.0.0/core",
                                           "https://api.statspec.org/v1.0.0/ogcapi-features",
@@ -90,32 +90,32 @@ class StacAPIExporter:
                                                                       "namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
                                                  "LandingPage": {"type": "object"}}}
             landingpagejson = {"stac_version":"1.0.0","title": "Landing Page", "description": "Landing Page", "conformsTo":conformancejson,"type":"Catalog","links": [{
-                "href": str(deploypath) + "/index.json",
+                "href": f"{deploypath}/index.json",
                 "rel": "self",
                 "type": "application/json",
                 "title": "this document as JSON"
             }, {
-                "href": str(deploypath) + "/index.html",
+                "href": f"{deploypath}/index.html",
                 "rel": "alternate",
                 "type": "text/html",
                 "title": "this document as HTML"
             }, {
-                "href": str(deploypath) + "/collections/",
+                "href": f"{deploypath}/collections/",
                 "rel": "data",
                 "type": "application/json",
                 "title": "Supported Feature Collections as JSON"
             }, {
-                "href": str(deploypath) + "/collections/indexc.html",
+                "href": f"{deploypath}/collections/indexc.html",
                 "rel": "data",
                 "type": "text/html",
                 "title": "Supported Feature Collections as HTML"
-            }, {"href": str(deploypath) + "/api/index.json", "rel": "service-desc",
+            }, {"href": f"{deploypath}/api/index.json", "rel": "service-desc",
                 "type": "application/vnd.oai.openapi+json;version=3.0", "title": "API definition"},
-                {"href": str(deploypath) + "/api", "rel": "service-desc", "type": "text/html",
+                {"href": f"{deploypath}/api", "rel": "service-desc", "type": "text/html",
                  "title": "API definition as HTML"},
-                {"href": str(deploypath) + "/conformance", "rel": "conformance", "type": "application/json",
+                {"href": f"{deploypath}/conformance", "rel": "conformance", "type": "application/json",
                  "title": "OGC API conformance classes as Json"},
-                {"href": str(deploypath) + "/conformance", "rel": "conformance", "type": "text/html",
+                {"href": f"{deploypath}/conformance", "rel": "conformance", "type": "text/html",
                  "title": "OGC API conformance classes as HTML"}]}
 
             apijson["paths"]["/"] = {"get": {"tags": ["Capabilities"], "summary": "landing page",
@@ -161,7 +161,7 @@ class StacAPIExporter:
                 with open(coll, 'r', encoding="utf-8") as infile:
                     curcoll = json.load(infile)
             if ogcapi:
-                op = outpath + "/collections/" + coll.replace(outpath, "").replace("index.geojson", "") + "/"
+                op = f'{outpath}/collections/{coll.replace(outpath, "").replace("index.geojson", "")}/'
                 op = op.replace(".geojson", "")
                 op = op.replace("//", "/")
                 if not os.path.exists(op):
@@ -339,8 +339,7 @@ class StacAPIExporter:
                                 targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.html", str(op + "/items/" + str(
                                     DocUtils.shortenURI(feat["id"])) + "/index.html").replace("//", "/"), outpath, True)
                                 f = open(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"]))) + "/index.html", "w",encoding="utf-8")
-                                f.write(
-                                    "<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + targetpath + "\" /></head></html>")
+                                f.write(f'<html><head><meta http-equiv="refresh" content="0; url={targetpath}" /></head></html>')
                                 f.close()
                             #print("symlinks created")
                         except Exception as e:

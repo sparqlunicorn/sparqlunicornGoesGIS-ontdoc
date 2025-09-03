@@ -1,11 +1,8 @@
 from doc.docconfig import DocConfig
 from doc.docutils import DocUtils
 from rdflib import URIRef
-import json
 
 class ClassTreeUtils:
-
-
 
     @staticmethod
     def getClassTree(graph, uritolabel, uritotreeitem, typeproperty, prefixes, preparedclassquery, instancecount, outpath,
@@ -149,18 +146,15 @@ class ClassTreeUtils:
         for item in classlist:
             if classlist[item]["items"] > 0:
                 if classlist[item]["item"]["text"].endswith("]"):
-                    classlist[item]["item"]["text"] = classlist[item]["item"]["text"][
-                                                      0:classlist[item]["item"]["text"].rfind("[") - 1] + " [" + str(
-                        classlist[item]["items"]) + "]"
+                    classlist[item]["item"]["text"] = f'{classlist[item]["item"]["text"][0:classlist[item]["item"]["text"].rfind("[") - 1]} [{classlist[item]["items"]}]'
                 else:
-                    classlist[item]["item"]["text"] = classlist[item]["item"]["text"] + " [" + str(
-                        classlist[item]["items"]) + "]"
+                    classlist[item]["item"]["text"] = f'{classlist[item]["item"]["text"]} [{classlist[item]["items"]}]'
             if item in DocConfig.collectionclasses:
                 classlist[item]["item"]["type"] = "collectionclass"
             elif classlist[item]["items"] == classlist[item]["geoitems"] and classlist[item]["items"] > 0 and \
                     classlist[item]["geoitems"] > 0:
                 classlist[item]["item"]["type"] = "geoclass"
-            elif classlist[item]["items"] > classlist[item]["geoitems"] and classlist[item]["geoitems"] > 0:
+            elif classlist[item]["items"] > classlist[item]["geoitems"] > 0:
                 classlist[item]["item"]["type"] = "halfgeoclass"
             else:
                 classlist[item]["item"]["type"] = "class"
@@ -177,7 +171,7 @@ class ClassTreeUtils:
                         if item["type"] != "instance" or item["type"] != "class":
                             thetype = item["type"]
                         if item["type"] != "class":
-                            item["id"] = item["id"] + "_suniv" + str(counter) + "_"
+                            item["id"] = f'{item["id"]}_suniv{counter}_'
                         counter += 1
                     if thetype != "instance" or thetype != "class":
                         for item in uritotreeitem[uri]:

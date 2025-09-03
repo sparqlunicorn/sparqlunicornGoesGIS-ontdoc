@@ -118,7 +118,7 @@ class IIIFAPIExporter:
                              "motivation": "painting",
                              "body": {"id": imgpath, "type": str(maintype), "format": "image/png"},
                              "target": imgpath + "/canvas/p" + pcstr}]}], "annotations": [
-                        {"id": imgpath + "/canvas/p" + pcstr + "/annopage-2", "type": "AnnotationPage",
+                        {"id": f"{imgpath}/canvas/p{pcstr}/annopage-2", "type": "AnnotationPage",
                          "items": []}]}
                 curiiifmanifest["items"].append(curitem)
                 pagecounter += 1
@@ -126,14 +126,14 @@ class IIIFAPIExporter:
                 for objs in predobjmap[pred]:
                     if isinstance(objs, URIRef):
                         curiiifmanifest["metadata"].append({"label": {"en": [DocUtils.shortenURI(str(pred))]}, "value": {
-                            "en": ["<a href=\"" + str(objs) + "\">" + str(objs) + "</a>"]}})
+                            "en": [f"<a href=\"{objs}\">{objs}</a>"]}})
                     else:
                         curiiifmanifest["metadata"].append({"label": {"en": [DocUtils.shortenURI(str(pred))]}, "value": {"en": [str(objs)]}})
             # print(curiiifmanifest["metadata"])
             if summary is not None and summary != "" and summary != {}:
                 curiiifmanifest["summary"] = {"en": [str(summary)]}
-            os.makedirs(outpath + "/iiif/mf/" + curinduri)
-            with open(outpath + "/iiif/mf/" + curinduri + "/manifest.json", "w", encoding="utf-8") as f:
+            os.makedirs(f"{outpath}/iiif/mf/{curinduri}")
+            with open(f"{outpath}/iiif/mf/{curinduri}/manifest.json", "w", encoding="utf-8") as f:
                 json.dump(curiiifmanifest,f)
         # if annos!=None:
         #    self.generateIIIFAnnotations(self.outpath,annos,curind,next(iter(imgpaths)))
@@ -161,9 +161,9 @@ class IIIFAPIExporter:
                 imghtml+=f'<a href={deploypath}/{induri}" target="_blank"><img src="{imgp}" loading="lazy" class="imgborder" alt="{imgpath["label"]}"/></a></div></div>'
                 imghtml+=f'<figcaption style="color:black"><a href="{deploypath}/{induri}" style="font-weight:bold;color:black" target="_blank">'
                 if imgpath["label"]!="":
-                   imghtml+=str(imgpath["label"])+"</a></figcaption></figure></li>"
+                   imghtml+=f'{imgpath["label"]}</a></figcaption></figure></li>'
                 else:
-                   imghtml += DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", "")) + "</a></figcaption></figure></li>"
+                   imghtml += f'{DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", ""))}</a></figcaption></figure></li>'
         if targetfile is not None:
             with open(targetfile, "w",encoding="utf-8") as f:
                 f.write(headertemplate)
@@ -207,7 +207,7 @@ class IIIFAPIExporter:
                 collections["main"]=json.load(f)
         else:
             collections = {"main": {"@context": "http://iiif.io/api/presentation/3/context.json",
-                                    "id": deploypath + "/iiif/collection/iiifcoll.json", "type": "Collection",
+                                    "id": f"{deploypath}/iiif/collection/iiifcoll.json", "type": "Collection",
                                     "label": {"en": ["Collection: " + DocUtils.shortenURI(str(prefixnamespace))]},
                                     "items": []}}
         seenurls = set()
@@ -218,7 +218,7 @@ class IIIFAPIExporter:
                 curclass = imgpath["class"]
                 if curclass not in collections:
                     collections[curclass] = {"@context": "http://iiif.io/api/presentation/3/context.json",
-                                             "id": deploypath + "/iiif/collection/" + DocUtils.shortenURI(curclass) + ".json",
+                                             "id": f"{deploypath}/iiif/collection/{DocUtils.shortenURI(curclass)}.json",
                                              "type": "Collection", "label": {"en": ["Collection: " + str(curclass)]},
                                              "items": []}
             if imgpath["url"] not in seenurls:
@@ -236,14 +236,14 @@ class IIIFAPIExporter:
         for coll in collections:
             if coll!="main":
                 collections["main"]["items"].append(collections[coll])
-                with open(outpath+"/iiif/collection/"+str(DocUtils.shortenURI(coll))+".json","w",encoding="utf-8") as f:
+                with open(f"{outpath}/iiif/collection/{DocUtils.shortenURI(coll)}.json","w",encoding="utf-8") as f:
                     json.dump(collections[coll],f)
-        with open(outpath + "/iiif/collection/iiifcoll.json", "w", encoding="utf-8") as f:
+        with open(f"{outpath}/iiif/collection/iiifcoll.json", "w", encoding="utf-8") as f:
             json.dump(collections["main"],f)
         iiifindex = """<html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"><script src="https://unpkg.com/mirador@latest/dist/mirador.min.js"></script></head><body><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500"><div id="my-mirador"/><script type="text/javascript">var mirador = Mirador.viewer({"id": "my-mirador","manifests": {"collection/iiifcoll.json": {"provider": "Harvard University"}},"windows": [{"loadedManifest": "collection/iiifcoll.json","canvasIndex": 2,"thumbnailNavigationPosition": 'far-bottom'}]});</script></body></html>"""
-        with open(outpath + "/iiif/index.html", "w", encoding="utf-8") as f:
+        with open(f"{outpath}/iiif/index.html", "w", encoding="utf-8") as f:
             f.write(iiifindex)
-        with open(outpath + "/iiif/api.html", "w", encoding="utf-8") as f:
+        with open(f"{outpath}/iiif/api.html", "w", encoding="utf-8") as f:
             f.write(apihtml)
-        with open(outpath + "/iiif/api.json", "w", encoding="utf-8") as f:
+        with open(f"{outpath}/iiif/api.json", "w", encoding="utf-8") as f:
             json.dump(apijson,f)
