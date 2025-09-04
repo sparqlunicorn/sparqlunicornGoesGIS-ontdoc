@@ -34,11 +34,13 @@ class SolidExporter:
         typeindexgraph.add((ptypeindex, RDF.type, URIRef("http://www.w3.org/ns/solid/terms#ListedDocument")))
         typeindexgraph.add((ptypeindex, RDFS.comment, Literal("This Document contains a list of links to other Documents, along with the type of data that is to be included in those Documents",lang="en")))
         typeindexgraph.add((ptypeindex, RDF.type, Literal("Public Type Index", lang="en")))
+        forclass=URIRef("http://www.w3.org/ns/solid/terms#forClass")
+        sinstance = URIRef("http://www.w3.org/ns/solid/terms#instance")
         for cls in classtree:
             ptyeindexhash=URIRef(f'{deploypath}/settings/publicTypeIndex.ttl#{DocUtils.shortenURI(cls["id"])}')
             typeindexgraph.add((ptypeindex, RDFS.member, ptyeindexhash))
-            typeindexgraph.add((ptyeindexhash,URIRef("http://www.w3.org/ns/solid/terms#forClass"), URIRef(cls["parent"])))
-            typeindexgraph.add((ptyeindexhash,URIRef("http://www.w3.org/ns/solid/terms#instance"), URIRef(f'{deploypath}/{DocUtils.shortenURI(cls["id"])}')))
+            typeindexgraph.add((ptyeindexhash,forclass, URIRef(cls["parent"])))
+            typeindexgraph.add((ptyeindexhash,sinstance, URIRef(f'{deploypath}/{DocUtils.shortenURI(cls["id"])}')))
         for subj,obj in graph.subject_objects(RDFS.subClassOf):
             typeindexgraph.add((subj, RDFS.subClassOf, obj))
             typeindexgraph.add((subj, RDF.type, OWL.Class))
@@ -70,7 +72,11 @@ class SolidExporter:
 
     @staticmethod
     def addSolidContainer(graph,deploypath,datasetname,collections):
+        ldpcon=URIRef("http://www.w3.org/ns/ldp#Container")
+        ianattl=URIRef("http://www.w3.org/ns/iana/media-types/text/ttl#Resource")
+        pimstorage=URIRef("http://www.w3.org/ns/pim/space#storage")
         for coll in collections:
-            graph.add((URIRef(coll),RDF.type, URIRef("http://www.w3.org/ns/iana/media-types/text/ttl#Resource")))
-            graph.add((URIRef(coll), RDF.type, URIRef("http://www.w3.org/ns/ldp#Container")))
-            graph.add((URIRef(coll), URIRef("http://www.w3.org/ns/pim/space#storage"),URIRef(str(deploypath) + str(datasetname))))
+            colluri=URIRef(coll)
+            graph.add((colluri,RDF.type, ianattl))
+            graph.add((colluri, RDF.type, ldpcon))
+            graph.add((colluri, pimstorage,URIRef(f'{deploypath}{datasetname}')))

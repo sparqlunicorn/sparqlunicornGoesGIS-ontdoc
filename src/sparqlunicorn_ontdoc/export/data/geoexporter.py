@@ -54,8 +54,7 @@ class GeoExporter:
         typeToRes=res[1]
         typeToGeom=res[2]
         for type in typeToFields:
-            with open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
-                type) + "." + formatt, "w", encoding="utf-8") as f:
+            with open(f'{os.path.realpath(file.name).replace("." + formatt, "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
                 #resjson={"type":"FeatureCollection","features":[{"type":"Feature","properties":res,"geometry":typeToGeom[type]} for res in typeToRes[type]]}
                 #for res in typeToRes[type]:
                 #    resjson["features"].append({"type":"Feature","properties":res,"geometry":typeToGeom[type]})
@@ -69,8 +68,7 @@ class GeoExporter:
         typeToRes=res[1]
         typeToGeom=res[2]
         for type in typeToFields:
-            with open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
-                type) + "." + formatt, "w", encoding="utf-8") as f:
+            with open(f'{os.path.realpath(file.name).replace("." + formatt, "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
                 #resjson={"type":"FeatureCollection","features":[{"type":"Feature","properties":res,"geometry":typeToGeom[type]} for res in typeToRes[type]]}
                 #for res in typeToRes[type]:
                 #    resjson["features"].append({"type":"Feature","properties":res,"geometry":typeToGeom[type]})
@@ -88,15 +86,16 @@ class GeoExporter:
         typeToRes = dict((el,[]) for el in typeToFields)
         typeToGeo={}
         for sub in subjectstorender:
-            if str(sub) not in subjectsToType:
+            substr=str(sub)
+            if substr not in subjectsToType:
                 continue
             res = {}
             for tup in g.predicate_objects(sub):
                 res[str(tup[0])] = str(tup[1])
                 geojsonrep=DocUtils.resolveGeoLiterals(tup[0], tup[1], g, {}, None , sub)
                 if geojsonrep!={}:
-                    typeToGeo[subjectsToType[str(sub)]].append(geojsonrep)
-            typeToRes[subjectsToType[str(sub)]].append(res)
+                    typeToGeo[subjectsToType[substr]].append(geojsonrep)
+            typeToRes[subjectsToType[substr]].append(res)
         return [typeToFields,typeToRes,typeToGeo]
 
     @staticmethod
@@ -106,8 +105,7 @@ class GeoExporter:
         typeToRes=res[1]
         typeToGeom=res[2]
         for type in typeToFields:
-            with open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
-                type) + "." + formatt, "w", encoding="utf-8") as f:
+            with open(f'{os.path.realpath(file.name).replace("." + formatt, "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
                 f.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?><kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\">\n")
                 f.write("<Placemark>\n")
                 f.write(f'<{typeToGeom[type]["type"]}>\n<coordinates>\n')
@@ -123,8 +121,7 @@ class GeoExporter:
         typeToRes=ress[1]
         typeToGeom=ress[2]
         for type in typeToFields:
-            with open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
-                type) + "." + formatt, "w", encoding="utf-8") as f:
+            with open(f'{os.path.realpath(file.name).replace("." + formatt, "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
                 f.write("<mapml>\n<head>\n<title></title>\n</head>\n<body>\n")
                 for res in typeToRes[type]:
                     f.write("<feature id=\""+str("")+"\" \"itemscope\"=\"itemscope\">\n")
@@ -157,8 +154,7 @@ class GeoExporter:
         typeToRes=res[1]
         typeToGeom=res[2]
         for type in typeToFields:
-            with open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
-                type) + "." + formatt, "w", encoding="utf-8") as f:
+            with open(f'{os.path.realpath(file.name).replace("." + formatt, "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
                 f.write(f'geo:{str(typeToGeom[type]["coordinates"]).replace("[","").replace("]","")}\n')
         return None
 
@@ -169,7 +165,6 @@ class GeoExporter:
         typeToRes=res[1]
         typeToGeom=res[2]
         for type in typeToFields:
-            with open(os.path.realpath(file.name).replace("." + formatt, "") + "_" + DocUtils.shortenURI(
-                type) + "." + formatt, "w", encoding="utf-8") as f:
+            with open(f'{os.path.realpath(file.name).replace("." + formatt, "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
                 f.write(f'{typeToGeom[type]["type"]}({typeToGeom[type]["coordinates"]})\n')
         return None

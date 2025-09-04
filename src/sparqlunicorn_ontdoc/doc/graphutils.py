@@ -52,24 +52,25 @@ class GraphUtils:
                     classToFColl[tupobjstr] += 1
         collrelprop = "http://www.w3.org/2000/01/rdf-schema#member"
         collcls=URIRef(collectionClass)
+        sobjcoll=URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection")
         for cls in classToInstances:
             colluri = URIRef(f"{namespace}{DocUtils.shortenURI(cls)}_collection")
             if classToFColl[cls] == len(classToInstances[cls]):
-                graph.add((URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection"),
+                graph.add((sobjcoll,
                            RDFS.subClassOf,
                            collcls))
                 graph.add((URIRef("http://www.opengis.net/ont/geosparql#FeatureCollection"),
                            RDFS.subClassOf,
-                           URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection")))
+                           sobjcoll))
                 graph.add((colluri, tprop,
                            URIRef("http://www.opengis.net/ont/geosparql#FeatureCollection")))
             elif classToGeoColl[cls] == len(classToInstances[cls]):
-                graph.add((URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection"),
+                graph.add((sobjcoll,
                            RDFS.subClassOf,
                            collcls))
                 graph.add((URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection"),
                            RDFS.subClassOf,
-                           URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection")))
+                           sobjcoll))
                 graph.add((colluri, tprop,
                            URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection")))
             elif cls in DocConfig.classToCollectionClass:
@@ -90,8 +91,9 @@ class GraphUtils:
             else:
                 graph.add((colluri, tprop,collcls))
             graph.add((colluri, RDFS.label,Literal(f"{DocUtils.shortenURI(cls)} Instances Collection", lang="en")))
+            crelprop=URIRef(collrelprop)
             for instance in classToInstances[cls]:
-                graph.add((colluri, URIRef(collrelprop), URIRef(instance)))
+                graph.add((colluri, crelprop, URIRef(instance)))
         return graph
 
     @staticmethod

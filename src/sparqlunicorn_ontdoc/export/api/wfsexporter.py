@@ -13,7 +13,7 @@ class WFSExporter:
             if os.path.exists(coll):
                 with open(coll, 'r', encoding="utf-8") as infile:
                     curcoll = json.load(infile)
-                op = outpath + "wfs/DescribeFeatureType/%3FSERVICE=WFS&REQUEST=DescribeFeatureType&VERSION="+version+"&typeName=" + coll.replace(outpath, "").replace("index.geojson", "")
+                op = f'{outpath}wfs/DescribeFeatureType/%3FSERVICE=WFS&REQUEST=DescribeFeatureType&VERSION={version}&typeName={coll.replace(outpath, "").replace("index.geojson", "")}'
                 if not os.path.exists(op):
                     os.mkdir(op)
                 op = op.replace(".geojson", "")
@@ -38,7 +38,7 @@ class WFSExporter:
                 if "features" in curcoll and len(curcoll["features"])>0:
                     firstfeat=curcoll["features"][0]
                     if "properties" in firstfeat:
-                        result+="<complexType name=\""+coll+"\"><complexContent><extension base=\"gml:AbstractFeatureType\"><sequence>"
+                        result+=f'<complexType name="{coll}"><complexContent><extension base="gml:AbstractFeatureType"><sequence>'
                         for prop in firstfeat["properties"]:
                             result+=f"""<element name="{prop}" minOccurs="0"/>"""
                         result+="</sequence></extension></complexContent></complexType>"
@@ -64,7 +64,7 @@ class WFSExporter:
             if os.path.exists(coll):
                 with open(coll, 'r', encoding="utf-8") as infile:
                     curcoll = json.load(infile)
-                op = outpath + "wfs/GetFeature/SERVICE=WFS&REQUEST=GetFeature&VERSION="+version+"&TYPENAME=" + coll.replace(outpath, "").replace("index.geojson", "")
+                op = f'{outpath}wfs/GetFeature/SERVICE=WFS&REQUEST=GetFeature&VERSION={version}&TYPENAME={coll.replace(outpath, "").replace("index.geojson", "")}'
                 if not os.path.exists(op):
                     os.mkdir(op)
                 op = op.replace(".geojson", "")

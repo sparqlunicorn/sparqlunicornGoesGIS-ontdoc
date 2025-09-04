@@ -102,15 +102,14 @@ class GraphExporter:
         for sub in subjectstorender:
             if str(sub) not in uriToNodeId:
                 uriToNodeId[str(sub)] = nodecounter
-                file.write(str(nodecounter) + sepchar + str(sub) + "\n")
+                file.write(f'{nodecounter}{sepchar}{sub}\n')
                 nodecounter += 1
             for tup in g.predicate_objects(sub):
                 if str(tup[1]) not in uriToNodeId:
-                    file.write(str(nodecounter) + sepchar + str(tup[1]) + "\n")
+                    file.write(f'{nodecounter}{sepchar}{tup[1]}\n')
                     uriToNodeId[str(tup[1])] = nodecounter
                     nodecounter += 1
-                tgfresedges += str(uriToNodeId[str(sub)]) + sepchar + str(uriToNodeId[str(tup[1])]) + sepchar + str(
-                    DocUtils.shortenURI(tup[0])) + "\n"
+                tgfresedges += f'{uriToNodeId[str(sub)]}{sepchar}{uriToNodeId[str(tup[1])]}{sepchar}{DocUtils.shortenURI(tup[0])}\n'
         if formatt=="gdf":
             file.write("edgedef>node1 VARCHAR,node2 VARCHAR,label VARCHAR\n")
         else:
@@ -126,7 +125,7 @@ class GraphExporter:
         sepchar=" "
         if subjectstorender is None:
             subjectstorender = list(g.subjects(None,None,True))
-        file.write("vertices "+str(len(subjectstorender))+"\n")
+        file.write(f"vertices {len(subjectstorender)}\n")
         for sub in subjectstorender:
             substr=str(sub)
             if substr not in uriToNodeId:
@@ -190,7 +189,8 @@ class GraphExporter:
                     nodecounter += 1
                 result["graph"]["edges"].append({"source":str(uriToNodeId[str(sub)]),"target":str(uriToNodeId[str(tup[1])])})
                 edgecounter+=1
-        file.write(json.dumps(result))
+        #file.write(json.dumps(result))
+        json.dump(result,file)
         return None
 
     @staticmethod
@@ -202,18 +202,20 @@ class GraphExporter:
         if subjectstorender is None:
             subjectstorender = g.subjects(None,None,True)
         for sub in subjectstorender:
-            if str(sub) not in uriToNodeId:
-                uriToNodeId[str(sub)] = nodecounter
-                result["graph"]["nodes"].append({"id":str(sub),"label":str(DocUtils.shortenURI(str(sub))),"x":random.uniform(0, 1000),"y":random.uniform(0, 1000)})
+            substr=str(sub)
+            if substr not in uriToNodeId:
+                uriToNodeId[substr] = nodecounter
+                result["graph"]["nodes"].append({"id":substr,"label":str(DocUtils.shortenURI(substr)),"x":random.uniform(0, 1000),"y":random.uniform(0, 1000)})
                 nodecounter += 1
             for tup in g.predicate_objects(sub):
                 if str(tup[1]) not in uriToNodeId:
                     result["graph"]["nodes"].append({"id":str(tup[1]),"label": str(DocUtils.shortenURI(str(tup[1])))})
                     uriToNodeId[str(tup[1])] = nodecounter
                     nodecounter += 1
-                result["graph"]["edges"].append({"id":str(uriToNodeId[str(sub)])+"_"+str(uriToNodeId[str(tup[1])]),"label":str(DocUtils.shortenURI(str(tup[0]))),"source":str(uriToNodeId[str(sub)]),"target":str(uriToNodeId[str(tup[1])])})
+                result["graph"]["edges"].append({"id":f'{uriToNodeId[substr]}_{uriToNodeId[str(tup[1])]}',"label":str(DocUtils.shortenURI(str(tup[0]))),"source":str(uriToNodeId[substr]),"target":str(uriToNodeId[str(tup[1])])})
                 edgecounter+=1
-        file.write(json.dumps(result))
+        #file.write(json.dumps(result))
+        json.dump(result,file)
         return None
 
     @staticmethod
@@ -231,10 +233,10 @@ class GraphExporter:
                 nodecounter += 1
             for tup in g.predicate_objects(sub):
                 if str(tup[1]) not in uriToNodeId:
-                    file.write(str(tup[1])+" [label=\""+str(DocUtils.shortenURI(str(tup[1])))+"\"]\n")
+                    file.write(f'{tup[1]} [label="{DocUtils.shortenURI(str(tup[1]))}"]\n')
                     uriToNodeId[str(tup[1])] = nodecounter
                     nodecounter += 1
-                file.write(str(sub) + " " + str(tup[1])+" [label=\""+str(DocUtils.shortenURI(str(tup[0])))+"\"]\n")
+                file.write(f'{sub} {tup[1]} [label="{DocUtils.shortenURI(str(tup[0]))}"]\n')
                 edgecounter+=1
         file.write("\n}\n")
         return None
