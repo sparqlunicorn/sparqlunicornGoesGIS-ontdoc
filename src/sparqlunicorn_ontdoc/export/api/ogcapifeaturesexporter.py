@@ -189,13 +189,9 @@ class OGCAPIFeaturesExporter:
                     if "extent" in currentcollection:
                         currentcollection["extent"]["spatial"]["crs"] = curcoll["crs"]
                         collectionsjson["collections"][-1]["extent"]["spatial"]["crs"] = curcoll["crs"]
-                apijson["paths"]["/collections/" + str(
-                    coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]).rstrip("/")] = {
-                    "get": {"tags": ["Collections"], "summary": "describes collection " + str(
-                        str(coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:])).rstrip(
-                        "/"), "description": "Describes the collection with the id " + str(
-                        str(coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:])).rstrip(
-                        "/"), "operationId": "collection-" + str(
+                cname=str(coll).replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:].rstrip("/")
+                apijson["paths"]["/collections/" + cname] = {
+                    "get": {"tags": ["Collections"], "summary": "describes collection " + cname, "description": "Describes the collection with the id " + cname, "operationId": "collection-" + str(
                         coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]),
                             "parameters": [], "responses": {"default": {"description": "default response", "content": {
                             "application/json": {"schema": {"$ref": "#/components/schemas/Collections"},"example": None}}}}}}
@@ -208,31 +204,29 @@ class OGCAPIFeaturesExporter:
                 collectiontable += curcollrow
                 if os.path.exists(coll):
                     try:
+                        oppath=str(op + "/items/index.json").replace("//", "/")
                         if os.path.exists(coll.replace("//", "/")):
                             targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"),
-                                                                      str(op + "/items/index.json").replace("//", "/"),
+                                                                      oppath,
                                                                       outpath)
-                            p = Path(str(op + "/items/index.json").replace("//", "/"))
+                            p = Path(oppath)
                             p.symlink_to(targetpath)
-                        if os.path.exists(coll.replace("//", "/").replace("index.geojson", "index.ttl").replace(
-                                "nonns_" + featurecollectionspaths[coll]["id"] + ".geojson",
-                                "nonns_" + featurecollectionspaths[coll]["id"] + ".ttl")):
+                        spath=coll.replace("//", "/").replace("index.geojson", "index.ttl").replace(
+                                f'nonns_{featurecollectionspaths[coll]["id"]}.geojson',
+                                f'nonns_{featurecollectionspaths[coll]["id"]}.ttl')
+                        oppath=str(op + "/items/index.ttl").replace("//", "/")
+                        if os.path.exists(spath):
                             targetpath = DocUtils.generateRelativeSymlink(
-                                coll.replace("//", "/").replace("index.geojson", "index.ttl").replace(
-                                    "nonns_" + featurecollectionspaths[coll]["id"] + ".geojson",
-                                    "nonns_" + featurecollectionspaths[coll]["id"] + ".ttl"),
-                                str(op + "/items/index.ttl").replace("//", "/"), outpath)
-                            p = Path(str(op + "/items/index.ttl").replace("//", "/"))
+                                spath,
+                                oppath, outpath)
+                            p = Path(oppath)
                             p.symlink_to(targetpath)
-                        if os.path.exists(coll.replace("//", "/").replace("index.geojson", "index.html").replace(
-                                "nonns_" + featurecollectionspaths[coll]["id"] + ".geojson",
-                                "nonns_" + featurecollectionspaths[coll]["id"] + ".html")):
+                        spath=spath.replace(".ttl",".html")
+                        if os.path.exists(spath):
                             targetpath = DocUtils.generateRelativeSymlink(
-                                coll.replace("//", "/").replace("index.geojson", "index.html").replace(
-                                    "nonns_" + featurecollectionspaths[coll]["id"] + ".geojson",
-                                    "nonns_" + featurecollectionspaths[coll]["id"] + ".html"),
+                                spath,
                                 str(op + "/items/"+collectionhtmlname).replace("//", "/"), outpath)
-                            with open(str(op + "/items/"+collectionhtmlname), "w",encoding="utf-8") as f:
+                            with open(f'{op}/items/{collectionhtmlname}', "w",encoding="utf-8") as f:
                                 if "nonns" in collid:
                                     f.write(f'<html><head><meta http-equiv="refresh" content="0; url="{deploypath}/{collid}.html" /></head></html>')
                                 else:
@@ -241,47 +235,23 @@ class OGCAPIFeaturesExporter:
                     except Exception as e:
                         print("symlink creation error")
                         print(e)
-                    apijson["paths"][str("/collections/" + str(
-                        coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[
-                        1:]) + "/items/index.json").replace("//", "/")] = {"get": {"tags": ["Data"],
-                                                                                   "summary": "retrieves features of collection " + str(
-                                                                                       coll.replace(outpath,"").replace(
-                                                                                           "index.geojson", "").replace(
-                                                                                           ".geojson", "")[1:]).rstrip(
+                    cname=str(coll).replace(outpath,"").replace("index.geojson", "").replace(".geojson", "")[1:]
+                    apijson["paths"][f'/collections/{cname}/items/index.json'.replace("//", "/")] = {"get": {"tags": ["Data"],
+                                                                                   "summary": "retrieves features of collection " + cname.rstrip(
                                                                                        "/"),
-                                                                                   "description": "Retrieves features of collection  " + str(
-                                                                                       coll.replace(outpath,"").replace(
-                                                                                           "index.geojson", "").replace(
-                                                                                           ".geojson", "")[1:]),
-                                                                                   "operationId": "features-" + str(
-                                                                                       coll.replace(outpath,"").replace(
-                                                                                           "index.geojson", "").replace(
-                                                                                           ".geojson", "")[1:]),
+                                                                                   "description": "Retrieves features of collection  " + cname,
+                                                                                   "operationId": "features-" + cname,
                                                                                    "parameters": [], "responses": {
                             "default": {"description": "default response",
                                         "content": {"application/geo+json": {"example": None}},
                                         "text/ttl": {"schema": {"example": None}, "example": None},
                                         "text/html": {"schema": {"example": None}, "example": None}}}}}
+                    cname=str(coll).replace(outpath,"").replace("index.geojson","").replace(".geojson", "")[1:]
                     apijson["paths"][str("/collections/" + str(coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[
                         1:]) + "/items/{featureId}/index.json").replace("//", "/")] = {"get": {"tags": ["Data"],
-                                                                                               "summary": "retrieves feature of collection " + str(
-                                                                                                   coll.replace(outpath,"").replace(
-                                                                                                       "index.geojson",
-                                                                                                       "").replace(
-                                                                                                       ".geojson", "")[
-                                                                                                   1:]).rstrip("/"),
-                                                                                               "description": "Retrieves one single feature of the collection with the id " + str(
-                                                                                                   coll.replace(outpath,"").replace(
-                                                                                                       "index.geojson",
-                                                                                                       "").replace(
-                                                                                                       ".geojson", "")[
-                                                                                                   1:]),
-                                                                                               "operationId": "feature-" + str(
-                                                                                                   coll.replace(outpath,"").replace(
-                                                                                                       "index.geojson",
-                                                                                                       "").replace(
-                                                                                                       ".geojson", "")[
-                                                                                                   1:]), "parameters": [
+                                                                                               "summary": "retrieves feature of collection " + cname.rstrip("/"),
+                                                                                               "description": "Retrieves one single feature of the collection with the id " + cname,
+                                                                                               "operationId": "feature-" + cname, "parameters": [
                             {"name": "featureId", "in": "path", "required": True, "schema": {"type": "string"}}],
                                                                                                "responses": {
                                                                                                    "default": {
@@ -301,23 +271,21 @@ class OGCAPIFeaturesExporter:
                     for feat in curcoll["features"]:
                         featpath = feat["id"].replace(prefixnamespace, "").replace("//", "/")
                         try:
-                            os.makedirs(f'{op}/items/{DocUtils.shortenURI(feat["id"])}')
+                            basepath=f'{op}/items/{DocUtils.shortenURI(feat["id"])}'.replace("//", "/")
+                            os.makedirs(basepath)
                             #print("CHECKPATH: " + str(
                             #    str(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.json").replace("//", "/")))
                             if os.path.exists(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.json"):
-                                targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.json", str(op + "/items/" + str(
-                                    DocUtils.shortenURI(feat["id"])) + "/index.json").replace("//", "/"), outpath, True)
-                                p = Path(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"])) + "/index.json").replace("//", "/"))
+                                targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.json", basepath + "/index.json", outpath, True)
+                                p = Path(basepath+"/index.json")
                                 p.symlink_to(targetpath)
                             if os.path.exists(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.ttl"):
-                                targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.ttl", str(op + "/items/" + str(
-                                    DocUtils.shortenURI(feat["id"])) + "/index.ttl").replace("//", "/"), outpath, True)
-                                p = Path(str(op + "/items/" + str(DocUtils.shortenURI(feat["id"])) + "/index.ttl").replace("//", "/"))
+                                targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.ttl", basepath+"/index.ttl", outpath, True)
+                                p = Path(basepath+"/index.ttl")
                                 p.symlink_to(targetpath)
                             if os.path.exists(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.html"):
-                                targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.html", str(op + "/items/" + str(
-                                    DocUtils.shortenURI(feat["id"])) + "/index.html").replace("//", "/"), outpath, True)
-                                with open(f'{op}/items/{DocUtils.shortenURI(feat["id"])}/index.html', "w",encoding="utf-8") as f:
+                                targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.html", basepath+"/index.html", outpath, True)
+                                with open(basepath+"/index.html", "w",encoding="utf-8") as f:
                                     f.write(f"<html><head><meta http-equiv=\"refresh\" content=\"0; url={targetpath}\" /></head></html>")
                                 #print("symlinks created")
                         except Exception as e:

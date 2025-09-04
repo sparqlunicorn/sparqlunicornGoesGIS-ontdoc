@@ -314,12 +314,21 @@ class OntDocGeneration:
             print("IIIF Collection Generation time: "+str(end-start)+" seconds")
             self.exectimes["IIIF Collection Generation"] = {"time": end - start}
         if len(self.htmlexporter.featurecollectionspaths) > 0 and self.pubconfig["apis"]["ckan"]:
+            start=time.time()
             CKANExporter.generateCKANCollection(outpath, self.pubconfig["deploypath"], self.htmlexporter.featurecollectionspaths, tree["core"]["data"],
                                                 self.pubconfig["license"])
+            end=time.time()
+            print("CKAN API Generation time: "+str(end-start)+" seconds")
+            self.exectimes["CKAN API Generation"] = {"time": end - start}
         if self.pubconfig["apis"]["solidexport"]:
+            start=time.time()
             SolidExporter.createSolidSettings(self.graph, outpath, self.pubconfig["deploypath"], self.pubconfig["publisher"], self.pubconfig["datasettitle"],
                                               tree["core"]["data"])
+            end=time.time()
+            print("Solid API Generation time: "+str(end-start)+" seconds")
+            self.exectimes["Solid API Generation"] = {"time": end - start}
         if len(self.htmlexporter.featurecollectionspaths) > 0:
+            start=time.time()
             indexhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], "", "0", "true",self.pubconfig)
             indexhtml = indexhtml.replace("{{iconprefixx}}",
                                           (relpath + "icons/" if self.pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",
@@ -350,13 +359,15 @@ class OntDocGeneration:
                     "{{stats}}", self.voidstatshtml)
                 tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, self.pubconfig["apis"]["ogcapifeatures"], self.pubconfig["apis"]["iiif"], self.pubconfig["apis"]["ckan"]],
                                                             [
-                                                                "<a href=\"sparql.html?endpoint=" + str(
-                                                                    self.pubconfig["deploypath"]) + "\">[SPARQL]</a>&nbsp;",
+                                                                f'<a href=\"sparql.html?endpoint={self.pubconfig["deploypath"]}">[SPARQL]</a>&nbsp;',
                                                                 "<a href=\"api/api.html\">[OGC API Features]</a>&nbsp;",
                                                                 "<a href=\"iiif/\">[IIIF]</a>&nbsp;",
                                                                 "<a href=\"api/3/\">[CKAN]</a>"
                                                             ], "{{apis}}")
                 f.write(tempfoot)
+            end=time.time()
+            print("OGC API Features Generation time: "+str(end-start)+" seconds")
+            self.exectimes["OGC API Features Generation"] = {"time": end - start}
         return subjectstorender
 
 
@@ -375,19 +386,20 @@ class OntDocGeneration:
                 if uri in uritotreeitem:
                     res = DocUtils.replaceNameSpacesInLabel(self.pubconfig["prefixes"], str(uri))
                     label = DocUtils.getLabelForObject(URIRef(str(uri)), graph, None, self.pubconfig["labellang"])
+                    suri=DocUtils.shortenURI(uri)
                     if res is not None and label != "":
-                        uritotreeitem[uri][-1]["text"] = label + " (" + res["uri"] + ")"
+                        uritotreeitem[uri][-1]["text"] = f'{label} ({res["uri"]})'
                     elif label != "":
-                        uritotreeitem[uri][-1]["text"] = label + " (" + DocUtils.shortenURI(uri) + ")"
+                        uritotreeitem[uri][-1]["text"] = f'{label} ({suri})'
                     else:
-                        uritotreeitem[uri][-1]["text"] = DocUtils.shortenURI(uri)
-                    uritotreeitem[uri][-1]["id"] = prefixnamespace + "nonns_" + DocUtils.shortenURI(uri) + ".html"
-                    labeltouri[label] = prefixnamespace + "nonns_" + DocUtils.shortenURI(uri) + ".html"
+                        uritotreeitem[uri][-1]["text"] = suri
+                    uritotreeitem[uri][-1]["id"] = f'{prefixnamespace}nonns_{suri}.html'
+                    labeltouri[label] = f'{prefixnamespace}nonns_{suri}.html'
                 if counter % 10 == 0:
                     DocUtils.updateProgressBar(counter, nonnsuris, "NonNS URIs")
-                self.htmlexporter.createHTML(outpath + "nonns_" + DocUtils.shortenURI(uri) + ".html", None, URIRef(uri), baseurl,
-                                graph.subject_predicates(URIRef(uri), True), graph, str(corpusid) + "_search.js",
-                                str(corpusid) + "_classtree.js", None, curlicense, None, Graph(), uristorender, True,
+                self.htmlexporter.createHTML(f'{outpath}nonns_{suri}.html', None, URIRef(uri), baseurl,
+                                graph.subject_predicates(URIRef(uri), True), graph, f"{corpusid}_search.js",
+                                f"{corpusid}_classtree.js", None, curlicense, None, Graph(), uristorender, True,
                                 label)
                 counter += 1
         return labeltouri
@@ -399,9 +411,10 @@ class OntDocGeneration:
 
 def main():
     prefixes = {"reversed": {}}
-    print("PREFIX EXISTS? " + resourcepath + '/prefixes.json ' + str(os.path.exists(resourcepath + '/prefixes.json')))
-    if os.path.exists(resourcepath + '/prefixes.json'):
-        with open(resourcepath + '/prefixes.json', encoding="utf-8") as f:
+    rpath=resourcepath + '/prefixes.json'
+    print(f'PREFIX EXISTS? {rpath} {os.path.exists(resourcepath)}/prefixes.json')
+    if os.path.exists(rpath):
+        with open(rpath, encoding="utf-8") as f:
             prefixes = json.load(f)
     prefixes["reversed"]["http://purl.org/cuneiform/"] = "cunei"
     prefixes["reversed"]["http://purl.org/graphemon/"] = "graphemon"
@@ -602,7 +615,7 @@ def main():
             subfolders = [f.path for f in os.scandir(outpath[0]) if f.is_dir()]
             #print(subfolders)
             for path in subfolders:
-                indexf.write("<tr><td><a href=\"" + path.replace(outpath[0] + "/", "") + "/index.html\">" + path.replace(outpath[0] + "/", "") + "</a></td></tr>")
+                indexf.write(f'<tr><td><a href="{path.replace(outpath[0] + "/", "")}/index.html">{path.replace(outpath[0] + "/", "")}</a></td></tr>')
             indexf.write("</tbody></table><script>$('#indextable').DataTable();</script>")
             indexf.write(DocUtils.replaceStandardVariables(templates["footer"], "", "0", "true",docgen.pubconfig).replace("{{license}}", curlicense).replace("{{exports}}",
                                                                                         templates["nongeoexports"]).replace(

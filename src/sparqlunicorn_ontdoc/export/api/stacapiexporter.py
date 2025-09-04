@@ -202,20 +202,14 @@ class StacAPIExporter:
                     if "extent" in currentcollection:
                         currentcollection["extent"]["spatial"]["crs"] = curcoll["crs"]
                         collectionsjson["collections"][-1]["extent"]["spatial"]["crs"] = curcoll["crs"]
-                apijson["paths"]["/collections/" + str(
-                    coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]).rstrip("/")] = {
-                    "get": {"tags": ["Collections"], "summary": "describes collection " + str(
-                        str(coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:])).rstrip(
-                        "/"), "description": "Describes the collection with the id " + str(
-                        str(coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:])).rstrip(
-                        "/"), "operationId": "collection-" + str(
+                cname=str(coll).replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:].rstrip("/")
+                apijson["paths"]["/collections/" + cname] = {
+                    "get": {"tags": ["Collections"], "summary": "describes collection " + cname, "description": "Describes the collection with the id " + cname, "operationId": "collection-" + str(
                         coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]),
                             "parameters": [], "responses": {"default": {"description": "default response", "content": {
                             "application/json": {"schema": {"$ref": "#/components/schemas/Collections"},
                                                  "example": None}}}}}}
-                curcollrow = "<tr><td><a href=\"" + opweb.replace(".geojson", "") + "/items/indexc.html\">" + str(
-                    featurecollectionspaths[coll]["name"]) + "</a></td><td><a href=\"" + opweb.replace(".geojson",
-                                                                                                       "") + "/items/indexc.html\">[Collection as HTML]</a>&nbsp;<a href=\"" + opweb.replace(
+                curcollrow = f'<tr><td><a href="{opweb.replace(".geojson", "")}/items/indexc.html">{featurecollectionspaths[coll]["name"]}</a></td><td><a href="{opweb.replace(".geojson","")}/items/indexc.html">[Collection as HTML]</a>&nbsp;<a href="' + opweb.replace(
                     ".geojson", "") + "/items/\">[Collection as JSON]</a>&nbsp;<a href=\"" + opweb.replace(".geojson",
                                                                                                            "") + "/items/index.ttl\">[Collection as TTL]</a></td></tr>"
                 with open(op + "index.json", "w", encoding="utf-8") as f:

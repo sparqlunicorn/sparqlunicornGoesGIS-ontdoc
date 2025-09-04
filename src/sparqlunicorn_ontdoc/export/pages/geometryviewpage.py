@@ -47,9 +47,7 @@ class GeometryViewPage:
         if geom.has_z:
             self.createSVGFromWKT(templates, {"type":"FeatureCollection","features":[jsonfeat]}, f)
         else:
-            f.write(templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace("{{myfeature}}",
-                                                                                                "[" + json.dumps(
-                                                                                                    jsonfeat) + "]").replace(
+            f.write(templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace("{{myfeature}}", f'[{json.dumps(jsonfeat)}]').replace(
                 "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(parameters.get("checkdepth",0))).replace("{{epsg}}",
                                                                                                      epsgcode).replace(
                 "{{baselayers}}", json.dumps(DocConfig.baselayers)).replace("{{epsgdefspath}}", parameters.get("epsgdefslink","")).replace(
@@ -156,9 +154,7 @@ class GeometryViewPage:
                         if dateatt not in feat["properties"]:
                             feat["properties"][dateatt] = ""
                 if parameters.get("localOptimized", False):
-                    f.write(templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace("{{myfeature}}",
-                                                                                                        "[" + json.dumps(
-                                                                                                            featcoll) + "]").replace(
+                    f.write(templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace("{{myfeature}}",f'[{json.dumps(featcoll)}]').replace(
                         "{{relativepath}}",
                         DocUtils.generateRelativePathFromGivenDepth(parameters.get("checkdepth", 0))).replace("{{epsg}}",
                                                                                                               epsgcode).replace(
@@ -168,8 +164,7 @@ class GeometryViewPage:
                         "{{dateatt}}",
                         str(dateatt)))
                 else:
-                    f.write(templates["maptemplate"].replace("{{myfeature}}", "[\"" + DocUtils.shortenURI(
-                        str(parameters.get("completesavepath", "").replace(".html", ".geojson"))) + "\"]").replace(
+                    f.write(templates["maptemplate"].replace("{{myfeature}}", f'["{DocUtils.shortenURI(str(parameters.get("completesavepath", "").replace(".html", ".geojson")))}"]').replace(
                         "{{relativepath}}",
                         DocUtils.generateRelativePathFromGivenDepth(
                             parameters.get("checkdepth", 0))).replace(
@@ -180,9 +175,9 @@ class GeometryViewPage:
                                                                                                           "")).replace(
                         "{{dateatt}}",
                         str(dateatt)))
-                with open(parameters.get("completesavepath", "").replace(".html", ".geojson"), 'w',
-                          encoding='utf-8') as fgeo:
-                    featurecollectionspaths[parameters.get("completesavepath", "").replace(".html", ".geojson")] = {
+                spath=parameters.get("completesavepath", "").replace(".html", ".geojson")
+                with open(spath, 'w',encoding='utf-8') as fgeo:
+                    featurecollectionspaths[spath] = {
                         "name": featcoll["name"],
                         "id": featcoll["id"]}
                     json.dump(featcoll,fgeo)

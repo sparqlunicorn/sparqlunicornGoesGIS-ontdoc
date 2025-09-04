@@ -117,7 +117,7 @@ class IIIFAPIExporter:
                             {"id": imgpath + "/annotation/p" + pcstr + "/1", "type": "Annotation",
                              "motivation": "painting",
                              "body": {"id": imgpath, "type": str(maintype), "format": "image/png"},
-                             "target": imgpath + "/canvas/p" + pcstr}]}], "annotations": [
+                             "target": f'{imgpath}/canvas/p{pcstr}'}]}], "annotations": [
                         {"id": f"{imgpath}/canvas/p{pcstr}/annopage-2", "type": "AnnotationPage",
                          "items": []}]}
                 curiiifmanifest["items"].append(curitem)
@@ -158,8 +158,7 @@ class IIIFAPIExporter:
             for imgp in imgpath["imgpath"]:
                 induri=DocUtils.shortenURI(imgpath["ind"])
                 imghtml+="<li data-groups='[\"all\",\"red\",\""+str(imgpath["class"])+"\"]' style=\"width:25%;background-color:white;border-radius:25px;\"><figure class=\"col-3@sm picture-item\"><div class=\"aspect aspect--16x9\"><div class=\"aspect__inner\">"
-                imghtml+=f'<a href={deploypath}/{induri}" target="_blank"><img src="{imgp}" loading="lazy" class="imgborder" alt="{imgpath["label"]}"/></a></div></div>'
-                imghtml+=f'<figcaption style="color:black"><a href="{deploypath}/{induri}" style="font-weight:bold;color:black" target="_blank">'
+                imghtml+=f'<a href={deploypath}/{induri}" target="_blank"><img src="{imgp}" loading="lazy" class="imgborder" alt="{imgpath["label"]}"/></a></div></div><figcaption style="color:black"><a href="{deploypath}/{induri}" style="font-weight:bold;color:black" target="_blank">'
                 if imgpath["label"]!="":
                    imghtml+=f'{imgpath["label"]}</a></figcaption></figure></li>'
                 else:
@@ -223,14 +222,11 @@ class IIIFAPIExporter:
                                              "items": []}
             if imgpath["url"] not in seenurls:
                 if imgpath["label"] != "":
-                    collections[curclass]["items"].append({"full": outpath + "/iiif/images/" + DocUtils.shortenURI(
-                        imgpath["url"].replace("/manifest.json", "")) + "/full/full/0/default.jpg","id": imgpath["url"].replace(outpath, deploypath),
+                    collections[curclass]["items"].append({"full": f'{outpath}/iiif/images/{DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", ""))}/full/full/0/default.jpg',"id": imgpath["url"].replace(outpath, deploypath),
                                                            "type": "Manifest", "label": {"en": [
-                            imgpath["label"] + " (" + DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", "")[
-                                                                      0:imgpath["url"].replace("/manifest.json","").rfind(".")]) + ")"]}})
+                            f'{imgpath["label"]} ({DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", "")[ 0:imgpath["url"].replace("/manifest.json","").rfind(".")])})']}})
                 else:
-                    collections[curclass]["items"].append({"full": outpath + "/iiif/images/" + DocUtils.shortenURI(
-                        imgpath["url"].replace("/manifest.json", "")) + "/full/full/0/default.jpg","id": imgpath["url"].replace(outpath, deploypath),
+                    collections[curclass]["items"].append({"full": f'{outpath}/iiif/images/{DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", ""))}/full/full/0/default.jpg',"id": imgpath["url"].replace(outpath, deploypath),
                         "type": "Manifest", "label": {"en": [DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", ""))]}})
             seenurls = imgpath["url"]
         for coll in collections:
