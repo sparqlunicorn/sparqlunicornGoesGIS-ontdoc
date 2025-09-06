@@ -39,7 +39,7 @@ class TextAnnoPage:
             annobody=" ".join(graph.objects(anno[0],URIRef("http://www.w3.org/ns/oa#hasBody")))
             #for obj in graph.objects(anno[0],URIRef("http://www.w3.org/ns/oa#hasBody")):
             #    annobody+=str(obj)+" "
-            f.write("<tr><td><a href=\""+str(anno.replace(prefixnamespace,outpath))+"\">"+str(DocUtils.shortenURI(anno))+"</a></td><td><a href=\""+str(thetype)+"\">"+DocUtils.shortenURI(str(thetype))+"</a></td><td>"+str(exact)+" ["+str(start)+"-"+str(end)+"]</td><td>"+str(annobody)+"</td></tr>")
+            f.write(f'<tr><td><a href="{anno.replace(prefixnamespace,outpath)}+">{DocUtils.shortenURI(anno)}</a></td><td><a href="{thetype}">{DocUtils.shortenURI(str(thetype))}</a></td><td>{exact} [{start}-{end}]</td><td>{annobody}</td></tr>')
         f.write("</tbody></table>")
 
 

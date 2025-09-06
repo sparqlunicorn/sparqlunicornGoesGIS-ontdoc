@@ -186,7 +186,7 @@ class PersonPage:
     def vcardJSONToString(vcard):
         res="BEGIN:VCARD\nVERSION:4.0\nPROFILE:VCARD\n"
         for key in vcard:
-            res+=str(key).upper()+":"+str(vcard[key]["value"])+"\n"
+            res+=f'{str(key).upper()}:{vcard[key]["value"]}\n'
         return res+"END:VCARD\n"
 
     @staticmethod

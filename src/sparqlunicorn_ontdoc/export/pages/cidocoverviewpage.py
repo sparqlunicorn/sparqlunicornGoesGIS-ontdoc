@@ -24,14 +24,15 @@ class CIDOCOverviewPage:
         resmap["P108_was_produced_by"]=None
         widget="<table><thead><tr><th>Name</th><th>Type</th><th>Composed of</th><th>part of</th><th>documented in</th><th>was present at</th><th>has dimension</th</tr></thead><tbody><tr>"
         for predobj in graph.predicate_objects(subject):
-            if str(predobj[0]) in resmap:
+            pobjstr=str(predobj[0])
+            if pobjstr in resmap:
                 if isinstance(predobj[1],URIRef):
-                    resmap[str(predobj[0])] = f"<a href=\"{predobj[0]}\">{DocUtils.shortenURI(str(predobj[0]))}</a>"
+                    resmap[pobjstr] = f"<a href=\"{predobj[0]}\">{DocUtils.shortenURI(pobjstr)}</a>"
                 else:
-                    resmap[str(predobj[0])]=str(predobj[1])
+                    resmap[pobjstr]=str(predobj[1])
         for val in resmap:
             if resmap[val] is not None:
-                widget+="<td>"+str(val)+"</td>"
+                widget+=f"<td>{val}</td>"
             else:
                 widget+="<td></td>"
         widget+="</tr></tbody></table>"

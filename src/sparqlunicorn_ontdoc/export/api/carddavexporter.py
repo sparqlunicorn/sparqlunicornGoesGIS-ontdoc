@@ -20,7 +20,7 @@ class CardDAVExporter:
         counter=1
         for vcard in vcards:
             if "fn" in vcard:
-                self.vcardJSONToFile(vcard,outpath+"/addressbook/"+str(vcard["fn"]).lower().replace(" ","_")+".vcf")
+                self.vcardJSONToFile(vcard,f'{outpath}/addressbook/{str(vcard["fn"]).lower().replace(" ","_")}.vcf')
             else:
-                self.vcardJSONToFile(vcard, outpath + "/addressbook/vcard" + str(counter) + ".vcf")
+                self.vcardJSONToFile(vcard, f"{outpath}/addressbook/vcard{counter}.vcf")
             counter+=1

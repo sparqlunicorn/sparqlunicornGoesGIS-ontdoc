@@ -71,11 +71,11 @@ class BibPage:
                         res += author + " "
                         first = False
                     else:
-                        res += "and " + author + " "
+                        res += f"and {author} "
                 res = res[0:-1]
                 res += "},\n"
             elif bibpart == "pages":
-                res += bibtexitem[bibpart]["start"] + "--" + bibtexitem[bibpart]["end"] + "},\n"
+                res += f'{bibtexitem[bibpart]["start"]}--{bibtexitem[bibpart]["end"]}' + "},\n"
             else:
                 res += str(bibtexitem[bibpart]) + "},\n"
         res = res[0:-2]

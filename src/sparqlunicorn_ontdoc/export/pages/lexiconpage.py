@@ -55,9 +55,9 @@ class LexiconPage(Page):
         lexentry=LexiconPage.extractLexEntry(graph,subject)
         if not onlybody:
             f.write(f"<table id=\"lexicon\">{LexiconPage.tableheader}<tbody>")
-        f.write("<tr><td><a href=\""+str(subject)+"\" target=\"_blank\">"+str(lexentry["lemma"])+"</a></td>")
+        f.write(f'<tr><td><a href="{subject}" target="_blank">"{lexentry["lemma"]}</a></td>')
         if "http" in lexentry["lexcat"]:
-            f.write("<td><a href=\""+str(lexentry["lexcat"])+"\" target=\"_blank\">" + DocUtils.shortenURI(str(lexentry["lexcat"])) + "</a></td>")
+            f.write(f'<td><a href="{lexentry["lexcat"]}" target="_blank">"{DocUtils.shortenURI(str(lexentry["lexcat"]))}</a></td>')
         else:
             f.write(f'<td>{lexentry["lexcat"]}</td>')
         if "http" in lexentry["language"]:
@@ -69,7 +69,7 @@ class LexiconPage(Page):
         f.write("</td><td>")
         for sense in lexentry["senses"]:
             if sense["reference"]!="":
-                f.write("<a href=\"" + str(sense["uri"]) + "\" target=\"_blank\">" + str(sense["label"]) + "</a> <a href=\""+str(sense["reference"])+"\" target=\"_blank\">["+DocUtils.shortenURI(str(sense["reference"]))+"]</a>")
+                f.write(f'<a href="{sense["uri"]}" target="_blank">{sense["label"]}</a> <a href="{sense["reference"]}" target="_blank">["{DocUtils.shortenURI(str(sense["reference"]))}]</a>')
             else:
                 f.write(f"<a href=\"{sense['uri']}\" target=\"_blank\">{sense['label']}</a> ")
         f.write("</td></tr>")

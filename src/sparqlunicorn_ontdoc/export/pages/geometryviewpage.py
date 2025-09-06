@@ -36,8 +36,7 @@ class GeometryViewPage:
                 dateprops.append(item)
                 #props[item] = str(parameters.get("timeobj")[item])
                 #props[item] = str(item)
-        jsonfeat = {"type": "Feature", 'id': str(subject), 'name': parameters.get("foundlabel",""), 'dateprops': dateprops,
-                    'properties': props, "geometry": geojsonrep}
+        jsonfeat = {"type": "Feature", 'id': str(subject), 'name': parameters.get("foundlabel",""), 'dateprops': dateprops,'properties': props, "geometry": geojsonrep}
         if epsgcode == "" and "crs" in geojsonrep:
             epsgcode = "EPSG:" + geojsonrep["crs"]
             jsonfeat["crs"]=epsgcode

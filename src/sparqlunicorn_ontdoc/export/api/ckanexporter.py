@@ -123,26 +123,29 @@ class CKANExporter:
             if not os.path.exists(op):
                 os.makedirs(op)
             dataset={"success":True,"result":{"id":curcollname,"type":"dataset","num_resources":3,"title":curcollname,"license_id":license,"license_title":license,"name":curcollname,"notes":"","tags":[],"groups":[],"resources":[{"name":curcollname+" (text/ttl)","format":"TTL","id":curcollname,"package_id":curcollname,"mimetype":"text/ttl","resource_type":"file","url":deploypath+"/dataset/"+curcollname+".ttl","state":"active","url_type":""},{"name":curcollname+" (application/json)","id":curcollname,"format":"JSON","package_id":curcollname,"mimetype":"application/json","resource_type":"file","url":deploypath+"/dataset/"+curcollname+".json","state":"active","url_type":""},{"name":curcollname+" (text/html)","id":curcollname,"format":"HTML","package_id":curcollname,"mimetype":"text/html","resource_type":"file","url":deploypath+"/dataset/"+curcollname+".html","state":"active","url_type":""}]}}
-            with open(outpath + "/dataset/"+curcollname+"_", "w",encoding="utf-8") as f:
+            with open(f"{outpath}/dataset/{curcollname}_", "w",encoding="utf-8") as f:
                 json.dump(dataset,f)
             try:
-                if not os.path.exists(str(op + ".json").replace("//", "/")):
+                cpath=str(op + ".json").replace("//", "/")
+                if not os.path.exists(cpath):
                     targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"), str(op + ".json"),outpath)
-                    p = Path(str(op + ".json").replace("//", "/"))
+                    p = Path(cpath)
                     p.symlink_to(targetpath)
                     p = Path(f"{outpath}/api/{version}/action/package_show?id={curcollname}.json")
                     p.symlink_to("../../"+targetpath)
-                if not os.path.exists(str(op + ".ttl").replace("//", "/")):
+                cpath = str(op + ".ttl").replace("//", "/")
+                if not os.path.exists(cpath):
                     targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"), str(op + ".ttl"),
                                                               outpath)
-                    p = Path(str(op + ".ttl").replace("//", "/"))
+                    p = Path(cpath)
                     p.symlink_to(targetpath)
                     p = Path(f"{outpath}/api/{version}/action/package_show?id={curcollname}.ttl")
                     p.symlink_to("../../"+targetpath)
-                if not os.path.exists(str(op + ".html").replace("//", "/")):
+                cpath = str(op + ".html").replace("//", "/")
+                if not os.path.exists(cpath):
                     targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"), str(op + ".html"),
                                                               outpath)
-                    p = Path(str(op + ".html").replace("//", "/"))
+                    p = Path(cpath)
                     p.symlink_to(targetpath)
                     p = Path(f"{outpath}/api/{version}/action/package_show?id={curcollname}.html")
                     p.symlink_to("../../"+targetpath)

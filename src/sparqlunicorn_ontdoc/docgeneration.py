@@ -247,7 +247,7 @@ class OntDocGeneration:
         classlist = ClassTreeUtils.assignGeoClassesToTree(tree)
         end=time.time()
         self.exectimes["Finalize Classtree"]={"time":end-start}
-        print("Finalizing class tree done in "+str(end-start)+" seconds")
+        print(f"Finalizing class tree done in {end-start} seconds")
         if self.pubconfig["nonnspages"]:
             start = time.time()
             labeltouri = self.getSubjectPagesForNonGraphURIs(nonnsmap, self.graph, prefixnamespace, self.pubconfig["corpusid"], outpath,
@@ -274,7 +274,7 @@ class OntDocGeneration:
             start = time.time()
             IndexViewPage.createIndexPages(self.pubconfig,templates,self.pubconfig["apis"],paths,subjectstorender,uritotreeitem,voidds,tree,classlist,self.graph,self.voidstatshtml,curlicense)
             end=time.time()
-            print("Index Page Creation time: "+str(end-start)+" seconds")
+            print(f"Index Page Creation time: {end-start} seconds")
             self.exectimes["Index Page Creation"] = {"time": end - start}
         if "layouts" in templates:
             for template in templates["layouts"]:
@@ -311,21 +311,21 @@ class OntDocGeneration:
                                                   "{{bibtex}}", "").replace("{{stats}}", self.voidstatshtml),
                                               outpath + "imagegrid.html")
             end=time.time()
-            print("IIIF Collection Generation time: "+str(end-start)+" seconds")
+            print(f"IIIF Collection Generation time: {end-start} seconds")
             self.exectimes["IIIF Collection Generation"] = {"time": end - start}
         if len(self.htmlexporter.featurecollectionspaths) > 0 and self.pubconfig["apis"]["ckan"]:
             start=time.time()
             CKANExporter.generateCKANCollection(outpath, self.pubconfig["deploypath"], self.htmlexporter.featurecollectionspaths, tree["core"]["data"],
                                                 self.pubconfig["license"])
             end=time.time()
-            print("CKAN API Generation time: "+str(end-start)+" seconds")
+            print(f"CKAN API Generation time: {end-start} seconds")
             self.exectimes["CKAN API Generation"] = {"time": end - start}
         if self.pubconfig["apis"]["solidexport"]:
             start=time.time()
             SolidExporter.createSolidSettings(self.graph, outpath, self.pubconfig["deploypath"], self.pubconfig["publisher"], self.pubconfig["datasettitle"],
                                               tree["core"]["data"])
             end=time.time()
-            print("Solid API Generation time: "+str(end-start)+" seconds")
+            print(f"Solid API Generation time: {end-start} seconds")
             self.exectimes["Solid API Generation"] = {"time": end - start}
         if len(self.htmlexporter.featurecollectionspaths) > 0:
             start=time.time()
@@ -383,10 +383,10 @@ class OntDocGeneration:
                 for tup in graph.predicate_objects(URIRef(uri)):
                     if str(tup[0]) in DocConfig.labelproperties:
                         label = str(tup[1])
+                suri = DocUtils.shortenURI(uri)
                 if uri in uritotreeitem:
                     res = DocUtils.replaceNameSpacesInLabel(self.pubconfig["prefixes"], str(uri))
                     label = DocUtils.getLabelForObject(URIRef(str(uri)), graph, None, self.pubconfig["labellang"])
-                    suri=DocUtils.shortenURI(uri)
                     if res is not None and label != "":
                         uritotreeitem[uri][-1]["text"] = f'{label} ({res["uri"]})'
                     elif label != "":
@@ -406,8 +406,7 @@ class OntDocGeneration:
 
     def polygonToPath(self, svg):
         svg = svg.replace("<polygon", "<path").replace("points=\"", "d=\"M").replace("\"></polygon>", " Z\"></polygon>")
-        return svg.replace("<svg>",
-                           "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">")
+        return svg.replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">")
 
 def main():
     prefixes = {"reversed": {}}
@@ -518,10 +517,10 @@ def main():
                 with ZipFile(BytesIO(zipresp.read())) as zfile:
                     subfoldername = zfile.namelist()[0][0:zfile.namelist()[0].rfind('/')]
                     zfile.extractall(resourcepath+'/html/')
-                    templatepath = resourcepath+'/html/' + subfoldername
+                    templatepath = f'{resourcepath}/html/{subfoldername}'
                     if subfoldername.endswith("/"):
                         subfoldername = subfoldername[0:-1]
-                    templatepath = resourcepath+'/html/' + subfoldername[0:subfoldername.rfind('/') + 1]
+                    templatepath = f'{resourcepath}/html/{subfoldername[0:subfoldername.rfind("/") + 1]}'
                     args.templatename = subfoldername
                     if templatepath.endswith("/"):
                         templatepath = templatepath[0:-1]
@@ -565,7 +564,7 @@ def main():
     curlicense = license
     if docgen is not None:
         curlicense = docgen.licensehtml
-    print("Path exists? " + outpath[0] + '/index.html ' + str(os.path.exists(outpath[0] + '/index.html')))
+    print(f'Path exists? {outpath[0]}/index.html {os.path.exists(outpath[0] + "/index.html")}')
     if not os.path.exists(outpath[0] + '/index.ttl') and subrend is not None:
         resg = Graph()
         for sub in subrend:

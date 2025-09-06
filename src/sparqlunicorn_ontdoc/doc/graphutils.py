@@ -101,13 +101,14 @@ class GraphUtils:
         for prop in tobeaddedPerInd:
             propp = URIRef(prop)
             if "value" in tobeaddedPerInd[prop] and "uri" in tobeaddedPerInd[prop]:
-                graph.add((ind, propp, URIRef(str(tobeaddedPerInd[prop]["value"]))))
-                graph.add((URIRef(str(tobeaddedPerInd[prop]["value"])),
+                valuri=URIRef(str(tobeaddedPerInd[prop]["value"]))
+                graph.add((ind, propp, valuri))
+                graph.add((valuri,
                            RDF.type,
                            URIRef(str(tobeaddedPerInd[prop]["uri"]))))
                 graph.add((URIRef(str(tobeaddedPerInd[prop]["value"]).replace(" ", "_")),
                            RDFS.label,
-                           URIRef(str(tobeaddedPerInd[prop]["value"]))))
+                           valuri))
             elif "value" in tobeaddedPerInd[prop] and not tobeaddedPerInd[prop]["value"].startswith("http"):
                 if "type" in tobeaddedPerInd[prop]:
                     graph.add((ind, propp,Literal(tobeaddedPerInd[prop]["value"], datatype=tobeaddedPerInd[prop]["type"])))
