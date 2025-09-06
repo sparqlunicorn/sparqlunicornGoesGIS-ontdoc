@@ -59,7 +59,7 @@ class IIIFAPIExporter:
                 curiiifmanifest = {"@context": "http://iiif.io/api/presentation/3/context.json",
                                    "id": deploypath + "/iiif/mf/" + curinduri + "/manifest.json",
                                    "type": "Manifest",
-                                   "label": {"en": [str(label) + " (" + curinduri + ")"]}, "homepage": [
+                                   "label": {"en": [f"{label} ({curinduri})"]}, "homepage": [
                         {"id": str(curind).replace(prefixnamespace, deploypath + "/"), "type": "Text",
                          "label": {"en": [str(curind).replace(prefixnamespace, deploypath + "/")]},
                          "format": "text/html", "language": ["en"]}], "metadata": [], "items": []}
@@ -110,11 +110,11 @@ class IIIFAPIExporter:
                 else:
                     height = imagetoURI[imgpath]["height"]
                     width = imagetoURI[imgpath]["width"]
-                curitem = {"id": imgpath + "/canvas/p" + pcstr, "height": height, "width": width,
+                curitem = {"id": f"{imgpath}/canvas/p{pcstr}", "height": height, "width": width,
                            "type": "Canvas",
                            "label": {"en": [f'{label} {maintype} {pagecounter + 1}']}, "items": [
-                        {"id": imgpath + "/canvas/p" + pcstr + "/1", "type": "AnnotationPage", "items": [
-                            {"id": imgpath + "/annotation/p" + pcstr + "/1", "type": "Annotation",
+                        {"id": f"{imgpath}/canvas/p{pcstr}/1", "type": "AnnotationPage", "items": [
+                            {"id": f"{imgpath}/annotation/p{pcstr}/1", "type": "Annotation",
                              "motivation": "painting",
                              "body": {"id": imgpath, "type": str(maintype), "format": "image/png"},
                              "target": f'{imgpath}/canvas/p{pcstr}'}]}], "annotations": [

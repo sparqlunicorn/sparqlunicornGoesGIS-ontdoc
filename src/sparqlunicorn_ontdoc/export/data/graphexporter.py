@@ -18,20 +18,19 @@ class GraphExporter:
             subjectstorender = g.subjects(None,None,True)
         for sub in subjectstorender:
             substr=str(sub)
+            substrsuri=DocUtils.shortenURI(substr)
             if substr not in uriToNodeId:
                 uriToNodeId[substr] = nodecounter
-                file.write("CREATE ( " + str(DocUtils.shortenURI(substr)) + "{ _id:'" + str(
-                    DocUtils.shortenURI(substr)) + "', _uri:'" + substr + "', rdfs_label:'" + str(
-                    DocUtils.shortenURI(substr)) + "' })\n")
+                file.write("CREATE ( " + substrsuri + "{ _id:'" + substrsuri + "', _uri:'" + substr + "', rdfs_label:'" + substrsuri + "' })\n")
                 nodecounter += 1
             for tup in g.predicate_objects(sub):
-                if str(tup[1]) not in uriToNodeId:
-                    file.write("CREATE ( " + str(DocUtils.shortenURI(str(tup[1]))) + "{ _id:'" + str(
-                        DocUtils.shortenURI(str(tup[1]))) + "', _uri:'" + str(tup[1]) + "', rdfs_label:'" + str(
-                        DocUtils.shortenURI(str(tup[1]))) + "' })\n")
-                    uriToNodeId[str(tup[1])] = nodecounter
+                tupstr=str(tup[1])
+                if tupstr not in uriToNodeId:
+                    tupstrsuri=DocUtils.shortenURI(tupstr)
+                    file.write("CREATE ( " + tupstrsuri + "{ _id:'" + tupstrsuri  + "', _uri:'" + tupstr + "', rdfs_label:'" + tupstrsuri  + "' })\n")
+                    uriToNodeId[tupstr] = nodecounter
                     nodecounter += 1
-                tgfresedges += f"({uriToNodeId[substr]})-[:{DocUtils.shortenURI(str(tup[1]))}]->({DocUtils.shortenURI(str(tup[0]))}),\n"
+                tgfresedges += f"({uriToNodeId[substr]})-[:{DocUtils.shortenURI(tupstr)}]->({DocUtils.shortenURI(str(tup[0]))}),\n"
         file.write("\n\nCREATE ")
         file.write(tgfresedges[0:-2] + "\n")
         return None

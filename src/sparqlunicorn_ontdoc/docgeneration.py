@@ -254,7 +254,7 @@ class OntDocGeneration:
                                                              self.licensehtml, prefixnamespace, uritotreeitem, labeltouri)
             end=time.time()
             self.exectimes["NonNS Pages"] = {"time": end - start,"items":len(nonnsmap)}
-            print("NonNS Page Generation time "+str(end-start)+" seconds")
+            print(f"NonNS Page Generation time {end-start} seconds")
         with open(classtreepath, 'w', encoding='utf-8') as f:
             f.write("var tree=")
             json.dump(tree,f, indent=2)
@@ -366,7 +366,7 @@ class OntDocGeneration:
                                                             ], "{{apis}}")
                 f.write(tempfoot)
             end=time.time()
-            print("OGC API Features Generation time: "+str(end-start)+" seconds")
+            print(f"OGC API Features Generation time: {end-start} seconds")
             self.exectimes["OGC API Features Generation"] = {"time": end - start}
         return subjectstorender
 

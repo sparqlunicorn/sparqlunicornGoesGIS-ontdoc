@@ -19,41 +19,41 @@ class CKANExporter:
             os.makedirs(outpath + "/api/")
         if not os.path.exists(outpath + "/api/action"):
             os.makedirs(outpath + "/api/action")
-        if not os.path.exists(outpath + "/api/"+str(version)+"/"):
-            os.makedirs(outpath + "/api/"+str(version)+"/")
-        if not os.path.exists(outpath + "/api/"+str(version)+"/action/"):
-            os.makedirs(outpath + "/api/"+str(version)+"/action/")
-        if not os.path.exists(outpath + "/api/"+str(version)+"/action/group_list/"):
-            os.makedirs(outpath + "/api/"+str(version)+"/action/group_list/")
-        if not os.path.exists(outpath + "/api/"+str(version)+"/action/package_list/"):
-            os.makedirs(outpath + "/api/"+str(version)+"/action/package_list/")
-        if not os.path.exists(outpath + "/api/"+str(version)+"/action/tag_list/"):
-            os.makedirs(outpath + "/api/"+str(version)+"/action/tag_list/")
+        if not os.path.exists(f"{outpath}/api/{version}/"):
+            os.makedirs(f"{outpath}/api/{version}/")
+        if not os.path.exists(f"{outpath}/api/{version}/action/"):
+            os.makedirs(f"{outpath}/api/{version}/action/")
+        if not os.path.exists(f"{outpath}/api/{version}/action/group_list/"):
+            os.makedirs(f"{outpath}/api/{version}/action/group_list/")
+        if not os.path.exists(f"{outpath}/api/{version}/action/package_list/"):
+            os.makedirs(f"{outpath}/api/{version}/action/package_list/")
+        if not os.path.exists(f"{outpath}/api/{version}/action/tag_list/"):
+            os.makedirs(f"{outpath}/api/{version}/action/tag_list/")
         try:
-            if not os.path.exists(outpath + "/api/"+str(version)+"/action/package_search"):
-                p = Path(str(outpath + "/api/"+str(version)+"/action/package_search"))
+            if not os.path.exists(f"{outpath}/api/{version}/action/package_search"):
+                p = Path(f"{outpath}/api/{version}/action/package_search")
                 p.symlink_to("./package_list/")
-            if not os.path.exists(outpath + "/api/"+str(version)+"/action/group_list?all_fields=true"):
-                p = Path(outpath + "/api/"+str(version)+"/action/group_list?all_fields=true")
+            if not os.path.exists(f"{outpath}/api/{version}/action/group_list?all_fields=true"):
+                p = Path(f"{outpath}/api/{version}/action/group_list?all_fields=true")
                 p.symlink_to("./group_list/")
             if not os.path.exists(outpath + "/api/action/package_search/"):
                 p = Path(outpath + "/api/action/package_search/")
-                p.symlink_to("../"+str(version)+"/action/package_list/")
+                p.symlink_to(f"../{version}/action/package_list/")
             if not os.path.exists(outpath + "/api/action/group_list/"):
                 p = Path(outpath + "/api/action/group_list/")
-                p.symlink_to("../"+str(version)+"/action/group_list/")
+                p.symlink_to(f"../{version}/action/group_list/")
             if not os.path.exists(outpath + "/api/action/package_list/"):
                 p = Path(outpath + "/api/action/package_list/")
-                p.symlink_to("../"+str(version)+"/action/package_list/")
+                p.symlink_to(f"../{version}/action/package_list/")
             if not os.path.exists(outpath + "/api/action/tag_list/"):
                 p = Path(outpath + "/api/action/tag_list/")
-                p.symlink_to("../"+str(version)+"/action/tag_list/")
+                p.symlink_to(f"../{version}/action/tag_list/")
         except Exception as e:
             print(e)
             print("Symlink creation might not be allowed")
-        with open(outpath + "/api/"+str(version)+"/index.json", "w",encoding="utf-8") as f:
+        with open(f"{outpath}/api/{version}/index.json", "w",encoding="utf-8") as f:
             json.dump({"version": int(version)},f)
-        ckanopenapi["paths"]["/api/"+str(version)+"/action/group_list/"] = {"get": {"tags": ["CKAN"],
+        ckanopenapi["paths"][f"/api/{version}/action/group_list/"] = {"get": {"tags": ["CKAN"],
                                                                        "summary": "Retrieves the group list of this CKAN API",
                                                                        "description": "Retrieves the group list of this CKAN API",
                                                                        "operationId": "actionapi-group_list",
@@ -62,7 +62,7 @@ class CKANExporter:
                             "content": {"text/plain": {"example": None}},
                             "application/json": {"schema": {"example": None}, "example": None},
                             "text/json": {"schema": {"example": None}, "example": None}}}}}
-        ckanopenapi["paths"]["/api/"+str(version)+"/action/tag_list/"] = {"get": {"tags": ["CKAN"],
+        ckanopenapi["paths"][f"/api/{version}/action/tag_list/"] = {"get": {"tags": ["CKAN"],
                                                                        "summary": "Retrieves the tag list of this CKAN API",
                                                                        "description": "Retrieves the tag list of this CKAN API",
                                                                        "operationId": "actionapi-tag_list",
@@ -71,7 +71,7 @@ class CKANExporter:
                             "content": {"text/plain": {"example": None}},
                             "application/json": {"schema": {"example": None}, "example": None},
                             "text/json": {"schema": {"example": None}, "example": None}}}}}
-        ckanopenapi["paths"]["/api/"+str(version)+"/action/package_list/"] = {"get": {"tags": ["CKAN"],
+        ckanopenapi["paths"][f"/api/{version}/action/package_list/"] = {"get": {"tags": ["CKAN"],
                                                                        "summary": "Retrieves the package list of this CKAN API",
                                                                        "description": "Retrieves the package list of this CKAN API",
                                                                        "operationId": "actionapi-package_list",
@@ -80,18 +80,18 @@ class CKANExporter:
                             "content": {"text/plain": {"example": None}},
                             "application/json": {"schema": {"example": None}, "example": None},
                             "text/json": {"schema": {"example": None}, "example": None}}}}}
-        with open(outpath + "/api/"+str(version)+"/api.json", "w",encoding="utf-8") as f:
+        with open(f"{outpath}/api/{version}/api.json", "w",encoding="utf-8") as f:
             json.dump(ckanopenapi,f)
-        with open(outpath + "/api/"+str(version)+"/index.html", "w",encoding="utf-8") as f:
+        with open(f"{outpath}/api/{version}/index.html", "w",encoding="utf-8") as f:
             f.write(ckanapihtml)
-        with open(outpath + "/api/"+str(version)+"/action/group_list/index.json", "w",encoding="utf-8") as f:
+        with open(f"{outpath}/api/{version}/action/group_list/index.json", "w",encoding="utf-8") as f:
             if classtree is not None and len(classtree)>0:
                 classes=[]
                 for item in classtree:
                     if item["type"]=="class" or item["type"]=="geoclass":
                         theid=DocUtils.shortenURI(item["id"])
                         classes.append({"description":theid,"display_name":item["text"],"name":item["text"],"title":item["text"],"type":"group"})
-                        thepath=outpath + "/api/"+str(version)+"/action/group_show?id="+DocUtils.replaceColonFromWinPath(theid)
+                        thepath=f"{outpath}/api/{version}/action/group_show?id={DocUtils.replaceColonFromWinPath(theid)}"
                         if not os.path.exists(thepath):
                             try:
                                 os.makedirs(thepath)
@@ -107,7 +107,7 @@ class CKANExporter:
             else:
                 json.dump({"success": True, "result": []},f)
                 #f.write(json.dumps({"success": True, "result": []}))
-        with open(outpath + "/api/"+str(version)+"/action/tag_list/index.json", "w",encoding="utf-8") as f:
+        with open(f"{outpath}/api/{version}/action/tag_list/index.json", "w",encoding="utf-8") as f:
             json.dump({"success": True, "result": ["ttl", "json", "geojson", "html"]},f)
         colls = []
         for coll in featurecollectionspaths:

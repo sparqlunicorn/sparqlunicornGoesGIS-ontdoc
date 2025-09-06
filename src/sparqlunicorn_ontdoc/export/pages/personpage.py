@@ -164,7 +164,7 @@ class PersonPage:
                     result += f"<td class=\"{PersonPage.vcardTohCard[hcard[prop]['prop']]}\">{hcard[prop]['value']}</td></tr>"
                 else:
                     result += f"<td class=\"{prop}\">{hcard[prop]['value']}</td></tr>"
-        result += "</tbody></table><script>$('#person').DataTable();</script><button id=\"vcard\" onclick=\"saveTextAsFile(`" + str(PersonPage.vcardJSONToString(vcard)) + "`,'vcard')\">Download VCard</button>"
+        result += f"</tbody></table><script>$('#person').DataTable();</script><button id=\"vcard\" onclick=\"saveTextAsFile(`{PersonPage.vcardJSONToString(vcard)}`,'vcard')\">Download VCard</button>"
         return result
 
     @staticmethod
@@ -215,5 +215,5 @@ class PersonPage:
             if str(person[0]) in DocConfig.collectionrelationproperties:
                 vcards+=PersonPage.vcardJSONToString(PersonPage.generatePageWidget(graph,person[1],templates,f,False,counter))
                 counter+=1
-        f.write("</tbody></table><script>$('#person').DataTable();</script><button id=\"vcard\" onclick=\"saveTextAsFile(`" + str(vcards) + "`,'vcard')\">Download VCards</button>")
+        f.write(f"</tbody></table><script>$('#person').DataTable();</script><button id=\"vcard\" onclick=\"saveTextAsFile(`{vcards}`,'vcard')\">Download VCards</button>")
         return vcards

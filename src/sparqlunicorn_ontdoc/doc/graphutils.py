@@ -53,26 +53,28 @@ class GraphUtils:
         collrelprop = "http://www.w3.org/2000/01/rdf-schema#member"
         collcls=URIRef(collectionClass)
         sobjcoll=URIRef("http://www.opengis.net/ont/geosparql#SpatialObjectCollection")
+        fcoll = URIRef("http://www.opengis.net/ont/geosparql#FeatureCollection")
+        gcoll = URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection")
         for cls in classToInstances:
             colluri = URIRef(f"{namespace}{DocUtils.shortenURI(cls)}_collection")
             if classToFColl[cls] == len(classToInstances[cls]):
                 graph.add((sobjcoll,
                            RDFS.subClassOf,
                            collcls))
-                graph.add((URIRef("http://www.opengis.net/ont/geosparql#FeatureCollection"),
+                graph.add((fcoll,
                            RDFS.subClassOf,
                            sobjcoll))
                 graph.add((colluri, tprop,
-                           URIRef("http://www.opengis.net/ont/geosparql#FeatureCollection")))
+                           fcoll))
             elif classToGeoColl[cls] == len(classToInstances[cls]):
                 graph.add((sobjcoll,
                            RDFS.subClassOf,
                            collcls))
-                graph.add((URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection"),
+                graph.add((gcoll,
                            RDFS.subClassOf,
                            sobjcoll))
                 graph.add((colluri, tprop,
-                           URIRef("http://www.opengis.net/ont/geosparql#GeometryCollection")))
+                           gcoll))
             elif cls in DocConfig.classToCollectionClass:
                 if "super" in DocConfig.classToCollectionClass[cls]:
                     graph.add((URIRef(DocConfig.classToCollectionClass[cls]["class"]),

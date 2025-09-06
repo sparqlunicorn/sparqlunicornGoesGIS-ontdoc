@@ -408,7 +408,7 @@ class DocUtils:
 
     @staticmethod
     def replaceColonFromWinPath(thepath):
-        if ":/" in thepath and re.search("^[A-Z]:[\/\\]",thepath)!=None:
+        if ":/" in thepath and re.search("^[A-Z]:[\/\\\\]",thepath) is not None:
             return thepath[0:2]+thepath[3:].replace(":","_")        
         else:
             return thepath.replace(":","_")
