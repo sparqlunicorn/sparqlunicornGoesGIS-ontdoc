@@ -32,7 +32,7 @@ class TextAnnoPage:
                     continue
                 elif str(pred[0])=="http://www.w3.org/ns/oa#start":
                     start=str(pred[1])
-                elif str(pred[0]) == "http://www.w3.org/ns/oa#start":
+                elif str(pred[0]) == "http://www.w3.org/ns/oa#end":
                     end = str(pred[1])
                 elif str(pred[0]) == "http://www.w3.org/ns/oa#exact":
                     exact = str(pred[1])

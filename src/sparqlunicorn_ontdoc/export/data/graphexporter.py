@@ -223,9 +223,10 @@ class GraphExporter:
             subjectstorender = g.subjects(None,None,True)
         file.write("digraph mygraph {")
         for sub in subjectstorender:
-            if str(sub) not in uriToNodeId:
-                uriToNodeId[str(sub)] = nodecounter
-                file.write(f'{sub} [label="{DocUtils.shortenURI(str(sub))}"]\n')
+            substr=str(sub)
+            if substr not in uriToNodeId:
+                uriToNodeId[substr] = nodecounter
+                file.write(f'{sub} [label="{DocUtils.shortenURI(substr)}"]\n')
                 nodecounter += 1
             for tup in g.predicate_objects(sub):
                 if str(tup[1]) not in uriToNodeId:
@@ -247,33 +248,35 @@ class GraphExporter:
         if subjectstorender is None:
             subjectstorender = g.subjects(None,None,True)
         for sub in subjectstorender:
-            if str(sub) not in uriToNodeId:
-                uriToNodeId[str(sub)] = nodecounter
-                file.write(f'<node id="{nodecounter}" value="{sub}" label="{DocUtils.shortenURI(str(sub))}"><viz:color r=\"128\" g=\"0\" b=\"128\"/></node>\n')
+            substr=str(sub)
+            if substr not in uriToNodeId:
+                uriToNodeId[substr] = nodecounter
+                file.write(f'<node id="{nodecounter}" value="{sub}" label="{DocUtils.shortenURI(substr)}"><viz:color r="128" g="0" b="128"/></node>\n')
                 nodecounter += 1
             for tup in g.predicate_objects(sub):
+                tup1str=str(tup[1])
                 if isinstance(tup[1],Literal):
-                    if str(tup[1]) not in uriToNodeId:
-                        file.write("<node id=\"" + str(nodecounter) + "\" value=\""+str(str(tup[1]).replace("<","&lt;").replace(">","&gt;").replace("&","&amp;").replace("\"","'"))+"\" label=\"" + str(str(tup[1]).replace("<","&lt;").replace(">","&gt;").replace("&","&amp;").replace("\"","'")) + "\">\n")
+                    if tup1str not in uriToNodeId:
+                        file.write(f"<node id=\"{nodecounter}\" value=\""+str(tup1str.replace("<","&lt;").replace(">","&gt;").replace("&","&amp;").replace("\"","'"))+"\" label=\"" + str(str(tup[1]).replace("<","&lt;").replace(">","&gt;").replace("&","&amp;").replace("\"","'")) + "\">\n")
                         if str(tup[0]) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":
                             file.write("<viz:color r=\"255\" g=\"165\" b=\"0\"/>\n")
                         else:
                             file.write("<viz:color r=\"0\" g=\"128\" b=\"0\"/>\n")
                         file.write("</node>")
-                        uriToNodeId[str(tup[1])] = nodecounter
+                        uriToNodeId[tup1str] = nodecounter
                         nodecounter += 1
-                    edges += f"<edge value=\"{tup[0]}\" id=\"{edgecounter}\" source=\"{uriToNodeId[str(sub)]}\" target=\"{uriToNodeId[str(tup[1])]}\" label=\"{DocUtils.shortenURI(str(tup[0]))}\"/>\n"
+                    edges += f"<edge value=\"{tup[0]}\" id=\"{edgecounter}\" source=\"{uriToNodeId[substr]}\" target=\"{uriToNodeId[tup1str]}\" label=\"{DocUtils.shortenURI(str(tup[0]))}\"/>\n"
                 else:
-                    if str(tup[1]) not in uriToNodeId:
-                        file.write(f'<node id="{nodecounter}" value="{tup[1]}" label="{DocUtils.shortenURI(str(tup[1]))}">\n')
+                    if tup1str not in uriToNodeId:
+                        file.write(f'<node id="{nodecounter}" value="{tup[1]}" label="{DocUtils.shortenURI(tup1str)}">\n')
                         if str(tup[0]) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":
                             file.write("<viz:color r=\"255\" g=\"165\" b=\"0\"/>\n")
                         else:
                             file.write("<viz:color r=\"128\" g=\"0\" b=\"128\"/>\n")
                         file.write("</node>")
-                        uriToNodeId[str(tup[1])] = nodecounter
+                        uriToNodeId[tup1str] = nodecounter
                         nodecounter += 1
-                    edges += f"<edge value=\"{tup[0]}\" id=\"{edgecounter}\" source=\"{uriToNodeId[str(sub)]}\" target=\"{uriToNodeId[str(tup[1])]}\" label=\"{DocUtils.shortenURI(str(tup[0]))}\"/>\n"
+                    edges += f"<edge value=\"{tup[0]}\" id=\"{edgecounter}\" source=\"{uriToNodeId[substr]}\" target=\"{uriToNodeId[tup1str]}\" label=\"{DocUtils.shortenURI(str(tup[0]))}\"/>\n"
                 edgecounter+=1
         file.write("</nodes>\n")
         file.write(edges)

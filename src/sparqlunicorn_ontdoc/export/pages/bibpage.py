@@ -59,7 +59,7 @@ class BibPage:
                     bibtexitem[bibtexmappings[tupstr]] = DocUtils.getLabelForObject(tup[1], graph)
                 else:
                     bibtexitem[bibtexmappings[tupstr]] = tupstrobj
-        res = bibtexitem["type"] + "{" + DocUtils.shortenURI(item) + ",\n"
+        res = f'{bibtexitem["type"]}{{{DocUtils.shortenURI(item)},\n'
         for bibpart in sorted(bibtexitem):
             if bibpart == "type":
                 continue
@@ -75,7 +75,7 @@ class BibPage:
                 res = res[0:-1]
                 res += "},\n"
             elif bibpart == "pages":
-                res += f'{bibtexitem[bibpart]["start"]}--{bibtexitem[bibpart]["end"]}' + "},\n"
+                res += f'{bibtexitem[bibpart]["start"]}--{bibtexitem[bibpart]["end"]}}},\n'
             else:
                 res += str(bibtexitem[bibpart]) + "},\n"
         res = res[0:-2]

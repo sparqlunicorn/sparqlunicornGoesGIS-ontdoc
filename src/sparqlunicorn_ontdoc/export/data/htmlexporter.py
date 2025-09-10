@@ -108,8 +108,7 @@ class HTMLExporter():
                             nonnsmap.setdefault(tupobjstr,set()).add(subject)
             for tup in predobjmap:
                 predobjtuplen=len(predobjmap[tup])
-                if self.pubconfig["metadatatable"] and tup not in DocConfig.labelproperties and DocUtils.shortenURI(tup,
-                                                                                                       True) in DocConfig.metadatanamespaces:
+                if self.pubconfig["metadatatable"] and tup not in DocConfig.labelproperties and DocUtils.shortenURI(tup,True) in DocConfig.metadatanamespaces:
                     thetable = metadatatablecontents
                     metadatatablecontentcounter += 1
                     thetable += f'<tr class="{"odd" if metadatatablecontentcounter % 2 == 0 else "even"}">'
@@ -147,20 +146,21 @@ class HTMLExporter():
                     for item in predobjmap[tup]:
                         if itemcounter >= HTMLExporter.maxlistthreshold:
                             break
-                        itemup=str(item).upper()
+                        itemstr = str(item)
+                        itemup=itemstr.upper()
                         if tup in DocConfig.valueproperties and ("POINT" in itemup or "POLYGON" in itemup or "LINESTRING" in itemup) and self.typeproperty in predobjmap and URIRef("http://www.w3.org/ns/oa#WKTSelector") in predobjmap[self.typeproperty]:
-                            image3dannos.append({"value": str(item)})
-                        elif "<svg" in str(item):
-                            foundmedia["image"][str(item)] = {}
-                        elif "http" in str(item):
+                            image3dannos.append({"value": itemstr})
+                        elif "<svg" in itemstr:
+                            foundmedia["image"][itemstr] = {}
+                        elif "http" in itemstr:
                             if isinstance(item, Literal):
                                 ext = "." + ''.join(filter(str.isalpha, str(item.value).split(".")[-1]))
                             else:
-                                ext = "." + ''.join(filter(str.isalpha, str(item).split(".")[-1]))
+                                ext = "." + ''.join(filter(str.isalpha, itemstr.split(".")[-1]))
                             if ext in DocConfig.fileextensionmap:
-                                foundmedia[DocConfig.fileextensionmap[ext]][str(item)] = {}
+                                foundmedia[DocConfig.fileextensionmap[ext]][itemstr] = {}
                         elif tup in DocConfig.valueproperties:
-                            foundvals.add((tup, str(item)))
+                            foundvals.add((tup, itemstr))
                         res = HTMLExporter.createHTMLTableValueEntry(subject, tup, item, ttlf, graph,
                                                                      baseurl, checkdepth, geojsonrep, foundmedia,
                                                                      imageannos,
@@ -198,8 +198,7 @@ class HTMLExporter():
                 else:
                     thetable += "<td class=\"wrapword\"></td>"
                 thetable += "</tr>"
-                if self.pubconfig["metadatatable"] and tup not in DocConfig.labelproperties and DocUtils.shortenURI(tup,
-                                                                                                       True) in DocConfig.metadatanamespaces:
+                if self.pubconfig["metadatatable"] and tup not in DocConfig.labelproperties and DocUtils.shortenURI(tup,True) in DocConfig.metadatanamespaces:
                     metadatatablecontents = thetable
                 else:
                     tablecontents = thetable
@@ -225,8 +224,7 @@ class HTMLExporter():
                 #    tablecontents += "<tr class=\"odd\">"
                 #else:
                 #    tablecontents += "<tr class=\"even\">"
-                tablecontents += HTMLExporter.formatPredicate(tup, baseurl, checkdepth, graph, True,
-                                                             self.pubconfig["labellang"], self.pubconfig["prefixes"])
+                tablecontents += HTMLExporter.formatPredicate(tup, baseurl, checkdepth, graph, True,self.pubconfig["labellang"], self.pubconfig["prefixes"])
                 if subpredtuplen > 0:
                     tablecontents += "<td class=\"wrapword\">"
                     if subpredtuplen > HTMLExporter.listthreshold:
@@ -377,6 +375,7 @@ class HTMLExporter():
                                                              self.pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
                                                              foundlabel, comment, thetypes, predobjmap, "Image"))
                 for image in foundmedia["image"]:
+                    imagestr=str(image)
                     if image not in self.imagetoURI or "uri" not in self.imagetoURI[image]:
                         self.imagetoURI[image] = {"uri": {}}
                     if not subjectstr in self.imagetoURI[image]["uri"]:
@@ -386,14 +385,14 @@ class HTMLExporter():
                     if "<svg" in image:
                         if "<svg>" in image:
                             f.write(self.templates["imagestemplatesvg"].replace("{{carousel}}", carousel).replace(
-                                "{{image}}", str(image.replace("<svg>", "<svg class=\"svgview\">"))))
+                                "{{image}}", imagestr.replace("<svg>", "<svg class=\"svgview\">")))
                         else:
                             f.write(self.templates["imagestemplatesvg"].replace("{{carousel}}", carousel).replace(
-                                "{{image}}", str(image)))
+                                "{{image}}", imagestr))
                     else:
                         f.write(self.templates["imagestemplate"].replace("{{carousel}}", carousel).replace("{{image}}",
-                                                                                                           str(image)).replace(
-                            "{{imagetitle}}", str(image)[0:str(image).rfind('.')]))
+                                                                                                           imagestr).replace(
+                            "{{imagetitle}}", imagestr[0:imagestr.rfind('.')]))
                     if len(foundmedia["image"]) > 3:
                         carousel = "carousel-item"
             if len(foundmedia["image"]) > 3:
@@ -504,9 +503,10 @@ class HTMLExporter():
                     if tupobjstr == "http://www.w3.org/ns/oa#SvgSelector" or tupobjstr == "http://www.w3.org/ns/oa#WKTSelector":
                         for svglit in graph.objects(object, typeprop):
                             svglitstr=str(svglit)
+                            svglistrup=svglitstr.upper()
                             if "<svg" in svglitstr:
                                 imageannos.append({"value": svglitstr, "bodies": []})
-                            elif "POINT" in svglitstr.upper() or "POLYGON" in svglitstr.upper() or "LINESTRING" in svglitstr.upper():
+                            elif "POINT" in svglistrup or "POLYGON" in svglistrup or "LINESTRING" in svglistrup:
                                 image3dannos.append({"value": svglitstr, "bodies": []})
                     elif tupobjstr == "http://www.w3.org/ns/oa#TextPositionSelector":
                         curanno = {}

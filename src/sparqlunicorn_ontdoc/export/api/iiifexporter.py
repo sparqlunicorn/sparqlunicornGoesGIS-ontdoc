@@ -47,7 +47,7 @@ class IIIFAPIExporter:
         #print(curind)
         #print(DocUtils.shortenURI(curind))
         curinduri = DocUtils.shortenURI(curind)
-        if not os.path.exists(outpath + "/iiif/mf/" + curinduri + "/manifest.json"):
+        if not os.path.exists(f'{outpath}/iiif/mf/{curinduri}/manifest.json'):
             if not os.path.exists(outpath + "/iiif/mf/"):
                 os.makedirs(outpath + "/iiif/mf/")
             if not os.path.exists(outpath + "/iiif/images/"):
@@ -55,20 +55,21 @@ class IIIFAPIExporter:
             if not os.path.exists(outpath + "/iiif/svg/"):
                 os.makedirs(outpath + "/iiif/svg/")
             #print(label)
+            curindr=str(curind).replace(prefixnamespace, deploypath + "/")
             if label != "":
                 curiiifmanifest = {"@context": "http://iiif.io/api/presentation/3/context.json",
-                                   "id": deploypath + "/iiif/mf/" + curinduri + "/manifest.json",
+                                   "id": f'{deploypath}/iiif/mf/{curinduri}/manifest.json',
                                    "type": "Manifest",
                                    "label": {"en": [f"{label} ({curinduri})"]}, "homepage": [
-                        {"id": str(curind).replace(prefixnamespace, deploypath + "/"), "type": "Text",
-                         "label": {"en": [str(curind).replace(prefixnamespace, deploypath + "/")]},
+                        {"id": curindr, "type": "Text",
+                         "label": {"en": [curindr]},
                          "format": "text/html", "language": ["en"]}], "metadata": [], "items": []}
             else:
                 curiiifmanifest = {"@context": "http://iiif.io/api/presentation/3/context.json",
-                                   "id": deploypath + "/iiif/mf/" + curinduri + "/manifest.json",
+                                   "id": f'{deploypath}/iiif/mf/{curinduri}/manifest.json',
                                    "type": "Manifest", "label": {"en": [curinduri]}, "homepage": [
-                        {"id": str(curind).replace(prefixnamespace, deploypath + "/"), "type": "Text",
-                         "label": {"en": [str(curind).replace(prefixnamespace, deploypath + "/")]},
+                        {"id": curindr, "type": "Text",
+                         "label": {"en": [curindr]},
                          "format": "text/html", "language": ["en"]}], "metadata": [], "items": []}
             pagecounter = 1
             for imgpath in imgpaths:
@@ -125,8 +126,7 @@ class IIIFAPIExporter:
             for pred in predobjmap:
                 for objs in predobjmap[pred]:
                     if isinstance(objs, URIRef):
-                        curiiifmanifest["metadata"].append({"label": {"en": [DocUtils.shortenURI(str(pred))]}, "value": {
-                            "en": [f"<a href=\"{objs}\">{objs}</a>"]}})
+                        curiiifmanifest["metadata"].append({"label": {"en": [DocUtils.shortenURI(str(pred))]}, "value": {"en": [f"<a href=\"{objs}\">{objs}</a>"]}})
                     else:
                         curiiifmanifest["metadata"].append({"label": {"en": [DocUtils.shortenURI(str(pred))]}, "value": {"en": [str(objs)]}})
             # print(curiiifmanifest["metadata"])
@@ -145,8 +145,7 @@ class IIIFAPIExporter:
                 break
         if besttype == "" and len(thetypes) > 0:
             besttype = next(iter(thetypes))
-        return {"url": f"{outpath}/iiif/mf/{curinduri}/manifest.json", "imgpath": list(imgpaths.keys()), "label": str(label),
-                "class": besttype,"ind":curind}
+        return {"url": f"{outpath}/iiif/mf/{curinduri}/manifest.json", "imgpath": list(imgpaths.keys()), "label": str(label),"class": besttype,"ind":curind}
 
     @staticmethod
     def generateImageGrid(outpath,deploypath,imagespaths,imagegridtemplate,headertemplate,footertemplate,targetfile=None):
@@ -221,13 +220,14 @@ class IIIFAPIExporter:
                                              "type": "Collection", "label": {"en": ["Collection: " + str(curclass)]},
                                              "items": []}
             if imgpath["url"] not in seenurls:
+                imgpathr=imgpath["url"].replace("/manifest.json", "")
                 if imgpath["label"] != "":
-                    collections[curclass]["items"].append({"full": f'{outpath}/iiif/images/{DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", ""))}/full/full/0/default.jpg',"id": imgpath["url"].replace(outpath, deploypath),
+                    collections[curclass]["items"].append({"full": f'{outpath}/iiif/images/{DocUtils.shortenURI(imgpathr)}/full/full/0/default.jpg',"id": imgpath["url"].replace(outpath, deploypath),
                                                            "type": "Manifest", "label": {"en": [
-                            f'{imgpath["label"]} ({DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", "")[ 0:imgpath["url"].replace("/manifest.json","").rfind(".")])})']}})
+                            f'{imgpath["label"]} ({DocUtils.shortenURI(imgpathr[ 0:imgpathr.rfind(".")])})']}})
                 else:
-                    collections[curclass]["items"].append({"full": f'{outpath}/iiif/images/{DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", ""))}/full/full/0/default.jpg',"id": imgpath["url"].replace(outpath, deploypath),
-                        "type": "Manifest", "label": {"en": [DocUtils.shortenURI(imgpath["url"].replace("/manifest.json", ""))]}})
+                    collections[curclass]["items"].append({"full": f'{outpath}/iiif/images/{DocUtils.shortenURI(imgpathr)}/full/full/0/default.jpg',"id": imgpath["url"].replace(outpath, deploypath),
+                        "type": "Manifest", "label": {"en": [DocUtils.shortenURI(imgpathr)]}})
             seenurls = imgpath["url"]
         for coll in collections:
             if coll!="main":

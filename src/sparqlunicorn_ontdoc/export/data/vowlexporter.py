@@ -39,9 +39,7 @@ class VOWLExporter:
 
     @staticmethod
     def convertOWL2MiniVOWL(g,outpath,outfile=None,predicates=[],typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",labelproperty="http://www.w3.org/2000/01/rdf-schema#label"):
-        minivowlresult={"info": [{
-            "description": "Created with pyowl2vowl (version 0.1) as part of the SPARQLing Unicorn QGIS Plugin"}],
-            "nodes": [],"links": []}
+        minivowlresult={"info": [{"description": "Created with pyowl2vowl (version 0.1) as part of the SPARQLing Unicorn QGIS Plugin"}],"nodes": [],"links": []}
         nodes=[]
         nodeuriToId={}
         links=[]
@@ -127,19 +125,21 @@ class VOWLExporter:
             #print(iri)
             for clsatt in g.predicate_objects(URIRef(iri)):
                 #print(clsatt)
+                clsattstr0=str(clsatt[0])
+                clsattstr1 = str(clsatt[1])
                 if clsatt[0]!=URIRef(typeproperty):
                     if clsatt[0]==RDFS.subClassOf:
-                        if str(clsatt[1]) in classiriToProdId:
-                            classAttributes[classiriToProdId[iri]["attid"]]["superClasses"].append(str(classiriToProdId[str(clsatt[1])]["id"]))
-                            classAttributes[classiriToProdId[str(clsatt[1])]["attid"]]["subClasses"].append(str(classiriToProdId[iri]["id"]))
+                        if clsattstr1 in classiriToProdId:
+                            classAttributes[classiriToProdId[iri]["attid"]]["superClasses"].append(str(classiriToProdId[clsattstr1]["id"]))
+                            classAttributes[classiriToProdId[clsattstr1]["attid"]]["subClasses"].append(str(classiriToProdId[iri]["id"]))
                     elif clsatt[0]==URIRef(labelproperty):
-                        classAttributes[classiriToProdId[iri]["attid"]]["label"]=str(clsatt[1])
+                        classAttributes[classiriToProdId[iri]["attid"]]["label"]=clsattstr1
                     else:
-                        classAttributes[classiriToProdId[iri]["attid"]]["annotations"][str(clsatt[0])]=[]
-                        if str(clsatt[1]).startswith("http"):
-                            classAttributes[classiriToProdId[iri]["attid"]]["annotations"][str(clsatt[0])].append({"identifier":str(clsatt[0]),"language":"undefined","value":str(clsatt[1]),"type":"iri"})
+                        classAttributes[classiriToProdId[iri]["attid"]]["annotations"][clsattstr0]=[]
+                        if clsattstr1.startswith("http"):
+                            classAttributes[classiriToProdId[iri]["attid"]]["annotations"][clsattstr0].append({"identifier":clsattstr0,"language":"undefined","value":clsattstr1,"type":"iri"})
                         else:
-                            classAttributes[classiriToProdId[iri]["attid"]]["annotations"][str(clsatt[0])].append({"identifier":str(clsatt[0]),"language":"undefined","value":str(clsatt[1]),"type":"label"})
+                            classAttributes[classiriToProdId[iri]["attid"]]["annotations"][clsattstr0].append({"identifier":clsattstr0,"language":"undefined","value":clsattstr1,"type":"label"})
 
         for iri in propiriToProdId:
             #print(iri)

@@ -29,20 +29,15 @@ class OGCAPIFeaturesExporter:
             apijson["paths"]["/api"] = {
                 "get": {"tags": ["Capabilities"], "summary": "api documentation", "description": "api documentation",
                         "operationId": "openApi", "parameters": [], "responses": {
-                        "default": {"description": "default response",
-                                    "content": {"application/vnd.oai.openapi+json;version=3.0": {},
+                        "default": {"description": "default response","content": {"application/vnd.oai.openapi+json;version=3.0": {},
                                                 "application/json": {}, "text/html": {"schema": {}}}}}}}
             apijson["paths"]["/license/dataset"] = {}
             apijson["components"] = {"schemas": {"Conformance": {"type": "object", "properties": {
-                "conformsTo": {"type": "array", "items": {"type": "string"}}}, "xml": {"name": "ConformsTo",
-                                                                                       "namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
+                "conformsTo": {"type": "array", "items": {"type": "string"}}}, "xml": {"name": "ConformsTo","namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
                                                  "Collection": {"type": "object", "properties": {
-                                                     "id": {"type": "string", "xml": {"name": "Id",
-                                                                                      "namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
-                                                     "title": {"type": "string", "xml": {"name": "Title",
-                                                                                         "namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
-                                                     "description": {"type": "string", "xml": {"name": "Description",
-                                                                                               "namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
+                                                     "id": {"type": "string", "xml": {"name": "Id","namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
+                                                     "title": {"type": "string", "xml": {"name": "Title","namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
+                                                     "description": {"type": "string", "xml": {"name": "Description","namespace": "http://www.opengis.net/ogcapi-features-1/1.0"}},
                                                      "links": {"type": "array", "xml": {"name": "link","namespace": "http://www.w3.org/2005/Atom"},
                                                                "items": {"$ref": "#/components/schemas/Link"}},
                                                      "extent": {"$ref": "#/components/schemas/Extent"},
@@ -164,8 +159,7 @@ class OGCAPIFeaturesExporter:
                 opwebcoll = opwebcoll.replace("//", "/")
                 collid=coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]
                 collectionsjson["collections"].append(
-                    {"id": collid,
-                     "title": featurecollectionspaths[coll]["name"], "links": [
+                    {"id": collid,"title": featurecollectionspaths[coll]["name"], "links": [
                         {"href": str(opweb.replace(".geojson", "") + "/index.json").replace("//", "/"),
                          "rel": "collection", "type": "application/json", "title": "Collection as JSON"},
                         {"href": str(opweb.replace(".geojson", "") + "/").replace("//", "/"), "rel": "collection",
@@ -174,12 +168,9 @@ class OGCAPIFeaturesExporter:
                          "rel": "collection", "type": "text/ttl", "title": "Collection as TTL"}]})
                 currentcollection = {"title": featurecollectionspaths[coll]["name"],"id": collid,"links": [], "itemType": "feature"}
                 currentcollection["links"] = [
-                    {"href": opwebcoll + "/items/index.json", "rel": "items", "type": "application/json",
-                     "title": "Collection as JSON"},
-                    {"href": f"{opwebcoll}/items/{collectionhtmlname}", "rel": "items", "type": "text/html",
-                     "title": "Collection as HTML"},
-                    {"href": opwebcoll + "/items/index.ttl", "rel": "collection", "type": "text/ttl",
-                     "title": "Collection as TTL"}]
+                    {"href": opwebcoll + "/items/index.json", "rel": "items", "type": "application/json","title": "Collection as JSON"},
+                    {"href": f"{opwebcoll}/items/{collectionhtmlname}", "rel": "items", "type": "text/html","title": "Collection as HTML"},
+                    {"href": opwebcoll + "/items/index.ttl", "rel": "collection", "type": "text/ttl","title": "Collection as TTL"}]
                 if "bbox" in curcoll:
                     currentcollection["extent"] = {"spatial": {"bbox": curcoll["bbox"]}}
                     collectionsjson["collections"][-1]["extent"] = {"spatial": {"bbox": curcoll["bbox"]}}
@@ -191,8 +182,8 @@ class OGCAPIFeaturesExporter:
                         collectionsjson["collections"][-1]["extent"]["spatial"]["crs"] = curcoll["crs"]
                 cname=str(coll).replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:].rstrip("/")
                 apijson["paths"]["/collections/" + cname] = {
-                    "get": {"tags": ["Collections"], "summary": "describes collection " + cname, "description": "Describes the collection with the id " + cname, "operationId": "collection-" + str(
-                        coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]),
+                    "get": {"tags": ["Collections"], "summary": "describes collection " + cname,
+                            "description": f'Describes the collection with the id " + cname, "operationId": "collection-"{coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]}',
                             "parameters": [], "responses": {"default": {"description": "default response", "content": {
                             "application/json": {"schema": {"$ref": "#/components/schemas/Collections"},"example": None}}}}}}
                 opwebrep=opweb.replace(".geojson","")
@@ -206,9 +197,7 @@ class OGCAPIFeaturesExporter:
                     try:
                         oppath=str(op + "/items/index.json").replace("//", "/")
                         if os.path.exists(coll.replace("//", "/")):
-                            targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"),
-                                                                      oppath,
-                                                                      outpath)
+                            targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"),oppath,outpath)
                             p = Path(oppath)
                             p.symlink_to(targetpath)
                         spath=coll.replace("//", "/").replace("index.geojson", "index.ttl").replace(
@@ -216,16 +205,13 @@ class OGCAPIFeaturesExporter:
                                 f'nonns_{featurecollectionspaths[coll]["id"]}.ttl')
                         oppath=str(op + "/items/index.ttl").replace("//", "/")
                         if os.path.exists(spath):
-                            targetpath = DocUtils.generateRelativeSymlink(
-                                spath,
-                                oppath, outpath)
+                            targetpath = DocUtils.generateRelativeSymlink(spath,oppath, outpath)
                             p = Path(oppath)
                             p.symlink_to(targetpath)
                         spath=spath.replace(".ttl",".html")
                         if os.path.exists(spath):
                             targetpath = DocUtils.generateRelativeSymlink(
-                                spath,
-                                str(op + "/items/"+collectionhtmlname).replace("//", "/"), outpath)
+                                spath,f'{op}/items/{collectionhtmlname}'.replace("//", "/"), outpath)
                             with open(f'{op}/items/{collectionhtmlname}', "w",encoding="utf-8") as f:
                                 if "nonns" in collid:
                                     f.write(f'<html><head><meta http-equiv="refresh" content="0; url="{deploypath}/{collid}.html" /></head></html>')
@@ -237,8 +223,7 @@ class OGCAPIFeaturesExporter:
                         print(e)
                     cname=str(coll).replace(outpath,"").replace("index.geojson", "").replace(".geojson", "")[1:]
                     apijson["paths"][f'/collections/{cname}/items/index.json'.replace("//", "/")] = {"get": {"tags": ["Data"],
-                                                                                   "summary": "retrieves features of collection " + cname.rstrip(
-                                                                                       "/"),
+                                                                                   "summary": "retrieves features of collection " + cname.rstrip("/"),
                                                                                    "description": "Retrieves features of collection  " + cname,
                                                                                    "operationId": "features-" + cname,
                                                                                    "parameters": [], "responses": {
@@ -246,9 +231,7 @@ class OGCAPIFeaturesExporter:
                                         "content": {"application/geo+json": {"example": None}},
                                         "text/ttl": {"schema": {"example": None}, "example": None},
                                         "text/html": {"schema": {"example": None}, "example": None}}}}}
-                    cname=str(coll).replace(outpath,"").replace("index.geojson","").replace(".geojson", "")[1:]
-                    apijson["paths"][str("/collections/" + str(coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[
-                        1:]) + "/items/{featureId}/index.json").replace("//", "/")] = {"get": {"tags": ["Data"],
+                    apijson["paths"][f'/collections/{cname}/items/{{featureId}}/index.json").replace("//", "/")'] = {"get": {"tags": ["Data"],
                                                                                                "summary": "retrieves feature of collection " + cname.rstrip("/"),
                                                                                                "description": "Retrieves one single feature of the collection with the id " + cname,
                                                                                                "operationId": "feature-" + cname, "parameters": [
@@ -260,12 +243,10 @@ class OGCAPIFeaturesExporter:
                                                                                                            "application/geo+json": {
                                                                                                                "example": None}},
                                                                                                        "text/ttl": {
-                                                                                                           "schema": {
-                                                                                                               "example": None},
+                                                                                                           "schema": {"example": None},
                                                                                                            "example": None},
                                                                                                        "text/html": {
-                                                                                                           "schema": {
-                                                                                                               "example": None},
+                                                                                                           "schema": {"example": None},
                                                                                                            "example": None}}}}}
 
                     for feat in curcoll["features"]:

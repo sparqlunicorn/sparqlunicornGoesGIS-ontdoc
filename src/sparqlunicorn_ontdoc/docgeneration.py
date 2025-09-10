@@ -377,15 +377,16 @@ class OntDocGeneration:
         counter = 0
         # print("NONS URIS TO RENDER: "+str(uristorender))
         for uri in uristorender:
+            theuri=URIRef(uri)
             label = ""
             if prefixnamespace not in uri:
                 # print("URI: " + str(uri))
-                for tup in graph.predicate_objects(URIRef(uri)):
+                for tup in graph.predicate_objects(theuri):
                     if str(tup[0]) in DocConfig.labelproperties:
                         label = str(tup[1])
                 suri = DocUtils.shortenURI(uri)
                 if uri in uritotreeitem:
-                    res = DocUtils.replaceNameSpacesInLabel(self.pubconfig["prefixes"], str(uri))
+                    res = DocUtils.replaceNameSpacesInLabel(self.pubconfig["prefixes"], uri)
                     label = DocUtils.getLabelForObject(URIRef(str(uri)), graph, None, self.pubconfig["labellang"])
                     if res is not None and label != "":
                         uritotreeitem[uri][-1]["text"] = f'{label} ({res["uri"]})'
@@ -397,8 +398,8 @@ class OntDocGeneration:
                     labeltouri[label] = f'{prefixnamespace}nonns_{suri}.html'
                 if counter % 10 == 0:
                     DocUtils.updateProgressBar(counter, nonnsuris, "NonNS URIs")
-                self.htmlexporter.createHTML(f'{outpath}nonns_{suri}.html', None, URIRef(uri), baseurl,
-                                graph.subject_predicates(URIRef(uri), True), graph, f"{corpusid}_search.js",
+                self.htmlexporter.createHTML(f'{outpath}nonns_{suri}.html', None, theuri, baseurl,
+                                graph.subject_predicates(theuri, True), graph, f"{corpusid}_search.js",
                                 f"{corpusid}_classtree.js", None, curlicense, None, Graph(), uristorender, True,
                                 label)
                 counter += 1

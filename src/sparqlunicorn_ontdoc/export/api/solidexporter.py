@@ -19,7 +19,7 @@ class SolidExporter:
         preferencesgraph.serialize(destination=outpath+"/settings/prefs.ttl", format="ttl")
         publisheruri=publisher.replace(" ","_")
         if not publisher.startswith("http"):
-            publisheruri=deploypath+"/profile/card#"+str(publisher).replace(" ","_")
+            publisheruri=f'{deploypath}/profile/card#{str(publisher).replace(" ","_")}'
         puburi=URIRef(str(publisheruri))
         ptypeindex = URIRef(deploypath + "/settings/publicTypeIndex.ttl")
         webidprofilegraph.add((URIRef(outpath + "/profile/card"), FOAF.primaryTopic, puburi))

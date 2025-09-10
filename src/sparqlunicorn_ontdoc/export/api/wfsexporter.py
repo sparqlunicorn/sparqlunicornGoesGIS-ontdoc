@@ -145,10 +145,11 @@ class WFSExporter:
             if os.path.exists(coll):
                 with open(coll, 'r', encoding="utf-8") as infile:
                     curcoll = json.load(infile)
+                cpath=coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")
                 curftype = f"""
                             <wfs:FeatureType>
-                    <wfs:Name>{str(coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")).rstrip("/")}</wfs:Name>
-                    <wfs:Title>{str(coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")).rstrip("/")}</wfs:Title>
+                    <wfs:Name>{cpath.rstrip("/")}</wfs:Name>
+                    <wfs:Title>{cpath.rstrip("/")}</wfs:Title>
                     <wfs:Abstract>FeatureCollection {str(coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")).rstrip("/")}</wfs:Abstract>
                     """
             if "crs" in curcoll:
@@ -163,7 +164,7 @@ class WFSExporter:
         getcapabilities += f"""</wfs:FeatureTypeList>
             <ogc:Filter_Capabilities></ogc:Filter_Capabilities>
         </wfs:WFS_Capabilities>"""
-        print("SAVE WFS GETCAPABILITIES: " + str(outpath + "/wfs?request=GetCapabilities&service=WFS&version="+str(wfsversion)))
+        print(f"SAVE WFS GETCAPABILITIES: {outpath}/wfs?request=GetCapabilities&service=WFS&version=7{wfsversion}")
 
         with open(outpath + "/wfs/index.xml", "w", encoding="utf-8") as f:
             f.write(getcapabilities)
@@ -215,11 +216,12 @@ class WFSExporter:
             if os.path.exists(coll):
                 with open(coll, 'r', encoding="utf-8") as infile:
                     curcoll = json.load(infile)
+                cpath=str(coll).replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")
                 curftype = f"""
                 <wfs:FeatureType>
-                    <wfs:Name>{str(coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")).rstrip("/")}</wfs:Name>
-                    <wfs:Title>{str(coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")).rstrip("/")}</wfs:Title>
-                    <wfs:Abstract>FeatureCollection {str(coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")).rstrip("/")}</wfs:Abstract>
+                    <wfs:Name>{cpath.rstrip("/")}</wfs:Name>
+                    <wfs:Title>{cpath.rstrip("/")}</wfs:Title>
+                    <wfs:Abstract>FeatureCollection {cpath.rstrip("/")}</wfs:Abstract>
                     """
             if "crs" in curcoll:
                 curftype += f"""<wfs:DefaultSRS>{curcoll["crs"]}</wfs:DefaultSRS>"""
@@ -235,7 +237,7 @@ class WFSExporter:
         </wfs:WFS_Capabilities>"""
         WFSExporter.generateFeatureList(outpath, deploypath, featurecollectionspaths, str(wfsversion), "")
         WFSExporter.generateFeatureDescriptions(outpath, deploypath, featurecollectionspaths, str(wfsversion), "")
-        print("SAVE WFS GETCAPABILITIES: " + str(outpath + "/wfs?request=GetCapabilities&service=WFS&version="+str(wfsversion)))
+        print(f"SAVE WFS GETCAPABILITIES: {outpath}/wfs?request=GetCapabilities&service=WFS&version={wfsversion}")
         with open(outpath + "/wfs/index.xml", "w", encoding="utf-8") as f:
             f.write(getcapabilities)
 
@@ -261,11 +263,12 @@ class WFSExporter:
             if os.path.exists(coll):
                 with open(coll, 'r', encoding="utf-8") as infile:
                     curcoll = json.load(infile)
+                cpath=coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")
                 curftype = f"""
                             <wfs:FeatureType>
-                    <wfs:Name>{str(coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")).rstrip("/")}</wfs:Name>
-                    <wfs:Title>{str(coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")).rstrip("/")}</wfs:Title>
-                    <wfs:Abstract>FeatureCollection {str(coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")).rstrip("/")}</wfs:Abstract>
+                    <wfs:Name>{cpath.rstrip("/")}</wfs:Name>
+                    <wfs:Title>{cpath.rstrip("/")}</wfs:Title>
+                    <wfs:Abstract>FeatureCollection {cpath.rstrip("/")}</wfs:Abstract>
                     """
             if "crs" in curcoll:
                 curftype += f"""<wfs:SRS>{curcoll["crs"]}</wfs:SRS>"""
