@@ -4,6 +4,7 @@ import re
 import shutil
 import urllib.request
 
+from collections import defaultdict
 from doc.docconfig import DocConfig
 from datetime import date
 
@@ -54,20 +55,19 @@ class DocUtils:
     @staticmethod
     def getLDFilesFromFolder(folder):
         directory = os.fsencode(folder)
-        files=[]
-        for file in os.listdir(directory):
-            filename = os.fsdecode(file)
-            if filename.endswith((".ttl",".owl",".n3",".nt")):
-                files.append(filename)
-        return files
+        return [os.fsdecode(file) for file in os.listdir(directory) if str(file).endswith((".ttl",".owl",".n3",".nt"))]
+        #for file in os.listdir(directory):
+        #    filename = os.fsdecode(file)
+        #    if filename.endswith((".ttl",".owl",".n3",".nt")):
+        #        files.append(filename)
+        #return files
 
     @staticmethod
     def getDataNamespace(g):
         print("Automatic data namespace detection")
-        namespacetosub = {}
+        namespacetosub = defaultdict(set)
         for sub in g.subjects(None, None, True):
-            ns = DocUtils.instanceToNS(sub)
-            namespacetosub.setdefault(ns,set()).add(sub)
+            namespacetosub[DocUtils.instanceToNS(sub)].add(sub)
             #if ns not in namespacetosub:
             #    namespacetosub[ns] = set()
             #namespacetosub[ns].add(sub)
@@ -182,10 +182,7 @@ class DocUtils:
     @staticmethod
     def createURILink(prefixes,uri):
         res = DocUtils.replaceNameSpacesInLabel(prefixes,uri)
-        if res is not None:
-            return f" <a href=\"{uri}\" target=\"_blank\">{res['uri']}</a>"
-        else:
-            return f" <a href=\"{uri}\" target=\"_blank\">{DocUtils.shortenURI(uri)}</a>"
+        return f" <a href=\"{uri}\" target=\"_blank\">{res['uri'] if res is not None else DocUtils.shortenURI(uri)}</a>"
 
     @staticmethod
     def generateRelativeLinkFromGivenDepth(baseurl,checkdepth,item,withindex):
@@ -296,7 +293,8 @@ class DocUtils:
             #    addpath += pathelem + "/"
             #    if not os.path.exists(outpath + addpath):
             #        os.mkdir(outpath + addpath)
-            paths.setdefault(outpath + path[0:path.rfind('/')] + "/",[]).append(path[0:path.rfind('/')])
+            ppath=path[0:path.rfind('/')]
+            paths[f"{outpath}{ppath}/"].append(ppath)
             #if outpath + path[0:path.rfind('/')] + "/" not in paths:
             #    paths[outpath + path[0:path.rfind('/')] + "/"] = []
             #paths[outpath + path[0:path.rfind('/')] + "/"].append(addpath[0:addpath.rfind('/')])
@@ -307,7 +305,7 @@ class DocUtils:
             os.makedirs(outpath+path,exist_ok=True)
             #if not os.path.exists(outpath + path):
             #    os.mkdir(outpath + path)
-            paths.setdefault(outpath,[]).append(path + "/index.html")
+            paths[outpath].append(path + "/index.html")
             #if outpath not in paths:
             #    paths[outpath] = []
             #paths[outpath].append(path + "/index.html")

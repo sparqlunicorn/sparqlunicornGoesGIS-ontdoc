@@ -41,10 +41,11 @@ class HTMLExporter():
     def createHTML(self, savepath, predobjs, subject, baseurl, subpreds, graph, searchfilename, classtreename,
                    uritotreeitem, curlicense, subjectstorender, postprocessing, nonnsmap=None, nonns=False,
                    foundlabel=""):
-        tablecontents = ""
-        metadatatablecontents = ""
-        geojsonrep = None
-        epsgcode = ""
+        tablecontents,metadatatablecontents,epsgcode = "","",""
+        geojsonrep,parentclass,timeobj = None,None,None
+        textannos,imageannos,annobodies,image3dannos,dateprops = [],[],[],[],[]
+        foundvals,curtypes,hasnonns,thetypes,collections = set(),set(),set(),set(),set()
+        tablecontentcounter,metadatatablecontentcounter = -1,-1
         foundmedia = {"audio": {}, "video": {}, "image": {}, "mesh": {}}
         savepath = savepath.replace("\\", "/")
         checkdepth = 0
@@ -53,20 +54,9 @@ class HTMLExporter():
         logo = ""
         if self.pubconfig["logourl"] != None and self.pubconfig["logourl"] != "":
             logo = f"<img src=\"{self.pubconfig['logourl']}\" alt=\"logo\" width=\"25\" height=\"25\"/>&nbsp;&nbsp;"
-        textannos = []
-        foundvals = set()
-        imageannos = []
-        annobodies = []
-        image3dannos = []
         predobjmap = OrderedDict()#defaultdict(list)
-        curtypes = set()
         comment = {}
-        parentclass = None
         inverse = False
-        dateprops = []
-        timeobj = None
-        tablecontentcounter = -1
-        metadatatablecontentcounter = -1
         subjectstr=str(subject)
         if uritotreeitem is not None and subjectstr in uritotreeitem and uritotreeitem[subjectstr][-1][
             "parent"].startswith("http"):
@@ -80,10 +70,7 @@ class HTMLExporter():
         #if parentclass is not None:
         #    uritotreeitem[parentclass][-1]["data"]["to"] = {}
         #    uritotreeitem[parentclass][-1]["data"]["from"] = {}
-        hasnonns = set()
-        thetypes = set()
         itembibtex = ""
-        collections = set()
         if predobjs is not None:
             for tup in sorted(predobjs, key=lambda tup: tup[0]):
                 tupobjstr = str(tup[1])
@@ -131,6 +118,7 @@ class HTMLExporter():
                     for lab in predobjmap[tup]:
                         if lab.language == self.pubconfig["labellang"]:
                             foundlabel = lab
+                            break
                     if foundlabel == "":
                         foundlabel = str(predobjmap[tup][0])
                 if tup in DocConfig.commentproperties:
@@ -231,7 +219,7 @@ class HTMLExporter():
                         tablecontents += f"<details><summary>{subpredtuplen} values</summary>"
                     if subpredtuplen > 1:
                         tablecontents += "<ul>"
-                    labelmap = {}
+                    labelmap = defaultdict(str)
                     itemcounter = 0
                     for item in subpredsmap[tup]:
                         if itemcounter >= HTMLExporter.maxlistthreshold:
@@ -254,7 +242,7 @@ class HTMLExporter():
                             hasnonns.add(str(item))
                         if nonns:
                             geojsonrep = res["geojson"]
-                        labelmap.setdefault(res["label"],"")
+                        #labelmap.setdefault(res["label"],"")
                         if subpredtuplen > 1:
                             labelmap[res["label"]] += f"<li>{res['html']}</li>"
                         else:
@@ -484,12 +472,7 @@ class HTMLExporter():
     def searchObjectConnectionsForAggregateData(graph, object, pred, geojsonrep, foundmedia, imageannos,
                                                 textannos, image3dannos, annobodies, label, unitlabel, nonns, inverse,
                                                 labellang, typeproperty, prefixes):
-        annosource = None
-        foundval = None
-        foundunit = None
-        onelabel = None
-        bibtex = None
-        timeobj = None
+        annosource,foundval,foundunit,onelabel,bibtex,timeobj = None,None,None,None,None,None
         typeprop=URIRef(typeproperty)
         for tup in graph.predicate_objects(object):
             tuppredstr=str(tup[0])
@@ -610,10 +593,9 @@ class HTMLExporter():
     def createHTMLTableValueEntry(subject, pred, object, ttlf, graph, baseurl, checkdepth, geojsonrep, foundmedia,
                                   imageannos, textannos, image3dannos, annobodies, dateprops, inverse, nonns, labellang,
                                   typeproperty, namespaceshort, generatePagesForNonNS, prefixes):
-        tablecontents = ""
-        label = ""
-        bibtex = None
-        timeobj = None
+        tablecontents,label = "",""
+        #bibtex = None
+        #timeobj = None
         objstr=str(object)
         predstr=str(pred)
         if isinstance(object, URIRef) or isinstance(object, BNode):
@@ -696,9 +678,9 @@ class HTMLExporter():
             return ["", None]
         if license.startswith("CC"):
             spl = license.split(" ")
-            res = f'<span style="float:right;margin-left:auto;margin-right:0px;text-align:right">This work is released under <a rel="license" target="_blank" href="http://creativecommons.org/licenses/{str(spl[1]).lower()}/{spl[2]}/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/{str(spl[1]).lower()}/{spl[2]}/80x15.png"/></a></span>'
-            licenseuri = f'http://creativecommons.org/licenses/{str(spl[1]).lower()}/{spl[2]}'
-            return [res, licenseuri]
+            #res =
+            #licenseuri =
+            return [f'<span style="float:right;margin-left:auto;margin-right:0px;text-align:right">This work is released under <a rel="license" target="_blank" href="http://creativecommons.org/licenses/{str(spl[1]).lower()}/{spl[2]}/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/{str(spl[1]).lower()}/{spl[2]}/80x15.png"/></a></span>', f'http://creativecommons.org/licenses/{str(spl[1]).lower()}/{spl[2]}']
         else:
             return ["""All rights reserved.""", None]
 

@@ -11,9 +11,7 @@ class GraphExporter:
 
     @staticmethod
     def convertTTLToCypher(g, file, subjectstorender=None,classlist=None, formatt="cypher"):
-        uriToNodeId = {}
-        nodecounter = 0
-        tgfresedges = ""
+        uriToNodeId,nodecounter,tgfresedges = {},0,""
         if subjectstorender is None:
             subjectstorender = g.subjects(None,None,True)
         for sub in subjectstorender:
@@ -37,8 +35,7 @@ class GraphExporter:
 
     @staticmethod
     def convertTTLToGraphML(g, file, subjectstorender=None,classlist=None, formatt="graphml"):
-        literalcounter = 0
-        edgecounter = 0
+        literalcounter,edgecounter=0,0
         file.write("""<?xml version="1.0" encoding="UTF-8"?>
     <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:y="http://www.yworks.com/xml/graphml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
     <key for="node" id="nodekey" yfiles.type="nodegraphics"></key><key for="edge" id="edgekey" yfiles.type="edgegraphics"></key><graph id="G" edgedefault="directed">""")
@@ -85,10 +82,7 @@ class GraphExporter:
 
     @staticmethod
     def convertTTLToTGF(g, file, subjectstorender=None,classlist=None, formatt="tgf"):
-        uriToNodeId = {}
-        nodecounter = 0
-        tgfresedges = ""
-        sepchar=" "
+        uriToNodeId,nodecounter,tgfresedges,sepchar = {},0,""," "
         if subjectstorender is None:
             subjectstorender = g.subjects(None,None,True)
         if formatt=="GDF":
@@ -114,10 +108,7 @@ class GraphExporter:
 
     @staticmethod
     def convertTTLToNET(g, file, subjectstorender=None,classlist=None, formatt="net"):
-        uriToNodeId = {}
-        nodecounter = 0
-        tgfresedges = ""
-        sepchar=" "
+        uriToNodeId,nodecounter,tgfresedges,sepchar = {},0,""," "
         if subjectstorender is None:
             subjectstorender = list(g.subjects(None,None,True))
         file.write(f"vertices {len(subjectstorender)}\n")
@@ -139,10 +130,7 @@ class GraphExporter:
 
     @staticmethod
     def convertTTLToTLP(g, file, subjectstorender=None,classlist=None, formatt="tlp"):
-        uriToNodeId = {}
-        nodecounter = 0
-        edgecounter=0
-        tgfresedges = ""
+        uriToNodeId,nodecounter,edgecounter,tgfresedges = {},0,0,""
         if subjectstorender is None:
             subjectstorender = g.subjects(None,None,True)
         file.write("(tlp \"2.0\"\nnodes(")
@@ -166,9 +154,7 @@ class GraphExporter:
 
     @staticmethod
     def convertTTLToJGF(g, file, subjectstorender=None,classlist=None, formatt="jgf"):
-        uriToNodeId = {}
-        nodecounter = 0
-        edgecounter=0
+        uriToNodeId,nodecounter,edgecounter = {},0,0
         result={"graph":{"nodes":{},"edges":[]}}
         if subjectstorender is None:
             subjectstorender = g.subjects(None,None,True)
@@ -191,9 +177,7 @@ class GraphExporter:
 
     @staticmethod
     def convertTTLToSigmaJSON(g, file, subjectstorender=None,classlist=None, formatt="jgf"):
-        uriToNodeId = {}
-        nodecounter = 0
-        edgecounter=0
+        uriToNodeId,nodecounter,edgecounter = {},0,0
         result={"graph":{"nodes":[],"edges":[]}}
         if subjectstorender is None:
             subjectstorender = g.subjects(None,None,True)
@@ -216,9 +200,7 @@ class GraphExporter:
 
     @staticmethod
     def convertTTLToDOT(g, file, subjectstorender=None,classlist=None, formatt="dot"):
-        uriToNodeId = {}
-        nodecounter = 0
-        edgecounter=0
+        uriToNodeId,nodecounter,edgecounter = {},0,0
         if subjectstorender is None:
             subjectstorender = g.subjects(None,None,True)
         file.write("digraph mygraph {")
@@ -240,10 +222,8 @@ class GraphExporter:
 
     @staticmethod
     def convertTTLToGEXF(g,file,subjectstorender,classlist=None,formatt="gexf"):
-        uriToNodeId = {}
-        nodecounter = 0
+        uriToNodeId,nodecounter,edgecounter = {},0,0
         edges = "<edges>"
-        edgecounter=0
         file.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<gexf xmlns=\"http://gexf.net/1.3\" xmlns:viz=\"http://gexf.net/1.3/viz\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://gexf.net/1.3 http://gexf.net/1.3/gexf.xsd\" version=\"1.3\">\n<graph mode=\"static\" defaultedgetype=\"directed\">\n<nodes>\n")
         if subjectstorender is None:
             subjectstorender = g.subjects(None,None,True)

@@ -30,8 +30,7 @@ class GeoExporter:
 
     @staticmethod
     def detectSubjectType(g,subjectstorender,geoclasslist):
-        subjectsToType={}
-        typeToFields={}
+        subjectsToType,typeToFields={},{}
         for sub in subjectstorender:
             substr=str(sub)
             typeToFields[substr]=set()
@@ -50,9 +49,7 @@ class GeoExporter:
     @staticmethod
     def convertTTLToGML(g, file, subjectstorender=None,classlist=None, formatt="json"):
         res=GeoExporter.preprocessGeometryData(g,file,subjectstorender,classlist,formatt)
-        typeToFields=res[0]
-        typeToRes=res[1]
-        typeToGeom=res[2]
+        typeToFields,typeToRes,typeToGeom=res
         for type in typeToFields:
             with open(f'{os.path.realpath(file.name).replace("." + formatt, "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
                 #resjson={"type":"FeatureCollection","features":[{"type":"Feature","properties":res,"geometry":typeToGeom[type]} for res in typeToRes[type]]}
@@ -64,9 +61,7 @@ class GeoExporter:
     @staticmethod
     def convertTTLToGeoJSON(g, file, subjectstorender=None,classlist=None, formatt="json"):
         res=GeoExporter.preprocessGeometryData(g,file,subjectstorender,classlist,formatt)
-        typeToFields=res[0]
-        typeToRes=res[1]
-        typeToGeom=res[2]
+        typeToFields,typeToRes,typeToGeom=res
         for type in typeToFields:
             with open(f'{os.path.realpath(file.name).replace("." + formatt, "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
                 #resjson={"type":"FeatureCollection","features":[{"type":"Feature","properties":res,"geometry":typeToGeom[type]} for res in typeToRes[type]]}
@@ -101,9 +96,7 @@ class GeoExporter:
     @staticmethod
     def convertTTLToKML(g, file, subjectstorender=None,classlist=None, formatt="kml"):
         res=GeoExporter.preprocessGeometryData(g,file,subjectstorender,classlist,formatt)
-        typeToFields=res[0]
-        typeToRes=res[1]
-        typeToGeom=res[2]
+        typeToFields,typeToRes,typeToGeom=res
         for type in typeToFields:
             with open(f'{os.path.realpath(file.name).replace("." + formatt, "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
                 f.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?><kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\">\n")
@@ -117,9 +110,7 @@ class GeoExporter:
     @staticmethod
     def convertTTLToMapML(g, file, subjectstorender=None,classlist=None, formatt="mapml"):
         ress=GeoExporter.preprocessGeometryData(g,file,subjectstorender,classlist,formatt)
-        typeToFields=ress[0]
-        typeToRes=ress[1]
-        typeToGeom=ress[2]
+        typeToFields,typeToRes,typeToGeom=ress
         for type in typeToFields:
             with open(f'{os.path.realpath(file.name).replace("." + formatt, "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
                 f.write("<mapml>\n<head>\n<title></title>\n</head>\n<body>\n")
@@ -150,9 +141,7 @@ class GeoExporter:
     @staticmethod
     def convertTTLToGeoURI(g, file, subjectstorender=None,classlist=None, formatt="geouri"):
         res=GeoExporter.preprocessGeometryData(g,file,subjectstorender,classlist,formatt)
-        typeToFields=res[0]
-        typeToRes=res[1]
-        typeToGeom=res[2]
+        typeToFields,typeToRes,typeToGeom=res
         for type in typeToFields:
             with open(f'{os.path.realpath(file.name).replace("." + formatt, "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
                 f.write(f'geo:{str(typeToGeom[type]["coordinates"]).replace("[","").replace("]","")}\n')
@@ -161,9 +150,7 @@ class GeoExporter:
     @staticmethod
     def convertTTLToWKT(g, file, subjectstorender=None,classlist=None, formatt="wkt"):
         res=GeoExporter.preprocessGeometryData(g,file,subjectstorender,classlist,formatt)
-        typeToFields=res[0]
-        typeToRes=res[1]
-        typeToGeom=res[2]
+        typeToFields,typeToRes,typeToGeom=res
         for type in typeToFields:
             with open(f'{os.path.realpath(file.name).replace("." + formatt, "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
                 f.write(f'{typeToGeom[type]["type"]}({typeToGeom[type]["coordinates"]})\n')

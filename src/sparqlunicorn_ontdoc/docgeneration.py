@@ -40,7 +40,7 @@ import argparse
 import shutil
 import json
 import time
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 
 templatepath = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/html/"))
 resourcepath = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/"))
@@ -193,7 +193,7 @@ class OntDocGeneration:
             f.write(templates["startscripts"].replace("{{baseurl}}", prefixnamespace))
         with open(outpath + "epsgdefs.js", 'w', encoding='utf-8') as f:
             f.write(templates["epsgdefs"])
-        paths = {}
+        paths = defaultdict(list)
         nonnsmap = {}
         postprocessing = Graph()
         subtorencounter = 0
@@ -212,8 +212,7 @@ class OntDocGeneration:
                                   self.graph.subject_predicates(subj),
                                   self.graph, f'{self.pubconfig["corpusid"]}_search.js', f'{self.pubconfig["corpusid"]}_classtree.js',
                                   uritotreeitem, curlicense, subjectstorender, postprocessing, nonnsmap)
-            postprocessing = res[0]
-            nonnsmap = res[1]
+            postprocessing,nonnsmap = res
             subtorencounter += 1
             if subtorencounter % 250 == 0:
                 subtorenderlen = len(subjectstorender) + len(postprocessing)

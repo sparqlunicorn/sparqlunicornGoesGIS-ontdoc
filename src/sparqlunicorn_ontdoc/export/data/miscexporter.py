@@ -9,8 +9,7 @@ class MiscExporter:
 
     @staticmethod
     def detectSubjectType(g,subjectstorender):
-        subjectsToType={}
-        typeToFields={}
+        subjectsToType,typeToFields={},{}
         for sub in subjectstorender:
             substr=str(sub)
             typeToFields[substr]=set()
@@ -32,19 +31,17 @@ class MiscExporter:
             sepchar="\t"
         if subjectstorender is None:
             subjectstorender = g.subjects(None,None,True)
-        res=MiscExporter.detectSubjectType(g,subjectstorender)
-        subjectsToType=res[0]
-        typeToFields=res[1]
+        subjectsToType,typeToFields=MiscExporter.detectSubjectType(g,subjectstorender)
         typeToRes={}
         for type in typeToFields:
             typeToRes[type]=[]
         for sub in subjectstorender:
             if str(sub) not in subjectsToType:
                 continue
-            res={str(tup[0]):str(tup[1]) for tup in g.predicate_objects(sub)}
+            #res=
             #for tup in g.predicate_objects(sub):
             #    res[str(tup[0])]=str(tup[1])
-            typeToRes[subjectsToType[str(sub)]].append(res)
+            typeToRes[subjectsToType[str(sub)]].append({str(tup[0]):str(tup[1]) for tup in g.predicate_objects(sub)})
         for type in typeToFields:
             with open(f'{os.path.realpath(file.name).replace("."+formatt,"")}_{DocUtils.shortenURI(type)}.{formatt}',"w") as f:
                 tlist=list(typeToFields[type])
@@ -68,17 +65,16 @@ class MiscExporter:
     def convertTTLToJSON(g, file, subjectstorender=None,classlist=None, formatt="json"):
         if subjectstorender is None:
             subjectstorender = g.subjects(None, None, True)
-        res = MiscExporter.detectSubjectType(g, subjectstorender)
-        subjectsToType = res[0]
-        typeToFields = res[1]
+        subjectsToType,typeToFields = MiscExporter.detectSubjectType(g, subjectstorender)
         typeToRes = dict((el,[]) for el in typeToFields)
+
         for sub in subjectstorender:
             if str(sub) not in subjectsToType:
                 continue
-            res={str(tup[0]):str(tup[1]) for tup in g.predicate_objects(sub)}
+            #res=
             #for tup in g.predicate_objects(sub):
             #    res[str(tup[0])] = str(tup[1])
-            typeToRes[subjectsToType[str(sub)]].append(res)
+            typeToRes[subjectsToType[str(sub)]].append({str(tup[0]):str(tup[1]) for tup in g.predicate_objects(sub)})
         for type in typeToFields:
             with open(f'{os.path.realpath(file.name).replace("." + formatt, "")}_{DocUtils.shortenURI(type)}.{formatt}', "w") as f:
                 f.write("\n")

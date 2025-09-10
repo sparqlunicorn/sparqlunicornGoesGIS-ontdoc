@@ -40,9 +40,8 @@ class VOWLExporter:
     @staticmethod
     def convertOWL2MiniVOWL(g,outpath,outfile=None,predicates=[],typeproperty="http://www.w3.org/1999/02/22-rdf-syntax-ns#type",labelproperty="http://www.w3.org/2000/01/rdf-schema#label"):
         minivowlresult={"info": [{"description": "Created with pyowl2vowl (version 0.1) as part of the SPARQLing Unicorn QGIS Plugin"}],"nodes": [],"links": []}
-        nodes=[]
+        nodes,links=[],[]
         nodeuriToId={}
-        links=[]
         nodecounter=0
         for pred in g.subject_objects(URIRef(typeproperty)):
             predstr=str(pred[1])
@@ -83,13 +82,8 @@ class VOWLExporter:
         vowlresult = {"_comment": "Created with pyowl2vowl (version 0.1) as part of the SPARQLing Unicorn QGIS Plugin",
                       "header": {"prefixList": {}, "baseIris": [], "languages": []}, "namespace": [], "class": [],
                       "classAttribute": [], "property": [], "propertyAttribute": []}
-        props=[]
-        propAttributes=[]
-        classes=[]
-        classAttributes=[]
-        iriToProdId={}
-        classiriToProdId={}
-        propiriToProdId={}
+        props,propAttributes,classes,classAttributes=[],[],[],[]
+        iriToProdId,classiriToProdId,propiriToProdId={},{},{}
         propidcounter=0
         classidcounter=0
         idcounter=0
