@@ -54,13 +54,9 @@ class GraphExporter:
                     literalcounter += 1
                 else:
                     if tup[1] not in subjectstorender and str(tup[1]) not in addednodes:
-                        file.write(f"<node id=\"{tup[1]}\" uri=\"{tup[1]}\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#800080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">" + str(
-                            DocUtils.shortenURI(str(tup[1]))) + "</y:NodeLabel></y:ShapeNode></data></node>\n")
+                        file.write(f"<node id=\"{tup[1]}\" uri=\"{tup[1]}\"><data key=\"nodekey\"><y:ShapeNode><y:Shape shape=\"ellipse\"></y:Shape><y:Fill color=\"#800080\" transparent=\"false\"></y:Fill><y:NodeLabel alignment=\"center\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">{DocUtils.shortenURI(str(tup[1]))}</y:NodeLabel></y:ShapeNode></data></node>\n")
                         addednodes.add(str(tup[1]))
-                    file.write("<edge id=\"e" + str(edgecounter) + "\" uri=\"" + str(tup[0]) + "\" source=\"" + str(
-                        sub) + "\" target=\"" + str(tup[
-                                                        1]) + "\"><data key=\"edgekey\"><y:PolyLineEdge><y:EdgeLabel alignment=\"center\" configuration=\"AutoFlippingLabel\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">" + str(
-                        DocUtils.shortenURI(str(tup[1]))) + "</y:EdgeLabel></y:PolyLineEdge></data></edge>\n")
+                    file.write(f"<edge id=\"e{edgecounter}\" uri=\"{tup[0]}\" source=\"{sub}\" target=\"{tup[1]}\"><data key=\"edgekey\"><y:PolyLineEdge><y:EdgeLabel alignment=\"center\" configuration=\"AutoFlippingLabel\" fontSize=\"12\" fontStyle=\"plain\" hasText=\"true\" visible=\"true\" width=\"4.0\">{DocUtils.shortenURI(str(tup[1]))}</y:EdgeLabel></y:PolyLineEdge></data></edge>\n")
                 edgecounter += 1
         file.write("</graph></graphml>")
         return None
@@ -73,17 +69,17 @@ class GraphExporter:
             subjectstorender = g.subjects(None,None,True)
         addednodes = set()
         for sub in subjectstorender:
-            file.write("node\n[\nid "+str(sub)+"\nlabel \""+DocUtils.shortenURI(str(sub))+"\"\n]\n")
+            file.write(f"node\n[\nid {sub}\nlabel \"{DocUtils.shortenURI(str(sub))}\"\n]\n")
             for tup in g.predicate_objects(sub):
                 if isinstance(tup[1], Literal):
-                    file.write("node\n[\nid literal"+str(literalcounter)+"\nlabel \""+DocUtils.shortenURI(str(tup[1]))+"\"\n]\n")
-                    file.write("edge\n[\nsource " + str(sub) + "\n target literal" + str(literalcounter) + "\nlabel \""+DocUtils.shortenURI(str(tup[0]))+"\"\n]\n")
+                    file.write(f"node\n[\nid literal{literalcounter}\nlabel \"{DocUtils.shortenURI(str(tup[1]))}\"\n]\n")
+                    file.write(f"edge\n[\nsource {sub}\n target literal{literalcounter}\nlabel \"{DocUtils.shortenURI(str(tup[0]))}\"\n]\n")
                     literalcounter += 1
                 else:
                     if tup[1] not in subjectstorender and str(tup[1]) not in addednodes:
-                        file.write("node\n[\nid " + str(tup[1]) + "\nlabel \"" + DocUtils.shortenURI(str(tup[1])) + "\"\n]\n")
+                        file.write(f"node\n[\nid {tup[1]}\nlabel \"{DocUtils.shortenURI(str(tup[1]))}\"\n]\n")
                         addednodes.add(str(tup[1]))
-                    file.write("edge \n[\n source " + str(sub) + "\n target " + str(tup[1]) + "\n label \""+DocUtils.shortenURI(str(tup[0]))+"\"")
+                    file.write(f"edge \n[\n source {sub}\n target {tup[1]}\n label \"{DocUtils.shortenURI(str(tup[0]))}\"")
         file.write("\n]\n")
         return None
 
@@ -177,16 +173,17 @@ class GraphExporter:
         if subjectstorender is None:
             subjectstorender = g.subjects(None,None,True)
         for sub in subjectstorender:
-            if str(sub) not in uriToNodeId:
-                uriToNodeId[str(sub)] = nodecounter
-                result["graph"]["nodes"][str(sub)]={"label":str(DocUtils.shortenURI(str(sub)))}
+            substr=str(sub)
+            if substr not in uriToNodeId:
+                uriToNodeId[substr] = nodecounter
+                result["graph"]["nodes"][substr]={"label":str(DocUtils.shortenURI(substr))}
                 nodecounter += 1
             for tup in g.predicate_objects(sub):
                 if str(tup[1]) not in uriToNodeId:
                     result["graph"]["nodes"][str(tup[1])] = {"label": str(DocUtils.shortenURI(str(tup[1])))}
                     uriToNodeId[str(tup[1])] = nodecounter
                     nodecounter += 1
-                result["graph"]["edges"].append({"source":str(uriToNodeId[str(sub)]),"target":str(uriToNodeId[str(tup[1])])})
+                result["graph"]["edges"].append({"source":str(uriToNodeId[substr]),"target":str(uriToNodeId[str(tup[1])])})
                 edgecounter+=1
         #file.write(json.dumps(result))
         json.dump(result,file)

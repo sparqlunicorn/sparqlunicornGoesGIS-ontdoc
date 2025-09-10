@@ -124,10 +124,10 @@ class GeoExporter:
             with open(f'{os.path.realpath(file.name).replace("." + formatt, "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
                 f.write("<mapml>\n<head>\n<title></title>\n</head>\n<body>\n")
                 for res in typeToRes[type]:
-                    f.write("<feature id=\""+str("")+"\" \"itemscope\"=\"itemscope\">\n")
+                    f.write(f"<feature id=\"{''}\" \"itemscope\"=\"itemscope\">\n")
                     f.write("<properties>\n<div class=\"table-container\"><table>\n<caption>Feature Properties</caption>\n<thead><tr><th>Property</th><th>Value</th></tr></thead>\n<tbody>\n")
                     for prop in res:
-                        f.write(f'<tr>\n<td itemprop="{prop}"><a href="{str(prop)}">{DocUtils.shortenURI(prop)}</a></td>\n')
+                        f.write(f'<tr>\n<td itemprop="{prop}"><a href="{prop}">{DocUtils.shortenURI(prop)}</a></td>\n')
                         if str(res[prop]).startswith("http"):
                             f.write(f'<td><a href={res[prop]}">{DocUtils.shortenURI(res[prop])}</a></td>\n')
                         elif "^^" in str(res[prop]):
@@ -141,7 +141,7 @@ class GeoExporter:
                     f.write("<coordinates>\n")
                     f.write(GeoExporter.geometryToCoordinateList(typeToGeom[res]))
                     f.write("</coordinates>\n")
-                    f.write("</"+str(typeToGeom[res]["type"])+">\n")
+                    f.write(f'</{typeToGeom[res]["type"]}>\n')
                     f.write("</geometry>\n")
                     f.write("</feature>\n")
                 f.write("</body>\n</mapml>")

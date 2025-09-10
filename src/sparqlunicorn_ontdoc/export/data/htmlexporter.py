@@ -67,9 +67,10 @@ class HTMLExporter():
         timeobj = None
         tablecontentcounter = -1
         metadatatablecontentcounter = -1
-        if uritotreeitem is not None and str(subject) in uritotreeitem and uritotreeitem[str(subject)][-1][
+        subjectstr=str(subject)
+        if uritotreeitem is not None and subjectstr in uritotreeitem and uritotreeitem[subjectstr][-1][
             "parent"].startswith("http"):
-            parentclass = str(uritotreeitem[str(subject)][-1]["parent"])
+            parentclass = str(uritotreeitem[subjectstr][-1]["parent"])
             uritotreeitem.setdefault(parentclass, [
                     {"id": parentclass, "parent": "#", "type": "class","instancecount":0, "text": DocUtils.shortenURI(str(parentclass)),
                      "data": {"from":{},"to":{}}}])
@@ -146,8 +147,8 @@ class HTMLExporter():
                     for item in predobjmap[tup]:
                         if itemcounter >= HTMLExporter.maxlistthreshold:
                             break
-                        if tup in DocConfig.valueproperties and ("POINT" in str(item).upper() or "POLYGON" in str(item).upper() or "LINESTRING" in str(
-                                item).upper()) and self.typeproperty in predobjmap and URIRef("http://www.w3.org/ns/oa#WKTSelector") in predobjmap[self.typeproperty]:
+                        itemup=str(item).upper()
+                        if tup in DocConfig.valueproperties and ("POINT" in itemup or "POLYGON" in itemup or "LINESTRING" in itemup) and self.typeproperty in predobjmap and URIRef("http://www.w3.org/ns/oa#WKTSelector") in predobjmap[self.typeproperty]:
                             image3dannos.append({"value": str(item)})
                         elif "<svg" in str(item):
                             foundmedia["image"][str(item)] = {}
@@ -204,6 +205,7 @@ class HTMLExporter():
                     tablecontents = thetable
         subpredsmap = OrderedDict()
         if subpreds is not None:
+            tprop=URIRef(self.typeproperty)
             for tup in sorted(subpreds, key=lambda tup: tup[1]):
                 tupobjstr=str(tup[1])
                 subpredsmap.setdefault(tupobjstr,[]).append(tup[0])
@@ -211,7 +213,7 @@ class HTMLExporter():
                     uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr] = {}
                     uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr]["instancecount"] = 0
                 if isinstance(tup[0], URIRef):
-                    for item in graph.objects(tup[0], URIRef(self.typeproperty)):
+                    for item in graph.objects(tup[0], tprop):
                         if parentclass is not None:
                             uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr].setdefault(item, 0)
                             uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr][item] += 1
@@ -296,6 +298,7 @@ class HTMLExporter():
                     print(e)
                     print(traceback.format_exc())
         # try:
+        subjectstr=str(subject)
         with open(completesavepath, 'w', encoding='utf-8') as f:
             searchfilelink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, searchfilename, False)
             classtreelink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, classtreename, False)
@@ -310,19 +313,19 @@ class HTMLExporter():
                 myexports = self.templates["nongeoexports"]
             relpath = DocUtils.generateRelativePathFromGivenDepth(checkdepth)
             if not foundlabel:
-                foundlabel = DocUtils.shortenURI(str(subject))
+                foundlabel = DocUtils.shortenURI(subjectstr)
             f.write(DocUtils.replaceStandardVariables(self.templates["htmltemplate"], subject, checkdepth, "false",self.pubconfig).replace(
                 "{{iconprefixx}}", (relpath + "icons/" if self.pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",baseurl).replace(
                 "{{relativepath}}", relpath).replace(
                 "{{relativedepth}}", str(checkdepth)).replace("{{prefixpath}}", self.pubconfig["prefixns"]).replace(
                 "{{toptitle}}", foundlabel).replace("{{startscriptpath}}", startscriptlink).replace("{{epsgdefspath}}", epsgdefslink).replace(
                 "{{bibtex}}", itembibtex).replace("{{vowlpath}}", vowlresultlink).replace("{{proprelationpath}}",proprelationslink).replace(
-                "{{stylepath}}", csslink).replace("{{title}}", "<a href=\"" + str(subject) + "\">" + str(foundlabel) + "</a>").replace(
+                "{{stylepath}}", csslink).replace("{{title}}", f"<a href=\"{subject}\">{foundlabel}</a>").replace(
                 "{{baseurl}}", baseurl).replace("{{tablecontent}}", tablecontents).replace("{{description}}","").replace(
                 "{{scriptfolderpath}}", searchfilelink).replace("{{classtreefolderpath}}", classtreelink).replace(
-                "{{exports}}", myexports).replace("{{nonnslink}}", str(nonnslink)).replace("{{subjectencoded}}",urllib.parse.quote(str(subject))))
+                "{{exports}}", myexports).replace("{{nonnslink}}", str(nonnslink)).replace("{{subjectencoded}}",urllib.parse.quote(subjectstr)))
             for comm in comment:
-                f.write(self.templates["htmlcommenttemplate"].replace("{{comment}}",DocUtils.shortenURI(comm) + ":" + comment[comm]))
+                f.write(self.templates["htmlcommenttemplate"].replace("{{comment}}",f"{DocUtils.shortenURI(comm)}:{comment[comm]}"))
             # for fval in foundvals:
             #    f.write(templates["htmlcommenttemplate"].replace("{{comment}}", "<b>Value "+ DocUtils.shortenURI(str(fval[0]))+": <mark>" + str(fval[1]) + "</mark></b>"))
             if len(foundmedia["mesh"]) > 0:
@@ -349,19 +352,20 @@ class HTMLExporter():
                     self.iiifmanifestpaths["default"].append(
                         IIIFAPIExporter.generateIIIFManifest(graph, self.pubconfig["outpath"], self.pubconfig["deploypath"],
                                                              foundmedia["image"], imageannos, annobodies,
-                                                             str(subject), self.pubconfig["prefixns"], self.imagetoURI,
+                                                             subjectstr, self.pubconfig["prefixns"], self.imagetoURI,
                                                              self.pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
                                                              foundlabel, comment, thetypes, predobjmap, "Image"))
                 for image in foundmedia["image"]:
+                    imagestr=str(image)
                     if image not in self.imagetoURI or "uri" not in self.imagetoURI[image]:
                         self.imagetoURI[image] = {"uri": {}}
-                    if not str(subject) in self.imagetoURI[image]["uri"]:
-                        self.imagetoURI[image]["uri"][str(subject)] = {"bodies": []}
+                    if not subjectstr in self.imagetoURI[image]["uri"]:
+                        self.imagetoURI[image]["uri"][subjectstr] = {"bodies": []}
                     annostring = ""
                     for anno in imageannos:
                         annostring += anno["value"].replace("<svg>","<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
-                    f.write(self.templates["imageswithannotemplate"].replace("{{carousel}}",carousel + "\" style=\"position: relative;display: inline-block;").replace(
-                        "{{image}}", str(image)).replace("{{svganno}}", annostring).replace("{{imagetitle}}",str(image)[0:str(image).rfind('.')]))
+                    f.write(self.templates["imageswithannotemplate"].replace("{{carousel}}",f'{carousel}" style="position: relative;display: inline-block;').replace(
+                        "{{image}}", imagestr).replace("{{svganno}}", annostring).replace("{{imagetitle}}",imagestr[0:imagestr.rfind('.')]))
                     if len(foundmedia["image"]) > 3:
                         carousel = "carousel-item"
             elif len(foundmedia["image"]) > 0:
@@ -369,14 +373,14 @@ class HTMLExporter():
                     self.iiifmanifestpaths["default"].append(
                         IIIFAPIExporter.generateIIIFManifest(graph, self.pubconfig["outpath"], self.pubconfig["deploypath"],
                                                              foundmedia["image"], imageannos, annobodies,
-                                                             str(subject), self.pubconfig["prefixns"], self.imagetoURI,
+                                                             subjectstr, self.pubconfig["prefixns"], self.imagetoURI,
                                                              self.pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
                                                              foundlabel, comment, thetypes, predobjmap, "Image"))
                 for image in foundmedia["image"]:
                     if image not in self.imagetoURI or "uri" not in self.imagetoURI[image]:
                         self.imagetoURI[image] = {"uri": {}}
-                    if not str(subject) in self.imagetoURI[image]["uri"]:
-                        self.imagetoURI[image]["uri"][str(subject)] = {"bodies": []}
+                    if not subjectstr in self.imagetoURI[image]["uri"]:
+                        self.imagetoURI[image]["uri"][subjectstr] = {"bodies": []}
                     if image == "<svg width=":
                         continue
                     if "<svg" in image:
@@ -399,22 +403,22 @@ class HTMLExporter():
             if len(foundmedia["audio"]) > 0 and self.pubconfig["apis"]["iiif"]:
                 self.iiifmanifestpaths["default"].append(
                     IIIFAPIExporter.generateIIIFManifest(graph, self.pubconfig["outpath"], self.pubconfig["deploypath"], foundmedia["audio"],
-                                                         None, None, str(subject), self.pubconfig["prefixns"],
+                                                         None, None, subjectstr, self.pubconfig["prefixns"],
                                                          self.imagetoURI,
                                                          self.pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
                                                          foundlabel, comment, thetypes, predobjmap, "Audio"))
             for audio in foundmedia["audio"]:
-                self.imagetoURI[audio] = {"uri": str(subject)}
+                self.imagetoURI[audio] = {"uri": subjectstr}
                 f.write(self.templates["audiotemplate"].replace("{{audio}}", str(audio)))
             if len(foundmedia["video"]) > 0 and self.pubconfig["apis"]["iiif"]:
                 self.iiifmanifestpaths["default"].append(
                     IIIFAPIExporter.generateIIIFManifest(graph, self.pubconfig["outpath"], self.pubconfig["deploypath"], foundmedia["video"],
-                                                         None, None, str(subject), self.pubconfig["prefixns"],
+                                                         None, None, subjectstr, self.pubconfig["prefixns"],
                                                          self.imagetoURI,
                                                          self.pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
                                                          foundlabel, comment, thetypes, predobjmap, "Video"))
             for video in foundmedia["video"]:
-                self.imagetoURI[video] = {"uri": str(subject)}
+                self.imagetoURI[video] = {"uri": subjectstr}
                 f.write(self.templates["videotemplate"].replace("{{video}}", str(video)))
             for type in curtypes:
                 if type in DocConfig.lexicontypes:
@@ -675,9 +679,7 @@ class HTMLExporter():
                     objstring = f'<a href="{objstr}">{objstr}</a>'
                 elif str(object.datatype) in DocConfig.timeliteraltypes and dateprops is not None and DocUtils.shortenURI(predstr, True) not in DocConfig.metadatanamespaces and str(pred) not in dateprops:
                     dateprops.append(predstr)
-                tablecontents += f"<span itemprop=\"{predstr}\" property=\"{predstr}\" content=\"{objstrrep}\" datatype=\"{object.datatype}\">{HTMLExporter.truncateValue(objstring)} <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"" + str(
-                    object.datatype) + "\">" + (res["uri"] if res is not None else DocUtils.shortenURI(
-                    str(object.datatype))) + "</a>)</small></span>"
+                tablecontents += f'<span itemprop="{predstr}" property="{predstr}" content="{objstrrep}" datatype="{object.datatype}">{HTMLExporter.truncateValue(objstring)} <small>(<a style="color: #666;" target="_blank" href="{object.datatype}">{(res["uri"] if res is not None else DocUtils.shortenURI(str(object.datatype)))}</a>)</small></span>'
                 geojsonrep = LiteralUtils.resolveGeoLiterals(URIRef(pred), object, graph, geojsonrep, nonns, subject)
             else:
                 if object.language is not None:
@@ -703,16 +705,15 @@ class HTMLExporter():
     @staticmethod
     def formatPredicate(tupstr, baseurl, checkdepth, graph, reverse, labellang, prefixes):
         label = DocUtils.getLabelForObject(URIRef(tupstr), graph, None, labellang)
-        tablecontents = f'<td class="property">{"Is " if reverse else ""}'
         #if reverse:
         #    tablecontents += "Is "
         if baseurl in tupstr:
             rellink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, tupstr, True)
-            tablecontents += f"<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"{rellink}\">{label}</a></span>"
+            return  f'<td class="property">{"Is " if reverse else ""}<span class="property-name"><a class="uri" target="_blank" href="{rellink}">{label}</a></span>{" of" if reverse else ""}</td>'
         else:
             res = DocUtils.replaceNameSpacesInLabel(prefixes, tupstr)
-            tablecontents+= f"<span class=\"property-name\"><a class=\"uri\" target=\"_blank\" href=\"{tupstr}\">{label} "+("<span style=\"color: #666;\">(" + res["uri"] + ")</span>" if res["uri"]!="" else "")+"</a> </span>"
-        return tablecontents+f'{" of" if reverse else ""}</td>'
+            return f'<td class="property">{"Is " if reverse else ""}<span class="property-name"><a class="uri" target="_blank" href="{tupstr}">{label} '+(f'<span style="color: #666;">({res["uri"]})</span>' if res["uri"]!="" else "")+f'</a> </span>{" of" if reverse else ""}</td>'
+        return f'{tablecontents}{" of" if reverse else ""}</td>'
         #if reverse:
         #    tablecontents += " of"
         #tablecontents += "</td>"
@@ -734,4 +735,4 @@ class HTMLExporter():
             return f'<span><a itemprop="{pred}" property="{pred}" href="https://www.doi.org/{object}" datatype="http://www.w3.org/2001/XMLSchema#anyURI">{object}</a> <small>(<a style="color: #666;" target="_blank" href="http://www.w3.org/2001/XMLSchema#anyURI">xsd:anyURI</a>)</small></span>'
         elif re.search(r'[\w.]+\@[\w.]+', object):
             return f"<span><a itemprop=\"{pred}\" property=\"{pred}\" href=\"mailto:{object}\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">mailto:{object}</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
-        return f"<span property=\"{pred}\" content=\""+str(object).replace("<", "&lt").replace(">","&gt;").replace("\"", "'") + "\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">" + str(object).replace("<","&lt").replace(">","&gt;")+" <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
+        return f"<span property=\"{pred}\" content=\""+str(object).replace("<", "&lt").replace(">","&gt;").replace("\"", "'") + f'" datatype="http://www.w3.org/2001/XMLSchema#string">{str(object).replace("<","&lt").replace(">","&gt;")} <small>(<a style="color: #666;" target="_blank" href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>)</small></span>'

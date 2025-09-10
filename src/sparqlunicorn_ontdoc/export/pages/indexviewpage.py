@@ -92,9 +92,7 @@ class IndexViewPage:
                         #exitemlabel=""
                         for item2 in tree["core"]["data"]:
                             if item2["parent"] == item["id"] and (item2["type"] == "instance" or item2["type"] == "geoinstance") and nslink in item2["id"]:
-                                exitem = f"<td><img src=\"{tree['types'][item2['type']]['icon']}\" height=\"25\" width=\"25\" alt=\"{item2['type']}\"/><a property=\"http://rdfs.org/ns/void#exampleResource\" resource=\"" + str(
-                                    DocUtils.shortenURI(str(item2["id"]))) + "\" href=\"" + DocUtils.generateRelativeLinkFromGivenDepth(
-                                    pubconfig["prefixns"], checkdepth, str(re.sub("_suniv[0-9]+_", "", item2["id"])),True) + "\">"
+                                exitem = f"<td><img src=\"{tree['types'][item2['type']]['icon']}\" height=\"25\" width=\"25\" alt=\"{item2['type']}\"/><a property=\"http://rdfs.org/ns/void#exampleResource\" resource=\"{DocUtils.shortenURI(str(item2['id']))}\" href=\"{DocUtils.generateRelativeLinkFromGivenDepth(pubconfig['prefixns'], checkdepth, str(re.sub('_suniv[0-9]+_', '', item2['id'])),True)}\">"
                                 if "[" in item2["text"]:
                                     exitem+=f'{str(item2["text"])[0:str(item2["text"]).rfind("[")]}</a></td>'
                                     #exitemlabel=str(item2["text"])[0:str(item2["text"]).rfind("[")]

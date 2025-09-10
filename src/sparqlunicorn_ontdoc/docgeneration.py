@@ -82,7 +82,7 @@ class OntDocGeneration:
         self.htmlexporter=HTMLExporter(pubconfig,templates,self.typeproperty)
         for nstup in self.graph.namespaces():
             prefixes["reversed"].setdefault(str(nstup[1]),str(nstup[0]))
-        self.preparedclassquery = prepareQuery(DocConfig.classtreequery.replace("%%typeproperty%%","<"+self.typeproperty+">").replace("%%subclassproperty%%","<"+self.subclassproperty+">"))
+        self.preparedclassquery = prepareQuery(DocConfig.classtreequery.replace("%%typeproperty%%",f"<{self.typeproperty}>").replace("%%subclassproperty%%",f"<{self.subclassproperty}>"))
         if self.pubconfig["prefixns"] is None or pubconfig["prefixnsshort"] is None or self.pubconfig["prefixns"] == "" or pubconfig["prefixnsshort"] == "":
             self.pubconfig["namespaceshort"] = "suni"
             self.pubconfig["prefixns"] = "http://purl.org/suni/"
@@ -544,7 +544,7 @@ def main():
                     args.prefixns = "http://www.sparqlunicorn.link/data/"
                 else:
                     args.prefixns = pres
-                print("Detected " + args.prefixns + " as data namespace")
+                print(f"Detected {args.prefixns} as data namespace")
             apis={"iiif":args.iiifmanifest,"ogcapifeatures":args.ogcapifeatures,"ckan":args.ckanapi,"solidexport":args.solidexport,"stac":args.stacapi}
             #print("Args: "+str(vars(args)))
             if fcounter < len(outpath):
@@ -613,8 +613,9 @@ def main():
             indexf.write("<table class=\"description\" border=1 id=indextable><thead><tr><th>Dataset</th></tr></thead><tbody>")
             subfolders = [f.path for f in os.scandir(outpath[0]) if f.is_dir()]
             #print(subfolders)
-            for path in subfolders:
-                indexf.write(f'<tr><td><a href="{path.replace(outpath[0] + "/", "")}/index.html">{path.replace(outpath[0] + "/", "")}</a></td></tr>')
+            indexf.write("".join(f'<tr><td><a href="{path.replace(outpath[0] + "/", "")}/index.html">{path.replace(outpath[0] + "/", "")}</a></td></tr>' for path in subfolders))
+            #for path in subfolders:
+            #    indexf.write(f'<tr><td><a href="{path.replace(outpath[0] + "/", "")}/index.html">{path.replace(outpath[0] + "/", "")}</a></td></tr>')
             indexf.write("</tbody></table><script>$('#indextable').DataTable();</script>")
             indexf.write(DocUtils.replaceStandardVariables(templates["footer"], "", "0", "true",docgen.pubconfig).replace("{{license}}", curlicense).replace("{{exports}}",
                                                                                         templates["nongeoexports"]).replace(

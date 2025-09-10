@@ -14,8 +14,7 @@ class GeometryViewPage:
 
     def createSVGFromWKT(self,templates,features,f):
         thepath="<svg>"
-        geomcoll= shapely.geometry.GeometryCollection(
-            [shapely.geometry.shape(feature["geometry"]) for feature in features["features"]])
+        geomcoll= shapely.geometry.GeometryCollection([shapely.geometry.shape(feature["geometry"]) for feature in features["features"]])
         svgpath=geomcoll.svg()
         #print(svgpath)
         thepath+=svgpath

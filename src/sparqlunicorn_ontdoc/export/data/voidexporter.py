@@ -77,11 +77,12 @@ class VoidExporter:
         dsocc=URIRef("http://purl.org/vocommons/voaf#DatasetOccurrence")
         for ns_prefix, namespace in g.namespaces():
             thens=URIRef(namespace)
+            namespacestr=str(namespace)
             g.add((voidds, VOID.vocabulary,thens))
             g.add((thens, RDF.type, voafVocab))
-            if "nstolabel" in pubconfig["prefixes"] and str(namespace) in pubconfig["prefixes"]["nstolabel"]:
+            if "nstolabel" in pubconfig["prefixes"] and namespacestr in pubconfig["prefixes"]["nstolabel"]:
                 g.add((thens, RDFS.label,
-                       Literal(pubconfig["prefixes"]["nstolabel"][str(namespace)],lang="en")))
+                       Literal(pubconfig["prefixes"]["nstolabel"][namespacestr],lang="en")))
             else:
                 g.add((thens, RDFS.label,Literal(f"{ns_prefix} Vocabulary",lang="en")))
             g.add((thens, VANN.preferredNamespaceUri,
@@ -92,13 +93,13 @@ class VoidExporter:
                    dsocc))
             g.add((URIRef(f'{pubconfig["prefixns"]}{ns_prefix}_{dsname}_occ'), RDFS.label,
                    Literal(f"Occurrences of vocabulary {namespace} in {dsname}")))
-            if nscount is not None and str(namespace) in nscount:
+            if nscount is not None and namespacestr in nscount:
                 g.add((URIRef(f'{pubconfig["prefixns"]}{ns_prefix}_{dsname}_occ'), voafocc,
-                       Literal(str(nscount[str(namespace)]),datatype=XSD.integer)))
+                       Literal(str(nscount[namespacestr]),datatype=XSD.integer)))
             g.add((thens, voafusage, URIRef(f"{namespace}_{dsname}_occ")))
             g.add((URIRef(f'{pubconfig["prefixns"]}{ns_prefix}_{dsname}_occ'), voafd, voidds))
-            if str(namespace) in DocConfig.namespaceToTopic:
-                for entry in DocConfig.namespaceToTopic[str(namespace)]:
+            if namespacestr in DocConfig.namespaceToTopic:
+                for entry in DocConfig.namespaceToTopic[namespacestr]:
                     g.add((voidds, DCAT.keyword, Literal(DocUtils.shortenURI(entry["uri"]).replace("_"," "),lang="en")))
                     g.add((voidds, dcsub,URIRef(entry["uri"])))
                     g.add((URIRef(entry["uri"]),RDFS.label,Literal(entry["label"],lang="en")))
@@ -112,10 +113,11 @@ class VoidExporter:
             subjectstorender.add(cururi)
         for item in classtree["core"]["data"]:
             if item["type"]=="class":
-                cururi = URIRef(f'{voidds}_{DocUtils.shortenURI(item["id"])}')
+                itemsuri=DocUtils.shortenURI(item["id"])
+                cururi = URIRef(f'{voidds}_{itemsuri}')
                 g.add((voidds, VOID.classPartition, cururi))
                 g.add((cururi, RDF.type,VOID.Dataset))
-                g.add((cururi, RDFS.label,Literal(f'Class Partition: {DocUtils.shortenURI(item["id"])}',lang="en")))
+                g.add((cururi, RDFS.label,Literal(f'Class Partition: {itemsuri}',lang="en")))
                 g.add((cururi, voidc, URIRef(item["id"])))
                 if item["id"] in objectmap:
                     g.add((cururi, VOID.entities,Literal(str(objectmap[item["id"]]), datatype=XSD.integer)))
