@@ -316,8 +316,8 @@ class HTMLExporter():
             #    f.write(templates["htmlcommenttemplate"].replace("{{comment}}", "<b>Value "+ DocUtils.shortenURI(str(fval[0]))+": <mark>" + str(fval[1]) + "</mark></b>"))
             if len(foundmedia["mesh"]) > 0:
                 self.has3d=Model3DPage.generatePageWidget(graph,foundmedia,annobodies,self.templates,subject,self.iiifmanifestpaths,image3dannos,self.pubconfig,self.imagetoURI,foundlabel,comment,thetypes,predobjmap,f,checkdepth)
-            if len(foundmedia["image"])> 0:
-                print("found media")
+            #if len(foundmedia["image"])> 0:
+                #print("found media")
                 #MediaPage.generatePageWidget(foundmedia, self.iiifmanifestpaths, graph, imageannos, self.imagetoURI,
                 #                             annobodies, foundlabel, comment, thetypes, predobjmap, self.templates,
                 #                             subject, self.pubconfig, f)
