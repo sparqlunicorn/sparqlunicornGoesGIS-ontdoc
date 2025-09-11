@@ -665,7 +665,7 @@ class HTMLExporter():
                 geojsonrep = LiteralUtils.resolveGeoLiterals(URIRef(pred), object, graph, geojsonrep, nonns, subject)
             else:
                 if object.language is not None:
-                    tablecontents += f'<span itemprop="{predstr}" property="{predstr}" content="{objstrrep} datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#langString" xml:lang="{object.language}">"{HTMLExporter.truncateValue(objstr.replace("<", "&lt").replace(">","&gt;"))} <small>(<a style="color: #666;" target="_blank" href="http://www.w3.org/1999/02/22-rdf-syntax-ns#langString">rdf:langString</a>) (<a href="http://www.lexvo.org/page/iso639-1/"{object.language}" target="_blank">iso6391:{object.language}</a>)</small></span>'
+                    tablecontents += f'<span itemprop="{predstr}" property="{predstr}" content="{objstrrep} datatype="http://www.w3.org/1999/02/22-rdf-syntax-ns#langString" xml:lang="{object.language}">{HTMLExporter.truncateValue(objstr.replace("<", "&lt").replace(">","&gt;"))} <small>(<a style="color: #666;" target="_blank" href="http://www.w3.org/1999/02/22-rdf-syntax-ns#langString">rdf:langString</a>) (<a href="http://www.lexvo.org/page/iso639-1/{object.language}" target="_blank">iso6391:{object.language}</a>)</small></span>'
                 else:
                     tablecontents += HTMLExporter.detectStringLiteralContent(pred, object)
         return {"html": tablecontents, "geojson": geojsonrep, "foundmedia": foundmedia, "imageannos": imageannos,
