@@ -108,7 +108,7 @@ class OntDocGeneration:
             os.mkdir(outpath)
         labeltouri = {}
         uritolabel = {}
-        uritotreeitem = defaultdict([])
+        uritotreeitem = defaultdict(list)
         if self.pubconfig["createvowl"]:
             vowlinstance = VOWLExporter()
             vowlinstance.convertOWL2VOWL(self.graph, outpath)
