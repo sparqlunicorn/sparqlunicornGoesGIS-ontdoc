@@ -165,7 +165,7 @@ class DocUtils:
                     else:
                         f.write(";;")
                     f.write("\n")
-                f.write(f"Total; {totaltime};;;")
+                f.write(f"Total;{totaltime};;;")
         else:
             with open(filename,"w",encoding="utf-8") as f:
                 f.write(f"Selected Execution Statistics in order of execution:\n")
