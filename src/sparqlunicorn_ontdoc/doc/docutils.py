@@ -2,6 +2,7 @@ from rdflib import URIRef, Literal
 import os
 import re
 import shutil
+import json
 import urllib.request
 
 from collections import defaultdict
@@ -149,16 +150,33 @@ class DocUtils:
 
     @staticmethod
     def writeExecutionStats(timeexec,filename="buildlog.txt"):
-        with open(filename,"w",encoding="utf-8") as f:
-            f.write(f"Selected Execution Statistics in order of execution:\n")
-            totaltime=0
-            for entry in timeexec:
-                f.write(f"{entry}: {timeexec[entry]['time']} seconds")
-                totaltime+=timeexec[entry]['time']
-                if "items" in timeexec[entry]:
-                    f.write(f" for {timeexec[entry]['items']} items, about {timeexec[entry]['time']/timeexec[entry]['items']} seconds per item")
-                f.write("\n")
-            f.write(f"Total measured execution time: {totaltime} seconds")
+        if filename.endswith(".json"):
+            with open(filename, "w", encoding="utf-8") as f:
+                json.dump(timeexec,f)
+        elif filename.endswith(".csv"):
+            with open(filename,"w",encoding="utf-8") as f:
+                f.write(f"Task;ExecutionTime (seconds);Items Processed;TimePerItem (seconds);Comment\n")
+                totaltime=0
+                for entry in timeexec:
+                    f.write(f"{entry};{timeexec[entry]['time']};")
+                    totaltime+=timeexec[entry]['time']
+                    if "items" in timeexec[entry]:
+                        f.write(f"{timeexec[entry]['items']};{timeexec[entry]['time']/timeexec[entry]['items']};")
+                    else:
+                        f.write(";;")
+                    f.write("\n")
+                f.write(f"Total; {totaltime};;;")
+        else:
+            with open(filename,"w",encoding="utf-8") as f:
+                f.write(f"Selected Execution Statistics in order of execution:\n")
+                totaltime=0
+                for entry in timeexec:
+                    f.write(f"{entry}: {timeexec[entry]['time']} seconds")
+                    totaltime+=timeexec[entry]['time']
+                    if "items" in timeexec[entry]:
+                        f.write(f" for {timeexec[entry]['items']} items, about {timeexec[entry]['time']/timeexec[entry]['items']} seconds per item")
+                    f.write("\n")
+                f.write(f"Total measured execution time: {totaltime} seconds")
 
     @staticmethod
     def shortenURI(uri,ns=False):

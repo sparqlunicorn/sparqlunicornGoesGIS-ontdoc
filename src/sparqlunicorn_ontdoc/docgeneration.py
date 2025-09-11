@@ -557,7 +557,7 @@ def main():
                 curpath=outpath[-1]
             subrend = docgen.generateOntDocForNameSpace(args.prefixns, dataformat="HTML")
             DocUtils.printExecutionStats(docgen.exectimes)
-            DocUtils.writeExecutionStats(docgen.exectimes,curpath+"/buildlog.txt")
+            DocUtils.writeExecutionStats(docgen.exectimes,curpath+"/buildlog.csv")
         except Exception as inst:
             print("Could not parse " + str(fp))
             print(inst)
@@ -573,12 +573,9 @@ def main():
             for predobj in g.predicate_objects(sub):
                 resg.add((sub, predobj[0], predobj[1]))
             if args.solidexport:
-                resg.add((sub, RDF.type,
-                          URIRef("http://www.w3.org/ns/ldp#Container")))
-                resg.add((sub, RDF.type,
-                          URIRef("http://www.w3.org/ns/ldp#BasicContainer")))
-                resg.add((sub, RDF.type,
-                          URIRef("http://www.w3.org/ns/ldp#Resource")))
+                resg.add((sub, RDF.type,URIRef("http://www.w3.org/ns/ldp#Container")))
+                resg.add((sub, RDF.type,URIRef("http://www.w3.org/ns/ldp#BasicContainer")))
+                resg.add((sub, RDF.type,URIRef("http://www.w3.org/ns/ldp#Resource")))
         resg.serialize(outpath[0] + '/index.ttl')
     manifest={
         "lang": "en-us",
