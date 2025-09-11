@@ -1,4 +1,5 @@
 from rdflib import Graph, Literal
+from rdflib.namespace import RDF
 import json
 import random
 
@@ -189,11 +190,12 @@ class GraphExporter:
                 result["graph"]["nodes"].append({"id":substr,"label":str(DocUtils.shortenURI(substr)),"x":random.uniform(0, 1000),"y":random.uniform(0, 1000)})
                 nodecounter += 1
             for tup in g.predicate_objects(sub):
-                if str(tup[1]) not in uriToNodeId:
-                    result["graph"]["nodes"].append({"id":str(tup[1]),"label": str(DocUtils.shortenURI(str(tup[1])))})
-                    uriToNodeId[str(tup[1])] = nodecounter
+                tup1str=str(tup[1])
+                if tup1str not in uriToNodeId:
+                    result["graph"]["nodes"].append({"id":tup1str,"label": str(DocUtils.shortenURI(tup1str))})
+                    uriToNodeId[tup1str] = nodecounter
                     nodecounter += 1
-                result["graph"]["edges"].append({"id":f'{uriToNodeId[substr]}_{uriToNodeId[str(tup[1])]}',"label":str(DocUtils.shortenURI(str(tup[0]))),"source":str(uriToNodeId[substr]),"target":str(uriToNodeId[str(tup[1])])})
+                result["graph"]["edges"].append({"id":f'{uriToNodeId[substr]}_{uriToNodeId[tup1str]}',"label":str(DocUtils.shortenURI(str(tup[0]))),"source":str(uriToNodeId[substr]),"target":str(uriToNodeId[tup1str])})
                 edgecounter+=1
         #file.write(json.dumps(result))
         json.dump(result,file)
@@ -239,7 +241,7 @@ class GraphExporter:
                 if isinstance(tup[1],Literal):
                     if tup1str not in uriToNodeId:
                         file.write(f"<node id=\"{nodecounter}\" value=\""+str(tup1str.replace("<","&lt;").replace(">","&gt;").replace("&","&amp;").replace("\"","'"))+"\" label=\"" + str(str(tup[1]).replace("<","&lt;").replace(">","&gt;").replace("&","&amp;").replace("\"","'")) + "\">\n")
-                        if str(tup[0]) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":
+                        if tup[0] == RDF.type:
                             file.write("<viz:color r=\"255\" g=\"165\" b=\"0\"/>\n")
                         else:
                             file.write("<viz:color r=\"0\" g=\"128\" b=\"0\"/>\n")
@@ -250,7 +252,7 @@ class GraphExporter:
                 else:
                     if tup1str not in uriToNodeId:
                         file.write(f'<node id="{nodecounter}" value="{tup[1]}" label="{DocUtils.shortenURI(tup1str)}">\n')
-                        if str(tup[0]) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":
+                        if tup[0] == RDF.type:
                             file.write("<viz:color r=\"255\" g=\"165\" b=\"0\"/>\n")
                         else:
                             file.write("<viz:color r=\"128\" g=\"0\" b=\"128\"/>\n")

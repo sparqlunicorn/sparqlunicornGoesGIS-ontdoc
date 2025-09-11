@@ -105,10 +105,11 @@ class IndexViewPage:
                                 f.write(f'<tr><td><img src="{tree["types"][item["type"]]["icon"]}" height="25" width="25" alt="{item["type"]}"/><a property="http://rdfs.org/ns/void#exampleResource" resource="{DocUtils.shortenURI(str(item["id"]))}_collection/" href="{DocUtils.shortenURI(str(item["id"]))}_collection/index.html" target="_blank">{item["text"]}</a></td>')
                             else:
                                 f.write(f"<tr><td><img src=\"{tree['types'][item['type']]['icon']}\" height=\"25\" width=\"25\" alt=\"{item['type']}\"/><a  href=\"{item['id']}\" target=\"_blank\">")
+                                itemstr=str(item["text"])
                                 if "[" in item["text"]:
-                                    f.write(f'{str(item["text"])[0:str(item["text"]).rfind("[")]}</a></td>')
+                                    f.write(f'{itemstr[0:itemstr.rfind("[")]}</a></td>')
                                 else:
-                                    f.write(str(item["text"]) + "</a></td>")
+                                    f.write(itemstr + "</a></td>")
                             f.write(f'<td property="http://rdfs.org/ns/void#classPartition" typeof="http://rdfs.org/ns/void#Dataset" resource="{voidds}_{DocUtils.shortenURI(item["id"])}"><span about="{voidds}_{DocUtils.shortenURI(item["id"])}" property="http://rdfs.org/ns/void#class" resource="{item["id"]}"></span><span about="{voidds}_{DocUtils.shortenURI(item["id"])}" property="http://rdfs.org/ns/void#entities" content="{item["instancecount"]}" datatype="http://www.w3.org/2001/XMLSchema#integer">{item["instancecount"]}</td>{exitem}</tr>')
                 f.write(f"</tbody></table><script property=\"http://purl.org/dc/terms/modified\" content=\"{pubconfig['modtime']}\" datatype=\"http://www.w3.org/2001/XMLSchema#dateTime\">$('#indextable').DataTable();</script>")
                 tempfoot = DocUtils.replaceStandardVariables(templates["footer"], "", checkdepth,str(nslink == pubconfig["prefixns"]).lower(),pubconfig).replace(

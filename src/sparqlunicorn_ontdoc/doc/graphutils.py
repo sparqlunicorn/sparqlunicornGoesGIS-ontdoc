@@ -162,7 +162,7 @@ class GraphUtils:
         voidstats["http://ldf.fi/void-ext#propertyClasses"] = res["predclasses"]
         voidstats["http://ldf.fi/void-ext#averagePropertyIRILength"] = res["avgpredlen"]
         voidstats["http://rdfs.org/ns/void#distinctObjects"] = res["objs"]
-        nonnscount = defaultdict(dict)
+        nonnscount = defaultdict(lambda: defaultdict(int))
         nscount = defaultdict(int)
         instancecount = defaultdict(int)
         literaltypes = defaultdict(set)
@@ -236,7 +236,7 @@ class GraphUtils:
                         #nscount.setdefault(ns, 0)
                         nscount[ns] += 1
                         #nonnscount.setdefault(tuppredstr,{})
-                        nonnscount[tuppredstr].setdefault(ns,0)
+                        #nonnscount[tuppredstr].setdefault(ns,0)
                         nonnscount[tuppredstr][ns] += 1
                 if isinstance(sub, BNode) and restriction:
                     graph.add((sub, RDFS.label,Literal(label + " [Restriction]", lang="en")))

@@ -72,28 +72,24 @@ class VoidExporter:
             g.add((voidds, VOID.vocabulary,thens))
             g.add((thens, RDF.type, voafVocab))
             if "nstolabel" in pubconfig["prefixes"] and namespacestr in pubconfig["prefixes"]["nstolabel"]:
-                g.add((thens, RDFS.label,
-                       Literal(pubconfig["prefixes"]["nstolabel"][namespacestr],lang="en")))
+                g.add((thens, RDFS.label,Literal(pubconfig["prefixes"]["nstolabel"][namespacestr],lang="en")))
             else:
                 g.add((thens, RDFS.label,Literal(f"{ns_prefix} Vocabulary",lang="en")))
-            g.add((thens, VANN.preferredNamespaceUri,
-                   Literal(namespace,datatype=XSD.anyURI)))
-            g.add((thens, VANN.preferredNamespacePrefix,
-                   Literal(ns_prefix,datatype=XSD.string)))
-            g.add((URIRef(f'{pubconfig["prefixns"]}{ns_prefix}_{dsname}_occ'), RDF.type,
-                   dsocc))
-            g.add((URIRef(f'{pubconfig["prefixns"]}{ns_prefix}_{dsname}_occ'), RDFS.label,
-                   Literal(f"Occurrences of vocabulary {namespace} in {dsname}")))
+            g.add((thens, VANN.preferredNamespaceUri,Literal(namespace,datatype=XSD.anyURI)))
+            g.add((thens, VANN.preferredNamespacePrefix, Literal(ns_prefix,datatype=XSD.string)))
+            occuri=URIRef(f'{pubconfig["prefixns"]}{ns_prefix}_{dsname}_occ')
+            g.add((occuri, RDF.type,dsocc))
+            g.add((occuri, RDFS.label,Literal(f"Occurrences of vocabulary {namespace} in {dsname}")))
             if nscount is not None and namespacestr in nscount:
-                g.add((URIRef(f'{pubconfig["prefixns"]}{ns_prefix}_{dsname}_occ'), voafocc,
-                       Literal(str(nscount[namespacestr]),datatype=XSD.integer)))
+                g.add((occuri, voafocc,Literal(str(nscount[namespacestr]),datatype=XSD.integer)))
             g.add((thens, voafusage, URIRef(f"{namespace}_{dsname}_occ")))
-            g.add((URIRef(f'{pubconfig["prefixns"]}{ns_prefix}_{dsname}_occ'), voafd, voidds))
+            g.add((occuri, voafd, voidds))
             if namespacestr in DocConfig.namespaceToTopic:
                 for entry in DocConfig.namespaceToTopic[namespacestr]:
+                    euri=URIRef(entry["uri"])
                     g.add((voidds, DCAT.keyword, Literal(DocUtils.shortenURI(entry["uri"]).replace("_"," "),lang="en")))
-                    g.add((voidds, dcsub,URIRef(entry["uri"])))
-                    g.add((URIRef(entry["uri"]),RDFS.label,Literal(entry["label"],lang="en")))
+                    g.add((voidds, dcsub,euri))
+                    g.add((euri,RDFS.label,Literal(entry["label"],lang="en")))
         for pred in propstats:
             cururi=URIRef(f'{voidds}_{DocUtils.shortenURI(pred)}')
             g.add((voidds,VOID.propertyPartition,cururi))
@@ -114,13 +110,15 @@ class VoidExporter:
                     g.add((cururi, VOID.entities,Literal(str(objectmap[item["id"]]), datatype=XSD.integer)))
                 #subjectstorender.add(URIRef(cururi))
         for prop in nonnscount:
+            propuri=URIRef(prop)
             for ns in nonnscount[prop]:
+                nsuri=URIRef(ns)
                 cururi=URIRef(f'{voidds}_{ns.replace("http://","").replace("https://","").replace("/","_").replace("#","_")}')
                 g.add((cururi, RDF.type,VOID.Linkset))
-                g.add((cururi, RDFS.label,Literal(f'Linkset: {DocUtils.shortenURI(str(voidds))} - {DocUtils.getLabelForObject(URIRef(ns),g,pubconfig["prefixes"])}',lang="en")))
+                g.add((cururi, RDFS.label,Literal(f'Linkset: {DocUtils.shortenURI(str(voidds))} - {DocUtils.getLabelForObject(nsuri,g,pubconfig["prefixes"])}',lang="en")))
                 g.add((cururi, VOID.subjectsTarget,voidds))
-                g.add((cururi, VOID.objectsTarget,URIRef(ns)))
-                g.add((cururi, VOID.linkPredicate,URIRef(prop)))
+                g.add((cururi, VOID.objectsTarget,nsuri))
+                g.add((cururi, VOID.linkPredicate,propuri))
                 g.add((cururi, VOID.triples,Literal(str(nonnscount[prop][ns]),datatype=XSD.integer)))
                 subjectstorender.add(cururi)
         g.serialize(pubconfig["outpath"]+"/void.ttl", encoding="utf-8")

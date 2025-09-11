@@ -63,7 +63,7 @@ class HTMLExporter():
             parentclass = str(uritotreeitem[subjectstr][-1]["parent"])
             uritotreeitem.setdefault(parentclass, [
                     {"id": parentclass, "parent": "#", "type": "class","instancecount":0, "text": DocUtils.shortenURI(str(parentclass)),
-                     "data": {"from":{},"to":{}}}])
+                     "data": {"from":defaultdict(int),"to":defaultdict(int)}}])
             #uritotreeitem[parentclass][-1]["instancecount"] = 0
         ttlf = Graph(bind_namespaces="rdflib")
         # ttlf = open(savepath + "/index.ttl", "w", encoding="utf-8")
@@ -77,17 +77,17 @@ class HTMLExporter():
                 tuppredstr = str(tup[0])
                 predobjmap.setdefault(tuppredstr,[]).append(tup[1])
                 if parentclass is not None:
-                    if tuppredstr not in uritotreeitem[parentclass][-1]["data"]["to"]:
-                        uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr] = {}
-                        uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr]["instancecount"] = 0
-                    else:
-                        uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr]["instancecount"] += 1
+                    #if tuppredstr not in uritotreeitem[parentclass][-1]["data"]["to"]:
+                    #    uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr] = defaultdict(int)
+                        #uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr]["instancecount"] = 0
+                    #else:
+                    uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr]["instancecount"] += 1
                         #uritotreeitem[parentclass][-1]["instancecount"] += 1
                 if isinstance(tup[1], URIRef):
                     for item in graph.objects(tup[1], URIRef(self.typeproperty)):
                         thetypes.add(str(item))
                         if parentclass is not None:
-                            uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr].setdefault(item,0)
+                            #uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr].setdefault(item,0)
                             uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr][item] += 1
                     if baseurl not in tupobjstr and tuppredstr != self.typeproperty:
                         hasnonns.add(tupobjstr)
@@ -197,9 +197,9 @@ class HTMLExporter():
             for tup in sorted(subpreds, key=lambda tup: tup[1]):
                 tupobjstr=str(tup[1])
                 subpredsmap.setdefault(tupobjstr,[]).append(tup[0])
-                if parentclass is not None and tupobjstr not in uritotreeitem[parentclass][-1]["data"]["from"]:
-                    uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr] = defaultdict(int)
-                    uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr]["instancecount"] = 0
+                #if parentclass is not None and tupobjstr not in uritotreeitem[parentclass][-1]["data"]["from"]:
+                    #uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr] = defaultdict(int)
+                    #uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr]["instancecount"] = 0
                 if isinstance(tup[0], URIRef):
                     if parentclass is not None:
                         for item in graph.objects(tup[0], tprop):

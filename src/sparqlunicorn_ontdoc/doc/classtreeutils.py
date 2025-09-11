@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from doc.docconfig import DocConfig
 from doc.docutils import DocUtils
 from rdflib import URIRef
@@ -93,9 +95,9 @@ class ClassTreeUtils:
                     # print("SUPER NOT NONE: " + str({"id": cls, "parent": "#", "type": "class", "text": restext, "data": {}}))
                     if cls in instancecount:
                         result.append({"id": cls, "parent": "#", "type": "class","instancecount":instancecount[cls], "text": restext,
-                                       "data": {"from": {}, "to": {}}})
+                                       "data": {"from": defaultdict(lambda: defaultdict(int)), "to": defaultdict(lambda: defaultdict(int))}})
                     else:
-                        result.append({"id": cls, "parent": "#", "type": "class", "text": restext, "data": {"from":{},"to":{}}})
+                        result.append({"id": cls, "parent": "#", "type": "class", "text": restext, "data": {"from":defaultdict(lambda: defaultdict(int)),"to":defaultdict(lambda: defaultdict(int))}})
                     uritotreeitem[cls].append(result[-1])
             else:
                 if "label" in cls and ress[cls]["label"] is not None:
@@ -111,9 +113,9 @@ class ClassTreeUtils:
                 if cls not in uritotreeitem:
                     if cls in instancecount:
                         result.append({"id": cls, "parent": ress[cls]["super"],"instancecount":instancecount[cls], "type": "class", "text": restext,
-                                       "data": {"from": {}, "to": {}}})
+                                       "data": {"from": defaultdict(lambda: defaultdict(int)), "to": defaultdict(lambda: defaultdict(int))}})
                     else:
-                        result.append({"id": cls, "parent": ress[cls]["super"], "type": "class", "text": restext, "data": {"from":{},"to":{}}})
+                        result.append({"id": cls, "parent": ress[cls]["super"], "type": "class", "text": restext, "data": {"from":defaultdict(lambda: defaultdict(int)),"to":defaultdict(lambda: defaultdict(int))}})
                     uritotreeitem[cls].append(result[-1])
                 else:
                     uritotreeitem[cls][-1]["parent"] = ress[cls]["super"]
@@ -124,10 +126,10 @@ class ClassTreeUtils:
                     clsres = DocUtils.replaceNameSpacesInLabel(prefixes, ressuperstr)
                     if clsres is not None:
                         theitem = {"id": ressuperstr, "parent": "#", "type": "class",
-                                   "text": f'{DocUtils.shortenURI(ressuperstr)} ({clsres["uri"]})', "data": {"from":{},"to":{}}}
+                                   "text": f'{DocUtils.shortenURI(ressuperstr)} ({clsres["uri"]})', "data": {"from":defaultdict(lambda: defaultdict(int)),"to":defaultdict(lambda: defaultdict(int))}}
                     else:
                         theitem = {"id": ressuperstr, "parent": "#", "type": "class",
-                                   "text": DocUtils.shortenURI(ressuperstr), "data": {"from":{},"to":{}}}
+                                   "text": DocUtils.shortenURI(ressuperstr), "data": {"from":defaultdict(lambda: defaultdict(int)),"to":defaultdict(lambda: defaultdict(int))}}
                     uritotreeitem[ressuperstr].append(theitem)
                     result.append(theitem)
                 classidset.add(ressuperstr)
