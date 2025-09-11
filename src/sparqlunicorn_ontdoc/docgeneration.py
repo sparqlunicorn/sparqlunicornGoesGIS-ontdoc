@@ -168,13 +168,12 @@ class OntDocGeneration:
         end=time.time()
         self.exectimes["Class Tree Generation"]={"time":end-start,"items":clsress[2]}
         print(f"Class Tree Generation time for {clsress[2]} classes: {end-start} seconds")
-        tree=clsress[0]
-        uritotreeitem=clsress[1]
-        numclasses=clsress[2]
+        tree,uritotreeitem,numclasses=clsress
         #print(str(tree))
-        for tr in prevtree:
-            if tr["id"] not in uritotreeitem:
-                tree["core"]["data"].append(tr)
+        tree["core"]["data"]+=[tr for tr in prevtree if tr["id"] not in uritotreeitem]
+        #for tr in prevtree:
+        #    if tr["id"] not in uritotreeitem:
+        #        tree["core"]["data"].append(tr)
         res["voidstats"]["http://rdfs.org/ns/void#classes"] = numclasses
         res["voidstats"]["http://rdfs.org/ns/void#triples"] = len(self.graph)
         start=time.time()
@@ -383,6 +382,7 @@ class OntDocGeneration:
                 for tup in graph.predicate_objects(theuri):
                     if str(tup[0]) in DocConfig.labelproperties:
                         label = str(tup[1])
+                        break
                 suri = DocUtils.shortenURI(uri)
                 if uri in uritotreeitem:
                     res = DocUtils.replaceNameSpacesInLabel(self.pubconfig["prefixes"], uri)
@@ -495,17 +495,19 @@ def main():
     print("Files to process: " + str(filestoprocess))
     for path in args.output:
         if " " in path:
-            for itemm in path.split(" "):
-                outpath.append(itemm)
+            outpath+=[itemm for itemm in path.split(" ")]
+            #for itemm in path.split(" "):
+            #    outpath.append(itemm)
         else:
             outpath.append(path)
 
     print("ARG EXPORTS: " + str(args.exports))
     for expo in args.exports:
         if " " in expo:
-            for ex in expo.split(" "):
-                if ex not in dataexports:
-                    dataexports.append(ex)
+            dataexports+=[ex for ex in expo.split(" ") if ex not in dataexports]
+            #for ex in expo.split(" "):
+            #    if ex not in dataexports:
+            #        dataexports.append(ex)
         elif expo not in dataexports:
             dataexports.append(expo)
     print("EXPORTS: "+str(dataexports))

@@ -2,6 +2,7 @@ import json
 import os
 
 from doc.docutils import DocUtils
+from collections import defaultdict
 
 
 class GeoExporter:
@@ -30,17 +31,17 @@ class GeoExporter:
 
     @staticmethod
     def detectSubjectType(g,subjectstorender,geoclasslist):
-        subjectsToType,typeToFields={},{}
+        subjectsToType,typeToFields=defaultdict(set),defaultdict(set)
         for sub in subjectstorender:
             substr=str(sub)
-            typeToFields[substr]=set()
+            #typeToFields[substr]=set()
             for tup in g.predicate_objects(sub):
                 if str(tup[0])=="http://www.w3.org/1999/02/22-rdf-syntax-ns#type" and str(tup[1]) in geoclasslist:
                     subjectsToType[substr]=str(tup[1])
                 typeToFields[substr].add(str(tup[0]))
             if substr in subjectsToType:
-                if subjectsToType[substr] not in typeToFields:
-                    typeToFields[subjectsToType[substr]]=set()
+                #if subjectsToType[substr] not in typeToFields:
+                #    typeToFields[subjectsToType[substr]]=set()
                 typeToFields[subjectsToType[substr]]=typeToFields[subjectsToType[substr]].union(typeToFields[substr])
                 del typeToFields[substr]
         return [subjectsToType,typeToFields]
@@ -75,9 +76,7 @@ class GeoExporter:
         if subjectstorender is None:
             subjectstorender = g.subjects(None, None, True)
         geoclasslist=GeoExporter.filterGeoClasses(classlist)
-        res=GeoExporter.detectSubjectType(g,subjectstorender,geoclasslist)
-        subjectsToType = res[0]
-        typeToFields = res[1]
+        subjectsToType,typeToFields = GeoExporter.detectSubjectType(g,subjectstorender,geoclasslist)
         typeToRes = dict((el,[]) for el in typeToFields)
         typeToGeo={}
         for sub in subjectstorender:

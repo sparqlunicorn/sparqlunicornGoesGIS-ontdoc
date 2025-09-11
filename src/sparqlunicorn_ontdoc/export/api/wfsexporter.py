@@ -46,8 +46,7 @@ class WFSExporter:
                 with open(op + "/index.xml", "w", encoding="utf-8") as f:
                     f.write(result)
                 with open(op + "/indexc.html", "w", encoding="utf-8") as f:
-                    f.write("<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /></head><body><h1>" + featurecollectionspaths[coll][
-                        "name"] + "</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>" #+ str(curcollrow)
+                    f.write(f'<html><head><meta name="viewport" content="width=device-width, initial-scale=1" /></head><body><h1>{featurecollectionspaths[coll]["name"]}</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>' #+ str(curcollrow)
                          + "</tbody></table></html>")
 
 
@@ -165,7 +164,6 @@ class WFSExporter:
             <ogc:Filter_Capabilities></ogc:Filter_Capabilities>
         </wfs:WFS_Capabilities>"""
         print(f"SAVE WFS GETCAPABILITIES: {outpath}/wfs?request=GetCapabilities&service=WFS&version=7{wfsversion}")
-
         with open(outpath + "/wfs/index.xml", "w", encoding="utf-8") as f:
             f.write(getcapabilities)
 

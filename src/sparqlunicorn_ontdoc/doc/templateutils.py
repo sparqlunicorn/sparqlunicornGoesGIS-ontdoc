@@ -14,7 +14,7 @@ class TemplateUtils:
         if len(matches)>0:
             for mat in matches:
                 if mat.replace(".html","") in templates:
-                    template=template.replace("{% include "+mat+" %}",templates[mat.replace(".html","")])
+                    template=template.replace(f"{{% include {mat} %}}",templates[mat.replace(".html","")])
         return template
 
     @staticmethod
@@ -23,8 +23,8 @@ class TemplateUtils:
         templates["includes"] = {}
         templates["js"] = {}
         templates["layouts"] = {}
-        print(f"{templatepath}/{templatename} {os.path.exists(templatepath+'/'+templatename+'/templates/')}")
-        print(f"{templatepath}/{templatename} {os.path.exists(templatepath + '/' + templatename)}")
+        print(f"{templatepath}/{templatename} {os.path.exists(f'{templatepath}/{templatename}/templates/')}")
+        print(f"{templatepath}/{templatename} {os.path.exists(f'{templatepath}/{templatename}')}")
         print(os.listdir(f"{templatepath}/{templatename}"))
         if os.path.exists(f"{templatepath}/{templatename}/templateconf.json"):
             with open(f"{templatepath}/{templatename}/templateconf.json", 'r',encoding="utf-8") as f:

@@ -129,7 +129,7 @@ class HTMLExporter():
                         thetable += f"<details><summary>{predobjtuplen} values</summary>"
                     if predobjtuplen > 1:
                         thetable += "<ul>"
-                    labelmap = {}
+                    labelmap = defaultdict(str)
                     itemcounter = 0
                     for item in predobjmap[tup]:
                         if itemcounter >= HTMLExporter.maxlistthreshold:
@@ -167,7 +167,7 @@ class HTMLExporter():
                         if res["timeobj"] is not None and res["timeobj"] != []:
                             # print("RESTIMEOBJ: "+str(timeobj))
                             timeobj = res["timeobj"]
-                        labelmap.setdefault(res["label"],"")
+                        #labelmap.setdefault(res["label"],"")
                         if predobjtuplen > 1:
                             labelmap[res["label"]] += f"<li>{res['html']}</li>"
                         else:
@@ -177,7 +177,7 @@ class HTMLExporter():
                     #for lab in sorted(labelmap):
                     #    thetable += str(labelmap[lab])
                     if predobjtuplen >= HTMLExporter.maxlistthreshold:
-                        tablecontents += "<li>(...)</li>"
+                        thetable += "<li>(...)</li>"
                     if predobjtuplen > 1:
                         thetable += "</ul>"
                     if predobjtuplen > HTMLExporter.listthreshold:
@@ -197,12 +197,12 @@ class HTMLExporter():
                 tupobjstr=str(tup[1])
                 subpredsmap.setdefault(tupobjstr,[]).append(tup[0])
                 if parentclass is not None and tupobjstr not in uritotreeitem[parentclass][-1]["data"]["from"]:
-                    uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr] = {}
+                    uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr] = defaultdict(int)
                     uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr]["instancecount"] = 0
                 if isinstance(tup[0], URIRef):
-                    for item in graph.objects(tup[0], tprop):
-                        if parentclass is not None:
-                            uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr].setdefault(item, 0)
+                    if parentclass is not None:
+                        for item in graph.objects(tup[0], tprop):
+                            #uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr].setdefault(item, 0)
                             uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr][item] += 1
             for tup in subpredsmap:
                 subpredtuplen=len(subpredsmap[tup])

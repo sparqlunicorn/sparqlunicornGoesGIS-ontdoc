@@ -31,8 +31,9 @@ class GeometryViewPage:
         epsgcode=parameters.get("epsgcode","")
         if parameters.get("timeobj") is not None:
             #print(parameters.get("timeobj"))
-            for item in parameters.get("timeobj"):
-                dateprops.append(item)
+            dateprops+=[item for item in parameters.get("timeobj")]
+            #for item in parameters.get("timeobj"):
+            #    dateprops.append(item)
                 #props[item] = str(parameters.get("timeobj")[item])
                 #props[item] = str(item)
         jsonfeat = {"type": "Feature", 'id': str(subject), 'name': parameters.get("foundlabel",""), 'dateprops': dateprops,'properties': props, "geometry": geojsonrep}

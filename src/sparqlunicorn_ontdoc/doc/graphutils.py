@@ -121,14 +121,12 @@ class GraphUtils:
 
     @staticmethod
     def getPropertyRelations(graph, outpath,typeproperty,createVOWL):
-        predicates = {}
-        predicatecounter = 0
-        predicatelength = 0
-        predicateClasses = 0
+        predicates = defaultdict(lambda: {"from": set(), "to": set(), "triples": 0})
+        predicatecounter,predicatelength,predicateClasses = 0,0,0
         objects = set()
         tpprop=URIRef(typeproperty)
         for pred in graph.predicates(None, None, True):
-            predicates[pred] = {"from": set(), "to": set(), "triples": 0}
+            #predicates[pred] = {"from": set(), "to": set(), "triples": 0}
             for tup in graph.subject_objects(pred):
                 if tup[0] == tpprop:
                     predicateClasses += 1
