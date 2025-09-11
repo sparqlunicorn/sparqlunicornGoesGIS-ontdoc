@@ -124,11 +124,11 @@ class HTMLExporter():
                 if tup in DocConfig.commentproperties:
                     comment[tup] = str(predobjmap[tup][0])
                 if predobjtuplen > 0:
-                    thetable += "<td class=\"wrapword\">"
-                    if predobjtuplen > HTMLExporter.listthreshold:
-                        thetable += f"<details><summary>{predobjtuplen} values</summary>"
-                    if predobjtuplen > 1:
-                        thetable += "<ul>"
+                    thetable += f'<td class="wrapword">{f"<details><summary>{predobjtuplen} values</summary>" if predobjtuplen > HTMLExporter.listthreshold else ""}{"<ul>" if predobjtuplen > 1 else ""}'
+                    #if predobjtuplen > HTMLExporter.listthreshold:
+                    #    thetable += f"<details><summary>{predobjtuplen} values</summary>"
+                    #if predobjtuplen > 1:
+                    #    thetable += "<ul>"
                     labelmap = defaultdict(str)
                     itemcounter = 0
                     for item in predobjmap[tup]:
@@ -176,13 +176,14 @@ class HTMLExporter():
                     thetable+="".join(labelmap[lab] for lab in sorted(labelmap))
                     #for lab in sorted(labelmap):
                     #    thetable += str(labelmap[lab])
-                    if predobjtuplen >= HTMLExporter.maxlistthreshold:
-                        thetable += "<li>(...)</li>"
-                    if predobjtuplen > 1:
-                        thetable += "</ul>"
-                    if predobjtuplen > HTMLExporter.listthreshold:
-                        thetable += "</details>"
-                    thetable += "</td>"
+                    thetable+=f'{"<li>(...)</li>" if predobjtuplen >= HTMLExporter.maxlistthreshold else ""}{"</ul>" if predobjtuplen > 1 else ""}{"</details>" if predobjtuplen > HTMLExporter.listthreshold else ""}</td>'
+                    #if predobjtuplen >= HTMLExporter.maxlistthreshold:
+                    #    thetable += "<li>(...)</li>"
+                    #if predobjtuplen > 1:
+                    #    thetable += "</ul>"
+                    #if predobjtuplen > HTMLExporter.listthreshold:
+                    #    thetable += "</details>"
+                    #thetable += "</td>"
                 else:
                     thetable += "<td class=\"wrapword\"></td>"
                 thetable += "</tr>"
@@ -216,8 +217,8 @@ class HTMLExporter():
                 if subpredtuplen > 0:
                     tablecontents += "<td class=\"wrapword\">"
                     if subpredtuplen > HTMLExporter.listthreshold:
-                        tablecontents += f"<details><summary>{subpredtuplen} values</summary>"
-                    if subpredtuplen > 1:
+                        tablecontents += f"<details><summary>{subpredtuplen} values</summary><ul>"
+                    elif subpredtuplen > 1:
                         tablecontents += "<ul>"
                     labelmap = defaultdict(str)
                     itemcounter = 0
@@ -253,10 +254,10 @@ class HTMLExporter():
                     #    tablecontents += str(labelmap[lab])
                     if subpredtuplen >= HTMLExporter.maxlistthreshold:
                         tablecontents += "<li>(...)</li>"
-                    if subpredtuplen > 1:
-                        tablecontents += "</ul>"
                     if subpredtuplen > HTMLExporter.listthreshold:
-                        tablecontents += "</details>"
+                        tablecontents += "</ul></details>"
+                    elif subpredtuplen > 1:
+                        tablecontents += "</ul>"
                     tablecontents += "</td>"
                 else:
                     tablecontents += "<td class=\"wrapword\"></td>"

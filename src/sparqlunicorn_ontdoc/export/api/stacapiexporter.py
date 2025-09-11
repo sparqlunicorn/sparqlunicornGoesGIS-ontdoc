@@ -135,14 +135,12 @@ class StacAPIExporter:
                  "title": "this document as JSON"},
                 {"href": outpath + "collections/index.html", "rel": "self", "type": "text/html",
                  "title": "this document as HTML"}]}
-            collectionshtml = "<html><head></head><body><header><h1>Collections of " + str(
+            collectionshtml = f"<html><head></head><body><header><h1>Collections of " + str(
                 deploypath) + "</h1></head>{{collectiontable}}<footer><a href=\"index.json\">This page as JSON</a></footer></body></html>"
             collectiontable = "<table><thead><th>Collection</th><th>Links</th></thead><tbody>"
             apijson["paths"]["/collections"] = {"get": {"tags": ["Collections"], "summary": "describes collections",
-                                                        "description": "Describes all collections provided by this service",
-                                                        "operationId": "collections", "parameters": [], "responses": {
-                    "default": {"description": "default response", "content": {
-                        "application/json": {"schema": {"$ref": "#/components/schemas/Collections"}},
+                    "description": "Describes all collections provided by this service","operationId": "collections", "parameters": [], "responses": {
+                    "default": {"description": "default response", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Collections"}},
                         "text/ttl": {"schema": {}}, "text/html": {"schema": {}}}}}}}
             if outpath.endswith("/"):
                 outpath = outpath[0:-1]
@@ -236,8 +234,8 @@ class StacAPIExporter:
                             p = Path(str(op + "/items/index.ttl").replace("//", "/"))
                             p.symlink_to(targetpath)
                         if os.path.exists(coll.replace("//", "/").replace("index.geojson", "index.html").replace(
-                                "nonns_" + featurecollectionspaths[coll]["id"] + ".geojson",
-                                "nonns_" + featurecollectionspaths[coll]["id"] + ".html")):
+                                f'nonns_{featurecollectionspaths[coll]["id"]}.geojson',
+                                f'nonns_{featurecollectionspaths[coll]["id"]}.html')):
                             targetpath = DocUtils.generateRelativeSymlink(
                                 coll.replace("//", "/").replace("index.geojson", "index.html").replace(
                                     "nonns_" + featurecollectionspaths[coll]["id"] + ".geojson",
@@ -324,8 +322,7 @@ class StacAPIExporter:
                                 p = Path(f'{op}/items/{DocUtils.shortenURI(feat["id"])}/index.json'.replace("//", "/"))
                                 p.symlink_to(targetpath)
                             if os.path.exists(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.ttl"):
-                                targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.ttl", str(op + "/items/" + str(
-                                    DocUtils.shortenURI(feat["id"])) + "/index.ttl").replace("//", "/"), outpath, True)
+                                targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.ttl", f'{op}/items/{DocUtils.shortenURI(feat["id"])}/index.ttl'.replace("//", "/"), outpath, True)
                                 p = Path(f'{op}/items/{DocUtils.shortenURI(feat["id"])}/index.ttl'.replace("//", "/"))
                                 p.symlink_to(targetpath)
                             if os.path.exists(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.html"):

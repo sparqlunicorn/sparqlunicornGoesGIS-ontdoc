@@ -30,11 +30,12 @@ class CIDOCOverviewPage:
                     resmap[pobjstr] = f"<a href=\"{predobj[0]}\">{DocUtils.shortenURI(pobjstr)}</a>"
                 else:
                     resmap[pobjstr]=str(predobj[1])
-        for val in resmap:
-            if resmap[val] is not None:
-                widget+=f"<td>{val}</td>"
-            else:
-                widget+="<td></td>"
+        widget+="".join(f'<td>{val if  resmap[val] is not None else ""}</td>' for val in resmap)
+        #for val in resmap:
+        #    if resmap[val] is not None:
+        #        widget+=f"<td>{val if  resmap[val] is not None else ""}</td>"
+        #    else:
+        #        widget+="<td></td>"
         widget+="</tr></tbody></table>"
 
 

@@ -19,13 +19,13 @@ class GraphExporter:
             substrsuri=DocUtils.shortenURI(substr)
             if substr not in uriToNodeId:
                 uriToNodeId[substr] = nodecounter
-                file.write("CREATE ( " + substrsuri + "{ _id:'" + substrsuri + "', _uri:'" + substr + "', rdfs_label:'" + substrsuri + "' })\n")
+                file.write(f"CREATE ( {substrsuri}{{ _id:'{substrsuri}', _uri:'{substr}', rdfs_label:'{substrsuri}' }})\n")
                 nodecounter += 1
             for tup in g.predicate_objects(sub):
                 tupstr=str(tup[1])
                 if tupstr not in uriToNodeId:
                     tupstrsuri=DocUtils.shortenURI(tupstr)
-                    file.write("CREATE ( " + tupstrsuri + "{ _id:'" + tupstrsuri  + "', _uri:'" + tupstr + "', rdfs_label:'" + tupstrsuri  + "' })\n")
+                    file.write(f"CREATE ( {tupstrsuri}{{ _id:'{tupstrsuri}', _uri:'{tupstr}', rdfs_label:'{tupstrsuri}' }})\n")
                     uriToNodeId[tupstr] = nodecounter
                     nodecounter += 1
                 tgfresedges += f"({uriToNodeId[substr]})-[:{DocUtils.shortenURI(tupstr)}]->({DocUtils.shortenURI(str(tup[0]))}),\n"
@@ -89,8 +89,9 @@ class GraphExporter:
             sepchar=","
             file.write("nodedef>name VARCHAR,label VARCHAR")
         for sub in subjectstorender:
-            if str(sub) not in uriToNodeId:
-                uriToNodeId[str(sub)] = nodecounter
+            substr=str(sub)
+            if substr not in uriToNodeId:
+                uriToNodeId[substr] = nodecounter
                 file.write(f'{nodecounter}{sepchar}{sub}\n')
                 nodecounter += 1
             for tup in g.predicate_objects(sub):
@@ -98,7 +99,7 @@ class GraphExporter:
                     file.write(f'{nodecounter}{sepchar}{tup[1]}\n')
                     uriToNodeId[str(tup[1])] = nodecounter
                     nodecounter += 1
-                tgfresedges += f'{uriToNodeId[str(sub)]}{sepchar}{uriToNodeId[str(tup[1])]}{sepchar}{DocUtils.shortenURI(tup[0])}\n'
+                tgfresedges += f'{uriToNodeId[substr]}{sepchar}{uriToNodeId[str(tup[1])]}{sepchar}{DocUtils.shortenURI(tup[0])}\n'
         if formatt=="gdf":
             file.write("edgedef>node1 VARCHAR,node2 VARCHAR,label VARCHAR\n")
         else:
@@ -120,7 +121,7 @@ class GraphExporter:
                 nodecounter += 1
             for tup in g.predicate_objects(sub):
                 if str(tup[1]) not in uriToNodeId:
-                    file.write(str(nodecounter) + sepchar +"\""+ DocUtils.shortenURI(str(tup[1])) + "\"\n")
+                    file.write(f'{nodecounter}{sepchar}"{DocUtils.shortenURI(str(tup[1]))}"\n')
                     uriToNodeId[str(tup[1])] = nodecounter
                     nodecounter += 1
                 tgfresedges += f'{substr}{sepchar}{tup[1]}\n'

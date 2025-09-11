@@ -161,9 +161,7 @@ class GeometryViewPage:
                                                                                                           "epsgdefslink","")).replace("{{dateatt}}", str(dateatt)))
                 spath=parameters.get("completesavepath", "").replace(".html", ".geojson")
                 with open(spath, 'w',encoding='utf-8') as fgeo:
-                    featurecollectionspaths[spath] = {
-                        "name": featcoll["name"],
-                        "id": featcoll["id"]}
+                    featurecollectionspaths[spath] = {"name": featcoll["name"],"id": featcoll["id"]}
                     json.dump(featcoll,fgeo)
         return geocache
 

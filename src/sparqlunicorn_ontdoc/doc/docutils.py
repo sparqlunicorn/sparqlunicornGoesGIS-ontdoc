@@ -349,46 +349,49 @@ class DocUtils:
         matched = re.findall(r'src="(http.*)"', myhtmltemplate)
         for match in matched:
             # download the library
+            matchl = match[match.rfind("/") + 1:]
             if "</script>" in match:
                 for m in match.split("></script><script src="):
                     m = m.replace("\"", "").replace("/>", "")
                     m = m.replace(">", "")
+                    ml=m[m.rfind('/') + 1:]
                     try:
                         g = urllib.request.urlopen(m.replace("\"", ""))
-                        with open(f'{outpath}{os.sep}js{os.sep}{m[m.rfind("/") + 1:]}', 'b+w') as f:
+                        with open(f'{outpath}{os.sep}js{os.sep}{ml}', 'b+w') as f:
                             f.write(g.read())
                     except Exception as e:
                         print(e)
-                        thepath=f"{templatepath}/{templatename}/js/lib/{m[m.rfind('/') + 1:]}"
+                        thepath=f"{templatepath}/{templatename}/js/lib/{ml}"
                         if os.path.exists(thepath):
-                            shutil.copy(thepath,f'{outpath}{os.sep}js{os.sep}{m[m.rfind("/") + 1:]}')
-                    myhtmltemplate = myhtmltemplate.replace(m, "{{relativepath}}js/" + m[m.rfind("/") + 1:])
+                            shutil.copy(thepath,f'{outpath}{os.sep}js{os.sep}{ml}')
+                    myhtmltemplate = myhtmltemplate.replace(m, "{{relativepath}}js/" + ml)
             else:
                 match = match.replace("\"", "")
                 try:
                     g = urllib.request.urlopen(match.replace("\"", ""))
-                    with open(f'{outpath}{os.sep}js{os.sep}{match[match.rfind("/") + 1:]}', 'b+w') as f:
+                    with open(f'{outpath}{os.sep}js{os.sep}{matchl}', 'b+w') as f:
                         f.write(g.read())
                 except Exception as e:
                     print(e)
-                    thepath=f"{templatepath}/{templatename}/js/lib/{match[match.rfind('/') + 1:]}"
+                    thepath=f"{templatepath}/{templatename}/js/lib/{matchl}"
                     if os.path.exists(thepath):
-                        shutil.copy(thepath,f'{outpath}{os.sep}js{os.sep}{match[match.rfind("/") + 1:]}')
-                myhtmltemplate = myhtmltemplate.replace(match, "{{relativepath}}js/" + match[match.rfind("/") + 1:])
+                        shutil.copy(thepath,f'{outpath}{os.sep}js{os.sep}{matchl}')
+                myhtmltemplate = myhtmltemplate.replace(match, "{{relativepath}}js/" + matchl)
         matched = re.findall(r'href="(http.*.css)"', myhtmltemplate)
         for match in matched:
             #print(match.replace("\"", ""))
             match = match.replace("\"", "").replace("/>", "")
             match = match.replace(">", "")
+            matchl=match[match.rfind("/") + 1:]
             try:
                 g = urllib.request.urlopen(match.replace("\"", ""))
-                with open(f'{outpath}{os.sep}css{os.sep}{match[match.rfind("/") + 1:]}', 'b+w') as f:
+                with open(f'{outpath}{os.sep}css{os.sep}{matchl}', 'b+w') as f:
                     f.write(g.read())
             except Exception as e:
-                thepath=f"{templatepath}/{templatename}/css/lib/{match[match.rfind('/') + 1:]}"
+                thepath=f"{templatepath}/{templatename}/css/lib/{matchl}"
                 if os.path.exists(thepath):
-                    shutil.copy(thepath,f'{outpath}{os.sep}css{os.sep}{match[match.rfind("/") + 1:]}')
-            myhtmltemplate = myhtmltemplate.replace(match, "{{relativepath}}css/" + match[match.rfind("/") + 1:])
+                    shutil.copy(thepath,f'{outpath}{os.sep}css{os.sep}{matchl}')
+            myhtmltemplate = myhtmltemplate.replace(match, "{{relativepath}}css/" + matchl)
         return myhtmltemplate
 
     @staticmethod

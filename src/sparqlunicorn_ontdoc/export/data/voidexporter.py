@@ -38,28 +38,19 @@ class VoidExporter:
             g.add((voidds, URIRef("http://purl.org/dc/terms/license"),URIRef(licenseuri)))
         g.add((voidds, VOID.dataDump,
               URIRef(pubconfig["deploypath"]+"/index.ttl")))
-        g.add((voidds, FOAF.homepage,
-              URIRef(pubconfig["deploypath"])))
-        g.add((voidds, DCAT.landingPage,
-              URIRef(pubconfig["deploypath"])))
-        g.add((voidds, FOAF.page,
-              URIRef(pubconfig["deploypath"]+"/index.html")))
-        g.add((voidds, VOID.dataDump,
-              URIRef(pubconfig["deploypath"]+"/index.ttl")))
+        depl=URIRef(pubconfig["deploypath"])
+        g.add((voidds, FOAF.homepage,depl))
+        g.add((voidds, DCAT.landingPage,depl))
+        g.add((voidds, FOAF.page,URIRef(pubconfig["deploypath"]+"/index.html")))
+        g.add((voidds, VOID.dataDump,URIRef(pubconfig["deploypath"]+"/index.ttl")))
         voiddistttl=URIRef(f"{voidds}_dist_ttl")
-        g.add((voidds, DCAT.distribution,
-               voiddistttl))
+        g.add((voidds, DCAT.distribution,voiddistttl))
         g.add((voiddistttl, RDF.type, URIRef("http://www.w3.org/ns/adms#AssetDistribution")))
-        g.add((voiddistttl, RDFS.label,
-               Literal(dsname+" TTL Distribution",lang="en")))
-        g.add((voiddistttl, DCAT.downloadURL,
-               Literal(pubconfig["deploypath"]+"/index.ttl",datatype=XSD.anyURI)))
-        g.add((voiddistttl, DCAT.mediaType,
-               URIRef("http://www.w3.org/ns/formats/Turtle")))
-        g.add((voidds, VOID.feature,
-              URIRef("http://www.w3.org/ns/formats/Turtle")))
-        g.add((voidds, VOID.feature,
-              URIRef("http://www.w3.org/ns/formats/RDFa")))
+        g.add((voiddistttl, RDFS.label,Literal(dsname+" TTL Distribution",lang="en")))
+        g.add((voiddistttl, DCAT.downloadURL,Literal(pubconfig["deploypath"]+"/index.ttl",datatype=XSD.anyURI)))
+        g.add((voiddistttl, DCAT.mediaType,URIRef("http://www.w3.org/ns/formats/Turtle")))
+        g.add((voidds, VOID.feature,URIRef("http://www.w3.org/ns/formats/Turtle")))
+        g.add((voidds, VOID.feature,URIRef("http://www.w3.org/ns/formats/RDFa")))
         if pubconfig["startconcept"] is not None and pubconfig["startconcept"]!= "":
             g.add((voidds, VOID.rootResource, URIRef(pubconfig["startconcept"].replace("index.html",""))))
             g.add((voidds, VOID.exampleResource, URIRef(pubconfig["startconcept"].replace("index.html",""))))
@@ -138,7 +129,8 @@ class VoidExporter:
     @staticmethod
     def toHTML(stats,deploypath):
         result=f'<details><summary>Dataset Statistics <a href="{deploypath}/void.ttl" target="_blank">[VOID]</a></summary><table border="1"><thead><th>Property</th><th>Value</th></thead><tbody>'
-        for stat in stats:
-            result+=f'<tr><td><a href="{stat}" target="_blank">"{DocUtils.shortenURI(stat)}</a></td><td><span property="{stat}" content="{stats[stat]}" datatype="http://www.w3.org/2001/XMLSchema#integer">"{stats[stat]}</span>&nbsp;<a href="http://www.w3.org/2001/XMLSchema#integer" style="color:#666;"><small>(xsd:integer)</small></a></td></tr>'
+        result+="".join(f'<tr><td><a href="{stat}" target="_blank">"{DocUtils.shortenURI(stat)}</a></td><td><span property="{stat}" content="{stats[stat]}" datatype="http://www.w3.org/2001/XMLSchema#integer">"{stats[stat]}</span>&nbsp;<a href="http://www.w3.org/2001/XMLSchema#integer" style="color:#666;"><small>(xsd:integer)</small></a></td></tr>' for stat in stats)
+        #for stat in stats:
+        #    result+=f'<tr><td><a href="{stat}" target="_blank">"{DocUtils.shortenURI(stat)}</a></td><td><span property="{stat}" content="{stats[stat]}" datatype="http://www.w3.org/2001/XMLSchema#integer">"{stats[stat]}</span>&nbsp;<a href="http://www.w3.org/2001/XMLSchema#integer" style="color:#666;"><small>(xsd:integer)</small></a></td></tr>'
         result+="</tbody></table></details>"
         return result

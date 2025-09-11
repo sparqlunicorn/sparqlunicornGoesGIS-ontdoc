@@ -84,9 +84,9 @@ class VOWLExporter:
                       "classAttribute": [], "property": [], "propertyAttribute": []}
         props,propAttributes,classes,classAttributes=[],[],[],[]
         iriToProdId,classiriToProdId,propiriToProdId={},{},{}
-        propidcounter=0
-        classidcounter=0
-        idcounter=0
+        propidcounter,classidcounter,idcounter=0,0,0
+        tprop=URIRef(typeproperty)
+        lprop=URIRef(labelproperty)
         for nstup in g.namespaces():
             vowlresult["header"]["prefixList"][str(nstup[0])]=str(nstup[1])
             vowlresult["header"]["baseIris"].append(str(nstup[1]))
@@ -101,9 +101,9 @@ class VOWLExporter:
                 classAttributes.append({"id":idcounter,"iri":predsubstr,"baseIRI":VOWLExporter.getBaseIRI(predsubstr), "instances":0, "label":{"IRI-based":VOWLExporter.getIRILabel(predsubstr)}, "annotations":{}, "subClasses":[], "superClasses":[]})
                 idcounter+=1
             else:
-                props.append({"id":idcounter,"type":VOWLExporter.getTypeForProperty(str(predsubstr), g, typeproperty)})
+                props.append({"id":idcounter,"type":VOWLExporter.getTypeForProperty(predsubstr, g, typeproperty)})
                 propiriToProdId[predsubstr]={"id":idcounter,"attid":len(propAttributes)-1}
-                propAttributes.append({"id":idcounter,"iri":str(predsubstr),"baseIRI":VOWLExporter.getBaseIRI(predsubstr), "instances":0, "label":{"IRI-based":VOWLExporter.getIRILabel(predsubstr)}, "annotations":{}, "range":[], "domain":[], "subProperties":[], "superProperties":[]})
+                propAttributes.append({"id":idcounter,"iri":predsubstr,"baseIRI":VOWLExporter.getBaseIRI(predsubstr), "instances":0, "label":{"IRI-based":VOWLExporter.getIRILabel(predsubstr)}, "annotations":{}, "range":[], "domain":[], "subProperties":[], "superProperties":[]})
                 idcounter+=1
 
         for pred in g.subject_objects(RDFS.range):
@@ -121,12 +121,12 @@ class VOWLExporter:
                 #print(clsatt)
                 clsattstr0=str(clsatt[0])
                 clsattstr1 = str(clsatt[1])
-                if clsatt[0]!=URIRef(typeproperty):
+                if clsatt[0]!=tprop:
                     if clsatt[0]==RDFS.subClassOf:
                         if clsattstr1 in classiriToProdId:
                             classAttributes[classiriToProdId[iri]["attid"]]["superClasses"].append(str(classiriToProdId[clsattstr1]["id"]))
                             classAttributes[classiriToProdId[clsattstr1]["attid"]]["subClasses"].append(str(classiriToProdId[iri]["id"]))
-                    elif clsatt[0]==URIRef(labelproperty):
+                    elif clsatt[0]==lprop:
                         classAttributes[classiriToProdId[iri]["attid"]]["label"]=clsattstr1
                     else:
                         classAttributes[classiriToProdId[iri]["attid"]]["annotations"][clsattstr0]=[]
