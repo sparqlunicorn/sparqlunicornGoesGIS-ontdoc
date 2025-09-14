@@ -386,7 +386,7 @@ class OntDocGeneration:
                 suri = DocUtils.shortenURI(uri)
                 if uri in uritotreeitem:
                     res = DocUtils.replaceNameSpacesInLabel(self.pubconfig["prefixes"], uri)
-                    label = DocUtils.getLabelForObject(URIRef(str(uri)), graph, None, self.pubconfig["labellang"])
+                    label = DocUtils.getLabelForObject(URIRef(uri), graph, None, self.pubconfig["labellang"])
                     if res is not None and label != "":
                         uritotreeitem[uri][-1]["text"] = f'{label} ({res["uri"]})'
                     elif label != "":

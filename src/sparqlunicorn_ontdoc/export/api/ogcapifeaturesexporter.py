@@ -134,10 +134,7 @@ class OGCAPIFeaturesExporter:
                         "text/ttl": {"schema": {}}, "text/html": {"schema": {}}}}}}}
             if outpath.endswith("/"):
                 outpath = outpath[0:-1]
-            os.makedirs(outpath + "/api/",exist_ok=True)
-            os.makedirs(outpath + "/license/",exist_ok=True)
-            os.makedirs(outpath + "/collections/",exist_ok=True)
-            os.makedirs(outpath + "/conformance/",exist_ok=True)
+            DocUtils.createFoldersFromList([outpath + "/api/",outpath + "/license/",outpath + "/collections/",outpath + "/conformance/"])
         result = list()
         for coll in featurecollectionspaths:
             curcoll = None

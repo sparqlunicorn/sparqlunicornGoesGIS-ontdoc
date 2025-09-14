@@ -66,11 +66,9 @@ class ObservationPage:
             res=ObservationPage.aggregateSingleValues(xValueAlt)
             xValues=res[0]
             timeValues=res[1]
-            f.write(templates["chartviewtemplate"].replace("{{xValues}}", str(xValues))
-                    .replace("{{yValues}}", str(timeValues)).replace("{{xLabel}}", str(xLabel)).replace("{{yLabel}}",                                                                                                   str(yLabel)))
+            f.write(templates["chartviewtemplate"].replace("{{xValues}}", str(xValues)).replace("{{yValues}}", str(timeValues)).replace("{{xLabel}}", str(xLabel)).replace("{{yLabel}}", str(yLabel)))
         else:
-            f.write(templates["chartviewtemplate"].replace("{{xValues}}", str(xValues))
-                .replace("{{yValues}}",str(timeValues)).replace("{{xLabel}}", str(xLabel)).replace("{{yLabel}}", str(yLabel)))
+            f.write(templates["chartviewtemplate"].replace("{{xValues}}", str(xValues)).replace("{{yValues}}",str(timeValues)).replace("{{xLabel}}", str(xLabel)).replace("{{yLabel}}", str(yLabel)))
 
     def generatePageView(self,graph, subject, f):
         print("PageView")

@@ -143,13 +143,14 @@ class PersonPage:
         thevcard={}
         thehcard={}
         for pprop in graph.predicate_objects(subject, True):
-            if str(pprop[0]) in PersonPage.vcardTohCard:
-                thehcard[str(PersonPage.vcardTohCard[str(pprop[0])])]={"value":str(pprop[1]),"prop":str(pprop[0])}
-            if str(pprop[0]) in PersonPage.vcardprops:
-                if PersonPage.vcardprops[str(pprop[0])] in thevcard:
-                    thevcard[PersonPage.vcardprops[str(pprop[0])]]["value"]+=" "+str(pprop[1])
+            ppropstr=str(pprop[0])
+            if ppropstr in PersonPage.vcardTohCard:
+                thehcard[str(PersonPage.vcardTohCard[ppropstr])]={"value":str(pprop[1]),"prop":ppropstr}
+            if ppropstr in PersonPage.vcardprops:
+                if PersonPage.vcardprops[ppropstr] in thevcard:
+                    thevcard[PersonPage.vcardprops[ppropstr]]["value"]+=" "+str(pprop[1])
                 else:
-                    thevcard[PersonPage.vcardprops[str(pprop[0])]]={"value":str(pprop[1]),"prop":str(pprop[0])}
+                    thevcard[PersonPage.vcardprops[ppropstr]]={"value":str(pprop[1]),"prop":ppropstr}
         return {"vcard":thevcard,"hcard":thehcard}
 
     @staticmethod

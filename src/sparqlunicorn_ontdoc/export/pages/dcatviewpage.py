@@ -29,7 +29,7 @@ class DCATOverviewPage:
                     resmap[str(predobj[0])]=str(predobj[1])
         for val in resmap:
             if resmap[val] is not None:
-                widget+="<td>"+str(val)+"</td>"
+                widget+=f"<td>{val}</td>"
             else:
                 widget+="<td></td>"
         widget+="</tr></tbody></table>"

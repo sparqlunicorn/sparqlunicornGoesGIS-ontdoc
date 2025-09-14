@@ -38,6 +38,7 @@ class DocConfig:
                          "http://www.opengis.net/ont/geosparql#GeometryCollection": "geocollection",
                          "http://www.opengis.net/ont/geosparql#SpatialObjectCollection": "geocollection",
                          "http://www.w3.org/2004/02/skos/core#Collection": "collection",
+                         "http://www.w3.org/ns/shacl#PropertyGroup":"collection",
                          "http://www.w3.org/2004/02/skos/core#OrderedCollection": "collection",
                          "https://www.w3.org/ns/activitystreams#Collection": "collection",
                          "https://www.w3.org/ns/activitystreams#OrderedCollection": "collection"
@@ -335,6 +336,7 @@ class DocConfig:
         "http://www.w3.org/2004/02/skos/core#scopeNote": "DatatypeProperty",
         "http://www.w3.org/2004/02/skos/core#historyNote": "DatatypeProperty",
         "https://schema.org/description":"DatatypeProperty",
+        "http://www.w3.org/ns/shacl#description":"DatatypeProperty",
         "http://www.w3.org/2000/01/rdf-schema#comment": "DatatypeProperty",
         "http://purl.org/dc/terms/description": "DatatypeProperty",
         "http://purl.org/dc/elements/1.1/description": "DatatypeProperty"

@@ -6,8 +6,7 @@ class CardDAVExporter:
 
     def vcardJSONToFile(self,vcard,path):
         with open(path,"w",encoding="utf-8") as f:
-            f.write("BEGIN:VCARD\nVERSION:4.0\n")
-            f.write("PROFILE:VCARD\n")
+            f.write("BEGIN:VCARD\nVERSION:4.0\nPROFILE:VCARD\n")
             #for key in vcard:
             f.write("".join(""f"{str(key).upper()}:{str(vcard[key])}\n" for key in vcard))
             f.write("END:VCARD\n")

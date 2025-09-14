@@ -48,12 +48,7 @@ class IIIFAPIExporter:
         #print(DocUtils.shortenURI(curind))
         curinduri = DocUtils.shortenURI(curind)
         if not os.path.exists(f'{outpath}/iiif/mf/{curinduri}/manifest.json'):
-            if not os.path.exists(outpath + "/iiif/mf/"):
-                os.makedirs(outpath + "/iiif/mf/")
-            if not os.path.exists(outpath + "/iiif/images/"):
-                os.makedirs(outpath + "/iiif/images/")
-            if not os.path.exists(outpath + "/iiif/svg/"):
-                os.makedirs(outpath + "/iiif/svg/")
+            DocUtils.createFoldersFromList([outpath + "/iiif/mf/", outpath + "/iiif/images/",outpath + "/iiif/svg/"])
             #print(label)
             curindr=str(curind).replace(prefixnamespace, deploypath + "/")
             if label != "":
@@ -156,7 +151,7 @@ class IIIFAPIExporter:
             categories.add(DocUtils.shortenURI(imgpath["class"]))
             for imgp in imgpath["imgpath"]:
                 induri=DocUtils.shortenURI(imgpath["ind"])
-                imghtml+="<li data-groups='[\"all\",\"red\",\""+str(imgpath["class"])+"\"]' style=\"width:25%;background-color:white;border-radius:25px;\"><figure class=\"col-3@sm picture-item\"><div class=\"aspect aspect--16x9\"><div class=\"aspect__inner\">"
+                imghtml+=f'<li data-groups=\'["all","red","{imgpath["class"]}"] style="width:25%;background-color:white;border-radius:25px;"><figure class="col-3@sm picture-item"><div class="aspect aspect--16x9"><div class="aspect__inner">'
                 imghtml+=f'<a href={deploypath}/{induri}" target="_blank"><img src="{imgp}" loading="lazy" class="imgborder" alt="{imgpath["label"]}"/></a></div></div><figcaption style="color:black"><a href="{deploypath}/{induri}" style="font-weight:bold;color:black" target="_blank">'
                 if imgpath["label"]!="":
                    imghtml+=f'{imgpath["label"]}</a></figcaption></figure></li>'

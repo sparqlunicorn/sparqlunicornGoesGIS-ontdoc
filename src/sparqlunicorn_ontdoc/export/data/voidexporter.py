@@ -31,7 +31,7 @@ class VoidExporter:
         g.add((voidds, RDFS.label,Literal(dsname,lang="en")))
         g.add((voidds, URIRef("http://purl.org/dc/terms/title"),Literal(dsname,lang="en")))
         if pubconfig["labellang"] is not None and pubconfig["labellang"]!= "":
-            g.add((voidds, DC.language,URIRef("http://www.lexvo.org/page/iso639-1/"+str(pubconfig["labellang"]))))
+            g.add((voidds, DC.language,URIRef(f'http://www.lexvo.org/page/iso639-1/{pubconfig["labellang"]}')))
         g.add((voidds, URIRef("http://purl.org/dc/terms/modified"),
               Literal(pubconfig["modtime"],datatype=XSD.dateTime)))
         if licenseuri is not None:

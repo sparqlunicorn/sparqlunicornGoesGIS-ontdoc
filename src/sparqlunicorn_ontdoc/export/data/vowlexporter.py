@@ -148,7 +148,7 @@ class VOWLExporter:
                             propAttributes[propiriToProdId[propattobj]["attid"]]["subProperties"].append(str(propiriToProdId[iri]["id"]))
                     elif propattpred=="http://www.w3.org/2000/01/rdf-schema#range" and propattobj in propiriToProdId:
                         propAttributes[propiriToProdId[iri]["attid"]]["range"].append(str(classiriToProdId[propattobj]["id"]))
-                    elif propattpred=="http://www.w3.org/2000/01/rdf-schema#domain" and str(propattobj) in propiriToProdId:
+                    elif propattpred=="http://www.w3.org/2000/01/rdf-schema#domain" and propattobj in propiriToProdId:
                         propAttributes[propiriToProdId[iri]["attid"]]["domain"].append(str(classiriToProdId[propattobj]["id"]))
                     elif propattpred==labelproperty:
                         propAttributes[propiriToProdId[iri]["attid"]]["label"]=propattobj

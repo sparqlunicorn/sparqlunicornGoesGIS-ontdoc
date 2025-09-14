@@ -39,6 +39,13 @@ class DocUtils:
             print()
 
     @staticmethod
+    def createFoldersFromList(flist):
+        for fl in flist:
+            if not os.path.exists(fl):
+                os.makedirs(fl)
+
+
+    @staticmethod
     def replaceStandardVariables(template, subject, checkdepth, indexpage,pubconfig):
         template = template.replace("{{indexpage}}", str(indexpage)).replace("{{subject}}", str(subject)).replace(
             "{{relativedepth}}", str(checkdepth)) \

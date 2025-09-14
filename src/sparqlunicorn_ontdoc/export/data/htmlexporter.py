@@ -18,6 +18,7 @@ from export.api.iiifexporter import IIIFAPIExporter
 from export.pages.geometryviewpage import GeometryViewPage
 from export.pages.lexiconpage import LexiconPage
 from export.pages.personpage import PersonPage
+from export.pages.shaclpage import SHACLPage
 from export.pages.model3dpage import Model3DPage
 
 from export.pages.textannopage import TextAnnoPage
@@ -96,13 +97,13 @@ class HTMLExporter():
             for tup in predobjmap:
                 predobjtuplen=len(predobjmap[tup])
                 if self.pubconfig["metadatatable"] and tup not in DocConfig.labelproperties and DocUtils.shortenURI(tup,True) in DocConfig.metadatanamespaces:
-                    thetable = metadatatablecontents
+                    #thetable = metadatatablecontents
                     metadatatablecontentcounter += 1
-                    thetable += f'<tr class="{"odd" if metadatatablecontentcounter % 2 == 0 else "even"}">'
+                    thetable = f'{metadatatablecontents}<tr class="{"odd" if metadatatablecontentcounter % 2 == 0 else "even"}">'
                 else:
-                    thetable = tablecontents
+                    #thetable = tablecontents
                     tablecontentcounter += 1
-                    thetable+=f'<tr class="{"odd" if tablecontentcounter % 2 == 0 else "even"}">'
+                    thetable=f'{tablecontents}<tr class="{"odd" if tablecontentcounter % 2 == 0 else "even"}">'
                 if tup == self.typeproperty:
                     for tp in predobjmap[tup]:
                         tpstr=str(tp)
@@ -222,11 +223,12 @@ class HTMLExporter():
                         tablecontents += "<ul>"
                     labelmap = defaultdict(str)
                     itemcounter = 0
+                    tupuri=URIRef(tup)
                     for item in subpredsmap[tup]:
                         if itemcounter >= HTMLExporter.maxlistthreshold:
                             break
                         if subjectstorender is not None and item not in subjectstorender and baseurl in str(item):
-                            postprocessing.add((item, URIRef(tup), subject))
+                            postprocessing.add((item, tupuri, subject))
                         res = HTMLExporter.createHTMLTableValueEntry(subject, tup, item, None, graph,
                                                                      baseurl, checkdepth, geojsonrep, foundmedia,
                                                                      imageannos,
@@ -348,9 +350,10 @@ class HTMLExporter():
                         self.imagetoURI[image] = {"uri": {}}
                     if not subjectstr in self.imagetoURI[image]["uri"]:
                         self.imagetoURI[image]["uri"][subjectstr] = {"bodies": []}
-                    annostring = ""
-                    for anno in imageannos:
-                        annostring += anno["value"].replace("<svg>","<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
+                    #annostring = ""
+                    annostring="".join(anno["value"].replace("<svg>","<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">") for anno in imageannos)
+                    #for anno in imageannos:
+                    #    annostring += anno["value"].replace("<svg>","<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
                     f.write(self.templates["imageswithannotemplate"].replace("{{carousel}}",f'{carousel}" style="position: relative;display: inline-block;').replace(
                         "{{image}}", imagestr).replace("{{svganno}}", annostring).replace("{{imagetitle}}",imagestr[0:imagestr.rfind('.')]))
                     if len(foundmedia["image"]) > 3:
@@ -413,6 +416,8 @@ class HTMLExporter():
                     LexiconPage.generatePageWidget(graph, subject, f, False)
                 if type in PersonPage.pageWidgetConstraint():
                     PersonPage.generatePageWidget(graph, subject, self.templates, f, True)
+                if type in SHACLPage.pageWidgetConstraint():
+                    SHACLPage.generatePageWidget(graph, subject,type, f)
             for coll in collections:
                 if coll in DocDefaults.collectionclassToFunction:
                     DocDefaults.collectionclassToFunction[coll](graph, subject, self.templates, f)
@@ -446,8 +451,7 @@ class HTMLExporter():
                 f.write(self.templates["htmltabletemplate"].replace("{{tablecontent}}", metadatatablecontents))
             tempfoot = DocUtils.replaceStandardVariables(self.templates["footer"], "", checkdepth, "false",self.pubconfig).replace(
                 "{{exports}}",
-                myexports).replace(
-                "{{license}}", curlicense).replace("{{bibtex}}", "").replace("{{stats}}", "")
+                myexports).replace("{{license}}", curlicense).replace("{{bibtex}}", "").replace("{{stats}}", "")
             tempfoot=DocUtils.replaceCitationLink(tempfoot,foundlabel,subject,self.pubconfig)
             relpath=DocUtils.generateRelativePathFromGivenDepth(checkdepth)
             tempfoot = DocUtils.conditionalArrayReplace(tempfoot,

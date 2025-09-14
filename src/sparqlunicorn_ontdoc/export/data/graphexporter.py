@@ -140,14 +140,15 @@ class GraphExporter:
             substr=str(sub)
             if substr not in uriToNodeId:
                 uriToNodeId[substr] = nodecounter
-                file.write(str(nodecounter)+" ")
+                file.write(f"{nodecounter} ")
                 nodecounter += 1
             for tup in g.predicate_objects(sub):
-                if str(tup[1]) not in uriToNodeId:
-                    file.write(str(nodecounter)+" ")
-                    uriToNodeId[str(tup[1])] = nodecounter
+                tup1str=str(tup[1])
+                if tup1str not in uriToNodeId:
+                    file.write(f"{nodecounter} ")
+                    uriToNodeId[tup1str] = nodecounter
                     nodecounter += 1
-                tgfresedges += f"(edge {edgecounter} {uriToNodeId[substr]} {uriToNodeId[str(tup[1])]})\n"
+                tgfresedges += f"(edge {edgecounter} {uriToNodeId[substr]} {uriToNodeId[tup1str]})\n"
                 edgecounter+=1
         file.write(")\n")
         file.write(tgfresedges)
@@ -167,11 +168,12 @@ class GraphExporter:
                 result["graph"]["nodes"][substr]={"label":str(DocUtils.shortenURI(substr))}
                 nodecounter += 1
             for tup in g.predicate_objects(sub):
-                if str(tup[1]) not in uriToNodeId:
-                    result["graph"]["nodes"][str(tup[1])] = {"label": str(DocUtils.shortenURI(str(tup[1])))}
-                    uriToNodeId[str(tup[1])] = nodecounter
+                tup1str=str(tup[1])
+                if tup1str not in uriToNodeId:
+                    result["graph"]["nodes"][tup1str] = {"label": str(DocUtils.shortenURI(tup1str))}
+                    uriToNodeId[tup1str] = nodecounter
                     nodecounter += 1
-                result["graph"]["edges"].append({"source":str(uriToNodeId[substr]),"target":str(uriToNodeId[str(tup[1])])})
+                result["graph"]["edges"].append({"source":str(uriToNodeId[substr]),"target":str(uriToNodeId[tup1str])})
                 edgecounter+=1
         #file.write(json.dumps(result))
         json.dump(result,file)
@@ -214,9 +216,10 @@ class GraphExporter:
                 file.write(f'{sub} [label="{DocUtils.shortenURI(substr)}"]\n')
                 nodecounter += 1
             for tup in g.predicate_objects(sub):
-                if str(tup[1]) not in uriToNodeId:
-                    file.write(f'{tup[1]} [label="{DocUtils.shortenURI(str(tup[1]))}"]\n')
-                    uriToNodeId[str(tup[1])] = nodecounter
+                tup1str=str(tup[1])
+                if tup1str not in uriToNodeId:
+                    file.write(f'{tup[1]} [label="{DocUtils.shortenURI(tup1str)}"]\n')
+                    uriToNodeId[tup1str] = nodecounter
                     nodecounter += 1
                 file.write(f'{sub} {tup[1]} [label="{DocUtils.shortenURI(str(tup[0]))}"]\n')
                 edgecounter+=1

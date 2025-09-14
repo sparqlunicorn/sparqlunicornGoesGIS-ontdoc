@@ -22,7 +22,7 @@ class CIDOCOverviewPage:
         resmap["P46_is_composed_of"]=None
         resmap["P46_forms_part_of"]=None
         resmap["P108_was_produced_by"]=None
-        widget="<table><thead><tr><th>Name</th><th>Type</th><th>Composed of</th><th>part of</th><th>documented in</th><th>was present at</th><th>has dimension</th</tr></thead><tbody><tr>"
+        widget="<table><thead><tr><th>Name</th><th>Type</th><th>Composed of</th><th>part of</th><th>documented in</th><th>was present at</th><th>has dimension</th></tr></thead><tbody><tr>"
         for predobj in graph.predicate_objects(subject):
             pobjstr=str(predobj[0])
             if pobjstr in resmap:

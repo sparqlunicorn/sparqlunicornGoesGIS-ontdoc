@@ -144,14 +144,7 @@ class StacAPIExporter:
                         "text/ttl": {"schema": {}}, "text/html": {"schema": {}}}}}}}
             if outpath.endswith("/"):
                 outpath = outpath[0:-1]
-            if not os.path.exists(outpath + "/api/"):
-                os.makedirs(outpath + "/api/")
-            if not os.path.exists(outpath + "/license/"):
-                os.makedirs(outpath + "/license/")
-            if not os.path.exists(outpath + "/collections/"):
-                os.makedirs(outpath + "/collections/")
-            if not os.path.exists(outpath + "/conformance/"):
-                os.makedirs(outpath + "/conformance/")
+            DocUtils.createFoldersFromList(outpath + "/api/",outpath + "/license/",outpath + "/collections/",outpath + "/conformance/")
         result = list()
         for coll in featurecollectionspaths:
             curcoll = None

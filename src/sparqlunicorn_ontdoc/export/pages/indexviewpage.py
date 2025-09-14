@@ -67,18 +67,14 @@ class IndexViewPage:
                 indexhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], voidds, checkdepth,
                                                           str(nslink == pubconfig["prefixns"]).lower(),pubconfig)
                 indexhtml = indexhtml.replace("{{iconprefixx}}",
-                                              (relpath + "icons/" if pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",
-                                                                                                          pubconfig["prefixns"]).replace(
+                                              (relpath + "icons/" if pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",pubconfig["prefixns"]).replace(
                     "{{relativedepth}}", str(checkdepth)).replace("{{relativepath}}", relpath).replace("{{toptitle}}",
                                                                                                        "Index page for " + nslink).replace(
                     "{{title}}", f'Index page for <span property="http://rdfs.org/ns/void#uriSpace" content="{nslink}">{nslink}</span>').replace("{{startscriptpath}}", scriptlink).replace(
                     "{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink) \
                     .replace("{{classtreefolderpath}}", classtreelink).replace("{{baseurlhtml}}", nslink).replace(
-                    "{{proprelationpath}}", proprelations).replace("{{nonnslink}}", "").replace("{{scriptfolderpath}}",
-                                                                                                sfilelink).replace(
-                    "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "").replace("{{subjectencoded}}",
-                                                                                                 urllib.parse.quote(
-                                                                                                     str(voidds)))
+                    "{{proprelationpath}}", proprelations).replace("{{nonnslink}}", "").replace("{{scriptfolderpath}}",sfilelink).replace(
+                    "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "").replace("{{subjectencoded}}",urllib.parse.quote(str(voidds)))
                 f.write(indexhtml)
                 f.write(f'<p property="http://rdfs.org/ns/void#feature" resource="http://www.w3.org/ns/formats/Turtle">This page shows information about linked data resources in <span property="http://rdfs.org/ns/void#feature" resource="http://www.w3.org/ns/formats/RDFa">HTML</span>. Choose the classtree navigation or search to browse the data</p>{templates["vowltemplate"].replace("{{vowlpath}}", "minivowl_result.js")}')
                 if pubconfig["startconcept"] is not None and path == pubconfig["outpath"] and pubconfig["startconcept"] in uritotreeitem:
@@ -106,21 +102,18 @@ class IndexViewPage:
                             else:
                                 f.write(f"<tr><td><img src=\"{tree['types'][item['type']]['icon']}\" height=\"25\" width=\"25\" alt=\"{item['type']}\"/><a  href=\"{item['id']}\" target=\"_blank\">")
                                 itemstr=str(item["text"])
-                                if "[" in item["text"]:
-                                    f.write(f'{itemstr[0:itemstr.rfind("[")]}</a></td>')
-                                else:
-                                    f.write(itemstr + "</a></td>")
+                                f.write(f'{itemstr[0:itemstr.rfind("[")] if "[" in itemstr else ""}</a></td>')
                             f.write(f'<td property="http://rdfs.org/ns/void#classPartition" typeof="http://rdfs.org/ns/void#Dataset" resource="{voidds}_{DocUtils.shortenURI(item["id"])}"><span about="{voidds}_{DocUtils.shortenURI(item["id"])}" property="http://rdfs.org/ns/void#class" resource="{item["id"]}"></span><span about="{voidds}_{DocUtils.shortenURI(item["id"])}" property="http://rdfs.org/ns/void#entities" content="{item["instancecount"]}" datatype="http://www.w3.org/2001/XMLSchema#integer">{item["instancecount"]}</td>{exitem}</tr>')
                 f.write(f"</tbody></table><script property=\"http://purl.org/dc/terms/modified\" content=\"{pubconfig['modtime']}\" datatype=\"http://www.w3.org/2001/XMLSchema#dateTime\">$('#indextable').DataTable();</script>")
                 tempfoot = DocUtils.replaceStandardVariables(templates["footer"], "", checkdepth,str(nslink == pubconfig["prefixns"]).lower(),pubconfig).replace(
                     "{{license}}", curlicense).replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}","").replace("{{stats}}", voidstatshtml)
                 tempfoot=DocUtils.replaceCitationLink(tempfoot,"Index page for " + nslink,"",pubconfig)
                 tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True, apis["ogcapifeatures"], apis["iiif"],apis["ckan"]],
-                                                            [
-                                                                f"<a href=\"{DocUtils.generateRelativePathFromGivenDepth(checkdepth)}sparql.html?endpoint={pubconfig['deploypath']}\">[SPARQL]</a>&nbsp;",
-                                                                f"<a href=\"{relpath}api/api.html\">[OGC API Features]</a>&nbsp;",
-                                                                f"<a href=\"{relpath}iiif/\">[IIIF]</a>&nbsp;",
-                                                                f"<a href=\"{relpath}api/3/\">[CKAN]</a>"
-                                                            ], "{{apis}}")
+                        [
+                            f"<a href=\"{DocUtils.generateRelativePathFromGivenDepth(checkdepth)}sparql.html?endpoint={pubconfig['deploypath']}\">[SPARQL]</a>&nbsp;",
+                            f"<a href=\"{relpath}api/api.html\">[OGC API Features]</a>&nbsp;",
+                            f"<a href=\"{relpath}iiif/\">[IIIF]</a>&nbsp;",
+                            f"<a href=\"{relpath}api/3/\">[CKAN]</a>"
+                        ], "{{apis}}")
                 f.write(tempfoot)
 
