@@ -7,6 +7,7 @@ from rdflib.namespace import RDF
 from rdflib.plugins.sparql import prepareQuery
 from urllib.request import urlopen
 
+
 from io import BytesIO
 from zipfile import ZipFile
 import os
@@ -373,7 +374,7 @@ class OntDocGeneration:
                                        uritotreeitem, labeltouri):
         nonnsuris = len(uristorender)
         counter = 0
-        # print("NONS URIS TO RENDER: "+str(uristorender))
+        print("NONS URIS TO RENDER: "+str(nonnsuris))
         for uri in uristorender:
             theuri=URIRef(uri)
             label = ""

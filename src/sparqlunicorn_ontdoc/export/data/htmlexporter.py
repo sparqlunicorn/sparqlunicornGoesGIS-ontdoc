@@ -313,11 +313,12 @@ class HTMLExporter():
                 "{{baseurl}}", baseurl).replace("{{tablecontent}}", tablecontents).replace("{{description}}","").replace(
                 "{{scriptfolderpath}}", searchfilelink).replace("{{classtreefolderpath}}", classtreelink).replace(
                 "{{exports}}", myexports).replace("{{nonnslink}}", str(nonnslink)).replace("{{subjectencoded}}",urllib.parse.quote(subjectstr)))
-            for comm in comment:
-                f.write(self.templates["htmlcommenttemplate"].replace("{{comment}}",f"{DocUtils.shortenURI(comm)}:{comment[comm]}"))
+            if comment:
+                for comm in comment:
+                    f.write(self.templates["htmlcommenttemplate"].replace("{{comment}}",f"{DocUtils.shortenURI(comm)}:{comment[comm]}"))
             # for fval in foundvals:
             #    f.write(templates["htmlcommenttemplate"].replace("{{comment}}", "<b>Value "+ DocUtils.shortenURI(str(fval[0]))+": <mark>" + str(fval[1]) + "</mark></b>"))
-            if len(foundmedia["mesh"]) > 0:
+            if foundmedia["mesh"]:
                 self.has3d=Model3DPage.generatePageWidget(graph,foundmedia,annobodies,self.templates,subject,self.iiifmanifestpaths,image3dannos,self.pubconfig,self.imagetoURI,foundlabel,comment,thetypes,predobjmap,f,checkdepth)
             #if len(foundmedia["image"])> 0:
                 #print("found media")
@@ -391,33 +392,36 @@ class HTMLExporter():
                 f.write(self.templates["imagecarouselfooter"])
             if len(textannos) > 0:
                 TextAnnoPage.generatePageWidget(graph,textannos,self.templates,f)
-            if len(foundmedia["audio"]) > 0 and self.pubconfig["apis"]["iiif"]:
+            if foundmedia["audio"] and self.pubconfig["apis"]["iiif"]:
                 self.iiifmanifestpaths["default"].append(
                     IIIFAPIExporter.generateIIIFManifest(graph, self.pubconfig["outpath"], self.pubconfig["deploypath"], foundmedia["audio"],
                                                          None, None, subjectstr, self.pubconfig["prefixns"],
                                                          self.imagetoURI,
                                                          self.pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
                                                          foundlabel, comment, thetypes, predobjmap, "Audio"))
-            for audio in foundmedia["audio"]:
-                self.imagetoURI[audio] = {"uri": subjectstr}
-                f.write(self.templates["audiotemplate"].replace("{{audio}}", str(audio)))
-            if len(foundmedia["video"]) > 0 and self.pubconfig["apis"]["iiif"]:
+            if foundmedia["audio"]:
+                for audio in foundmedia["audio"]:
+                    self.imagetoURI[audio] = {"uri": subjectstr}
+                    f.write(self.templates["audiotemplate"].replace("{{audio}}", str(audio)))
+            if foundmedia["video"] and self.pubconfig["apis"]["iiif"]:
                 self.iiifmanifestpaths["default"].append(
                     IIIFAPIExporter.generateIIIFManifest(graph, self.pubconfig["outpath"], self.pubconfig["deploypath"], foundmedia["video"],
                                                          None, None, subjectstr, self.pubconfig["prefixns"],
                                                          self.imagetoURI,
                                                          self.pubconfig["imagemetadata"], DocConfig.metadatanamespaces,
                                                          foundlabel, comment, thetypes, predobjmap, "Video"))
-            for video in foundmedia["video"]:
-                self.imagetoURI[video] = {"uri": subjectstr}
-                f.write(self.templates["videotemplate"].replace("{{video}}", str(video)))
-            for type in curtypes:
-                if type in DocConfig.lexicontypes:
-                    LexiconPage.generatePageWidget(graph, subject, f, False)
-                if type in PersonPage.pageWidgetConstraint():
-                    PersonPage.generatePageWidget(graph, subject, self.templates, f, True)
-                if type in SHACLPage.pageWidgetConstraint():
-                    SHACLPage.generatePageWidget(graph, subject,type, f)
+            if foundmedia["video"]:
+                for video in foundmedia["video"]:
+                    self.imagetoURI[video] = {"uri": subjectstr}
+                    f.write(self.templates["videotemplate"].replace("{{video}}", str(video)))
+            if curtypes:
+                for type in curtypes:
+                    if type in DocConfig.lexicontypes:
+                        LexiconPage.generatePageWidget(graph, subject, f, False)
+                    if type in PersonPage.pageWidgetConstraint():
+                        PersonPage.generatePageWidget(graph, subject, self.templates, f, True)
+                    if type in SHACLPage.pageWidgetConstraint():
+                        SHACLPage.generatePageWidget(graph, subject,type, f)
             for coll in collections:
                 if coll in DocDefaults.collectionclassToFunction:
                     DocDefaults.collectionclassToFunction[coll](graph, subject, self.templates, f)
@@ -450,8 +454,7 @@ class HTMLExporter():
                 f.write("<h5>Metadata</h5>")
                 f.write(self.templates["htmltabletemplate"].replace("{{tablecontent}}", metadatatablecontents))
             tempfoot = DocUtils.replaceStandardVariables(self.templates["footer"], "", checkdepth, "false",self.pubconfig).replace(
-                "{{exports}}",
-                myexports).replace("{{license}}", curlicense).replace("{{bibtex}}", "").replace("{{stats}}", "")
+                "{{exports}}",myexports).replace("{{license}}", curlicense).replace("{{bibtex}}", "").replace("{{stats}}", "")
             tempfoot=DocUtils.replaceCitationLink(tempfoot,foundlabel,subject,self.pubconfig)
             relpath=DocUtils.generateRelativePathFromGivenDepth(checkdepth)
             tempfoot = DocUtils.conditionalArrayReplace(tempfoot,
@@ -640,28 +643,28 @@ class HTMLExporter():
                 if res["uri"] != "":
                     tablecontents += f"<span><a itemprop=\"{predstr}\"{microdatares}property=\"{predstr}\" {rdfares} target=\"_blank\" href=\"{objstr}\">{label} <span style=\"color: #666;\">({res['uri']})</span></a>"
                 else:
-                    tablecontents += f"<span><a itemprop=\"{predstr}\"{microdatares}property=\"{predstr}\" {rdfares} target=\"_blank\" href=\"{objstr}\">{label}</a>"
+                    tablecontents += f'<span><a itemprop="{predstr}"{microdatares}property="{predstr}" {rdfares} target="_blank" href="{objstr}">{label}</a>'
                 if bibtex is not None:
                     tablecontents += f"<details><summary>[BIBTEX]</summary><pre>{bibtex}</pre></details>"
                 if generatePagesForNonNS:
                     rellink = DocUtils.generateRelativeLinkFromGivenDepth(str(baseurl), checkdepth,f'{baseurl}nonns_{DocUtils.shortenURI(objstr.replace(":", "_"))}', False)
-                    tablecontents += f" <a href=\"{rellink}.html\">[x]</a>"
+                    tablecontents += f' <a href="{rellink}.html">[x]</a>'
             if unitlabel:
-                tablecontents += f" <span style=\"font-weight:bold\">[{unitlabel}]</span>"
+                tablecontents += f' <span style="font-weight:bold">[{unitlabel}]</span>'
             if timeobj is not None:
                 res = OWLTimePage.timeObjectToHTML(timeobj, prefixes)
                 if res:
-                    tablecontents += f" <span style=\"font-weight:bold\">[{res}]</span>"
+                    tablecontents += f' <span style="font-weight:bold">[{res}]</span>'
                 dateprops = timeobj
             tablecontents += "</span>"
         else:
             label = objstr
             if ttlf is not None:
                 ttlf.add((subject, URIRef(pred), object))
-            objstrrep = objstr.replace("<", "&lt").replace(">", "&gt;").replace("\"", "'")
+            objstring = objstr.replace("<", "&lt").replace(">", "&gt;")
+            objstrrep = objstring.replace("\"", "'")
             if isinstance(object, Literal) and object.datatype is not None:
                 res = DocUtils.replaceNameSpacesInLabel(prefixes, str(object.datatype))
-                objstring = objstr.replace("<", "&lt").replace(">", "&gt;")
                 if object.datatype == XSD.anyURI:
                     objstring = f'<a href="{objstr}">{objstr}</a>'
                 elif str(object.datatype) in DocConfig.timeliteraltypes and dateprops is not None and DocUtils.shortenURI(predstr, True) not in DocConfig.metadatanamespaces and str(pred) not in dateprops:

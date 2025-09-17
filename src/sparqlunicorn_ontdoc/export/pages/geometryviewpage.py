@@ -24,8 +24,9 @@ class GeometryViewPage:
 
 
     def generatePageWidget(self,graph,subject,templates,f,uritotreeitem,geojsonrep,predobjmap,geocache,parameters={},onlybody=False):
-        if uritotreeitem is not None and str(subject) in uritotreeitem:
-            uritotreeitem[str(subject)][-1]["type"] = "geoinstance"
+        substr=str(subject)
+        if uritotreeitem is not None and substr in uritotreeitem:
+            uritotreeitem[substr][-1]["type"] = "geoinstance"
         props = predobjmap
         dateprops=parameters.get("dateprops",[])
         epsgcode=parameters.get("epsgcode","")
@@ -36,12 +37,12 @@ class GeometryViewPage:
             #    dateprops.append(item)
                 #props[item] = str(parameters.get("timeobj")[item])
                 #props[item] = str(item)
-        jsonfeat = {"type": "Feature", 'id': str(subject), 'name': parameters.get("foundlabel",""), 'dateprops': dateprops,'properties': props, "geometry": geojsonrep}
+        jsonfeat = {"type": "Feature", 'id': substr, 'name': parameters.get("foundlabel",""), 'dateprops': dateprops,'properties': props, "geometry": geojsonrep}
         if epsgcode == "" and "crs" in geojsonrep:
             epsgcode = "EPSG:" + geojsonrep["crs"]
             jsonfeat["crs"]=epsgcode
         if parameters.get("hasnonnslen",0) > 0:
-            geocache[str(subject)] = jsonfeat
+            geocache[substr] = jsonfeat
         geom=shapely.geometry.shape(jsonfeat["geometry"])
         if geom.has_z:
             self.createSVGFromWKT(templates, {"type":"FeatureCollection","features":[jsonfeat]}, f)
