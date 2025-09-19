@@ -65,20 +65,20 @@ class LexiconPage(Page):
         else:
             f.write(f'<td>{lexentry["language"]}</td><td>')
         for form in lexentry["forms"]:
-            f.write(f"<a href=\"{form['uri']}\" target=\"_blank\">{form['label']}</a> ")
+            f.write(f'<a href="{form["uri"]}" target="_blank">{form["label"]}</a> ')
         f.write("</td><td>")
         for sense in lexentry["senses"]:
             if sense["reference"]!="":
                 f.write(f'<a href="{sense["uri"]}" target="_blank">{sense["label"]}</a> <a href="{sense["reference"]}" target="_blank">["{DocUtils.shortenURI(str(sense["reference"]))}]</a>')
             else:
-                f.write(f"<a href=\"{sense['uri']}\" target=\"_blank\">{sense['label']}</a> ")
+                f.write(f'<a href="{sense["uri"]}" target="_blank">{sense["label"]}</a> ')
         f.write("</td></tr>")
         if not onlybody:
             f.write("</tbody></table><script>$('#lexicon').DataTable();</script>")
 
     @staticmethod
     def generateCollectionWidget(graph,subject,templates,f):
-        f.write(f"<table id=\"lexicon\">{LexiconPage.tableheader}<tbody>")
+        f.write(f'<table id="lexicon">{LexiconPage.tableheader}<tbody>')
         count=0
         for lexentry in graph.objects(subject, URIRef("http://www.w3.org/ns/lemon/lexicog#entry"), True):
             LexiconPage.generatePageWidget(graph,lexentry,f,True)
@@ -87,7 +87,7 @@ class LexiconPage(Page):
             for lexentry in graph.objects(subject, URIRef("http://www.w3.org/ns/lemon/lime#entry"), True):
                 LexiconPage.generatePageWidget(graph,lexentry,f,True)
                 count+=1
-        f.write("</tbody></table><script>$('#lexicon').DataTable();</script>")
+        f.write('</tbody></table><script>$("#lexicon").DataTable();</script>')
 
     def generatePageView(self,templates,g,f):
         print("PageView")

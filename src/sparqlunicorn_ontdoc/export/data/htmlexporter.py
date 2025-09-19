@@ -451,8 +451,7 @@ class HTMLExporter():
                                                                              "hasnonnslen": len(hasnonns)})
             f.write(self.templates["htmltabletemplate"].replace("{{tablecontent}}", tablecontents))
             if metadatatablecontentcounter >= 0:
-                f.write("<h5>Metadata</h5>")
-                f.write(self.templates["htmltabletemplate"].replace("{{tablecontent}}", metadatatablecontents))
+                f.write(f'<h5>Metadata</h5>{self.templates["htmltabletemplate"].replace("{{tablecontent}}", metadatatablecontents)}')
             tempfoot = DocUtils.replaceStandardVariables(self.templates["footer"], "", checkdepth, "false",self.pubconfig).replace(
                 "{{exports}}",myexports).replace("{{license}}", curlicense).replace("{{bibtex}}", "").replace("{{stats}}", "")
             tempfoot=DocUtils.replaceCitationLink(tempfoot,foundlabel,subject,self.pubconfig)

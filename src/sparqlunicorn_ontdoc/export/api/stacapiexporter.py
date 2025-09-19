@@ -176,14 +176,15 @@ class StacAPIExporter:
                 currentcollection = {"title": featurecollectionspaths[coll]["name"],
                                      "id": coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson",
                                                                                                           "")[1:],
-                                     "links": [], "itemType": "feature"}
-                currentcollection["links"] = [
-                    {"href": opwebcoll + "/items/index.json", "rel": "items", "type": "application/json",
-                     "title": "Collection as JSON"},
-                    {"href": opwebcoll + "/items/indexc.html", "rel": "items", "type": "text/html",
-                     "title": "Collection as HTML"},
-                    {"href": opwebcoll + "/items/index.ttl", "rel": "collection", "type": "text/ttl",
-                     "title": "Collection as TTL"}]
+                                     "links": [
+                                         {"href": opwebcoll + "/items/index.json", "rel": "items",
+                                          "type": "application/json",
+                                          "title": "Collection as JSON"},
+                                         {"href": opwebcoll + "/items/indexc.html", "rel": "items", "type": "text/html",
+                                          "title": "Collection as HTML"},
+                                         {"href": opwebcoll + "/items/index.ttl", "rel": "collection",
+                                          "type": "text/ttl",
+                                          "title": "Collection as TTL"}], "itemType": "feature"}
                 if "bbox" in curcoll:
                     currentcollection["extent"] = {"spatial": {"bbox": curcoll["bbox"]}}
                     collectionsjson["collections"][-1]["extent"] = {"spatial": {"bbox": curcoll["bbox"]}}

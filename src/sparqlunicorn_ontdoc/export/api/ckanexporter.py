@@ -12,7 +12,6 @@ class CKANExporter:
     @staticmethod
     def generateCKANCollection(outpath, deploypath, featurecollectionspaths,classtree,license="",version="3"):
         ckanapihtml = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><metaname=\"description\" content=\"SwaggerUI\"/><title>SwaggerUI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist/swagger-ui.css\" /></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js\" crossorigin></script><script>const swaggerUrl = \"" + str(deploypath) + "/api/3/api.json\"; const apiUrl = \"" + str(deploypath) + "/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
-        ckanopenapi = {"openapi": "3.0.1","info": {"title": str(deploypath)+" CKAN API", "version": str(version)}, "servers": [{"url": str(deploypath)+"/api/3/"}], "paths": {}}
         if not os.path.exists(outpath + "/dataset/"):
             os.makedirs(outpath + "/dataset/")
         if not os.path.exists(outpath + "/api/"):
@@ -53,33 +52,36 @@ class CKANExporter:
             print("Symlink creation might not be allowed")
         with open(f"{outpath}/api/{version}/index.json", "w",encoding="utf-8") as f:
             json.dump({"version": int(version)},f)
-        ckanopenapi["paths"][f"/api/{version}/action/group_list/"] = {"get": {"tags": ["CKAN"],
-                                                                       "summary": "Retrieves the group list of this CKAN API",
-                                                                       "description": "Retrieves the group list of this CKAN API",
-                                                                       "operationId": "actionapi-group_list",
-                                                                       "parameters": [], "responses": {
-                "200": {"description": "Success",
-                            "content": {"text/plain": {"example": None}},
-                            "application/json": {"schema": {"example": None}, "example": None},
-                            "text/json": {"schema": {"example": None}, "example": None}}}}}
-        ckanopenapi["paths"][f"/api/{version}/action/tag_list/"] = {"get": {"tags": ["CKAN"],
-                                                                       "summary": "Retrieves the tag list of this CKAN API",
-                                                                       "description": "Retrieves the tag list of this CKAN API",
-                                                                       "operationId": "actionapi-tag_list",
-                                                                       "parameters": [], "responses": {
-                "200": {"description": "Success",
-                            "content": {"text/plain": {"example": None}},
-                            "application/json": {"schema": {"example": None}, "example": None},
-                            "text/json": {"schema": {"example": None}, "example": None}}}}}
-        ckanopenapi["paths"][f"/api/{version}/action/package_list/"] = {"get": {"tags": ["CKAN"],
-                                                                       "summary": "Retrieves the package list of this CKAN API",
-                                                                       "description": "Retrieves the package list of this CKAN API",
-                                                                       "operationId": "actionapi-package_list",
-                                                                       "parameters": [], "responses": {
-                "200": {"description": "Success",
-                            "content": {"text/plain": {"example": None}},
-                            "application/json": {"schema": {"example": None}, "example": None},
-                            "text/json": {"schema": {"example": None}, "example": None}}}}}
+        ckanopenapi = {"openapi": "3.0.1", "info": {"title": str(deploypath) + " CKAN API", "version": str(version)},
+                       "servers": [{"url": str(deploypath) + "/api/3/"}], "paths": {
+                f"/api/{version}/action/group_list/": {"get": {"tags": ["CKAN"],
+                       "summary": "Retrieves the group list of this CKAN API",
+                       "description": "Retrieves the group list of this CKAN API",
+                       "operationId": "actionapi-group_list",
+                       "parameters": [], "responses": {
+                        "200": {"description": "Success",
+                                    "content": {"text/plain": {"example": None}},
+                                    "application/json": {"schema": {"example": None}, "example": None},
+                                    "text/json": {"schema": {"example": None}, "example": None}}}}},
+                f"/api/{version}/action/tag_list/":{"get": {"tags": ["CKAN"],
+                        "summary": "Retrieves the tag list of this CKAN API",
+                        "description": "Retrieves the tag list of this CKAN API",
+                        "operationId": "actionapi-tag_list",
+                        "parameters": [], "responses": {
+                        "200": {"description": "Success",
+                                "content": {"text/plain": {"example": None}},
+                                "application/json": {"schema": {"example": None}, "example": None},
+                                "text/json": {"schema": {"example": None}, "example": None}}}}},
+                f"/api/{version}/action/package_list/": {"get": {"tags": ["CKAN"],
+                       "summary": "Retrieves the package list of this CKAN API",
+                       "description": "Retrieves the package list of this CKAN API",
+                       "operationId": "actionapi-package_list",
+                       "parameters": [], "responses": {
+                        "200": {"description": "Success",
+                                "content": {"text/plain": {"example": None}},
+                                "application/json": {"schema": {"example": None}, "example": None},
+                                "text/json": {"schema": {"example": None}, "example": None}}}}}
+        }}
         with open(f"{outpath}/api/{version}/api.json", "w",encoding="utf-8") as f:
             json.dump(ckanopenapi,f)
         with open(f"{outpath}/api/{version}/index.html", "w",encoding="utf-8") as f:

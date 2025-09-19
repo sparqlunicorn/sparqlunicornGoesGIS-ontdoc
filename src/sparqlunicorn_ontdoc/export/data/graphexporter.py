@@ -62,7 +62,7 @@ class GraphExporter:
     @staticmethod
     def convertTTLToGML(g, file, subjectstorender=None,classlist=None, formatt="graphml"):
         literalcounter = 0
-        file.write("""graph\n[\n""")
+        file.write("graph\n[\n")
         if subjectstorender is None:
             subjectstorender = g.subjects(None,None,True)
         addednodes = set()
@@ -245,9 +245,9 @@ class GraphExporter:
                     if tup1str not in uriToNodeId:
                         file.write(f"<node id=\"{nodecounter}\" value=\""+str(tup1str.replace("<","&lt;").replace(">","&gt;").replace("&","&amp;").replace("\"","'"))+"\" label=\"" + str(str(tup[1]).replace("<","&lt;").replace(">","&gt;").replace("&","&amp;").replace("\"","'")) + "\">\n")
                         if tup[0] == RDF.type:
-                            file.write("<viz:color r=\"255\" g=\"165\" b=\"0\"/>\n")
+                            file.write('<viz:color r="255" g="165" b="0"/>\n')
                         else:
-                            file.write("<viz:color r=\"0\" g=\"128\" b=\"0\"/>\n")
+                            file.write('<viz:color r="0" g="128" b="0"/>\n')
                         file.write("</node>")
                         uriToNodeId[tup1str] = nodecounter
                         nodecounter += 1
@@ -256,9 +256,9 @@ class GraphExporter:
                     if tup1str not in uriToNodeId:
                         file.write(f'<node id="{nodecounter}" value="{tup[1]}" label="{DocUtils.shortenURI(tup1str)}">\n')
                         if tup[0] == RDF.type:
-                            file.write("<viz:color r=\"255\" g=\"165\" b=\"0\"/>\n")
+                            file.write('<viz:color r="255" g="165" b="0"/>\n')
                         else:
-                            file.write("<viz:color r=\"128\" g=\"0\" b=\"128\"/>\n")
+                            file.write('<viz:color r="128" g="0" b="128"/>\n')
                         file.write("</node>")
                         uriToNodeId[tup1str] = nodecounter
                         nodecounter += 1

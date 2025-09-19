@@ -116,4 +116,5 @@ class IndexViewPage:
                             f"<a href=\"{relpath}api/3/\">[CKAN]</a>"
                         ], "{{apis}}")
                 f.write(tempfoot)
+                indpcounter+=1
 

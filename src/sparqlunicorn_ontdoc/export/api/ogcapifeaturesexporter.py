@@ -161,11 +161,13 @@ class OGCAPIFeaturesExporter:
                          "type": "text/html", "title": "Collection as HTML"},
                         {"href": str(opweb.replace(".geojson", "") + "/index.ttl").replace("//", "/"),
                          "rel": "collection", "type": "text/ttl", "title": "Collection as TTL"}]})
-                currentcollection = {"title": featurecollectionspaths[coll]["name"],"id": collid,"links": [], "itemType": "feature"}
-                currentcollection["links"] = [
-                    {"href": opwebcoll + "/items/index.json", "rel": "items", "type": "application/json","title": "Collection as JSON"},
-                    {"href": f"{opwebcoll}/items/{collectionhtmlname}", "rel": "items", "type": "text/html","title": "Collection as HTML"},
-                    {"href": opwebcoll + "/items/index.ttl", "rel": "collection", "type": "text/ttl","title": "Collection as TTL"}]
+                currentcollection = {"title": featurecollectionspaths[coll]["name"], "id": collid, "links": [
+                    {"href": opwebcoll + "/items/index.json", "rel": "items", "type": "application/json",
+                     "title": "Collection as JSON"},
+                    {"href": f"{opwebcoll}/items/{collectionhtmlname}", "rel": "items", "type": "text/html",
+                     "title": "Collection as HTML"},
+                    {"href": opwebcoll + "/items/index.ttl", "rel": "collection", "type": "text/ttl",
+                     "title": "Collection as TTL"}], "itemType": "feature"}
                 if "bbox" in curcoll:
                     currentcollection["extent"] = {"spatial": {"bbox": curcoll["bbox"]}}
                     collectionsjson["collections"][-1]["extent"] = {"spatial": {"bbox": curcoll["bbox"]}}
@@ -262,7 +264,7 @@ class OGCAPIFeaturesExporter:
                             if os.path.exists(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.html"):
                                 targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.html", basepath+"/index.html", outpath, True)
                                 with open(basepath+"/index.html", "w",encoding="utf-8") as f:
-                                    f.write(f"<html><head><meta http-equiv=\"refresh\" content=\"0; url={targetpath}\" /></head></html>")
+                                    f.write(f'<html><head><meta http-equiv="refresh" content="0; url={targetpath}" /></head></html>')
                                 #print("symlinks created")
                         except Exception as e:
                             print("symlink creation error")

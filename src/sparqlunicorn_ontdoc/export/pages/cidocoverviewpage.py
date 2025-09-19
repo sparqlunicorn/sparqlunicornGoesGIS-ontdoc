@@ -2,10 +2,11 @@ from doc.docconfig import DocConfig
 from doc.docutils import DocUtils
 from rdflib import URIRef, Literal
 from collections import OrderedDict
+from export.pages.page import Page
 
 
 
-class CIDOCOverviewPage:
+class CIDOCOverviewPage(Page):
 
     def pageWidgetConstraint(self):
         return ["http://www.cidoc-crm.org/cidoc-crm/E22_Man-Made_Object","http://www.cidoc-crm.org/cidoc-crm/Thing"]

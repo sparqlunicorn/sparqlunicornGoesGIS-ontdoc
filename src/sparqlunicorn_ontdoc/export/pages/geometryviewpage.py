@@ -153,12 +153,10 @@ class GeometryViewPage:
                 if parameters.get("localOptimized", False):
                     f.write(templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace("{{myfeature}}",f'[{json.dumps(featcoll)}]').replace(
                         "{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(parameters.get("checkdepth", 0))).replace("{{epsg}}",epsgcode).replace(
-                        "{{baselayers}}", json.dumps(DocConfig.baselayers)).replace("{{epsgdefspath}}",parameters.get("epsgdefslink","")).replace(
-                        "{{dateatt}}",str(dateatt)))
+                        "{{baselayers}}", json.dumps(DocConfig.baselayers)).replace("{{epsgdefspath}}",parameters.get("epsgdefslink","")).replace("{{dateatt}}",str(dateatt)))
                 else:
                     f.write(templates["maptemplate"].replace("{{myfeature}}", f'["{DocUtils.shortenURI(str(parameters.get("completesavepath", "").replace(".html", ".geojson")))}"]').replace(
-                        "{{relativepath}}",
-                        DocUtils.generateRelativePathFromGivenDepth(parameters.get("checkdepth", 0))).replace("{{baselayers}}", json.dumps(DocConfig.baselayers)).replace("{{epsg}}",epsgcode).replace("{{epsgdefspath}}",parameters.get(
+                        "{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(parameters.get("checkdepth", 0))).replace("{{baselayers}}", json.dumps(DocConfig.baselayers)).replace("{{epsg}}",epsgcode).replace("{{epsgdefspath}}",parameters.get(
                                                                                                           "epsgdefslink","")).replace("{{dateatt}}", str(dateatt)))
                 spath=parameters.get("completesavepath", "").replace(".html", ".geojson")
                 with open(spath, 'w',encoding='utf-8') as fgeo:

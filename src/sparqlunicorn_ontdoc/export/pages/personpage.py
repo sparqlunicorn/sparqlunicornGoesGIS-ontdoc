@@ -145,7 +145,7 @@ class PersonPage:
         for pprop in graph.predicate_objects(subject, True):
             ppropstr=str(pprop[0])
             if ppropstr in PersonPage.vcardTohCard:
-                thehcard[str(PersonPage.vcardTohCard[ppropstr])]={"value":str(pprop[1]),"prop":ppropstr}
+                thehcard[PersonPage.vcardTohCard[ppropstr]]={"value":str(pprop[1]),"prop":ppropstr}
             if ppropstr in PersonPage.vcardprops:
                 if PersonPage.vcardprops[ppropstr] in thevcard:
                     thevcard[PersonPage.vcardprops[ppropstr]]["value"]+=" "+str(pprop[1])
@@ -155,9 +155,9 @@ class PersonPage:
 
     @staticmethod
     def hcardToHTMLTable(vcard,hcard):
-        result="<table id=\"person\" class=\"h-card\" border=\"1\"><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>"
+        result=f'<table id="person" class="h-card" border="1"><thead><tr><th>Property</th><th>Value</th></tr></thead><tbody>'
         for prop in hcard:
-            result+=f"<tr><td><a href=\"{hcard[prop]['prop']}\">{DocUtils.shortenURI(hcard[prop]['prop'])}</a></td>"
+            result+=f'<tr><td><a href="{hcard[prop]["prop"]}">{DocUtils.shortenURI(hcard[prop]["prop"])}</a></td>'
             if "http" in hcard[prop]:
                 result+=f"<td><a href=\"{hcard[prop]['value']}\" class=\"{prop}\">{DocUtils.shortenURI(hcard[prop]['value'])}</a></td></tr>"
             else:

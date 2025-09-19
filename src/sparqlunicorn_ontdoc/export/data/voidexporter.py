@@ -91,10 +91,11 @@ class VoidExporter:
                     g.add((voidds, dcsub,euri))
                     g.add((euri,RDFS.label,Literal(entry["label"],lang="en")))
         for pred in propstats:
-            cururi=URIRef(f'{voidds}_{DocUtils.shortenURI(pred)}')
+            predsuri=DocUtils.shortenURI(pred)
+            cururi=URIRef(f'{voidds}_{predsuri}')
             g.add((voidds,VOID.propertyPartition,cururi))
             g.add((cururi, RDF.type,VOID.Dataset))
-            g.add((cururi, RDFS.label,Literal(f"Property Partition: {DocUtils.shortenURI(pred)}", lang="en")))
+            g.add((cururi, RDFS.label,Literal(f"Property Partition: {predsuri}", lang="en")))
             g.add((cururi,VOID.property,URIRef(pred)))
             g.add((cururi,VOID.triples,Literal(str(propstats[pred]["triples"]),datatype=XSD.integer)))
             subjectstorender.add(cururi)

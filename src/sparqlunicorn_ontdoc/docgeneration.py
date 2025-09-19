@@ -216,7 +216,7 @@ class OntDocGeneration:
             subtorencounter += 1
             if subtorencounter % 250 == 0:
                 subtorenderlen = len(subjectstorender) + len(postprocessing)
-                DocUtils.updateProgressBar(subtorencounter, subtorenderlen, "Processing Subject URIs")
+                DocUtils.updateProgressBar(subtorencounter, subtorenderlen, f"Processing {subtorenderlen} Subject URIs")
             # except Exception as e:
             #    print("Create HTML Exception: "+str(e))
             #    print(traceback.format_exc())
@@ -605,8 +605,7 @@ def main():
                 .replace("{{classtreefolderpath}}", args.prefixnsshort + "_classtree.js").replace("{{baseurlhtml}}",
                                                                                                   ".").replace(
                 "{{nonnslink}}", str(nonnslink)).replace("{{proprelationpath}}", "proprelations.js").replace(
-                "{{scriptfolderpath}}", args.prefixnsshort + '_search.js').replace("{{exports}}",
-                                                                                   templates["nongeoexports"]).replace(
+                "{{scriptfolderpath}}", args.prefixnsshort + '_search.js').replace("{{exports}}",templates["nongeoexports"]).replace(
                 "{{bibtex}}", "")
             indexf.write(indexhtml)
             indexf.write("<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>")

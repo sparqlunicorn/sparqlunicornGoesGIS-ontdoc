@@ -78,9 +78,8 @@ class BibPage:
                 res += f'{bibtexitem[bibpart]["start"]}--{bibtexitem[bibpart]["end"]}}},\n'
             else:
                 res += str(bibtexitem[bibpart]) + "},\n"
-        res = res[0:-2]
-        res += "\n}"
-        return res
+        return f'{res[0:-2]}\n}}'
+        #return res
 
     @staticmethod
     def generatePageWidget(graph,memberid,templates,f,pageWidget=False):

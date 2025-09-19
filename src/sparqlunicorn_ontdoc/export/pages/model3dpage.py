@@ -41,13 +41,10 @@ class Model3DPage:
                     format = "nexus"
                     has3d = True
                 elif format == "gltf":
-                    f.write(templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",
-                                                                                                   str(list(
-                                                                                                       foundmedia[
+                    f.write(templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",str(list(foundmedia[
                                                                                                            "mesh"]))).replace(
                         "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
-                f.write(templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",
-                                                                                               str(list(foundmedia[
+                f.write(templates["threejstemplate"].replace("{{wktstring}}", "").replace("{{meshurls}}",str(list(foundmedia[
                                                                                                             "mesh"]))).replace(
                     "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
                 # f.write(templates["3dtemplate"].replace("{{meshurl}}",curitem).replace("{{meshformat}}",format))
@@ -57,8 +54,7 @@ class Model3DPage:
                 annoup = anno["value"].upper()
                 if "POINT" in annoup or "POLYGON" in annoup or "LINESTRING" in annoup:
                     f.write(templates["threejstemplate"].replace("{{wktstring}}", anno["value"]).replace(
-                        "{{meshurls}}", "[]").replace("{{relativepath}}",
-                                                      DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
+                        "{{meshurls}}", "[]").replace("{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)))
         return has3d
 
     @staticmethod
