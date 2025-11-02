@@ -44,6 +44,10 @@ class DocUtils:
             if not os.path.exists(fl):
                 os.makedirs(fl)
 
+    @staticmethod
+    def polygonToPath(svg):
+        svg = svg.replace("<polygon", "<path").replace("points=\"", "d=\"M").replace("\"></polygon>", " Z\"></polygon>")
+        return svg.replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">")
 
     @staticmethod
     def replaceStandardVariables(template, subject, checkdepth, indexpage,pubconfig):
@@ -156,10 +160,26 @@ class DocUtils:
         return f"{res} Total measured execution time: {totaltime} seconds"
 
     @staticmethod
-    def writeExecutionStats(timeexec,filename="buildlog.txt"):
+    def getExecutionStatsHTML(timeexec):
+        res=f"<html><head></head><body><h3 align=center>Selected Execution Statistics in order of execution</h3><table border=1><thead><tr><th>Process</th><th>Time</th><th>Comment</th></tr></thead><tbody>"
+        totaltime=0
+        for entry in timeexec:
+            res+=f"<tr><td><b>{entry}:</b></td><td>{timeexec[entry]['time']} seconds</td><td>"
+            totaltime+=timeexec[entry]['time']
+            if "items" in timeexec[entry]:
+                res+=f" for <b>{timeexec[entry]['items']}</b> items, about <b>{timeexec[entry]['time']/timeexec[entry]['items']} seconds</b> per item\n"
+            res+="</td></tr>"
+            #print("\n",end="")
+        return f"{res}<tr><td><b>Total measured execution time:</b></td><td>{totaltime} seconds</td></tr></tbody></table></body></html>"
+
+    @staticmethod
+    def writeExecutionStats(timeexec,filename="buildlog.json"):
         if filename.endswith(".json"):
             with open(filename, "w", encoding="utf-8") as f:
                 json.dump(timeexec,f)
+        elif filename.endswith(".js"):
+            with open(filename, "w", encoding="utf-8") as f:
+                f.write("var buildlog=" + json.dumps(timeexec))
         elif filename.endswith(".csv"):
             with open(filename,"w",encoding="utf-8") as f:
                 f.write(f"Task;ExecutionTime (seconds);Items Processed;TimePerItem (seconds);Comment\n")

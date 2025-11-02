@@ -18,6 +18,7 @@ from export.data.htmlexporter import HTMLExporter
 from export.data.voidexporter import VoidExporter
 from export.pages.indexviewpage import IndexViewPage
 from export.pages.sparqlpage import SPARQLPage
+from export.pages.buildlogpage import BuildLogPage
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 print(sys.path)
@@ -282,6 +283,9 @@ class OntDocGeneration:
         if "sparqltemplate" in templates:
             with open(outpath + "sparql.html", 'w', encoding='utf-8') as f:
                 SPARQLPage().generatePageView(templates, self.pubconfig, curlicense, self.voidstatshtml,self.graph, f)
+        if "buildlog" in templates:
+            with open(outpath + "buildlog.html", 'w', encoding='utf-8') as f:
+                BuildLogPage().generatePageView(templates, self.pubconfig, curlicense, self.voidstatshtml,self.graph, f)
         relpath = DocUtils.generateRelativePathFromGivenDepth(0)
         if len(self.htmlexporter.iiifmanifestpaths["default"]) > 0:
             start=time.time()
@@ -404,10 +408,6 @@ class OntDocGeneration:
                                 label)
                 counter += 1
         return labeltouri
-
-    def polygonToPath(self, svg):
-        svg = svg.replace("<polygon", "<path").replace("points=\"", "d=\"M").replace("\"></polygon>", " Z\"></polygon>")
-        return svg.replace("<svg>","<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">")
 
 def main():
     prefixes = {"reversed": {}}

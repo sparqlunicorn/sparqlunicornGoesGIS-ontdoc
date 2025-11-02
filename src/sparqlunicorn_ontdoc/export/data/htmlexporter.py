@@ -461,6 +461,7 @@ class HTMLExporter():
                                                          self.pubconfig["apis"]["ckan"]],
                                                         [
                                                             f'<a href="{relpath}/sparql.html?endpoint="{self.pubconfig["deploypath"]}">[SPARQL]</a>&nbsp;',
+                                                            f"<a href=\"{relpath}/buildlog.html\">[BuildLog]</a>&nbsp;",
                                                             f'<a href="{relpath}/api/api.html">[OGC API Features]</a>&nbsp;',
                                                             f'<a href="{relpath}/iiif/">[IIIF]</a>&nbsp;',
                                                             f'<a href="{relpath}/api/3/">[CKAN]</a>'
@@ -711,7 +712,7 @@ class HTMLExporter():
     @staticmethod
     def truncateValue(value, limit=150):
         if len(value) > limit:
-            return f"<details><summary style=\"list-style-type: none;\">{value[0:limit]} (...)</summary>{value[limit:]}</details>"
+            return f'<details><summary style="list-style-type: none;">{value[0:limit]} (...)</summary>{value[limit:]}</details>'
         return value
 
     @staticmethod

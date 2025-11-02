@@ -207,8 +207,7 @@ class OGCAPIFeaturesExporter:
                             p.symlink_to(targetpath)
                         spath=spath.replace(".ttl",".html")
                         if os.path.exists(spath):
-                            targetpath = DocUtils.generateRelativeSymlink(
-                                spath,f'{op}/items/{collectionhtmlname}'.replace("//", "/"), outpath)
+                            targetpath = DocUtils.generateRelativeSymlink(spath,f'{op}/items/{collectionhtmlname}'.replace("//", "/"), outpath)
                             with open(f'{op}/items/{collectionhtmlname}', "w",encoding="utf-8") as f:
                                 if "nonns" in collid:
                                     f.write(f'<html><head><meta http-equiv="refresh" content="0; url="{deploypath}/{collid}.html" /></head></html>')

@@ -149,7 +149,7 @@ class WFSExporter:
                             <wfs:FeatureType>
                     <wfs:Name>{cpath.rstrip("/")}</wfs:Name>
                     <wfs:Title>{cpath.rstrip("/")}</wfs:Title>
-                    <wfs:Abstract>FeatureCollection {str(coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")).rstrip("/")}</wfs:Abstract>
+                    <wfs:Abstract>FeatureCollection {str(coll).replace(outpath, "").replace("index.geojson", "").replace(".geojson", "").rstrip("/")}</wfs:Abstract>
                     """
             if "crs" in curcoll:
                 curftype += f"""<wfs:SRS>{curcoll["crs"]}</wfs:SRS>"""

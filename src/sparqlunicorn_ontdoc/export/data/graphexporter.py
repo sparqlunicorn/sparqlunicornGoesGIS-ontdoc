@@ -70,14 +70,14 @@ class GraphExporter:
             file.write(f"node\n[\nid {sub}\nlabel \"{DocUtils.shortenURI(str(sub))}\"\n]\n")
             for tup in g.predicate_objects(sub):
                 if isinstance(tup[1], Literal):
-                    file.write(f"node\n[\nid literal{literalcounter}\nlabel \"{DocUtils.shortenURI(str(tup[1]))}\"\n]\n")
+                    file.write(f'node\n[\nid literal{literalcounter}\nlabel "{DocUtils.shortenURI(str(tup[1]))}"\n]\n')
                     file.write(f"edge\n[\nsource {sub}\n target literal{literalcounter}\nlabel \"{DocUtils.shortenURI(str(tup[0]))}\"\n]\n")
                     literalcounter += 1
                 else:
                     if tup[1] not in subjectstorender and str(tup[1]) not in addednodes:
-                        file.write(f"node\n[\nid {tup[1]}\nlabel \"{DocUtils.shortenURI(str(tup[1]))}\"\n]\n")
+                        file.write(f'node\n[\nid {tup[1]}\nlabel "{DocUtils.shortenURI(str(tup[1]))}"\n]\n')
                         addednodes.add(str(tup[1]))
-                    file.write(f"edge \n[\n source {sub}\n target {tup[1]}\n label \"{DocUtils.shortenURI(str(tup[0]))}\"")
+                    file.write(f'edge \n[\n source {sub}\n target {tup[1]}\n label "{DocUtils.shortenURI(str(tup[0]))}"')
         file.write("\n]\n")
         return None
 

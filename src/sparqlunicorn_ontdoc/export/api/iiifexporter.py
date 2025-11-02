@@ -28,10 +28,14 @@ class IIIFAPIExporter:
                         annocounter = 2
                         for anno in imagetoURI[imgpath]["anno"]:
                             anno["id"] = f"{imgpath}/canvas/p2/anno-{annocounter}"
+                            anno["motivation"] = "tagging"
+                            del anno["@context"]
                             anno["target"]["source"] = f"{imgpath}/canvas/p1"
                             if "bodies" in imagetoURI[imgpath]["uri"]:
                                 anno["body"] = [anno["body"]]
                                 anno["body"] += imagetoURI[imgpath]["uri"]["bodies"]
+                            if "selector" in anno["target"] and anno["target"]["selector"]["type"]=="SvgSelector":
+                                anno["target"]["selector"]["value"]=DocUtils.polygonToPath(anno["target"]["selector"]["value"])
                             curmanifest["items"][0]["annotations"][0]["items"].append(anno)
                             annocounter += 1
                         with open(mf, 'w', encoding="utf-8") as f:
