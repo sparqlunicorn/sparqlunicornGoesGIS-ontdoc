@@ -110,7 +110,7 @@ class OGCAPIFeaturesExporter:
                 {"href": str(deploypath) + "/api", "rel": "service-desc", "type": "text/html",
                  "title": "API definition as HTML"},
                 {"href": str(deploypath) + "/conformance", "rel": "conformance", "type": "application/json",
-                 "title": "OGC API conformance classes as Json"},
+                 "title": "OGC API conformance classes as JSON"},
                 {"href": str(deploypath) + "/conformance", "rel": "conformance", "type": "text/html",
                  "title": "OGC API conformance classes as HTML"}]}
 
