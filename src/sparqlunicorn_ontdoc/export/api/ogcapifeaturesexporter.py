@@ -119,9 +119,9 @@ class OGCAPIFeaturesExporter:
                         "application/json": {"schema": {"$ref": "#/components/schemas/Conformance"}},
                         "text/ttl": {"schema": {}}, "text/html": {"schema": {}}}}}}}
             collectionsjson = {"collections": [], "links": [
-                {"href": outpath + "collections/index.json", "rel": "self", "type": "application/json",
+                {"href": str(deploypath) + "collections/index.json", "rel": "self", "type": "application/json",
                  "title": "this document as JSON"},
-                {"href": outpath + "collections/index.html", "rel": "self", "type": "text/html",
+                {"href": str(deploypath) + "collections/index.html", "rel": "self", "type": "text/html",
                  "title": "this document as HTML"}]}
             collectionshtml = "<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><link rel=\"stylesheet\" href=\"../style.css\"/><link rel=\"stylesheet\" href=\"https://cdn.datatables.net/2.2.1/css/dataTables.dataTables.css\" /><script src=\"https://code.jquery.com/jquery-3.7.1.js\"></script><script src=\"https://cdn.datatables.net/2.2.1/js/dataTables.js\"></script></head><body><header id=\"header\"><h1 id=\"title\">Collections of " + str(
                 deploypath) + "</h1></header>{{collectiontable}}<footer id=\"footer\"><a href=\"../\">Landing page</a>&nbsp;<a href=\"index.json\">This page as JSON</a></footer><script>$(document).ready( function () {$('#collectiontable').DataTable();} );</script></body></html>"
