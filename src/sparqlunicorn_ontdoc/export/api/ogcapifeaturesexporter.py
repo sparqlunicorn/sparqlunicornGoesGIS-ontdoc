@@ -14,7 +14,7 @@ class OGCAPIFeaturesExporter:
             deploypath) + "/api/index.json\"; const apiUrl = \"" + str(
             deploypath) + "/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
         apijson = {"openapi": "3.0.1", "info": {"title": str(deploypath) + " Feature Collections",
-                                                "description": "Feature Collections of " + str(deploypath)},
+                                                "description": "Feature Collections of " + str(deploypath),"version":"1.0"},
                    "servers": [{"url": str(deploypath)}], "paths": {}}
         conformancejson = {"conformsTo": ["http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core",
                                           "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html",
@@ -127,9 +127,9 @@ class OGCAPIFeaturesExporter:
                         "application/json": {"schema": {"$ref": "#/components/schemas/Conformance"}},
                         "text/ttl": {"schema": {}}, "text/html": {"schema": {}}}}}}}
             collectionsjson = {"collections": [], "links": [
-                {"href": outpath + "collections/index.json", "rel": "self", "type": "application/json",
+                {"href": str(deploypath) + "collections/index.json", "rel": "self", "type": "application/json",
                  "title": "this document as JSON"},
-                {"href": outpath + "collections/index.html", "rel": "self", "type": "text/html",
+                {"href": str(deploypath) + "collections/index.html", "rel": "self", "type": "text/html",
                  "title": "this document as HTML"}]}
             collectionshtml = "<html><head></head><body><header><h1>Collections of " + str(
                 deploypath) + "</h1></head>{{collectiontable}}<footer><a href=\"index.json\">This page as JSON</a></footer></body></html>"
