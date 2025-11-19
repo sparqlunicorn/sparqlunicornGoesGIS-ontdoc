@@ -199,16 +199,15 @@ class OGCAPIFeaturesExporter:
                         currentcollection["extent"]["spatial"]["crs"] = curcoll["crs"]
                         collectionsjson["collections"][-1]["extent"]["spatial"]["crs"] = curcoll["crs"]
                 apijson["paths"]["/collections/" + str(
-                    coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]).rstrip("/")] = {
-                    "get": {"tags": ["Collections"], "summary": "describes collection " + str(
-                        str(coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:])).rstrip(
-                        "/"), "description": "Describes the collection with the id " + str(
-                        str(coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:])).rstrip(
+                    coll).replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:].rstrip("/")] = {
+                    "get": {"tags": ["Collections"], "summary": "describes collection " + 
+                        str(coll).replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:].rstrip(
+                        "/"), "description": "Describes the collection with the id " +
+                        str(coll).replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:].rstrip(
                         "/"), "operationId": "collection-" + str(
-                        coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]),
+                        coll).replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:],
                             "parameters": [], "responses": {"default": {"description": "default response", "content": {
-                            "application/json": {"schema": {"$ref": "#/components/schemas/Collections"},
-                                                 "example": None}}}}}}
+                            "application/json": {"schema": {"$ref": "#/components/schemas/Collections"},"example": None}}}}}}
                 curcollrow = "<tr><td><a href=\"" + opweb.replace(".geojson", "") + "/items/indexc.html\">" + str(
                     featurecollectionspaths[coll]["name"]) + "</a></td><td><a href=\"" + opweb.replace(".geojson",
                                                                                                        "") + "/items/indexc.html\">[Collection as HTML]</a>&nbsp;<a href=\"" + opweb.replace(
