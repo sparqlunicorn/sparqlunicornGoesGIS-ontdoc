@@ -227,7 +227,7 @@ class OGCAPIFeaturesExporter:
                                         "content": {"application/geo+json": {"example": None}},
                                         "text/ttl": {"schema": {"example": None}, "example": None},
                                         "text/html": {"schema": {"example": None}, "example": None}}}}}
-                    apijson["paths"][f'/collections/{cname}/items/{{featureId}}/index.json").replace("//", "/")'] = {"get": {"tags": ["Data"],
+                    apijson["paths"][f'/collections/{cname}/items/{{featureId}}/index.json'.replace("//", "/")] = {"get": {"tags": ["Data"],
                                                                                                "summary": "retrieves feature of collection " + cname.rstrip("/"),
                                                                                                "description": "Retrieves one single feature of the collection with the id " + cname,
                                                                                                "operationId": "feature-" + cname, "parameters": [
