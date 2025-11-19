@@ -558,8 +558,7 @@ def main():
                 curpath=outpath[-1]
             subrend = docgen.generateOntDocForNameSpace(args.prefixns, dataformat="HTML")
             DocUtils.printExecutionStats(docgen.exectimes)
-            DocUtils.writeExecutionStats(docgen.exectimes,curpath+"/buildlog.json")
-            DocUtils.writeExecutionStats(ontdoc.exectimes, curpath+"/buildlog.js")
+            DocUtils.writeExecutionStats(docgen.exectimes, curpath+"/buildlog.js")
         except Exception as inst:
             print("Could not parse " + str(fp))
             print(inst)
