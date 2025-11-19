@@ -147,19 +147,18 @@ class OGCAPIFeaturesExporter:
                 op = op.replace("//", "/")
                 os.makedirs(op,exist_ok=True)
                 os.makedirs(op + "/items/",exist_ok=True)
-                opweb = op.replace(outpath, deploypath)
+                opweb = deploypath[0:-1]+f'{deploypath[-1:]}/collections/{coll.replace(outpath, "").replace("index.geojson", "")}/'.replace("//", "/")
                 opwebcoll = opweb
                 if opwebcoll.endswith("/"):
                     opwebcoll = opwebcoll[0:-1]
-                opwebcoll = opwebcoll.replace("//", "/")
                 collid=coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]
                 collectionsjson["collections"].append(
                     {"id": collid,"title": featurecollectionspaths[coll]["name"], "links": [
-                        {"href": str(opweb.replace(".geojson", "") + "/index.json").replace("//", "/"),
+                        {"href": str(opweb.replace(".geojson", "") + "/index.json"),
                          "rel": "collection", "type": "application/json", "title": "Collection as JSON"},
-                        {"href": str(opweb.replace(".geojson", "") + "/").replace("//", "/"), "rel": "collection",
+                        {"href": str(opweb.replace(".geojson", "") + "/"), "rel": "collection",
                          "type": "text/html", "title": "Collection as HTML"},
-                        {"href": str(opweb.replace(".geojson", "") + "/index.ttl").replace("//", "/"),
+                        {"href": str(opweb.replace(".geojson", "") + "/index.ttl"),
                          "rel": "collection", "type": "text/ttl", "title": "Collection as TTL"}]})
                 currentcollection = {"title": featurecollectionspaths[coll]["name"], "id": collid, "links": [
                     {"href": opwebcoll + "/items/index.json", "rel": "items", "type": "application/json",
