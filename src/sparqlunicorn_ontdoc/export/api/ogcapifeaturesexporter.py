@@ -168,12 +168,16 @@ class OGCAPIFeaturesExporter:
                      "title": "Collection as HTML"},
                     {"href": opwebcoll + "/items/index.ttl", "rel": "collection", "type": "text/ttl",
                      "title": "Collection as TTL"}], "itemType": "feature"}
+                currentcollection["itemCount"]=len(curcoll["features"])
+                collectionsjson["collections"][-1]["itemCount"]=len(curcoll["features"])
                 if "bbox" in curcoll:
                     currentcollection["extent"] = {"spatial": {"bbox": curcoll["bbox"]}}
                     collectionsjson["collections"][-1]["extent"] = {"spatial": {"bbox": curcoll["bbox"]}}
                 if "crs" in curcoll:
                     currentcollection["crs"] = curcoll["crs"]
+                    currentcollection["storageCrs"] = curcoll["crs"]
                     collectionsjson["collections"][-1]["crs"] = curcoll["crs"]
+                    collectionsjson["collections"][-1]["storageCrs"] = curcoll["crs"]
                     if "extent" in currentcollection:
                         currentcollection["extent"]["spatial"]["crs"] = curcoll["crs"]
                         collectionsjson["collections"][-1]["extent"]["spatial"]["crs"] = curcoll["crs"]
