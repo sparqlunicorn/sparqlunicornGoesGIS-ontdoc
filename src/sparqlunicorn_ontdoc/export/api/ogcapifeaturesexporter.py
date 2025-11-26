@@ -17,7 +17,7 @@ class OGCAPIFeaturesExporter:
         if contentnegotiation:
             collectionhtmlname="index.html"
         apijson = {"openapi": "3.0.1", "info": {"title": f"{deploypath} Feature Collections",
-                                                "description": f"Feature Collections of {deploypath}"},
+                                                "description": f"Feature Collections of {deploypath}","version":"1.0"},
                    "servers": [{"url": str(deploypath)}], "paths": {}}
         conformancejson = {"conformsTo": ["http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core",
                                           "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html",
@@ -102,7 +102,7 @@ class OGCAPIFeaturesExporter:
                 {"href": f"{deploypath}/api", "rel": "service-desc", "type": "text/html",
                  "title": "API definition as HTML"},
                 {"href": f"{deploypath}/conformance", "rel": "conformance", "type": "application/json",
-                 "title": "OGC API conformance classes as Json"},
+                 "title": "OGC API conformance classes as JSON"},
                 {"href": f"{deploypath}/conformance", "rel": "conformance", "type": "text/html",
                  "title": "OGC API conformance classes as HTML"}]}
 
@@ -119,9 +119,9 @@ class OGCAPIFeaturesExporter:
                         "application/json": {"schema": {"$ref": "#/components/schemas/Conformance"}},
                         "text/ttl": {"schema": {}}, "text/html": {"schema": {}}}}}}}
             collectionsjson = {"collections": [], "links": [
-                {"href": outpath + "collections/index.json", "rel": "self", "type": "application/json",
+                {"href": str(deploypath) + "collections/index.json", "rel": "self", "type": "application/json",
                  "title": "this document as JSON"},
-                {"href": outpath + "collections/index.html", "rel": "self", "type": "text/html",
+                {"href": str(deploypath) + "collections/index.html", "rel": "self", "type": "text/html",
                  "title": "this document as HTML"}]}
             collectionshtml = "<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><link rel=\"stylesheet\" href=\"../style.css\"/><link rel=\"stylesheet\" href=\"https://cdn.datatables.net/2.2.1/css/dataTables.dataTables.css\" /><script src=\"https://code.jquery.com/jquery-3.7.1.js\"></script><script src=\"https://cdn.datatables.net/2.2.1/js/dataTables.js\"></script></head><body><header id=\"header\"><h1 id=\"title\">Collections of " + str(
                 deploypath) + "</h1></header>{{collectiontable}}<footer id=\"footer\"><a href=\"../\">Landing page</a>&nbsp;<a href=\"index.json\">This page as JSON</a></footer><script>$(document).ready( function () {$('#collectiontable').DataTable();} );</script></body></html>"
@@ -147,19 +147,18 @@ class OGCAPIFeaturesExporter:
                 op = op.replace("//", "/")
                 os.makedirs(op,exist_ok=True)
                 os.makedirs(op + "/items/",exist_ok=True)
-                opweb = op.replace(outpath, deploypath)
+                opweb = deploypath[0:-1]+f'{deploypath[-1:]}/collections/{coll.replace(outpath, "").replace("index.geojson", "")}/'.replace("//", "/")
                 opwebcoll = opweb
                 if opwebcoll.endswith("/"):
                     opwebcoll = opwebcoll[0:-1]
-                opwebcoll = opwebcoll.replace("//", "/")
                 collid=coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]
                 collectionsjson["collections"].append(
                     {"id": collid,"title": featurecollectionspaths[coll]["name"], "links": [
-                        {"href": str(opweb.replace(".geojson", "") + "/index.json").replace("//", "/"),
+                        {"href": str(opweb.replace(".geojson", "") + "/index.json"),
                          "rel": "collection", "type": "application/json", "title": "Collection as JSON"},
-                        {"href": str(opweb.replace(".geojson", "") + "/").replace("//", "/"), "rel": "collection",
+                        {"href": str(opweb.replace(".geojson", "") + "/"), "rel": "collection",
                          "type": "text/html", "title": "Collection as HTML"},
-                        {"href": str(opweb.replace(".geojson", "") + "/index.ttl").replace("//", "/"),
+                        {"href": str(opweb.replace(".geojson", "") + "/index.ttl"),
                          "rel": "collection", "type": "text/ttl", "title": "Collection as TTL"}]})
                 currentcollection = {"title": featurecollectionspaths[coll]["name"], "id": collid, "links": [
                     {"href": opwebcoll + "/items/index.json", "rel": "items", "type": "application/json",
@@ -231,7 +230,7 @@ class OGCAPIFeaturesExporter:
                                         "content": {"application/geo+json": {"example": None}},
                                         "text/ttl": {"schema": {"example": None}, "example": None},
                                         "text/html": {"schema": {"example": None}, "example": None}}}}}
-                    apijson["paths"][f'/collections/{cname}/items/{{featureId}}/index.json").replace("//", "/")'] = {"get": {"tags": ["Data"],
+                    apijson["paths"][f'/collections/{cname}/items/{{featureId}}/index.json'.replace("//", "/")] = {"get": {"tags": ["Data"],
                                                                                                "summary": "retrieves feature of collection " + cname.rstrip("/"),
                                                                                                "description": "Retrieves one single feature of the collection with the id " + cname,
                                                                                                "operationId": "feature-" + cname, "parameters": [
