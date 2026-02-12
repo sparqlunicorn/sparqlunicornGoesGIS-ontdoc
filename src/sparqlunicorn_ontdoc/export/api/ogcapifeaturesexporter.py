@@ -187,7 +187,7 @@ class OGCAPIFeaturesExporter:
                             "parameters": [], "responses": {"default": {"description": "default response", "content": {
                             "application/json": {"schema": {"$ref": "#/components/schemas/Collections"},"example": None}}}}}}
                 opwebrep=opweb.replace(".geojson","")
-                curcollrow = f'<tr><td><a href="{opwebrep}/items/{collectionhtmlname}">"{featurecollectionspaths[coll]["name"]}</a></td><td>{len(curcoll["features"])}</td><td><a href="{opwebrep}/items/{collectionhtmlname}">[Collection as HTML]</a>&nbsp;<a href="{opwebrep}/items/">[Collection as JSON]</a>&nbsp;<a href="{opwebrep}/items/index.ttl">[Collection as TTL]</a></td></tr>'
+                curcollrow = f'<tr><td><a href="{opwebrep}/items/{collectionhtmlname}">{featurecollectionspaths[coll]["name"]}</a></td><td>{len(curcoll["features"])}</td><td><a href="{opwebrep}/items/{collectionhtmlname}">[Collection as HTML]</a>&nbsp;<a href="{opwebrep}/items/">[Collection as JSON]</a>&nbsp;<a href="{opwebrep}/items/index.ttl">[Collection as TTL]</a></td></tr>'
                 with open(op + "index.json", "w", encoding="utf-8") as f:
                     json.dump(currentcollection,f)
                 with open(op + collectionhtmlname, "w", encoding="utf-8") as f:
