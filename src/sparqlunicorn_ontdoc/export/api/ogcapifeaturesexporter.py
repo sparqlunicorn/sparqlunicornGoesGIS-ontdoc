@@ -273,7 +273,7 @@ class OGCAPIFeaturesExporter:
                             print(e)
                     if mergeJSON:
                         result.append(curcoll)
-            collectiontable += "</tbody></table>"
+        collectiontable += "</tbody></table>"
         if mergeJSON:
             with open(f"{outpath}/features.js", 'w', encoding="utf-8") as output_file:
                 output_file.write("var featurecolls=")
