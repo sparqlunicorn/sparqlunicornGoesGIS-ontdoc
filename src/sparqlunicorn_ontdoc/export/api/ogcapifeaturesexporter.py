@@ -213,9 +213,9 @@ class OGCAPIFeaturesExporter:
                             targetpath = DocUtils.generateRelativeSymlink(spath,f'{op}/items/{collectionhtmlname}'.replace("//", "/"), outpath)
                             with open(f'{op}/items/{collectionhtmlname}', "w",encoding="utf-8") as f:
                                 if "nonns" in collid:
-                                    f.write(f'<html><head><meta http-equiv="refresh" content="0; url="{deploypath}/{collid}.html" /></head></html>')
+                                    f.write(f'<html><head><meta http-equiv="refresh" content="0; url={deploypath}/{collid}.html" /></head></html>')
                                 else:
-                                    f.write(f'<html><head><meta http-equiv="refresh" content="0; url="{deploypath}/{collid}/" /></head></html>')
+                                    f.write(f'<html><head><meta http-equiv="refresh" content="0; url={deploypath}/{collid}/" /></head></html>')
                         #print("symlinks created")
                     except Exception as e:
                         print("symlink creation error")
