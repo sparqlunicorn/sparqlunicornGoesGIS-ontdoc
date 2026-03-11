@@ -24,7 +24,7 @@
 */
 var NAVTREE =
 [
-  [ "SPARQLing Unicorn Ontology Documentation", "index.html", ]
+  [ "RDFlib GeoSPARQL", "index.html", ]
 ];
 
 var NAVTREEINDEX =
