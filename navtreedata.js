@@ -24,7 +24,7 @@
 */
 var NAVTREE =
 [
-  [ "Sparql Unicorn Goes GIS Ontology Documentation", "index.html", [
+  [ "SPARQL Unicorn Ontology Documentation", "index.html", [
     [ "Packages", "namespaces.html", [
       [ "Package List", "namespaces.html", "namespaces_dup" ],
       [ "Package Members", "namespacemembers.html", [
