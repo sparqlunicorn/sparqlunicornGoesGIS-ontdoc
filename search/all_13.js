@@ -10,7 +10,7 @@ var searchData=
   ['videoextensions_7',['videoextensions',['../a00145.html#a50ccf79b85cf417944f40a501d232b6d',1,'src::sparqlunicorn_ontdoc::doc::docconfig::DocConfig']]],
   ['vocabtopage_8',['vocabToPage',['../a00253.html#affb1f40f38b74d9509018d32153243a7',1,'src::sparqlunicorn_ontdoc::export::pages::pageutils::PageUtils']]],
   ['voidexporter_9',['VoidExporter',['../a00205.html',1,'src::sparqlunicorn_ontdoc::export::data::voidexporter']]],
-  ['voidexporter_2epy_10',['voidexporter.py',['../a00032.html',1,'']]],
+  ['voidexporter_2epy_10',['voidexporter.py',['../a00092.html',1,'']]],
   ['voidstatshtml_11',['voidstatshtml',['../a00165.html#a2a9d0a54e7a7fd9504998b24884169c8',1,'src::sparqlunicorn_ontdoc::docgeneration::OntDocGeneration']]],
-  ['vowlexporter_2epy_12',['vowlexporter.py',['../a00020.html',1,'']]]
+  ['vowlexporter_2epy_12',['vowlexporter.py',['../a00101.html',1,'']]]
 ];

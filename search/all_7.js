@@ -19,12 +19,12 @@ var searchData=
   ['geocache_16',['geocache',['../a00165.html#ae2bf21952d78ba0feb4634c488991105',1,'src::sparqlunicorn_ontdoc::docgeneration::OntDocGeneration']]],
   ['geocollectionspaths_17',['geocollectionspaths',['../a00165.html#accb7fef6e11234af4622bc12a3ad9dfc',1,'src::sparqlunicorn_ontdoc::docgeneration::OntDocGeneration']]],
   ['geoexporter_18',['GeoExporter',['../a00193.html',1,'src::sparqlunicorn_ontdoc::export::data::geoexporter']]],
-  ['geoexporter_2epy_19',['geoexporter.py',['../a00026.html',1,'']]],
+  ['geoexporter_2epy_19',['geoexporter.py',['../a00089.html',1,'']]],
   ['geolatlonproperties_20',['geolatlonproperties',['../a00145.html#ab8a04df72a9b627fa4a97940ec42b740',1,'src::sparqlunicorn_ontdoc::doc::docconfig::DocConfig']]],
   ['geoliteraltypes_21',['geoliteraltypes',['../a00145.html#a21eb3ca7f7b109f80e9549abd833218f',1,'src::sparqlunicorn_ontdoc::doc::docconfig::DocConfig']]],
   ['geometrytocoordinatelist_22',['geometryToCoordinateList',['../a00193.html#ab6626c61db89324dca0a6cb602f8d696',1,'src::sparqlunicorn_ontdoc::export::data::geoexporter::GeoExporter']]],
   ['geometryviewpage_23',['GeometryViewPage',['../a00221.html',1,'src::sparqlunicorn_ontdoc::export::pages::geometryviewpage']]],
-  ['geometryviewpage_2epy_24',['geometryviewpage.py',['../a00053.html',1,'']]],
+  ['geometryviewpage_2epy_24',['geometryviewpage.py',['../a00041.html',1,'']]],
   ['geopairproperties_25',['geopairproperties',['../a00145.html#ad5a6b0456f11ebccc7c63131642acfcf',1,'src::sparqlunicorn_ontdoc::doc::docconfig::DocConfig']]],
   ['geopointerproperties_26',['geopointerproperties',['../a00145.html#a8b57114cfa4c0f0c209c616a4b437f81',1,'src::sparqlunicorn_ontdoc::doc::docconfig::DocConfig']]],
   ['geoproperties_27',['geoproperties',['../a00145.html#ae2a0676e312205eefbd4dbcfa2e96f33',1,'src::sparqlunicorn_ontdoc::doc::docconfig::DocConfig']]],
@@ -41,7 +41,7 @@ var searchData=
   ['gettypeforproperty_38',['getTypeForProperty',['../a00209.html#a2e4fe0010d6ce974edf49d107ad10630',1,'src::sparqlunicorn_ontdoc::export::data::vowlexporter::OWL2VOWL']]],
   ['graph_39',['graph',['../a00165.html#a8ca49c796430e66a10450bfc2d218c81',1,'src::sparqlunicorn_ontdoc::docgeneration::OntDocGeneration']]],
   ['graphexporter_40',['GraphExporter',['../a00197.html',1,'src::sparqlunicorn_ontdoc::export::data::graphexporter']]],
-  ['graphexporter_2epy_41',['graphexporter.py',['../a00029.html',1,'']]],
+  ['graphexporter_2epy_41',['graphexporter.py',['../a00086.html',1,'']]],
   ['graphviewerpage_42',['GraphViewerPage',['../a00225.html',1,'src::sparqlunicorn_ontdoc::export::pages::graphviewerpage']]],
-  ['graphviewerpage_2epy_43',['graphviewerpage.py',['../a00038.html',1,'']]]
+  ['graphviewerpage_2epy_43',['graphviewerpage.py',['../a00053.html',1,'']]]
 ];

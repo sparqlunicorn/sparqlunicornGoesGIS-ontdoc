@@ -1,4 +1,4 @@
 var a00068 =
 [
-    [ "CIDOCOverviewPage", "a00217.html", "a00217" ]
+    [ "BibPage", "a00213.html", "a00213" ]
 ];

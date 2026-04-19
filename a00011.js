@@ -1,4 +1,4 @@
 var a00011 =
 [
-    [ "OGCAPIFeaturesExporter", "a00181.html", "a00181" ]
+    [ "DocConfig", "a00145.html", "a00145" ]
 ];

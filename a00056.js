@@ -1,4 +1,4 @@
 var a00056 =
 [
-    [ "PageUtils", "a00253.html", "a00253" ]
+    [ "LexiconPage", "a00233.html", "a00233" ]
 ];

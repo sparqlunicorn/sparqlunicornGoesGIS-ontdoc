@@ -1,4 +1,4 @@
 var a00014 =
 [
-    [ "IIIFAPIExporter", "a00177.html", "a00177" ]
+    [ "DocDefaults", "a00149.html", "a00149" ]
 ];

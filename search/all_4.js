@@ -6,10 +6,10 @@ var searchData=
   ['detectstringliteralcontent_3',['detectStringLiteralContent',['../a00165.html#a0c24ca2a6272597e18f4136594cdd836',1,'src::sparqlunicorn_ontdoc::docgeneration::OntDocGeneration']]],
   ['detectsubjecttype_4',['detectsubjecttype',['../a00193.html#a0f64bc5478cc86a14a0a4d1a9cbec1ad',1,'src.sparqlunicorn_ontdoc.export.data.geoexporter.GeoExporter.detectSubjectType()'],['../a00201.html#abe1caabe15cb2a91be762c6704b536f2',1,'src.sparqlunicorn_ontdoc.export.data.miscexporter.MiscExporter.detectSubjectType()']]],
   ['docconfig_5',['DocConfig',['../a00145.html',1,'src::sparqlunicorn_ontdoc::doc::docconfig']]],
-  ['docconfig_2epy_6',['docconfig.py',['../a00086.html',1,'']]],
+  ['docconfig_2epy_6',['docconfig.py',['../a00011.html',1,'']]],
   ['docdefaults_7',['DocDefaults',['../a00149.html',1,'src::sparqlunicorn_ontdoc::doc::docdefaults']]],
-  ['docdefaults_2epy_8',['docdefaults.py',['../a00089.html',1,'']]],
-  ['docgeneration_2epy_9',['docgeneration.py',['../a00101.html',1,'']]],
+  ['docdefaults_2epy_8',['docdefaults.py',['../a00014.html',1,'']]],
+  ['docgeneration_2epy_9',['docgeneration.py',['../a00002.html',1,'']]],
   ['docutils_10',['DocUtils',['../a00153.html',1,'src::sparqlunicorn_ontdoc::doc::docutils']]],
-  ['docutils_2epy_11',['docutils.py',['../a00098.html',1,'']]]
+  ['docutils_2epy_11',['docutils.py',['../a00005.html',1,'']]]
 ];
