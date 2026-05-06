@@ -21,9 +21,9 @@ from export.pages.sparqlpage import SPARQLPage
 from export.pages.buildlogpage import BuildLogPage
 
 sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
-print(sys.path)
-print(os.path.dirname(os.path.realpath(__file__)))
-print(os.listdir(os.getcwd()))
+#print(sys.path)
+#print(os.path.dirname(os.path.realpath(__file__)))
+#print(os.listdir(os.getcwd()))
 from datetime import datetime
 from doc.docutils import DocUtils
 from doc.graphutils import GraphUtils

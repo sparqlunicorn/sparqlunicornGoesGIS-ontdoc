@@ -25,7 +25,7 @@ class TemplateUtils:
         templates["layouts"] = {}
         print(f"{templatepath}/{templatename} {os.path.exists(f'{templatepath}/{templatename}/templates/')}")
         print(f"{templatepath}/{templatename} {os.path.exists(f'{templatepath}/{templatename}')}")
-        print(os.listdir(f"{templatepath}/{templatename}"))
+        #print(os.listdir(f"{templatepath}/{templatename}"))
         if os.path.exists(f"{templatepath}/{templatename}/templateconf.json"):
             with open(f"{templatepath}/{templatename}/templateconf.json", 'r',encoding="utf-8") as f:
                 templatefiles = json.load(f)
