@@ -150,9 +150,9 @@ class OntDocGeneration:
             except Exception as e:
                 print("Exception occurred " + str(e))
                 print(traceback.format_exc())
-        with open(searchjspath, 'w', encoding='utf-8') as f:
-            f.write("var search=")
-            json.dump(labeltouri,f, indent=2, sort_keys=True)
+        #with open(searchjspath, 'w', encoding='utf-8') as f:
+        #    f.write("var search=")
+        #    json.dump(labeltouri,f, indent=1, sort_keys=True)
         if self.pubconfig["offlinecompat"]:
             if os.path.exists(outpath + "icons/"):
                 shutil.rmtree(outpath + "icons/")
@@ -257,10 +257,10 @@ class OntDocGeneration:
             print(f"NonNS Page Generation time {end-start} seconds")
         with open(classtreepath, 'w', encoding='utf-8') as f:
             f.write("var tree=")
-            json.dump(tree,f, indent=2)
+            json.dump(tree,f, indent=1)
         with open(searchjspath, 'w', encoding='utf-8') as f:
             f.write("var search=")
-            json.dump(labeltouri,f, indent=2, sort_keys=True)
+            json.dump(labeltouri,f, sort_keys=True)
         if self.htmlexporter.has3d:
             if not os.path.exists(outpath + "/js"):
                 os.makedirs(outpath + "/js")
