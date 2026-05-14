@@ -462,10 +462,10 @@ class DocConfig:
     classtreequery="""PREFIX owl: <http://www.w3.org/2002/07/owl#>\n
             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n
-            SELECT DISTINCT ?subject ?label ?supertype\n
+            SELECT DISTINCT ?subject ?label ?supertype ?supertypelabel\n
             WHERE {\n
                { ?individual %%typeproperty%% ?subject . } UNION { ?subject %%typeproperty%% owl:Class . } UNION { ?subject %%typeproperty%% rdfs:Class . } .\n
-               OPTIONAL { ?subject %%subclassproperty%% ?supertype } .\n
+               OPTIONAL { ?subject %%subclassproperty%% ?supertype OPTIONAL { ?supertype rdfs:label ?supertypelabel } } .\n
                OPTIONAL { ?subject rdfs:label ?label. filter(langMatches(lang(?label),\"en\")) }
                OPTIONAL { ?subject rdfs:label ?label }.\n
                 FILTER (\n
