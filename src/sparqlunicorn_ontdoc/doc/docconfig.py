@@ -273,6 +273,21 @@ class DocConfig:
     "http://www.w3.org/TR/owl-time#generalDay":"http://www.w3.org/2006/time#unitDay",
     "http://www.w3.org/2001/XMLSchema#date":"","http://www.w3.org/2001/XMLSchema#dateTime":""}
 
+    timecalendarinstances={
+        "http://www.w3.org/ns/time/gregorian/January":"greg:January",
+        "http://www.w3.org/ns/time/gregorian/February":"greg:February",
+        "http://www.w3.org/ns/time/gregorian/March":"greg:March",
+        "http://www.w3.org/ns/time/gregorian/April":"greg:April",
+        "http://www.w3.org/ns/time/gregorian/May":"greg:May",
+        "http://www.w3.org/ns/time/gregorian/June":"greg:June",
+        "http://www.w3.org/ns/time/gregorian/July":"greg:July",
+        "http://www.w3.org/ns/time/gregorian/August":"greg:August",
+        "http://www.w3.org/ns/time/gregorian/September":"greg:September",
+        "http://www.w3.org/ns/time/gregorian/October":"greg:October",
+        "http://www.w3.org/ns/time/gregorian/November":"greg:November",
+        "http://www.w3.org/ns/time/gregorian/December":"greg:December",
+    }
+
     collectionrelationproperties={
         "http://www.w3.org/2000/01/rdf-schema#member":"ObjectProperty",
         "http://www.w3.org/2004/02/skos/core#member":"ObjectProperty",
