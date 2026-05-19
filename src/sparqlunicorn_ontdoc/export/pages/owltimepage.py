@@ -30,30 +30,30 @@ class OWLTimePage:
             if "end" in timeobj:
                 timeres = str(timeobj["begin"]) + " "
                 if str(timeobj["begin"]) in DocConfig.timecalendarinstances:
-                    timeres += DocUtils.createURILink(prefixes,DocConfig.timeliteraltypes[str(timeobj["begin"])])
+                    timeres += DocUtils.createURILink(prefixes,str(timeobj["begin"]))
                 elif str(timeobj["begin"].datatype) in DocConfig.timeliteraltypes:
                     timeres += DocUtils.createURILink(prefixes,DocConfig.timeliteraltypes[str(timeobj["begin"].datatype)])
                 timeres += " - " + str(timeobj["end"])
                 if str(timeobj["end"]) in DocConfig.timecalendarinstances:
-                    timeres += DocUtils.createURILink(prefixes,DocConfig.timeliteraltypes[str(timeobj["end"])])
+                    timeres += DocUtils.createURILink(prefixes,str(timeobj["end"]))
                 elif str(timeobj["end"].datatype) in DocConfig.timeliteraltypes:
                     timeres += DocUtils.createURILink(prefixes,DocConfig.timeliteraltypes[str(timeobj["end"].datatype)])
             else:
                 timeres = str(timeobj["begin"])
                 if str(timeobj["begin"]) in DocConfig.timecalendarinstances:
-                    timeres += DocUtils.createURILink(prefixes,DocConfig.timeliteraltypes[str(timeobj["begin"])])
+                    timeres += DocUtils.createURILink(prefixes,str(timeobj["begin"]))
                 elif str(timeobj["begin"].datatype) in DocConfig.timeliteraltypes:
                     timeres += DocUtils.createURILink(prefixes,DocConfig.timeliteraltypes[str(timeobj["begin"].datatype)])
         elif "end" in timeobj:
             timeres = str(timeobj["end"])
             if str(timeobj["end"]) in DocConfig.timecalendarinstances:
-                timeres += DocUtils.createURILink(prefixes,DocConfig.timeliteraltypes[str(timeobj["end"])])
+                timeres += DocUtils.createURILink(prefixes,str(timeobj["end"]))
             elif str(timeobj["end"].datatype) in DocConfig.timeliteraltypes:
                 timeres += DocUtils.createURILink(prefixes,DocConfig.timeliteraltypes[str(timeobj["end"].datatype)])
         elif "timepoint" in timeobj:
             timeres = timeobj["timepoint"]
             if str(timeobj["timepoint"]) in DocConfig.timecalendarinstances:
-                timeres += DocUtils.createURILink(prefixes,DocConfig.timeliteraltypes[str(timeobj["timepoint"])])
+                timeres += DocUtils.createURILink(prefixes,str(timeobj["timepoint"]))
             elif str(timeobj["timepoint"].datatype) in DocConfig.timeliteraltypes:
                 timeres += DocUtils.createURILink(prefixes,DocConfig.timeliteraltypes[str(timeobj["timepoint"].datatype)])
         return timeres
