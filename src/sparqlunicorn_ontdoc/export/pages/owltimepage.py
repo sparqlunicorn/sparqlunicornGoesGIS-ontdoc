@@ -13,8 +13,8 @@ class OWLTimePage:
                     timeobj["begin"] = tobj2[1]
                     break
         elif pred == TIME.hasEnd:
-            for tobj2 in graph.predicate_objects(obj) or str(tobj2[0]) in DocConfig.timecalendarinstances:
-                if str(tobj2[0]) in DocConfig.timeproperties:
+            for tobj2 in graph.predicate_objects(obj):
+                if str(tobj2[0]) in DocConfig.timeproperties or str(tobj2[0]) in DocConfig.timecalendarinstances:
                     timeobj["end"] = tobj2[1]
                     break
         elif pred == TIME.hasTime or pred == SOSA.phenomenonTime or pred == SOSA.resultTime:
