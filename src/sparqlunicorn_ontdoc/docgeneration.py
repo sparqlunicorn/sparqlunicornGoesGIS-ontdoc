@@ -257,7 +257,7 @@ class OntDocGeneration:
             print(f"NonNS Page Generation time {end-start} seconds")
         with open(classtreepath, 'w', encoding='utf-8') as f:
             f.write("var tree=")
-            json.(tree,f, indent=1, separators=(',',':'))
+            json.dump(tree,f, indent=1, separators=(',',':'))
         with open(searchjspath, 'w', encoding='utf-8') as f:
             f.write("var search=")
             json.dump(labeltouri,f, sort_keys=True)
