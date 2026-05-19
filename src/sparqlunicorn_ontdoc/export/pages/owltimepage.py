@@ -8,19 +8,28 @@ class OWLTimePage:
     @staticmethod
     def resolveTimeObject(pred, obj, graph, timeobj):
         if pred == TIME.hasBeginning:
-            for tobj2 in graph.predicate_objects(obj):
-                if str(tobj2[0]) in DocConfig.timeproperties or str(tobj2[1]) in DocConfig.timecalendarinstances:
-                    timeobj["begin"] = tobj2[1]
-                    break
+            if str(obj) in DocConfig.timecalendarinstances:
+                timeobj["begin"] = obj
+            else:
+                for tobj2 in graph.predicate_objects(obj):
+                    if str(tobj2[0]) in DocConfig.timeproperties 
+                        timeobj["begin"] = tobj2[1]
+                        break
         elif pred == TIME.hasEnd:
-            for tobj2 in graph.predicate_objects(obj):
-                if str(tobj2[0]) in DocConfig.timeproperties or str(tobj2[1]) in DocConfig.timecalendarinstances:
-                    timeobj["end"] = tobj2[1]
-                    break
+            if str(obj) in DocConfig.timecalendarinstances:
+                timeobj["end"] = obj
+            else:
+                for tobj2 in graph.predicate_objects(obj):
+                    if str(tobj2[0]) in DocConfig.timeproperties or str(tobj2[1]) in DocConfig.timecalendarinstances:
+                        timeobj["end"] = tobj2[1]
+                        break
         elif pred == TIME.hasTime or pred == SOSA.phenomenonTime or pred == SOSA.resultTime:
-            for tobj2 in graph.predicate_objects(obj):
-                if str(tobj2[0]) in DocConfig.timeproperties or str(tobj2[1]) in DocConfig.timecalendarinstances:
-                    timeobj["timepoint"] = tobj2[1]
+            if str(obj) in DocConfig.timecalendarinstances:
+                timeobj["timepoint"] = obj
+            else:
+                for tobj2 in graph.predicate_objects(obj):
+                    if str(tobj2[0]) in DocConfig.timeproperties or str(tobj2[1]) in DocConfig.timecalendarinstances:
+                        timeobj["timepoint"] = tobj2[1]
         return timeobj
 
     @staticmethod
