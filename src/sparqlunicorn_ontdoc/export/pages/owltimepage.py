@@ -62,7 +62,7 @@ class OWLTimePage:
                 timeres += DocUtils.createURILink(prefixes,str(timeobj["timepoint"]))
             elif str(timeobj["timepoint"].datatype) in DocConfig.timeliteraltypes:
                 timeres += timeobj["timepoint"]+DocUtils.createURILink(prefixes,DocConfig.timeliteraltypes[str(timeobj["timepoint"].datatype)])
-        return timeres
+        return timeres.strip()
 
     @staticmethod
     def resolveTimeLiterals(pred, obj, graph):
