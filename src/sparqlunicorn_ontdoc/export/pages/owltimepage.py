@@ -35,6 +35,7 @@ class OWLTimePage:
     @staticmethod
     def timeObjectToHTML(timeobj,prefixes):
         timeres = ""
+        print("TOBJ to HTML"+str(timeobj))
         if "begin" in timeobj:
             if "end" in timeobj:
                 if str(timeobj["begin"]) in DocConfig.timecalendarinstances:
