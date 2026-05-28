@@ -36,14 +36,12 @@ class VoidExporter:
               Literal(pubconfig["modtime"],datatype=XSD.dateTime)))
         if licenseuri is not None:
             g.add((voidds, URIRef("http://purl.org/dc/terms/license"),URIRef(licenseuri)))
-        g.add((voidds, VOID.dataDump,
-              URIRef(pubconfig["deploypath"]+"/index.ttl")))
-        depl=URIRef(pubconfig["deploypath"])
+       
+        depl=Literal(pubconfig["deploypath"],datatype=XSD.anyURI)
         g.add((voidds, FOAF.homepage,depl))
         g.add((voidds, DCAT.landingPage,depl))
-        g.add((voidds, FOAF.page,URIRef(pubconfig["deploypath"]+"/index.html")))
-        g.add((voidds, VOID.dataDump,URIRef(pubconfig["deploypath"]+"/index.ttl")))
-        voiddistttl=URIRef(f"{voidds}_dist_ttl")
+        g.add((voidds, FOAF.page,Literal(pubconfig["deploypath"]+"/index.html",XSD.anyURI)))
+        g.add((voidds, VOID.dataDump,Literal(pubconfig["deploypath"]+"/index.ttl",datatype=XSD.anyURI)))
         g.add((voidds, DCAT.distribution,voiddistttl))
         g.add((voiddistttl, RDF.type, URIRef("http://www.w3.org/ns/adms#AssetDistribution")))
         g.add((voiddistttl, RDFS.label,Literal(dsname+" TTL Distribution",lang="en")))
