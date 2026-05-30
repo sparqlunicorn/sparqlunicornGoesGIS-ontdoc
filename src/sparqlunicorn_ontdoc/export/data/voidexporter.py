@@ -40,7 +40,7 @@ class VoidExporter:
         depl=Literal(pubconfig["deploypath"],datatype=XSD.anyURI)
         g.add((voidds, FOAF.homepage,depl))
         g.add((voidds, DCAT.landingPage,depl))
-        g.add((voidds, FOAF.page,Literal(pubconfig["deploypath"]+"/index.html",XSD.anyURI)))
+        g.add((voidds, FOAF.page,Literal(pubconfig["deploypath"]+"/index.html",datatype=XSD.anyURI)))
         g.add((voidds, VOID.dataDump,Literal(pubconfig["deploypath"]+"/index.ttl",datatype=XSD.anyURI)))
         g.add((voidds, DCAT.distribution,voiddistttl))
         g.add((voiddistttl, RDF.type, URIRef("http://www.w3.org/ns/adms#AssetDistribution")))
