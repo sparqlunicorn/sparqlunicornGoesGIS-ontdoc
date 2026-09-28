@@ -145,6 +145,7 @@ inputs:
         description: "The publishing organization of the HTML deployment"
         default: ""
         type: string
+        
 runs:
     runs-on: ubuntu-latest
     steps:
