@@ -44,7 +44,7 @@ class GeometryViewPage:
         if parameters.get("hasnonnslen",0) > 0:
             geocache[substr] = jsonfeat
         geom=shapely.geometry.shape(jsonfeat["geometry"])
-        if geom.has_z and str(shapely.get_coordinates(geom)[0, 0]).split(".")[1]<8:
+        if geom.has_z and len(str(shapely.get_coordinates(geom)[0, 0]).split(".")[1])<6:
             self.createSVGFromWKT(templates, {"type":"FeatureCollection","features":[jsonfeat]}, f)
         else:
             f.write(templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace("{{myfeature}}", f'[{json.dumps(jsonfeat)}]').replace(
