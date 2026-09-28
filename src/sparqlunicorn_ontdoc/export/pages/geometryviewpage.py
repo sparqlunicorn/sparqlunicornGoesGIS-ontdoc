@@ -137,7 +137,7 @@ class GeometryViewPage:
             featcoll["numberReturned"] = len(featcoll["features"])
             geomcoll=shapely.geometry.GeometryCollection([shapely.geometry.shape(feature["geometry"]) for feature in featcoll["features"]])
             featcoll["bbox"]=geomcoll.bounds
-            if geomcoll.has_z:
+            if geomcoll.has_z and len(str(shapely.get_coordinates(geomcoll)[0, 0]).split(".")[1])<6:
                 self.createSVGFromWKT(templates,featcoll,f)
             else:
                 firstcrs = "4326"
