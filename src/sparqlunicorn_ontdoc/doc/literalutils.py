@@ -45,8 +45,6 @@ class LiteralUtils:
                     literal = literal[literal.rfind('>') + 1:].strip()
                 shapelygeom = shapely.wkt.loads(literal)
                 thejson = shapely.geometry.mapping(shapelygeom)#json.loads(json.dumps(shapely.geometry.mapping(shapelygeom), indent=2))
-                if "coordinates" in thejson and isinstance(thejson["coordinates"],tuple):
-                    thejson["coordinates"]=list(thejson["coordinates"])
                 if curcrs is not None:
                     thejson["crs"] = curcrs
                 return thejson
