@@ -10,7 +10,7 @@ class LiteralUtils:
 
     @staticmethod
     def resolveGeoLiterals(pred, object, graph, geojsonrep, nonns, subject=None):
-        print("resolveGeoLiterals")
+        #print("resolveGeoLiterals")
         predstr=str(pred)
         if isinstance(object, Literal):
             if subject is not None and (predstr in DocConfig.geopairproperties):
@@ -29,7 +29,7 @@ class LiteralUtils:
             for pobj in graph.predicate_objects(object):
                 if isinstance(pobj[1], Literal) and (str(pobj[0]) in DocConfig.geoproperties or str(pobj[1].datatype) in DocConfig.geoliteraltypes):
                     geojsonrep = LiteralUtils.processLiteral(str(pobj[1]), str(pobj[1].datatype), "")
-        print(geojsonrep)
+        #print(geojsonrep)
         return geojsonrep
 
     @staticmethod
