@@ -130,7 +130,10 @@ on:
         required: false
         default: ""
         type: string
-
+      pythonversion:
+        required: false
+        default: "3.11"
+        type: string
 
 jobs:
   ontdoc-action:
@@ -138,7 +141,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11"]
+        python-version: ["${{inputs.pythonversion}}"]
     steps:
       - name: Checkout repo
         if: ${{ inputs.checkout }}
