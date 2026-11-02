@@ -5,6 +5,8 @@ from collections import OrderedDict
 from export.pages.page import Page
 
 
+_SHACL_PROPERTY = URIRef("http://www.w3.org/ns/shacl#property")
+
 
 class SHACLPage(Page):
 
@@ -83,7 +85,7 @@ class SHACLPage(Page):
         print("CollectionWidget")
         if type=="http://www.w3.org/ns/shacl#PropertyGroup":
             f.write("<table><thead><tr><th>Name</th><th>Type</th><th>Target</th><th>Contraints</th></tr></thead><tbody>")
-            for prop in graph.objects(subject, URIRef("http://www.w3.org/ns/shacl#property"), True):
+            for prop in graph.objects(subject, _SHACL_PROPERTY, True):
                 f.write("<tr>")
                 SHACLPage.processPropertyShape(graph,prop,f)
                 f.write("</tr>")

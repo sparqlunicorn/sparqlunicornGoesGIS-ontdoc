@@ -8,6 +8,12 @@ from export.exporterutils import ExporterUtils
 import re
 import urllib.parse
 
+
+_LDP_CONTAINER = URIRef("http://www.w3.org/ns/ldp#Container")
+_LDP_BASIC_CONTAINER = URIRef("http://www.w3.org/ns/ldp#BasicContainer")
+_LDP_RESOURCE = URIRef("http://www.w3.org/ns/ldp#Resource")
+
+
 class IndexViewPage:
 
 
@@ -45,15 +51,10 @@ class IndexViewPage:
                     for tup in graph.predicate_objects(sub):
                         subgraph.add((sub, tup[0], tup[1]))
                     if apis["solidexport"]:
-                        subgraph.add((URIRef(sub.replace("nslink", "")),
-                                      RDF.type,
-                                      URIRef("http://www.w3.org/ns/ldp#Container")))
-                        subgraph.add((URIRef(sub.replace("nslink", "")),
-                                      RDF.type,
-                                      URIRef("http://www.w3.org/ns/ldp#BasicContainer")))
-                        subgraph.add((URIRef(sub.replace("nslink", "")),
-                                      RDF.type,
-                                      URIRef("http://www.w3.org/ns/ldp#Resource")))
+                        container_uri = URIRef(sub.replace("nslink", ""))
+                        subgraph.add((container_uri, RDF.type, _LDP_CONTAINER))
+                        subgraph.add((container_uri, RDF.type, _LDP_BASIC_CONTAINER))
+                        subgraph.add((container_uri, RDF.type, _LDP_RESOURCE))
             for ex in pubconfig["exports"]:
                 if ex in ExporterUtils.exportToFunction:
                     if ex not in ExporterUtils.rdfformats:

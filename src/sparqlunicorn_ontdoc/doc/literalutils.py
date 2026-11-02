@@ -20,9 +20,9 @@ class LiteralUtils:
                 for obj in graph.objects(subject, URIRef(pairprop)):
                     othervalue = str(obj)
                 if latorlong:
-                    geojsonrep = {"type": "Point", "coordinates": [float(str(othervalue)), float(str(object))]}
+                    geojsonrep = {"type": "Point", "coordinates": [float(othervalue), float(object)]}
                 else:
-                    geojsonrep = {"type": "Point", "coordinates": [float(str(object)), float(str(othervalue))]}
+                    geojsonrep = {"type": "Point", "coordinates": [float(object), float(othervalue)]}
             elif predstr in DocConfig.geoproperties or str(object.datatype) in DocConfig.geoliteraltypes:
                 geojsonrep = LiteralUtils.processLiteral(str(object), str(object.datatype), "")
         elif isinstance(object, URIRef) and nonns:

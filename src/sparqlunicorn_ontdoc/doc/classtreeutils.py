@@ -64,9 +64,11 @@ class ClassTreeUtils:
             #    else:
             #        ress[str(res["subject"])] = {"super": None, "label": res["label"]}
         # print(ress)
+        type_uri = URIRef(typeproperty)
         for cls in ress:
             clsstr = str(cls)
-            for obj in graph.subjects(URIRef(typeproperty), URIRef(cls), True):
+            class_uri = URIRef(cls)
+            for obj in graph.subjects(type_uri, class_uri, True):
                 objstr = str(obj)
                 res = DocUtils.replaceNameSpacesInLabel(prefixes, objstr)
                 if objstr in uritolabel:

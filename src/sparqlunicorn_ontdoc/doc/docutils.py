@@ -10,6 +10,10 @@ from doc.docconfig import DocConfig
 from datetime import date
 
 
+_EXIF_WIDTH = URIRef("http://www.w3.org/2003/12/exif/ns#width")
+_EXIF_HEIGHT = URIRef("http://www.w3.org/2003/12/exif/ns#height")
+
+
 class DocUtils:
 
     @staticmethod
@@ -279,9 +283,10 @@ class DocUtils:
     @staticmethod
     def checkImgMetadataRDF(g,uri):
         res={}
-        for obj in g.objects(URIRef(uri),URIRef("http://www.w3.org/2003/12/exif/ns#width")):
+        image_uri = URIRef(uri)
+        for obj in g.objects(image_uri, _EXIF_WIDTH):
             res["width"]=str(obj)
-        for obj in g.objects(URIRef(uri),URIRef("http://www.w3.org/2003/12/exif/ns#height")):
+        for obj in g.objects(image_uri, _EXIF_HEIGHT):
             res["height"]=str(obj)
         return res
 

@@ -24,6 +24,13 @@ from export.pages.model3dpage import Model3DPage
 from export.pages.textannopage import TextAnnoPage
 
 
+_WKT_SELECTOR = URIRef("http://www.w3.org/ns/oa#WKTSelector")
+_DC_LICENSE = URIRef("http://purl.org/dc/elements/1.1/license")
+_LDP_RESOURCE = URIRef("http://www.w3.org/ns/ldp#Resource")
+_TURTLE_RESOURCE = URIRef("https://www.iana.org/assignments/media-types/text/turtle#Resource")
+_OBSERVATION_COLLECTION = URIRef("http://www.w3.org/ns/sosa/ObservationCollection")
+
+
 class HTMLExporter():
     listthreshold = 5
     maxlistthreshold = 1500
@@ -53,12 +60,13 @@ class HTMLExporter():
         if not nonns:
             checkdepth = DocUtils.checkDepthFromPath(savepath, baseurl, subject)
         logo = ""
-        if self.pubconfig["logourl"] != None and self.pubconfig["logourl"] != "":
+        if self.pubconfig["logourl"] is not None and self.pubconfig["logourl"] != "":
             logo = f"<img src=\"{self.pubconfig['logourl']}\" alt=\"logo\" width=\"25\" height=\"25\"/>&nbsp;&nbsp;"
         predobjmap = OrderedDict()#defaultdict(list)
         comment = {}
         inverse = False
         subjectstr=str(subject)
+        tprop = URIRef(self.typeproperty)
         if uritotreeitem is not None and subjectstr in uritotreeitem and uritotreeitem[subjectstr][-1][
             "parent"].startswith("http"):
             parentclass = str(uritotreeitem[subjectstr][-1]["parent"])
@@ -85,7 +93,7 @@ class HTMLExporter():
                     uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr]["instancecount"] += 1
                         #uritotreeitem[parentclass][-1]["instancecount"] += 1
                 if isinstance(tup[1], URIRef):
-                    for item in graph.objects(tup[1], URIRef(self.typeproperty)):
+                    for item in graph.objects(tup[1], tprop):
                         thetypes.add(str(item))
                         if parentclass is not None:
                             #uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr].setdefault(item,0)
@@ -137,7 +145,7 @@ class HTMLExporter():
                             break
                         itemstr = str(item)
                         itemup=itemstr.upper()
-                        if tup in DocConfig.valueproperties and ("POINT" in itemup or "POLYGON" in itemup or "LINESTRING" in itemup) and self.typeproperty in predobjmap and URIRef("http://www.w3.org/ns/oa#WKTSelector") in predobjmap[self.typeproperty]:
+                        if tup in DocConfig.valueproperties and ("POINT" in itemup or "POLYGON" in itemup or "LINESTRING" in itemup) and self.typeproperty in predobjmap and _WKT_SELECTOR in predobjmap[self.typeproperty]:
                             image3dannos.append({"value": itemstr})
                         elif "<svg" in itemstr:
                             foundmedia["image"][itemstr] = {}
@@ -194,7 +202,6 @@ class HTMLExporter():
                     tablecontents = thetable
         subpredsmap = OrderedDict()
         if subpreds is not None:
-            tprop=URIRef(self.typeproperty)
             for tup in sorted(subpreds, key=lambda tup: tup[1]):
                 tupobjstr=str(tup[1])
                 subpredsmap.setdefault(tupobjstr,[]).append(tup[0])
@@ -265,10 +272,10 @@ class HTMLExporter():
                     tablecontents += "<td class=\"wrapword\"></td>"
                 tablecontents += "</tr>"
         if self.pubconfig["licenseuri"] is not None:
-            ttlf.add((subject, URIRef("http://purl.org/dc/elements/1.1/license"), URIRef(self.pubconfig["licenseuri"])))
+            ttlf.add((subject, _DC_LICENSE, URIRef(self.pubconfig["licenseuri"])))
         if self.pubconfig["apis"]["solidexport"] is not None:
-            ttlf.add((subject, RDF.type,URIRef("http://www.w3.org/ns/ldp#Resource")))
-            ttlf.add((subject, RDF.type,URIRef("https://www.iana.org/assignments/media-types/text/turtle#Resource")))
+            ttlf.add((subject, RDF.type, _LDP_RESOURCE))
+            ttlf.add((subject, RDF.type, _TURTLE_RESOURCE))
         nonnslink = ""
         if nonns:
             if "http:" in savepath:
@@ -514,7 +521,7 @@ class HTMLExporter():
                 elif (pred == "http://purl.org/dc/terms/isReferencedBy" or pred == "http://purl.org/spar/cito/hasCitingEntity") and ("http://purl.org/ontology/bibo/" in tupobjstr):
                     bibtex = BibPage.resolveBibtexReference(graph.predicate_objects(object), object, graph)
             elif tuppredstr == "http://www.w3.org/2000/01/rdf-schema#member":
-                if not inverse and (object, typeprop,URIRef("http://www.w3.org/ns/sosa/ObservationCollection")) in graph:
+                if not inverse and (object, typeprop, _OBSERVATION_COLLECTION) in graph:
                     for valtup in graph.predicate_objects(tup[1]):
                         if str(valtup[0]) in DocConfig.unitproperties:
                             foundunit = str(valtup[1])

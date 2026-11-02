@@ -4,6 +4,10 @@ from doc.docconfig import DocConfig
 from export.pages.page import Page
 
 
+_LEXICOG_ENTRY = URIRef("http://www.w3.org/ns/lemon/lexicog#entry")
+_LIME_ENTRY = URIRef("http://www.w3.org/ns/lemon/lime#entry")
+
+
 class LexiconPage(Page):
 
     tableheader="<thead><th>Lemma</th><th>Lexical Category</th><th>Language</th><th>Forms</th><th>Senses</th></thead>"
@@ -80,11 +84,11 @@ class LexiconPage(Page):
     def generateCollectionWidget(graph,subject,templates,f):
         f.write(f'<table id="lexicon">{LexiconPage.tableheader}<tbody>')
         count=0
-        for lexentry in graph.objects(subject, URIRef("http://www.w3.org/ns/lemon/lexicog#entry"), True):
+        for lexentry in graph.objects(subject, _LEXICOG_ENTRY, True):
             LexiconPage.generatePageWidget(graph,lexentry,f,True)
             count+=1
         if count==0:
-            for lexentry in graph.objects(subject, URIRef("http://www.w3.org/ns/lemon/lime#entry"), True):
+            for lexentry in graph.objects(subject, _LIME_ENTRY, True):
                 LexiconPage.generatePageWidget(graph,lexentry,f,True)
                 count+=1
         f.write('</tbody></table><script>$("#lexicon").DataTable();</script>')
