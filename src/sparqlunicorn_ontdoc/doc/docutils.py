@@ -30,7 +30,7 @@ class DocUtils:
             fill        - Optional  : bar fill character (Str)
             printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
         """
-        percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+        percent = f"{100 * (iteration / float(total)):.{decimals}f}"
         filledLength = int(length * iteration // total)
         bar = fill * filledLength + '-' * (length - filledLength)
         print(f'\r{prefix} |{bar}| {percent}% {suffix}', end=printEnd)
@@ -41,8 +41,7 @@ class DocUtils:
     @staticmethod
     def createFoldersFromList(flist):
         for fl in flist:
-            if not os.path.exists(fl):
-                os.makedirs(fl)
+            os.makedirs(fl, exist_ok=True)
 
     @staticmethod
     def polygonToPath(svg):
@@ -89,7 +88,7 @@ class DocUtils:
             if len(namespacetosub[ns])>maxnsnum:
                 maxnsnum=len(namespacetosub[ns])
                 maxns=ns
-        print("Automatically detected datanamespace "+str(maxns))
+        print(f"Automatically detected datanamespace {maxns}")
         return maxns
 
     @staticmethod
@@ -179,7 +178,7 @@ class DocUtils:
                 json.dump(timeexec,f)
         elif filename.endswith(".js"):
             with open(filename, "w", encoding="utf-8") as f:
-                f.write("var buildlog=" + json.dumps(timeexec))
+                f.write(f"var buildlog={json.dumps(timeexec)}")
         elif filename.endswith(".csv"):
             with open(filename,"w",encoding="utf-8") as f:
                 f.write(f"Task;ExecutionTime (seconds);Items Processed;TimePerItem (seconds);Comment\n")
@@ -231,7 +230,7 @@ class DocUtils:
 
     @staticmethod
     def generateRelativeLinkFromGivenDepth(baseurl,checkdepth,item,withindex):
-        rellink = "../"*checkdepth+str(item).replace(baseurl, "")
+        rellink = f'{"../" * checkdepth}{item}'.replace(baseurl, "")
         #for i in range(0, checkdepth):
         #    rellink = "../" + rellink
         if withindex:
@@ -350,7 +349,7 @@ class DocUtils:
             os.makedirs(outpath+path,exist_ok=True)
             #if not os.path.exists(outpath + path):
             #    os.mkdir(outpath + path)
-            paths[outpath].append(path + "/index.html")
+            paths[outpath].append(f"{path}/index.html")
             #if outpath not in paths:
             #    paths[outpath] = []
             #paths[outpath].append(path + "/index.html")
@@ -385,12 +384,9 @@ class DocUtils:
 
     @staticmethod
     def createOfflineCompatibleVersion(outpath, myhtmltemplate, templatepath, templatename):
-        if not os.path.isdir(outpath):
-            os.mkdir(outpath)
-        if not os.path.isdir(outpath + "/js"):
-            os.mkdir(outpath + "/js")
-        if not os.path.isdir(outpath + "/css"):
-            os.mkdir(outpath + "/css")
+        os.makedirs(outpath, exist_ok=True)
+        os.makedirs(f"{outpath}/js", exist_ok=True)
+        os.makedirs(f"{outpath}/css", exist_ok=True)
         matched = re.findall(r'src="(http.*)"', myhtmltemplate)
         for match in matched:
             # download the library
@@ -409,7 +405,7 @@ class DocUtils:
                         thepath=f"{templatepath}/{templatename}/js/lib/{ml}"
                         if os.path.exists(thepath):
                             shutil.copy(thepath,f'{outpath}{os.sep}js{os.sep}{ml}')
-                    myhtmltemplate = myhtmltemplate.replace(m, "{{relativepath}}js/" + ml)
+                    myhtmltemplate = myhtmltemplate.replace(m, f"{{{{relativepath}}}}js/{ml}")
             else:
                 match = match.replace("\"", "")
                 try:
@@ -421,7 +417,7 @@ class DocUtils:
                     thepath=f"{templatepath}/{templatename}/js/lib/{matchl}"
                     if os.path.exists(thepath):
                         shutil.copy(thepath,f'{outpath}{os.sep}js{os.sep}{matchl}')
-                myhtmltemplate = myhtmltemplate.replace(match, "{{relativepath}}js/" + matchl)
+                myhtmltemplate = myhtmltemplate.replace(match, f"{{{{relativepath}}}}js/{matchl}")
         matched = re.findall(r'href="(http.*.css)"', myhtmltemplate)
         for match in matched:
             #print(match.replace("\"", ""))
@@ -436,7 +432,7 @@ class DocUtils:
                 thepath=f"{templatepath}/{templatename}/css/lib/{matchl}"
                 if os.path.exists(thepath):
                     shutil.copy(thepath,f'{outpath}{os.sep}css{os.sep}{matchl}')
-            myhtmltemplate = myhtmltemplate.replace(match, "{{relativepath}}css/" + matchl)
+            myhtmltemplate = myhtmltemplate.replace(match, f"{{{{relativepath}}}}css/{matchl}")
         return myhtmltemplate
 
     @staticmethod

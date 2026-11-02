@@ -63,12 +63,12 @@ class BibPage:
         for bibpart in sorted(bibtexitem):
             if bibpart == "type":
                 continue
-            res += bibpart + "={"
+            res += f"{bibpart}={{"
             if bibpart == "author":
                 first = True
                 for author in bibtexitem["author"]:
                     if first:
-                        res += author + " "
+                        res += f"{author} "
                         first = False
                     else:
                         res += f"and {author} "
@@ -77,7 +77,7 @@ class BibPage:
             elif bibpart == "pages":
                 res += f'{bibtexitem[bibpart]["start"]}--{bibtexitem[bibpart]["end"]}}},\n'
             else:
-                res += str(bibtexitem[bibpart]) + "},\n"
+                res += f"{bibtexitem[bibpart]}}},\n"
         return f'{res[0:-2]}\n}}'
         #return res
 
@@ -92,5 +92,3 @@ class BibPage:
             f.write(BibPage.generatePageWidget(graph,bibentry,templates,f,True))
             f.write("\n")
         f.write("</pre></details>")
-
-

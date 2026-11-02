@@ -12,11 +12,11 @@ inputfile="test.ttl"
 def getImageMetadataFromURL(imgpath):
     height=480
     width=640
-    print("Adding image metadata for "+str(imgpath))
+    print(f"Adding image metadata for {imgpath}")
     if imgpath not in imagetoURI or "width" not in imagetoURI[imgpath]:
         imagetoURI[imgpath]={}
         try:
-            print("Loading image for "+str(imgpath))
+            print(f"Loading image for {imgpath}")
             response = requests.get(imgpath)
             im = Image.open(BytesIO(response.content))
             exif_data = im.getexif()
@@ -45,7 +45,7 @@ def getImageMetadataFromURL(imgpath):
     else:
         height=imagetoURI[imgpath]["height"]
         width=imagetoURI[imgpath]["width"]
-    print("Found width "+str(width)+" and height "+str(height))
+    print(f"Found width {width} and height {height}")
     return {"height":height,"width":width}
 
 lg=Graph()

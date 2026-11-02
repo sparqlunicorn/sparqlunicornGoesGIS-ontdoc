@@ -39,7 +39,7 @@ class GeometryViewPage:
                 #props[item] = str(item)
         jsonfeat = {"type": "Feature", 'id': substr, 'name': parameters.get("foundlabel",""), 'dateprops': dateprops,'properties': props, "geometry": geojsonrep}
         if epsgcode == "" and "crs" in geojsonrep:
-            epsgcode = "EPSG:" + geojsonrep["crs"]
+            epsgcode = f"EPSG:{geojsonrep['crs']}"
             jsonfeat["crs"]=epsgcode
         if parameters.get("hasnonnslen",0) > 0:
             geocache[substr] = jsonfeat
@@ -100,9 +100,9 @@ class GeometryViewPage:
                             foundunit=res[1]
                             #print("FOUNDVAL: "+str(foundval)+" FOUNDUNIT: "+str(foundunit))
                             if foundval is not None:
-                                properties[geoinstance0str+".value"]=foundval
+                                properties[f"{geoinstance0str}.value"]=foundval
                             if foundunit is not None:
-                                properties[geoinstance0str + ".unit"] = foundunit
+                                properties[f"{geoinstance0str}.unit"] = foundunit
                         else:
                             properties[geoinstance0str]=geoinstance1str
                     #print(geojsonrep)
@@ -144,8 +144,8 @@ class GeometryViewPage:
                 featcoll["crs"] = "http://www.opengis.net/def/crs/EPSG/0/4326"
                 if len(thecrs) > 0:
                     firstcrs = str(next(iter(thecrs)))
-                    featcoll["crs"] = "http://www.opengis.net/def/crs/EPSG/0/" + firstcrs
-                epsgcode = "EPSG:" + firstcrs
+                    featcoll["crs"] = f"http://www.opengis.net/def/crs/EPSG/0/{firstcrs}"
+                epsgcode = f"EPSG:{firstcrs}"
                 if len(dateatt)>0:
                     for feat in featcoll["features"]:
                         if dateatt not in feat["properties"]:

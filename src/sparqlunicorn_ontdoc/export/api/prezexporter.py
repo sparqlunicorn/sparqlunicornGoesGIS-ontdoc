@@ -10,7 +10,5 @@ class PrezExporter:
 
     @staticmethod
     def generatePrezPages(outpath,deploypath, featurecollectionspaths, prefixnamespace, ogcapi, mergeJSON, contentnegotiation=False):
-        if not os.path.exists(outpath+"/prefixes"):
-            os.mkdir(outpath+"/prefixes")
-        if not os.path.exists(outpath+"/search"):
-            os.mkdir(outpath+"/search")
+        os.makedirs(f"{outpath}/prefixes", exist_ok=True)
+        os.makedirs(f"{outpath}/search", exist_ok=True)

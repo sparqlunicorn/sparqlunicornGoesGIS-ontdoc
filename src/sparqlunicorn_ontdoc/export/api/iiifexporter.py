@@ -52,9 +52,9 @@ class IIIFAPIExporter:
         #print(DocUtils.shortenURI(curind))
         curinduri = DocUtils.shortenURI(curind)
         if not os.path.exists(f'{outpath}/iiif/mf/{curinduri}/manifest.json'):
-            DocUtils.createFoldersFromList([outpath + "/iiif/mf/", outpath + "/iiif/images/",outpath + "/iiif/svg/"])
+            DocUtils.createFoldersFromList([f"{outpath}/iiif/mf/", f"{outpath}/iiif/images/", f"{outpath}/iiif/svg/"])
             #print(label)
-            curindr=str(curind).replace(prefixnamespace, deploypath + "/")
+            curindr=str(curind).replace(prefixnamespace, f"{deploypath}/")
             if label != "":
                 curiiifmanifest = {"@context": "http://iiif.io/api/presentation/3/context.json",
                                    "id": f'{deploypath}/iiif/mf/{curinduri}/manifest.json',
@@ -175,11 +175,11 @@ class IIIFAPIExporter:
     @staticmethod
     def generateIIIFCollections(outpath, deploypath, imagespaths, prefixnamespace):
         deploypath=str(deploypath)
-        apihtml = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><metaname=\"description\" content=\"SwaggerUI\"/><title>SwaggerUI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist/swagger-ui.css\" /></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js\" crossorigin></script><script>const swaggerUrl = \"" + deploypath + "/iiif/api.json\"; const apiUrl = \"" + deploypath + "/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
-        apijson = {"openapi": "3.0.1", "info": {"title": deploypath + " IIIF", "description": "IIIF API of " + deploypath},"servers": [{"url": deploypath}],
+        apihtml = f"""<!DOCTYPE html><html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><metaname="description" content="SwaggerUI"/><title>SwaggerUI</title><link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist/swagger-ui.css" /></head><body><div id="swagger-ui"></div><script src="https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js" crossorigin></script><script>const swaggerUrl = "{deploypath}/iiif/api.json"; const apiUrl = "{deploypath}/";  window.onload = () => {{let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {{j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({{spec: j,dom_id: '#swagger-ui'}});}}));}};</script></body></html>"""
+        apijson = {"openapi": "3.0.1", "info": {"title": f"{deploypath} IIIF", "description": f"IIIF API of {deploypath}"},"servers": [{"url": deploypath}],
                    "paths": {
                        "/iiif/collection/": {"get": {"tags": ["IIIF"],
-                            "summary": "Retrieves IIIF Collections of "+deploypath,
+                            "summary": f"Retrieves IIIF Collections of {deploypath}",
                             "description": "Retrieves the IIIF Collections of this IIIF API",
                             "operationId": "iiif-collections","parameters": [],
                             "responses": {
@@ -202,16 +202,15 @@ class IIIFAPIExporter:
                                                    "example": None}}}}}
                   }
         }
-        if not os.path.exists(outpath + "/iiif/collection/"):
-            os.makedirs(outpath + "/iiif/collection/")
-        if os.path.exists(outpath + "/iiif/collection/iiifcoll.json"):
+        os.makedirs(f"{outpath}/iiif/collection/", exist_ok=True)
+        if os.path.exists(f"{outpath}/iiif/collection/iiifcoll.json"):
             collections = {}
-            with open(outpath+"/iiif/collection/iiifcoll.json","r",encoding="utf-8") as f:
+            with open(f"{outpath}/iiif/collection/iiifcoll.json","r",encoding="utf-8") as f:
                 collections["main"]=json.load(f)
         else:
             collections = {"main": {"@context": "http://iiif.io/api/presentation/3/context.json",
                                     "id": f"{deploypath}/iiif/collection/iiifcoll.json", "type": "Collection",
-                                    "label": {"en": ["Collection: " + DocUtils.shortenURI(str(prefixnamespace))]},
+                                    "label": {"en": [f"Collection: {DocUtils.shortenURI(str(prefixnamespace))}"]},
                                     "items": []}}
         seenurls = set()
         for imgpath in sorted(imagespaths, key=lambda k: k['label'], reverse=False):
@@ -222,7 +221,7 @@ class IIIFAPIExporter:
                 if curclass not in collections:
                     collections[curclass] = {"@context": "http://iiif.io/api/presentation/3/context.json",
                                              "id": f"{deploypath}/iiif/collection/{DocUtils.shortenURI(curclass)}.json",
-                                             "type": "Collection", "label": {"en": ["Collection: " + str(curclass)]},
+                                             "type": "Collection", "label": {"en": [f"Collection: {curclass}"]},
                                              "items": []}
             if imgpath["url"] not in seenurls:
                 imgpathr=imgpath["url"].replace("/manifest.json", "")

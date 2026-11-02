@@ -40,13 +40,13 @@ class VoidExporter:
         depl=Literal(pubconfig["deploypath"],datatype=XSD.anyURI)
         g.add((voidds, FOAF.homepage,depl))
         g.add((voidds, DCAT.landingPage,depl))
-        g.add((voidds, FOAF.page,Literal(pubconfig["deploypath"]+"/index.html",datatype=XSD.anyURI)))
-        g.add((voidds, VOID.dataDump,Literal(pubconfig["deploypath"]+"/index.ttl",datatype=XSD.anyURI)))
+        g.add((voidds, FOAF.page,Literal(f'{pubconfig["deploypath"]}/index.html',datatype=XSD.anyURI)))
+        g.add((voidds, VOID.dataDump,Literal(f'{pubconfig["deploypath"]}/index.ttl',datatype=XSD.anyURI)))
         voiddistttl=URIRef(f"{voidds}_dist_ttl")
         g.add((voidds, DCAT.distribution,voiddistttl))
         g.add((voiddistttl, RDF.type, URIRef("http://www.w3.org/ns/adms#AssetDistribution")))
-        g.add((voiddistttl, RDFS.label,Literal(dsname+" TTL Distribution",lang="en")))
-        g.add((voiddistttl, DCAT.downloadURL,Literal(pubconfig["deploypath"]+"/index.ttl",datatype=XSD.anyURI)))
+        g.add((voiddistttl, RDFS.label,Literal(f"{dsname} TTL Distribution",lang="en")))
+        g.add((voiddistttl, DCAT.downloadURL,Literal(f'{pubconfig["deploypath"]}/index.ttl',datatype=XSD.anyURI)))
         g.add((voiddistttl, DCAT.mediaType,URIRef("http://www.w3.org/ns/formats/Turtle")))
         g.add((voidds, VOID.feature,URIRef("http://www.w3.org/ns/formats/Turtle")))
         g.add((voidds, VOID.feature,URIRef("http://www.w3.org/ns/formats/RDFa")))
@@ -121,7 +121,7 @@ class VoidExporter:
                 g.add((cururi, VOID.linkPredicate,propuri))
                 g.add((cururi, VOID.triples,Literal(str(nonnscount[prop][ns]),datatype=XSD.integer)))
                 subjectstorender.add(cururi)
-        g.serialize(pubconfig["outpath"]+"/void.ttl", encoding="utf-8")
+        g.serialize(f'{pubconfig["outpath"]}/void.ttl', encoding="utf-8")
         return {"graph":g,"subjects":subjectstorender}
 
     @staticmethod

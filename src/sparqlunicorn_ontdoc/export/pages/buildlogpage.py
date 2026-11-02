@@ -29,8 +29,8 @@ class BuildLogPage():
                                                                                                    "Build Statistics").replace(
             "{{title}}", "Build Statistics").replace("{{startscriptpath}}", "startscripts.js").replace(
             "{{stylepath}}", "style.css") \
-            .replace("{{classtreefolderpath}}", pubconfig["corpusid"] + "_classtree.js").replace("{{baseurlhtml}}", "").replace(
-            "{{nonnslink}}", "").replace("{{scriptfolderpath}}", pubconfig["corpusid"] + "_search.js").replace("{{exports}}",
+            .replace("{{classtreefolderpath}}", f'{pubconfig["corpusid"]}_classtree.js').replace("{{baseurlhtml}}", "").replace(
+            "{{nonnslink}}", "").replace("{{scriptfolderpath}}", f'{pubconfig["corpusid"]}_search.js').replace("{{exports}}",
                                                                                                   templates[
                                                                                                       "nongeoexports"]).replace(
             "{{versionurl}}", DocConfig.versionurl).replace("{{version}}", DocConfig.version).replace("{{bibtex}}",

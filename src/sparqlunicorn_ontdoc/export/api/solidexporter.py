@@ -9,25 +9,23 @@ class SolidExporter:
 
     @staticmethod
     def createSolidSettings(graph,outpath,deploypath,publisher,datasetname,classtree):
-        if not os.path.exists(outpath+"/settings/"):
-            os.makedirs(outpath + "/settings/")
-        if not os.path.exists(outpath+"/profile/"):
-            os.makedirs(outpath + "/profile/")
+        os.makedirs(f"{outpath}/settings/", exist_ok=True)
+        os.makedirs(f"{outpath}/profile/", exist_ok=True)
         webidprofilegraph=Graph()
-        webidprofilegraph.add((URIRef(outpath+"/profile/card"), RDF.type, URIRef("http://xmlns.com/foaf/0.1/PersonalProfileDocument")))
+        webidprofilegraph.add((URIRef(f"{outpath}/profile/card"), RDF.type, URIRef("http://xmlns.com/foaf/0.1/PersonalProfileDocument")))
         preferencesgraph=Graph()
-        preferencesgraph.serialize(destination=outpath+"/settings/prefs.ttl", format="ttl")
+        preferencesgraph.serialize(destination=f"{outpath}/settings/prefs.ttl", format="ttl")
         publisheruri=publisher.replace(" ","_")
         if not publisher.startswith("http"):
             publisheruri=f'{deploypath}/profile/card#{str(publisher).replace(" ","_")}'
         puburi=URIRef(str(publisheruri))
-        ptypeindex = URIRef(deploypath + "/settings/publicTypeIndex.ttl")
-        webidprofilegraph.add((URIRef(outpath + "/profile/card"), FOAF.primaryTopic, puburi))
+        ptypeindex = URIRef(f"{deploypath}/settings/publicTypeIndex.ttl")
+        webidprofilegraph.add((URIRef(f"{outpath}/profile/card"), FOAF.primaryTopic, puburi))
         webidprofilegraph.add((puburi, RDF.type, FOAF.Person))
-        webidprofilegraph.add((puburi, URIRef("http://www.w3.org/ns/pim/space#storage"), URIRef(str(deploypath) + str(datasetname).replace(" ","_"))))
+        webidprofilegraph.add((puburi, URIRef("http://www.w3.org/ns/pim/space#storage"), URIRef(f'{deploypath}{str(datasetname).replace(" ", "_")}')))
         webidprofilegraph.add((puburi, URIRef("http://www.w3.org/ns/solid/terms#publicTypeIndex"), ptypeindex))
-        webidprofilegraph.add((puburi, URIRef("http://www.w3.org/ns/solid/terms#privateTypeIndex"), URIRef(deploypath + "/settings/privateTypeIndex.ttl")))
-        webidprofilegraph.serialize(destination=outpath+"/profile/card.ttl", format="ttl")
+        webidprofilegraph.add((puburi, URIRef("http://www.w3.org/ns/solid/terms#privateTypeIndex"), URIRef(f"{deploypath}/settings/privateTypeIndex.ttl")))
+        webidprofilegraph.serialize(destination=f"{outpath}/profile/card.ttl", format="ttl")
         typeindexgraph=Graph()
         typeindexgraph.add((ptypeindex, RDF.type, URIRef("http://www.w3.org/ns/solid/terms#TypeIndex")))
         typeindexgraph.add((ptypeindex, RDF.type, URIRef("http://www.w3.org/ns/ldp#RDFResource")))
@@ -47,15 +45,15 @@ class SolidExporter:
             typeindexgraph.add((obj, RDF.type, OWL.Class))
         for obj in graph.objects(None,RDF.type):
             typeindexgraph.add((obj, RDF.type, OWL.Class))
-        typeindexgraph.serialize(destination=outpath+"/settings/publicTypeIndex.ttl", format="ttl")
+        typeindexgraph.serialize(destination=f"{outpath}/settings/publicTypeIndex.ttl", format="ttl")
         typeindexgraph2=Graph()
-        ptypeindex = URIRef(deploypath + "/settings/privateTypeIndex.ttl")
+        ptypeindex = URIRef(f"{deploypath}/settings/privateTypeIndex.ttl")
         typeindexgraph2.add((ptypeindex, RDF.type, URIRef("http://www.w3.org/ns/solid/terms#TypeIndex")))
         typeindexgraph2.add((ptypeindex, RDF.type, URIRef("http://www.w3.org/ns/ldp#RDFResource")))
         typeindexgraph2.add((ptypeindex, RDF.type, URIRef("http://www.w3.org/ns/solid/terms#ListedDocument")))
         typeindexgraph2.add((ptypeindex, RDFS.comment, Literal("This Document contains a list of links to other Documents, along with the type of data that is to be included in those Documents",lang="en")))
         typeindexgraph2.add((ptypeindex, RDFS.label, Literal("Private Type Index", lang="en")))
-        typeindexgraph2.serialize(destination=outpath+"/settings/privateTypeIndex.ttl", format="ttl")
+        typeindexgraph2.serialize(destination=f"{outpath}/settings/privateTypeIndex.ttl", format="ttl")
 
     @staticmethod
     def prepareSolidPartitions(graph,classtree,properties):
@@ -63,8 +61,8 @@ class SolidExporter:
 
     @staticmethod
     def addSolidStorage(graph,deploypath,datasetname):
-        graph.add((URIRef(str(deploypath) + str(datasetname)),RDF.type,URIRef("http://www.w3.org/ns/pim/space#Storage")))
-        graph.add((URIRef(str(deploypath) + str(datasetname)), RDFS.label, Literal("Solid Storage for "+str(datasetname))))
+        graph.add((URIRef(f"{deploypath}{datasetname}"),RDF.type,URIRef("http://www.w3.org/ns/pim/space#Storage")))
+        graph.add((URIRef(f"{deploypath}{datasetname}"), RDFS.label, Literal(f"Solid Storage for {datasetname}")))
 
     @staticmethod
     def createSolidDocumentIndex():

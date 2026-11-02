@@ -143,9 +143,9 @@ class HTMLExporter():
                             foundmedia["image"][itemstr] = {}
                         elif "http" in itemstr:
                             if isinstance(item, Literal):
-                                ext = "." + ''.join(filter(str.isalpha, str(item.value).split(".")[-1]))
+                                ext = f".{''.join(filter(str.isalpha, str(item.value).split('.')[-1]))}"
                             else:
-                                ext = "." + ''.join(filter(str.isalpha, itemstr.split(".")[-1]))
+                                ext = f".{''.join(filter(str.isalpha, itemstr.split('.')[-1]))}"
                             if ext in DocConfig.fileextensionmap:
                                 foundmedia[DocConfig.fileextensionmap[ext]][itemstr] = {}
                         elif tup in DocConfig.valueproperties:
@@ -277,11 +277,11 @@ class HTMLExporter():
                 completesavepath = savepath
             nonnslink = f"<div>This page describes linked instances to the concept  <a target=\"_blank\" href=\"{subject}\">{foundlabel} ({DocUtils.shortenURI(subject)}) </a> in this knowledge graph. It is defined <a target=\"_blank\" href=\"{subject}\">here</a></div>"
         else:
-            completesavepath = savepath + "/index.html"
+            completesavepath = f"{savepath}/index.html"
             if os.path.exists(savepath):
                 try:
-                    ttlf.serialize(savepath + "/index.ttl", encoding="utf-8")
-                    with open(savepath + "/index.json", 'w', encoding='utf-8') as f:
+                    ttlf.serialize(f"{savepath}/index.ttl", encoding="utf-8")
+                    with open(f"{savepath}/index.json", 'w', encoding='utf-8') as f:
                         json.dump(predobjmap,f)
                 except Exception as e:
                     print(e)
@@ -304,7 +304,7 @@ class HTMLExporter():
             if not foundlabel:
                 foundlabel = DocUtils.shortenURI(subjectstr)
             f.write(DocUtils.replaceStandardVariables(self.templates["htmltemplate"], subject, checkdepth, "false",self.pubconfig).replace(
-                "{{iconprefixx}}", (relpath + "icons/" if self.pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",baseurl).replace(
+                "{{iconprefixx}}", (f"{relpath}icons/" if self.pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",baseurl).replace(
                 "{{relativepath}}", relpath).replace(
                 "{{relativedepth}}", str(checkdepth)).replace("{{prefixpath}}", self.pubconfig["prefixns"]).replace(
                 "{{toptitle}}", foundlabel).replace("{{startscriptpath}}", startscriptlink).replace("{{epsgdefspath}}", epsgdefslink).replace(
@@ -562,7 +562,7 @@ class HTMLExporter():
                 if "<svg" in tupobjstr:
                     foundmedia["image"][tupobjstr] = {}
                 elif "http" in tupobjstr:
-                    ext = "." + ''.join(filter(str.isalpha, tupobjstr.split(".")[-1]))
+                    ext = f".{''.join(filter(str.isalpha, tupobjstr.split('.')[-1]))}"
                     if ext in DocConfig.fileextensionmap:
                         foundmedia[DocConfig.fileextensionmap[ext]][tupobjstr] = {}
             elif pred in DocConfig.timepointerproperties:
@@ -702,7 +702,8 @@ class HTMLExporter():
             return  f'<td class="property">{"Is " if reverse else ""}<span class="property-name"><a class="uri" target="_blank" href="{rellink}">{label}</a></span>{" of" if reverse else ""}</td>'
         else:
             res = DocUtils.replaceNameSpacesInLabel(prefixes, tupstr)
-            return f'<td class="property">{"Is " if reverse else ""}<span class="property-name"><a class="uri" target="_blank" href="{tupstr}">{label} '+(f'<span style="color: #666;">({res["uri"]})</span>' if res["uri"]!="" else "")+f'</a> </span>{" of" if reverse else ""}</td>'
+            uri_label = f'<span style="color: #666;">({res["uri"]})</span>' if res["uri"] != "" else ""
+            return f'<td class="property">{"Is " if reverse else ""}<span class="property-name"><a class="uri" target="_blank" href="{tupstr}">{label}{uri_label}</a> </span>{" of" if reverse else ""}</td>'
         return f'{tablecontents}{" of" if reverse else ""}</td>'
         #if reverse:
         #    tablecontents += " of"
@@ -725,4 +726,6 @@ class HTMLExporter():
             return f'<span><a itemprop="{pred}" property="{pred}" href="https://www.doi.org/{object}" datatype="http://www.w3.org/2001/XMLSchema#anyURI">{object}</a> <small>(<a style="color: #666;" target="_blank" href="http://www.w3.org/2001/XMLSchema#anyURI">xsd:anyURI</a>)</small></span>'
         elif re.search(r'[\w.]+\@[\w.]+', object):
             return f"<span><a itemprop=\"{pred}\" property=\"{pred}\" href=\"mailto:{object}\" datatype=\"http://www.w3.org/2001/XMLSchema#string\">mailto:{object}</a> <small>(<a style=\"color: #666;\" target=\"_blank\" href=\"http://www.w3.org/2001/XMLSchema#string\">xsd:string</a>)</small></span>"
-        return f"<span property=\"{pred}\" content=\""+str(object).replace("<", "&lt").replace(">","&gt;").replace("\"", "'") + f'" datatype="http://www.w3.org/2001/XMLSchema#string">{str(object).replace("<","&lt").replace(">","&gt;")} <small>(<a style="color: #666;" target="_blank" href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>)</small></span>'
+        escaped_content = str(object).replace("<", "&lt").replace(">", "&gt;").replace("\"", "'")
+        escaped_text = str(object).replace("<", "&lt").replace(">", "&gt;")
+        return f'<span property="{pred}" content="{escaped_content}" datatype="http://www.w3.org/2001/XMLSchema#string">{escaped_text} <small>(<a style="color: #666;" target="_blank" href="http://www.w3.org/2001/XMLSchema#string">xsd:string</a>)</small></span>'

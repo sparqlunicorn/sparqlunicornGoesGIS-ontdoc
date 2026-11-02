@@ -31,7 +31,7 @@ class GraphExporter:
                     nodecounter += 1
                 tgfresedges += f"({uriToNodeId[substr]})-[:{DocUtils.shortenURI(tupstr)}]->({DocUtils.shortenURI(str(tup[0]))}),\n"
         file.write("\n\nCREATE ")
-        file.write(tgfresedges[0:-2] + "\n")
+        file.write(f"{tgfresedges[0:-2]}\n")
         return None
 
     @staticmethod
@@ -243,7 +243,9 @@ class GraphExporter:
                 tup1str=str(tup[1])
                 if isinstance(tup[1],Literal):
                     if tup1str not in uriToNodeId:
-                        file.write(f"<node id=\"{nodecounter}\" value=\""+str(tup1str.replace("<","&lt;").replace(">","&gt;").replace("&","&amp;").replace("\"","'"))+"\" label=\"" + str(str(tup[1]).replace("<","&lt;").replace(">","&gt;").replace("&","&amp;").replace("\"","'")) + "\">\n")
+                        escaped_value = str(tup1str.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;").replace("\"", "'"))
+                        escaped_label = str(str(tup[1]).replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;").replace("\"", "'"))
+                        file.write(f'<node id="{nodecounter}" value="{escaped_value}" label="{escaped_label}">\n')
                         if tup[0] == RDF.type:
                             file.write('<viz:color r="255" g="165" b="0"/>\n')
                         else:

@@ -10,11 +10,10 @@ class TemplateUtils:
 
     @staticmethod
     def resolveIncludes(template,templates):
-        matches=re.findall(TemplateUtils.includepattern,template)
-        if len(matches)>0:
-            for mat in matches:
-                if mat.replace(".html","") in templates:
-                    template=template.replace(f"{{% include {mat} %}}",templates[mat.replace(".html","")])
+        for match in re.finditer(TemplateUtils.includepattern, template):
+            template_name = match.group(1).strip().removesuffix(".html")
+            if template_name in templates:
+                template=template.replace(match.group(0),templates[template_name])
         return template
 
     @staticmethod
@@ -39,48 +38,53 @@ class TemplateUtils:
         elif os.path.exists(f"{templatepath}/{templatename}/templates/"):
             if os.path.exists(f"{templatepath}/{templatename}/templates/layouts/") and os.path.exists(f"{templatepath}/{templatename}/templates/includes/"):
                 for filename in os.listdir(f"{templatepath}/{templatename}/templates/includes/"):
-                    print("FOUND INCLUDE: "+str(filename))
+                    print(f"FOUND INCLUDE: {filename}")
                     if filename.endswith(".html") or filename.endswith(".css"):
+                        template_name = filename.removesuffix(".html")
                         with open(f"{templatepath}/{templatename}/templates/includes/{filename}", 'r',encoding="utf-8") as f:
                             content=f.read()
-                            templates["includes"][filename.replace(".html","")] = content
-                            templates[filename.replace(".html", "")] = content
+                            templates["includes"][template_name] = content
+                            templates[template_name] = content
                 for filename in os.listdir(f"{templatepath}/{templatename}/js/"):
-                    print("FOUND INCLUDE: "+str(filename))
+                    print(f"FOUND INCLUDE: {filename}")
                     if filename.endswith(".js"):
+                        template_name = filename.removesuffix(".js")
                         with open(f"{templatepath}/{templatename}/js/{filename}", 'r',encoding="utf-8") as f:
                             content=f.read()
-                            templates["js"][filename.replace(".js","")] = content
-                            templates[filename.replace(".js", "")] = content
+                            templates["js"][template_name] = content
+                            templates[template_name] = content
                 for filename in os.listdir(f"{templatepath}/{templatename}/templates/layouts/"):
-                    print("FOUND LAYOUT: " + str(filename))
+                    print(f"FOUND LAYOUT: {filename}")
                     if filename.endswith(".html") or filename.endswith(".css"):
+                        template_name = filename.removesuffix(".html")
                         with open(f"{templatepath}/{templatename}/templates/layouts/{filename}", 'r',encoding="utf-8") as f:
                             content=f.read()
-                            templates["layouts"][filename.replace(".html", "")] = content
-                            templates[filename.replace(".html", "")] = content
+                            templates["layouts"][template_name] = content
+                            templates[template_name] = content
             else:
                 for filename in os.listdir(f"{templatepath}/{templatename}/templates/"):
                     if filename.endswith(".html") or filename.endswith(".css"):
+                        template_name = filename.removesuffix(".html")
                         with open(f"{templatepath}/{templatename}/templates/{filename}", 'r',encoding="utf-8") as f:
-                            templates[filename.replace(".html","")] = f.read()
+                            templates[template_name] = f.read()
                 if os.path.exists(f"{templatepath}/{templatename}/js/"):
                     for filename in os.listdir(f"{templatepath}/{templatename}/js/"):
-                        print("FOUND INCLUDE: "+str(filename))
+                        print(f"FOUND INCLUDE: {filename}")
                         if filename.endswith(".js"):
+                            template_name = filename.removesuffix(".js")
                             with open(f"{templatepath}/{templatename}/js/{filename}", 'r',encoding="utf-8") as f:
                                 content=f.read()
-                                templates["js"][filename.replace(".js","")] = content
-                                templates[filename.replace(".js", "")] = content
+                                templates["js"][template_name] = content
+                                templates[template_name] = content
                 if os.path.exists(f"{templatepath}/{templatename}/css/"):
                     for filename in os.listdir(f"{templatepath}/{templatename}/css/"):
-                        print("FOUND LAYOUT: " + str(filename))
+                        print(f"FOUND LAYOUT: {filename}")
                         if filename.endswith(".css"):
+                            template_name = filename.removesuffix(".css")
                             with open(f"{templatepath}/{templatename}/css/{filename}", 'r',encoding="utf-8") as f:
                                 content=f.read()
-                                templates[filename.replace(".css", "")] = content
-                                templates[filename.replace(".css", "")] = content
-        print("Found templates.... "+str(len(templates)))
+                                templates[template_name] = content
+        print(f"Found templates.... {len(templates)}")
         for temp in templates:
             if temp!="includes" and temp!="layouts" and temp!="js" and templates[temp] is not None:
                 templates[temp]=TemplateUtils.resolveIncludes(templates[temp],templates)

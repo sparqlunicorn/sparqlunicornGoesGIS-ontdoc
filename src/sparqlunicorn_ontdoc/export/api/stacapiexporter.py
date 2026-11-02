@@ -10,9 +10,7 @@ class StacAPIExporter:
 
     @staticmethod
     def generateOGCAPIFeaturesPages(outpath,deploypath, featurecollectionspaths, prefixnamespace, ogcapi, mergeJSON):
-        apihtml = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /><metaname=\"description\" content=\"SwaggerUI\"/><title>SwaggerUI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css\" /></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js\" crossorigin></script><script>const swaggerUrl = \"" + str(
-            deploypath) + "/api/index.json\"; const apiUrl = \"" + str(
-            deploypath) + "/\";  window.onload = () => {let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({spec: j,dom_id: '#swagger-ui'});}));};</script></body></html>"
+        apihtml = f"""<!DOCTYPE html><html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><metaname="description" content="SwaggerUI"/><title>SwaggerUI</title><link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css" /></head><body><div id="swagger-ui"></div><script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js" crossorigin></script><script>const swaggerUrl = "{deploypath}/api/index.json"; const apiUrl = "{deploypath}/";  window.onload = () => {{let swaggerJson = fetch(swaggerUrl).then(r => r.json().then(j => {{j.servers[0].url = apiUrl; window.ui = SwaggerUIBundle({{spec: j,dom_id: '#swagger-ui'}});}}));}};</script></body></html>"""
         apijson = {"openapi": "3.0.1", "stac_version":"1.0.0", "info": {"title": f"{deploypath} Feature Collections",
                                                 "description": f"Feature Collections of {deploypath}"},
                    "servers": [{"url": str(deploypath)}], "paths": {}}
@@ -131,12 +129,11 @@ class StacAPIExporter:
                         "application/json": {"schema": {"$ref": "#/components/schemas/Conformance"}},
                         "text/ttl": {"schema": {}}, "text/html": {"schema": {}}}}}}}
             collectionsjson = {"collections": [], "links": [
-                {"href": outpath + "collections/index.json", "rel": "self", "type": "application/json",
+                {"href": f"{outpath}collections/index.json", "rel": "self", "type": "application/json",
                  "title": "this document as JSON"},
-                {"href": outpath + "collections/index.html", "rel": "self", "type": "text/html",
+                {"href": f"{outpath}collections/index.html", "rel": "self", "type": "text/html",
                  "title": "this document as HTML"}]}
-            collectionshtml = f"<html><head></head><body><header><h1>Collections of " + str(
-                deploypath) + "</h1></head>{{collectiontable}}<footer><a href=\"index.json\">This page as JSON</a></footer></body></html>"
+            collectionshtml = f"<html><head></head><body><header><h1>Collections of {deploypath}</h1></head>{{collectiontable}}<footer><a href=\"index.json\">This page as JSON</a></footer></body></html>"
             collectiontable = "<table><thead><th>Collection</th><th>Links</th></thead><tbody>"
             apijson["paths"]["/collections"] = {"get": {"tags": ["Collections"], "summary": "describes collections",
                     "description": "Describes all collections provided by this service","operationId": "collections", "parameters": [], "responses": {
@@ -144,7 +141,10 @@ class StacAPIExporter:
                         "text/ttl": {"schema": {}}, "text/html": {"schema": {}}}}}}}
             if outpath.endswith("/"):
                 outpath = outpath[0:-1]
-            DocUtils.createFoldersFromList(outpath + "/api/",outpath + "/license/",outpath + "/collections/",outpath + "/conformance/")
+            DocUtils.createFoldersFromList([
+                f"{outpath}/api/", f"{outpath}/license/",
+                f"{outpath}/collections/", f"{outpath}/conformance/"
+            ])
         result = list()
         for coll in featurecollectionspaths:
             curcoll = None
@@ -152,37 +152,40 @@ class StacAPIExporter:
                 with open(coll, 'r', encoding="utf-8") as infile:
                     curcoll = json.load(infile)
             if ogcapi:
-                op = f'{outpath}/collections/{coll.replace(outpath, "").replace("index.geojson", "")}/'
+                collection_path = coll.replace(outpath, "").replace("index.geojson", "")
+                op = f"{outpath}/collections/{collection_path}/"
                 op = op.replace(".geojson", "")
                 op = op.replace("//", "/")
-                if not os.path.exists(op):
-                    os.makedirs(op)
-                if not os.path.exists(op + "/items/"):
-                    os.makedirs(op + "/items/")
+                os.makedirs(op, exist_ok=True)
+                items_path = f"{op}/items/"
+                os.makedirs(items_path, exist_ok=True)
                 opweb = op.replace(outpath, deploypath)
+                opweb_base = opweb.replace(".geojson", "")
+                opweb_link_base = opweb_base.replace("//", "/")
+                opweb_link_root = opweb_link_base if opweb_link_base.endswith("/") else f"{opweb_link_base}/"
                 opwebcoll = opweb
                 if opwebcoll.endswith("/"):
                     opwebcoll = opwebcoll[0:-1]
                 opwebcoll = opwebcoll.replace("//", "/")
+                collection_id = collection_path.replace(".geojson", "")[1:]
                 collectionsjson["collections"].append(
-                    {"stac_version":"1.0.0","stac_extensions":[],"id": coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:],"type":"Collection",
+                    {"stac_version":"1.0.0","stac_extensions":[],"id": collection_id,"type":"Collection",
                      "title": featurecollectionspaths[coll]["name"], "links": [
-                        {"href": str(opweb.replace(".geojson", "") + "/index.json").replace("//", "/"),
+                        {"href": f"{opweb_link_root}index.json",
                          "rel": "collection", "type": "application/json", "title": "Collection as JSON"},
-                        {"href": str(opweb.replace(".geojson", "") + "/").replace("//", "/"), "rel": "collection",
+                        {"href": opweb_link_root, "rel": "collection",
                          "type": "text/html", "title": "Collection as HTML"},
-                        {"href": str(opweb.replace(".geojson", "") + "/index.ttl").replace("//", "/"),
+                        {"href": f"{opweb_link_root}index.ttl",
                          "rel": "collection", "type": "text/ttl", "title": "Collection as TTL"}]})
                 currentcollection = {"title": featurecollectionspaths[coll]["name"],
-                                     "id": coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson",
-                                                                                                          "")[1:],
+                                     "id": collection_id,
                                      "links": [
-                                         {"href": opwebcoll + "/items/index.json", "rel": "items",
+                                         {"href": f"{opwebcoll}/items/index.json", "rel": "items",
                                           "type": "application/json",
                                           "title": "Collection as JSON"},
-                                         {"href": opwebcoll + "/items/indexc.html", "rel": "items", "type": "text/html",
+                                         {"href": f"{opwebcoll}/items/indexc.html", "rel": "items", "type": "text/html",
                                           "title": "Collection as HTML"},
-                                         {"href": opwebcoll + "/items/index.ttl", "rel": "collection",
+                                         {"href": f"{opwebcoll}/items/index.ttl", "rel": "collection",
                                           "type": "text/ttl",
                                           "title": "Collection as TTL"}], "itemType": "feature"}
                 if "bbox" in curcoll:
@@ -194,101 +197,63 @@ class StacAPIExporter:
                     if "extent" in currentcollection:
                         currentcollection["extent"]["spatial"]["crs"] = curcoll["crs"]
                         collectionsjson["collections"][-1]["extent"]["spatial"]["crs"] = curcoll["crs"]
-                cname=str(coll).replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:].rstrip("/")
-                apijson["paths"]["/collections/" + cname] = {
-                    "get": {"tags": ["Collections"], "summary": "describes collection " + cname, "description": "Describes the collection with the id " + cname, "operationId": "collection-" + str(
-                        coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[1:]),
+                cname = collection_id.rstrip("/")
+                apijson["paths"][f"/collections/{cname}"] = {
+                    "get": {"tags": ["Collections"], "summary": f"describes collection {cname}", "description": f"Describes the collection with the id {cname}", "operationId": f"collection-{collection_id}",
                             "parameters": [], "responses": {"default": {"description": "default response", "content": {
                             "application/json": {"schema": {"$ref": "#/components/schemas/Collections"},
                                                  "example": None}}}}}}
-                curcollrow = f'<tr><td><a href="{opweb.replace(".geojson", "")}/items/indexc.html">{featurecollectionspaths[coll]["name"]}</a></td><td><a href="{opweb.replace(".geojson","")}/items/indexc.html">[Collection as HTML]</a>&nbsp;<a href="' + opweb.replace(
-                    ".geojson", "") + "/items/\">[Collection as JSON]</a>&nbsp;<a href=\"" + opweb.replace(".geojson",
-                                                                                                           "") + "/items/index.ttl\">[Collection as TTL]</a></td></tr>"
-                with open(op + "index.json", "w", encoding="utf-8") as f:
+                curcollrow = f'<tr><td><a href="{opweb_base}/items/indexc.html">{featurecollectionspaths[coll]["name"]}</a></td><td><a href="{opweb_base}/items/indexc.html">[Collection as HTML]</a>&nbsp;<a href="{opweb_base}/items/">[Collection as JSON]</a>&nbsp;<a href="{opweb_base}/items/index.ttl">[Collection as TTL]</a></td></tr>'
+                with open(f"{op}index.json", "w", encoding="utf-8") as f:
                     json.dump(currentcollection,f)
-                with open(op + "indexc.html", "w", encoding="utf-8") as f:
+                with open(f"{op}indexc.html", "w", encoding="utf-8") as f:
                     f.write(f'<html><head></head><body><h1>{featurecollectionspaths[coll]["name"]}</h1><table><thead><tr><th>Collection</th><th>Links</th></tr></thead><tbody>{curcollrow}</tbody></table></html>')
                 collectiontable += curcollrow
                 if os.path.exists(coll):
                     try:
-                        if os.path.exists(coll.replace("//", "/")):
-                            targetpath = DocUtils.generateRelativeSymlink(coll.replace("//", "/"),
-                                                                      str(op + "/items/index.json").replace("//", "/"),
-                                                                      outpath)
-                            p = Path(str(op + "/items/index.json").replace("//", "/"))
+                        collection_data_id = featurecollectionspaths[coll]["id"]
+                        collection_items_dir = f"{op}/items"
+                        normalized_coll_path = coll.replace("//", "/")
+                        index_json_path = f"{collection_items_dir}/index.json".replace("//", "/")
+                        index_ttl_path = f"{collection_items_dir}/index.ttl".replace("//", "/")
+                        index_html_path = f"{collection_items_dir}/indexc.html".replace("//", "/")
+                        source_ttl_path = normalized_coll_path.replace("index.geojson", "index.ttl").replace(
+                            f"nonns_{collection_data_id}.geojson", f"nonns_{collection_data_id}.ttl")
+                        source_html_path = normalized_coll_path.replace("index.geojson", "index.html").replace(
+                            f'nonns_{featurecollectionspaths[coll]["id"]}.geojson',
+                            f'nonns_{featurecollectionspaths[coll]["id"]}.html')
+                        if os.path.exists(normalized_coll_path):
+                            targetpath = DocUtils.generateRelativeSymlink(normalized_coll_path, index_json_path, outpath)
+                            p = Path(index_json_path)
                             p.symlink_to(targetpath)
-                        if os.path.exists(coll.replace("//", "/").replace("index.geojson", "index.ttl").replace(
-                                "nonns_" + featurecollectionspaths[coll]["id"] + ".geojson",
-                                "nonns_" + featurecollectionspaths[coll]["id"] + ".ttl")):
+                        if os.path.exists(source_ttl_path):
                             targetpath = DocUtils.generateRelativeSymlink(
-                                coll.replace("//", "/").replace("index.geojson", "index.ttl").replace(
-                                    "nonns_" + featurecollectionspaths[coll]["id"] + ".geojson",
-                                    "nonns_" + featurecollectionspaths[coll]["id"] + ".ttl"),
-                                str(op + "/items/index.ttl").replace("//", "/"), outpath)
-                            p = Path(str(op + "/items/index.ttl").replace("//", "/"))
+                                source_ttl_path, index_ttl_path, outpath)
+                            p = Path(index_ttl_path)
                             p.symlink_to(targetpath)
-                        if os.path.exists(coll.replace("//", "/").replace("index.geojson", "index.html").replace(
-                                f'nonns_{featurecollectionspaths[coll]["id"]}.geojson',
-                                f'nonns_{featurecollectionspaths[coll]["id"]}.html')):
+                        if os.path.exists(source_html_path):
                             targetpath = DocUtils.generateRelativeSymlink(
-                                coll.replace("//", "/").replace("index.geojson", "index.html").replace(
-                                    "nonns_" + featurecollectionspaths[coll]["id"] + ".geojson",
-                                    "nonns_" + featurecollectionspaths[coll]["id"] + ".html"),
-                                str(op + "/items/indexc.html").replace("//", "/"), outpath)
-                            with open(str(op + "/items/indexc.html"), "w",encoding="utf-8") as f:
-                                f.write("<html><head><meta http-equiv=\"refresh\" content=\"0; url=" + targetpath + "\" /></head></html>")
+                                source_html_path, index_html_path, outpath)
+                            with open(index_html_path, "w",encoding="utf-8") as f:
+                                f.write(f'<html><head><meta http-equiv="refresh" content="0; url={targetpath}" /></head></html>')
                         #print("symlinks created")
                     except Exception as e:
                         print("symlink creation error")
                         print(e)
-                    apijson["paths"][str("/collections/" + str(
-                        coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[
-                        1:]) + "/items/index.json").replace("//", "/")] = {"get": {"tags": ["Data"],
-                                                                                   "summary": "retrieves features of collection " + str(
-                                                                                       coll.replace(outpath,
-                                                                                                    "").replace(
-                                                                                           "index.geojson", "").replace(
-                                                                                           ".geojson", "")[1:]).rstrip(
-                                                                                       "/"),
-                                                                                   "description": "Retrieves features of collection  " + str(
-                                                                                       coll.replace(outpath,
-                                                                                                    "").replace(
-                                                                                           "index.geojson", "").replace(
-                                                                                           ".geojson", "")[1:]),
-                                                                                   "operationId": "features-" + str(
-                                                                                       coll.replace(outpath,
-                                                                                                    "").replace(
-                                                                                           "index.geojson", "").replace(
-                                                                                           ".geojson", "")[1:]),
+                    collection_items_path = f"/collections/{collection_id}/items".replace("//", "/")
+                    apijson["paths"][f"{collection_items_path}/index.json"] = {"get": {"tags": ["Data"],
+                                                                                   "summary": f"retrieves features of collection {cname}",
+                                                                                   "description": f"Retrieves features of collection  {collection_id}",
+                                                                                   "operationId": f"features-{collection_id}",
                                                                                    "parameters": [], "responses": {
                             "default": {"description": "default response",
                                         "content": {"application/geo+json": {"example": None}},
                                         "text/ttl": {"schema": {"example": None}, "example": None},
                                         "text/html": {"schema": {"example": None}, "example": None}}}}}
-                    apijson["paths"][str("/collections/" + str(
-                        coll.replace(outpath, "").replace("index.geojson", "").replace(".geojson", "")[
-                        1:]) + "/items/{featureId}/index.json").replace("//", "/")] = {"get": {"tags": ["Data"],
-                                                                                               "summary": "retrieves feature of collection " + str(
-                                                                                                   coll.replace(outpath,
-                                                                                                                "").replace(
-                                                                                                       "index.geojson",
-                                                                                                       "").replace(
-                                                                                                       ".geojson", "")[
-                                                                                                   1:]).rstrip("/"),
-                                                                                               "description": "Retrieves one single feature of the collection with the id " + str(
-                                                                                                   coll.replace(outpath,
-                                                                                                                "").replace(
-                                                                                                       "index.geojson",
-                                                                                                       "").replace(
-                                                                                                       ".geojson", "")[
-                                                                                                   1:]),
-                                                                                               "operationId": "feature-" + str(
-                                                                                                   coll.replace(outpath,
-                                                                                                                "").replace(
-                                                                                                       "index.geojson",
-                                                                                                       "").replace(
-                                                                                                       ".geojson", "")[
-                                                                                                   1:]), "parameters": [
+                    apijson["paths"][f"{collection_items_path}/{{featureId}}/index.json"] = {"get": {"tags": ["Data"],
+                                                                                               "summary": f"retrieves feature of collection {cname}",
+                                                                                               "description": f"Retrieves one single feature of the collection with the id {collection_id}",
+                                                                                               "operationId": f"feature-{collection_id}", "parameters": [
                             {"name": "featureId", "in": "path", "required": True, "schema": {"type": "string"}}],
                                                                                                "responses": {
                                                                                                    "default": {
@@ -306,22 +271,26 @@ class StacAPIExporter:
                                                                                                            "example": None}}}}}
 
                     for feat in curcoll["features"]:
-                        featpath = feat["id"].replace(prefixnamespace, "").replace("//", "/")
+                        feature_id = feat["id"]
+                        featpath = feature_id.replace(prefixnamespace, "").replace("//", "/")
                         try:
-                            os.makedirs(f'{op}/items/{DocUtils.shortenURI(feat["id"])}')
+                            short_feature_id = DocUtils.shortenURI(feature_id)
+                            feature_source_path = feature_id.replace(prefixnamespace, f"{outpath}/")
+                            normalized_feature_output_path = f'{op}/items/{short_feature_id}'.replace("//", "/")
+                            os.makedirs(normalized_feature_output_path)
                             #print("CHECKPATH: " + str(
                             #    str(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.json").replace("//", "/")))
-                            if os.path.exists(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.json"):
-                                targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.json", f'{op}/items/{DocUtils.shortenURI(feat["id"])}/index.json'.replace("//", "/"), outpath, True)
-                                p = Path(f'{op}/items/{DocUtils.shortenURI(feat["id"])}/index.json'.replace("//", "/"))
+                            if os.path.exists(f"{feature_source_path}/index.json"):
+                                targetpath = DocUtils.generateRelativeSymlink(f"{featpath}/index.json", f"{normalized_feature_output_path}/index.json", outpath, True)
+                                p = Path(f"{normalized_feature_output_path}/index.json")
                                 p.symlink_to(targetpath)
-                            if os.path.exists(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.ttl"):
-                                targetpath = DocUtils.generateRelativeSymlink(featpath + "/index.ttl", f'{op}/items/{DocUtils.shortenURI(feat["id"])}/index.ttl'.replace("//", "/"), outpath, True)
-                                p = Path(f'{op}/items/{DocUtils.shortenURI(feat["id"])}/index.ttl'.replace("//", "/"))
+                            if os.path.exists(f"{feature_source_path}/index.ttl"):
+                                targetpath = DocUtils.generateRelativeSymlink(f"{featpath}/index.ttl", f"{normalized_feature_output_path}/index.ttl", outpath, True)
+                                p = Path(f"{normalized_feature_output_path}/index.ttl")
                                 p.symlink_to(targetpath)
-                            if os.path.exists(feat["id"].replace(prefixnamespace, outpath + "/") + "/index.html"):
-                                targetpath = DocUtils.generateRelativeSymlink(f"{featpath}/index.html", f'{op}/items/{DocUtils.shortenURI(feat["id"])}/index.html'.replace("//", "/"), outpath, True)
-                                with open(f'{op}/items/{DocUtils.shortenURI(feat["id"])}/index.html', "w",encoding="utf-8") as f:
+                            if os.path.exists(f"{feature_source_path}/index.html"):
+                                targetpath = DocUtils.generateRelativeSymlink(f"{featpath}/index.html", f"{normalized_feature_output_path}/index.html", outpath, True)
+                                with open(f"{normalized_feature_output_path}/index.html", "w",encoding="utf-8") as f:
                                     f.write(f'<html><head><meta http-equiv="refresh" content="0; url={targetpath}" /></head></html>')
                             #print("symlinks created")
                         except Exception as e:
@@ -331,20 +300,20 @@ class StacAPIExporter:
                         result.append(curcoll)
         collectiontable += "</tbody></table>"
         if mergeJSON:
-            with open(outpath + "/features.js", 'w', encoding="utf-8") as output_file:
+            with open(f"{outpath}/features.js", 'w', encoding="utf-8") as output_file:
                 output_file.write("var featurecolls=")
                 json.dump(result,output_file)
                 # shutil.move(coll, op+"/items/index.json")
         if ogcapi:
-            with open(outpath + "/index.json", "w", encoding="utf-8") as f:
+            with open(f"{outpath}/index.json", "w", encoding="utf-8") as f:
                 json.dump(landingpagejson,f)
-            with open(outpath + "/api/index.json", "w", encoding="utf-8") as f:
+            with open(f"{outpath}/api/index.json", "w", encoding="utf-8") as f:
                 json.dump(apijson,f)
-            with open(outpath + "/api/api.html", "w", encoding="utf-8") as f:
+            with open(f"{outpath}/api/api.html", "w", encoding="utf-8") as f:
                 f.write(apihtml)
-            with open(outpath + "/collections/indexc.html", "w", encoding="utf-8") as f:
+            with open(f"{outpath}/collections/indexc.html", "w", encoding="utf-8") as f:
                 f.write(collectionshtml.replace("{{collectiontable}}", collectiontable))
-            with open(outpath + "/collections/index.json", "w", encoding="utf-8") as f:
+            with open(f"{outpath}/collections/index.json", "w", encoding="utf-8") as f:
                 json.dump(collectionsjson,f)
-            with open(outpath + "/conformance/index.json", "w", encoding="utf-8") as f:
+            with open(f"{outpath}/conformance/index.json", "w", encoding="utf-8") as f:
                 json.dump(conformancejson,f)

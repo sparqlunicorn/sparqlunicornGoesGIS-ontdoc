@@ -27,9 +27,9 @@ class IndexViewPage:
             subgraph = Graph(bind_namespaces="rdflib")
             checkdepth = DocUtils.checkDepthFromPath(path, pubconfig["outpath"], path) - 1
             sfilelink = DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixns"], checkdepth,
-                                                                    pubconfig["corpusid"] + '_search.js', False)
+                                                                    f'{pubconfig["corpusid"]}_search.js', False)
             classtreelink = DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixns"], checkdepth,
-                                                                        pubconfig["corpusid"] + "_classtree.js", False)
+                                                                        f'{pubconfig["corpusid"]}_classtree.js', False)
             stylelink = DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixns"], checkdepth, "style.css", False)
             scriptlink = DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixns"], checkdepth, "startscripts.js",
                                                                      False)
@@ -39,7 +39,7 @@ class IndexViewPage:
                                                                        False)
             vowllink = DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixns"], checkdepth, "vowl_result.js",
                                                                    False)
-            nslink = pubconfig["prefixns"] + str(IndexViewPage.getAccessFromBaseURL(str(pubconfig["outpath"]), str(path)))
+            nslink = f'{pubconfig["prefixns"]}{IndexViewPage.getAccessFromBaseURL(str(pubconfig["outpath"]), str(path))}'
             for sub in subjectstorender:
                 if nslink in sub:
                     for tup in graph.predicate_objects(sub):
@@ -62,14 +62,14 @@ class IndexViewPage:
                     else:
                         ExporterUtils.exportToFunction[ex](subgraph, f'{path}index.{ex}', subjectstorender,classlist, ex)
             relpath = DocUtils.generateRelativePathFromGivenDepth(checkdepth)
-            with open(path + "index.html", 'w', encoding='utf-8') as f:
+            with open(f"{path}index.html", 'w', encoding='utf-8') as f:
                 #print("RELPATH: " + str(relpath))
                 indexhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], voidds, checkdepth,
                                                           str(nslink == pubconfig["prefixns"]).lower(),pubconfig)
                 indexhtml = indexhtml.replace("{{iconprefixx}}",
-                                              (relpath + "icons/" if pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",pubconfig["prefixns"]).replace(
+                                              (f"{relpath}icons/" if pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",pubconfig["prefixns"]).replace(
                     "{{relativedepth}}", str(checkdepth)).replace("{{relativepath}}", relpath).replace("{{toptitle}}",
-                                                                                                       "Index page for " + nslink).replace(
+                                                                                                       f"Index page for {nslink}").replace(
                     "{{title}}", f'Index page for <span property="http://rdfs.org/ns/void#uriSpace" content="{nslink}">{nslink}</span>').replace("{{startscriptpath}}", scriptlink).replace(
                     "{{stylepath}}", stylelink).replace("{{vowlpath}}", vowllink) \
                     .replace("{{classtreefolderpath}}", classtreelink).replace("{{baseurlhtml}}", nslink).replace(
@@ -107,7 +107,7 @@ class IndexViewPage:
                 f.write(f"</tbody></table><script property=\"http://purl.org/dc/terms/modified\" content=\"{pubconfig['modtime']}\" datatype=\"http://www.w3.org/2001/XMLSchema#dateTime\">$('#indextable').DataTable();</script>")
                 tempfoot = DocUtils.replaceStandardVariables(templates["footer"], "", checkdepth,str(nslink == pubconfig["prefixns"]).lower(),pubconfig).replace(
                     "{{license}}", curlicense).replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}","").replace("{{stats}}", voidstatshtml)
-                tempfoot=DocUtils.replaceCitationLink(tempfoot,"Index page for " + nslink,"",pubconfig)
+                tempfoot=DocUtils.replaceCitationLink(tempfoot,f"Index page for {nslink}","",pubconfig)
                 tempfoot = DocUtils.conditionalArrayReplace(tempfoot, [True,True, apis["ogcapifeatures"], apis["iiif"],apis["ckan"]],
                                                             [
                                                                 f"<a href=\"{relpath}/sparql.html?endpoint={pubconfig['deploypath']}\">[SPARQL]</a>&nbsp;",
@@ -118,4 +118,3 @@ class IndexViewPage:
                                                             ], "{{apis}}")
                 f.write(tempfoot)
                 indpcounter+=1
-

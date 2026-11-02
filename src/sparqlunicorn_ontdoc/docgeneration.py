@@ -105,9 +105,8 @@ class OntDocGeneration:
         outpath=self.pubconfig["outpath"]
         self.pubconfig["corpusid"]=self.pubconfig["namespaceshort"].replace("#","")
         if self.pubconfig["datasettitle"] is None or self.pubconfig["datasettitle"]== "":
-            self.pubconfig["datasettitle"]=self.pubconfig["corpusid"].replace(" ","_")+"_dataset"
-        if not os.path.isdir(outpath):
-            os.mkdir(outpath)
+            self.pubconfig["datasettitle"]=f'{self.pubconfig["corpusid"].replace(" ", "_")}_dataset'
+        os.makedirs(outpath, exist_ok=True)
         labeltouri = {}
         uritolabel = {}
         uritotreeitem = defaultdict(list)
@@ -127,8 +126,7 @@ class OntDocGeneration:
             self.exectimes["Create Collections"] = {"time": end - start}
         if self.pubconfig["logourl"] is not None and self.pubconfig["logourl"] != "" and not self.pubconfig["logourl"].startswith("http"):
             logoname=self.pubconfig["logourl"]
-            if not os.path.isdir(outpath + "/logo/"):
-                os.mkdir(outpath + "/logo/")
+            os.makedirs(f"{outpath}/logo/", exist_ok=True)
             shutil.copy(logoname, f'{outpath}/logo/logo.{logoname[logoname.rfind("."):]}')
             self.pubconfig["logourl"] = f'{outpath}/logo/logo.{logoname[logoname.rfind("."):]}'
         DocUtils.updateProgressBar(0, 1, "Creating classtree and search index")
@@ -148,22 +146,22 @@ class OntDocGeneration:
                     for key in data:
                         labeltouri[key] = data[key]
             except Exception as e:
-                print("Exception occurred " + str(e))
+                print(f"Exception occurred {e}")
                 print(traceback.format_exc())
         #with open(searchjspath, 'w', encoding='utf-8') as f:
         #    f.write("var search=")
         #    json.(labeltouri,f, indent=1, sort_keys=True)
         if self.pubconfig["offlinecompat"]:
-            if os.path.exists(outpath + "icons/"):
-                shutil.rmtree(outpath + "icons/")
-            shutil.copytree(f"{templatepath}/{self.templatename}/icons/", outpath + "icons/")
+            if os.path.exists(f"{outpath}icons/"):
+                shutil.rmtree(f"{outpath}icons/")
+            shutil.copytree(f"{templatepath}/{self.templatename}/icons/", f"{outpath}icons/")
         prevtree = []
         if os.path.exists(classtreepath):
             try:
                 with open(classtreepath, 'r', encoding='utf-8') as f:
                     prevtree = json.loads(f.read().replace("var tree=", ""))["core"]["data"]
             except Exception as e:
-                print("Exception occurred " + str(e))
+                print(f"Exception occurred {e}")
         #classidset = set()
         start=time.time()
         clsress = ClassTreeUtils.getClassTree(self.graph, uritolabel, uritotreeitem,self.typeproperty,self.pubconfig["prefixes"],self.preparedclassquery,res["instancecount"],self.pubconfig["outpath"],self.pubconfig)
@@ -188,11 +186,11 @@ class OntDocGeneration:
         end=time.time()
         self.exectimes["Void stats generation"]={"time":end-start,"items":numclasses}
         print(f"Void stats generation time for {numclasses} classes: {end-start} seconds")
-        with open(outpath + "style.css", 'w', encoding='utf-8') as f:
+        with open(f"{outpath}style.css", 'w', encoding='utf-8') as f:
             f.write(templates["style"])
-        with open(outpath + "startscripts.js", 'w', encoding='utf-8') as f:
+        with open(f"{outpath}startscripts.js", 'w', encoding='utf-8') as f:
             f.write(templates["startscripts"].replace("{{baseurl}}", prefixnamespace))
-        with open(outpath + "epsgdefs.js", 'w', encoding='utf-8') as f:
+        with open(f"{outpath}epsgdefs.js", 'w', encoding='utf-8') as f:
             f.write(templates["epsgdefs"])
         paths = defaultdict(list)
         nonnsmap = {}
@@ -224,7 +222,7 @@ class OntDocGeneration:
         end=time.time()
         self.exectimes["HTML Generation"]={"time":end-start,"items":len(subjectstorender)}
         print(f"HTML generation time for {len(subjectstorender)} pages: {end-start} seconds, about {(end-start)/len(subjectstorender)} seconds per page")
-        print("Postprocessing " + str(len(postprocessing)))
+        print(f"Postprocessing {len(postprocessing)}")
         subtorenderlen = len(subjectstorender) + len(postprocessing)
         for subj in postprocessing.subjects(None, None, True):
             path = str(subj).replace(prefixnamespace, "")
@@ -262,11 +260,10 @@ class OntDocGeneration:
             f.write("var search=")
             json.dump(labeltouri,f, sort_keys=True)
         if self.htmlexporter.has3d:
-            if not os.path.exists(outpath + "/js"):
-                os.makedirs(outpath + "/js")
-            with open(outpath + "/js/corto.em.js", 'w', encoding='utf-8') as f:
+            os.makedirs(f"{outpath}/js", exist_ok=True)
+            with open(f"{outpath}/js/corto.em.js", 'w', encoding='utf-8') as f:
                 f.write(templates["corto.em"])
-            with open(outpath + "/js/nexus.js", 'w', encoding='utf-8') as f:
+            with open(f"{outpath}/js/nexus.js", 'w', encoding='utf-8') as f:
                 f.write(templates["nexus"])
         if self.pubconfig["apis"]["iiif"]:
             IIIFAPIExporter.generateIIIFAnnotations(outpath, self.htmlexporter.imagetoURI)
@@ -281,10 +278,10 @@ class OntDocGeneration:
                 if template!="main":
                     templates["layouts"][template]=TemplateUtils.resolveIncludes(template,templates)
         if "sparqltemplate" in templates:
-            with open(outpath + "sparql.html", 'w', encoding='utf-8') as f:
+            with open(f"{outpath}sparql.html", 'w', encoding='utf-8') as f:
                 SPARQLPage().generatePageView(templates, self.pubconfig, curlicense, self.voidstatshtml,self.graph, f)
         if "buildlog" in templates:
-            with open(outpath + "buildlog.html", 'w', encoding='utf-8') as f:
+            with open(f"{outpath}buildlog.html", 'w', encoding='utf-8') as f:
                 BuildLogPage().generatePageView(templates, self.pubconfig, curlicense, self.voidstatshtml,self.graph, f)
         relpath = DocUtils.generateRelativePathFromGivenDepth(0)
         if len(self.htmlexporter.iiifmanifestpaths["default"]) > 0:
@@ -293,16 +290,16 @@ class OntDocGeneration:
                                                     prefixnamespace)
             indexhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], "", "0", "true",self.pubconfig)
             indexhtml = indexhtml.replace("{{iconprefixx}}",
-                                          (relpath + "icons/" if self.pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",
+                                          (f"{relpath}icons/" if self.pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",
                                                                                                       self.pubconfig["prefixns"]).replace(
                 "{{relativepath}}", relpath).replace("{{toptitle}}", "Feature Collection Overview").replace("{{title}}",
                                                                                                             "Image Grid View").replace(
                 "{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}",
                                                                                                         "vowl_result.js") \
-                .replace("{{classtreefolderpath}}", self.pubconfig["corpusid"] + "_classtree.js").replace("{{proprelationpath}}",
+                .replace("{{classtreefolderpath}}", f'{self.pubconfig["corpusid"]}_classtree.js').replace("{{proprelationpath}}",
                                                                                         "proprelations.js").replace(
                 "{{nonnslink}}", "").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}",
-                                                                            self.pubconfig["corpusid"] + '_search.js').replace(
+                                                                            f'{self.pubconfig["corpusid"]}_search.js').replace(
                 "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "")
             IIIFAPIExporter.generateImageGrid(self.pubconfig["outpath"], self.pubconfig["deploypath"], self.htmlexporter.iiifmanifestpaths["default"],
                                               templates["imagegrid"], indexhtml,
@@ -312,7 +309,7 @@ class OntDocGeneration:
                                                   "{{subject}}", "").replace("{{exports}}",
                                                                              templates["nongeoexports"]).replace(
                                                   "{{bibtex}}", "").replace("{{stats}}", self.voidstatshtml),
-                                              outpath + "imagegrid.html")
+                                              f"{outpath}imagegrid.html")
             end=time.time()
             print(f"IIIF Collection Generation time: {end-start} seconds")
             self.exectimes["IIIF Collection Generation"] = {"time": end - start}
@@ -334,21 +331,21 @@ class OntDocGeneration:
             start=time.time()
             indexhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], "", "0", "true",self.pubconfig)
             indexhtml = indexhtml.replace("{{iconprefixx}}",
-                                          (relpath + "icons/" if self.pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",
+                                          (f"{relpath}icons/" if self.pubconfig["offlinecompat"] else "")).replace("{{baseurl}}",
                                                                                                       self.pubconfig["prefixns"]).replace(
                 "{{relativepath}}", relpath).replace("{{toptitle}}", "Feature Collection Overview").replace("{{title}}",
                                                                                                             "Feature Collection Overview").replace(
                 "{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}", "style.css").replace("{{vowlpath}}",
                                                                                                         "vowl_result.js") \
-                .replace("{{classtreefolderpath}}", self.pubconfig["corpusid"] + "_classtree.js").replace("{{proprelationpath}}",
+                .replace("{{classtreefolderpath}}", f'{self.pubconfig["corpusid"]}_classtree.js').replace("{{proprelationpath}}",
                                                                                         "proprelations.js").replace(
                 "{{nonnslink}}", "").replace("{{baseurlhtml}}", "").replace("{{scriptfolderpath}}",
-                                                                            self.pubconfig["corpusid"] + '_search.js').replace(
+                                                                            f'{self.pubconfig["corpusid"]}_search.js').replace(
                 "{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}", "")
             OGCAPIFeaturesExporter.generateOGCAPIFeaturesPages(outpath, self.pubconfig["deploypath"], self.htmlexporter.featurecollectionspaths,
                                                                self.pubconfig["prefixns"], self.pubconfig["apis"]["ogcapifeatures"], True)
             WFSExporter.generateWFSPages(outpath,self.pubconfig["deploypath"], self.htmlexporter.featurecollectionspaths,self.licenseuri)
-            with open(outpath + "featurecollections.html", 'w', encoding='utf-8') as f:
+            with open(f"{outpath}featurecollections.html", 'w', encoding='utf-8') as f:
                 f.write(indexhtml)
                 f.write("<p>This page shows feature collections present in the linked open data export</p><script src=\"features.js\"></script>")
                 f.write(templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace(
@@ -378,7 +375,7 @@ class OntDocGeneration:
                                        uritotreeitem, labeltouri):
         nonnsuris = len(uristorender)
         counter = 0
-        print("NONS URIS TO RENDER: "+str(nonnsuris))
+        print(f"NONS URIS TO RENDER: {nonnsuris}")
         for uri in uristorender:
             theuri=URIRef(uri)
             label = ""
@@ -411,7 +408,7 @@ class OntDocGeneration:
 
 def main():
     prefixes = {"reversed": {}}
-    rpath=resourcepath + '/prefixes.json'
+    rpath = f"{resourcepath}/prefixes.json"
     print(f'PREFIX EXISTS? {rpath} {os.path.exists(resourcepath)}/prefixes.json')
     if os.path.exists(rpath):
         with open(rpath, encoding="utf-8") as f:
@@ -482,18 +479,18 @@ def main():
                         default="default")
     args, unknown = parser.parse_known_args()
     #print(args)
-    print("The following arguments were not recognized: " + str(unknown))
+    print(f"The following arguments were not recognized: {unknown}")
     if args.input is None or args.input[0] == "None" or args.input == "":
         print("No input files specified... trying to find files in the script folder")
         args.input = DocUtils.getLDFilesFromFolder(".")
-        print("Found " + str(args.input))
+        print(f"Found {args.input}")
     for path in args.input:
         if " " in path:
             for itemm in path.split(" "):
                 filestoprocess += DocUtils.resolveWildcardPath(itemm)
         else:
             filestoprocess += DocUtils.resolveWildcardPath(path)
-    print("Files to process: " + str(filestoprocess))
+    print(f"Files to process: {filestoprocess}")
     for path in args.output:
         if " " in path:
             outpath+=[itemm for itemm in path.split(" ")]
@@ -502,7 +499,7 @@ def main():
         else:
             outpath.append(path)
 
-    print("ARG EXPORTS: " + str(args.exports))
+    print(f"ARG EXPORTS: {args.exports}")
     for expo in args.exports:
         if " " in expo:
             dataexports+=[ex for ex in expo.split(" ") if ex not in dataexports]
@@ -511,7 +508,7 @@ def main():
             #        dataexports.append(ex)
         elif expo not in dataexports:
             dataexports.append(expo)
-    print("EXPORTS: "+str(dataexports))
+    print(f"EXPORTS: {dataexports}")
     print(os.listdir(os.getcwd()))
     if args.templatepath is not None:
         templatepath=args.templatepath
@@ -519,7 +516,7 @@ def main():
             with urlopen(templatepath) as zipresp:
                 with ZipFile(BytesIO(zipresp.read())) as zfile:
                     subfoldername = zfile.namelist()[0][0:zfile.namelist()[0].rfind('/')]
-                    zfile.extractall(resourcepath+'/html/')
+                    zfile.extractall(f"{resourcepath}/html/")
                     templatepath = f'{resourcepath}/html/{subfoldername}'
                     if subfoldername.endswith("/"):
                         subfoldername = subfoldername[0:-1]
@@ -558,17 +555,18 @@ def main():
                 curpath=outpath[-1]
             subrend = docgen.generateOntDocForNameSpace(args.prefixns, dataformat="HTML")
             DocUtils.printExecutionStats(docgen.exectimes)
-            DocUtils.writeExecutionStats(docgen.exectimes, curpath+"/buildlog.js")
+            DocUtils.writeExecutionStats(docgen.exectimes, f"{curpath}/buildlog.js")
         except Exception as inst:
-            print("Could not parse " + str(fp))
+            print(f"Could not parse {fp}")
             print(inst)
             print(traceback.format_exc())
         fcounter += 1
     curlicense = license
     if docgen is not None:
         curlicense = docgen.licensehtml
-    print(f'Path exists? {outpath[0]}/index.html {os.path.exists(outpath[0] + "/index.html")}')
-    if not os.path.exists(outpath[0] + '/index.ttl') and subrend is not None:
+    indexpath = f'{outpath[0]}/index.html'
+    print(f"Path exists? {indexpath} {os.path.exists(indexpath)}")
+    if not os.path.exists(f"{outpath[0]}/index.ttl") and subrend is not None:
         resg = Graph()
         for sub in subrend:
             for predobj in g.predicate_objects(sub):
@@ -577,10 +575,10 @@ def main():
                 resg.add((sub, RDF.type,URIRef("http://www.w3.org/ns/ldp#Container")))
                 resg.add((sub, RDF.type,URIRef("http://www.w3.org/ns/ldp#BasicContainer")))
                 resg.add((sub, RDF.type,URIRef("http://www.w3.org/ns/ldp#Resource")))
-        resg.serialize(outpath[0] + '/index.ttl')
+        resg.serialize(f"{outpath[0]}/index.ttl")
     manifest={
         "lang": "en-us",
-        "name": "SPARQLing Unicorn Ontology Documentation Script: "+args.prefixnsshort,
+        "name": f"SPARQLing Unicorn Ontology Documentation Script: {args.prefixnsshort}",
         "short_name": args.prefixnsshort,
         "description": "HTML Deployment produced by the SPARQLing Unicorn Ontology Documentation Script",
         "start_url": "/",
@@ -589,30 +587,31 @@ def main():
         "orientation": "any",
         "display": "standalone"
     }
-    with open(outpath[0] + "/manifest.json", "w", encoding="utf-8") as f:
+    with open(f'{outpath[0]}/manifest.json', "w", encoding="utf-8") as f:
         json.dump(manifest,f)
-    if not os.path.exists(outpath[0] + '/index.html'):
-        with open(outpath[0] + "/index.html", "w", encoding="utf-8") as indexf:
+    if not os.path.exists(f"{outpath[0]}/index.html"):
+        with open(f'{outpath[0]}/index.html', "w", encoding="utf-8") as indexf:
             nonnslink = ""
             relpath = ""
             indexhtml = DocUtils.replaceStandardVariables(templates["htmltemplate"], "", "0", "true",docgen.pubconfig)
-            indexhtml = indexhtml.replace("{{iconprefixx}}", (relpath + "icons/" if args.offlinecompat else "")).replace(
+            indexhtml = indexhtml.replace("{{iconprefixx}}", (f"{relpath}icons/" if args.offlinecompat else "")).replace(
                 "{{baseurl}}", args.prefixns).replace("{{relativepath}}", relpath).replace("{{relativedepth}}",
                                                                                            "0").replace("{{toptitle}}",
                                                                                                         "Index page").replace(
                 "{{title}}", "Index page").replace("{{startscriptpath}}", "startscripts.js").replace("{{stylepath}}",
                                                                                                      "style.css") \
-                .replace("{{classtreefolderpath}}", args.prefixnsshort + "_classtree.js").replace("{{baseurlhtml}}",
+                .replace("{{classtreefolderpath}}", f"{args.prefixnsshort}_classtree.js").replace("{{baseurlhtml}}",
                                                                                                   ".").replace(
                 "{{nonnslink}}", str(nonnslink)).replace("{{proprelationpath}}", "proprelations.js").replace(
-                "{{scriptfolderpath}}", args.prefixnsshort + '_search.js').replace("{{exports}}",templates["nongeoexports"]).replace(
+                "{{scriptfolderpath}}", f"{args.prefixnsshort}_search.js").replace("{{exports}}",templates["nongeoexports"]).replace(
                 "{{bibtex}}", "")
             indexf.write(indexhtml)
             indexf.write("<p>This page shows information about linked data resources in HTML. Choose the classtree navigation or search to browse the data</p>")
             indexf.write("<table class=\"description\" border=1 id=indextable><thead><tr><th>Dataset</th></tr></thead><tbody>")
             subfolders = [f.path for f in os.scandir(outpath[0]) if f.is_dir()]
             #print(subfolders)
-            indexf.write("".join(f'<tr><td><a href="{path.replace(outpath[0] + "/", "")}/index.html">{path.replace(outpath[0] + "/", "")}</a></td></tr>' for path in subfolders))
+            outputprefix = f'{outpath[0]}/'
+            indexf.write("".join(f'<tr><td><a href="{path.replace(outputprefix, "")}/index.html">{path.replace(outputprefix, "")}</a></td></tr>' for path in subfolders))
             #for path in subfolders:
             #    indexf.write(f'<tr><td><a href="{path.replace(outpath[0] + "/", "")}/index.html">{path.replace(outpath[0] + "/", "")}</a></td></tr>')
             indexf.write("</tbody></table><script>$('#indextable').DataTable();</script>")

@@ -29,7 +29,7 @@ class MediaPage:
                     annostring += anno["value"].replace("<svg>",
                                                         "<svg style=\"position: absolute;top: 0;left: 0;\" class=\"svgview svgoverlay\" fill=\"#044B94\" fill-opacity=\"0.4\">")
                 f.write(templates["imageswithannotemplate"].replace("{{carousel}}",
-                                                                    carousel + "\" style=\"position: relative;display: inline-block;").replace(
+                                                                    f'{carousel}" style="position: relative;display: inline-block;').replace(
                     "{{image}}", str(image)).replace("{{svganno}}", annostring).replace("{{imagetitle}}", str(image)[0:str(image).rfind('.')]))
                 if len(foundmedia["image"]) > 3:
                     carousel = "carousel-item"

@@ -52,7 +52,7 @@ class GeoExporter:
         res=GeoExporter.preprocessGeometryData(g,file,subjectstorender,classlist,formatt)
         typeToFields,typeToRes,typeToGeom=res
         for type in typeToFields:
-            with open(f'{os.path.realpath(file.name).replace("." + formatt, "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
+            with open(f'{os.path.realpath(file.name).replace(f".{formatt}", "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
                 #resjson={"type":"FeatureCollection","features":[{"type":"Feature","properties":res,"geometry":typeToGeom[type]} for res in typeToRes[type]]}
                 #for res in typeToRes[type]:
                 #    resjson["features"].append({"type":"Feature","properties":res,"geometry":typeToGeom[type]})
@@ -64,7 +64,7 @@ class GeoExporter:
         res=GeoExporter.preprocessGeometryData(g,file,subjectstorender,classlist,formatt)
         typeToFields,typeToRes,typeToGeom=res
         for type in typeToFields:
-            with open(f'{os.path.realpath(file.name).replace("." + formatt, "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
+            with open(f'{os.path.realpath(file.name).replace(f".{formatt}", "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
                 #resjson={"type":"FeatureCollection","features":[{"type":"Feature","properties":res,"geometry":typeToGeom[type]} for res in typeToRes[type]]}
                 #for res in typeToRes[type]:
                 #    resjson["features"].append({"type":"Feature","properties":res,"geometry":typeToGeom[type]})
@@ -97,7 +97,7 @@ class GeoExporter:
         res=GeoExporter.preprocessGeometryData(g,file,subjectstorender,classlist,formatt)
         typeToFields,typeToRes,typeToGeom=res
         for type in typeToFields:
-            with open(f'{os.path.realpath(file.name).replace("." + formatt, "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
+            with open(f'{os.path.realpath(file.name).replace(f".{formatt}", "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
                 f.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?><kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\">\n")
                 f.write("<Placemark>\n")
                 f.write(f'<{typeToGeom[type]["type"]}>\n<coordinates>\n')
@@ -111,7 +111,7 @@ class GeoExporter:
         ress=GeoExporter.preprocessGeometryData(g,file,subjectstorender,classlist,formatt)
         typeToFields,typeToRes,typeToGeom=ress
         for type in typeToFields:
-            with open(f'{os.path.realpath(file.name).replace("." + formatt, "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
+            with open(f'{os.path.realpath(file.name).replace(f".{formatt}", "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
                 f.write("<mapml>\n<head>\n<title></title>\n</head>\n<body>\n")
                 for res in typeToRes[type]:
                     f.write(f"<feature id=\"{''}\" \"itemscope\"=\"itemscope\">\n")
@@ -142,7 +142,7 @@ class GeoExporter:
         res=GeoExporter.preprocessGeometryData(g,file,subjectstorender,classlist,formatt)
         typeToFields,typeToRes,typeToGeom=res
         for type in typeToFields:
-            with open(f'{os.path.realpath(file.name).replace("." + formatt, "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
+            with open(f'{os.path.realpath(file.name).replace(f".{formatt}", "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
                 f.write(f'geo:{str(typeToGeom[type]["coordinates"]).replace("[","").replace("]","")}\n')
         return None
 
@@ -151,6 +151,6 @@ class GeoExporter:
         res=GeoExporter.preprocessGeometryData(g,file,subjectstorender,classlist,formatt)
         typeToFields,typeToRes,typeToGeom=res
         for type in typeToFields:
-            with open(f'{os.path.realpath(file.name).replace("." + formatt, "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
+            with open(f'{os.path.realpath(file.name).replace(f".{formatt}", "")}_{DocUtils.shortenURI(type)}.{formatt}', "w", encoding="utf-8") as f:
                 f.write(f'{typeToGeom[type]["type"]}({typeToGeom[type]["coordinates"]})\n')
         return None

@@ -148,7 +148,7 @@ class PersonPage:
                 thehcard[PersonPage.vcardTohCard[ppropstr]]={"value":str(pprop[1]),"prop":ppropstr}
             if ppropstr in PersonPage.vcardprops:
                 if PersonPage.vcardprops[ppropstr] in thevcard:
-                    thevcard[PersonPage.vcardprops[ppropstr]]["value"]+=" "+str(pprop[1])
+                    thevcard[PersonPage.vcardprops[ppropstr]]["value"]+=f" {pprop[1]}"
                 else:
                     thevcard[PersonPage.vcardprops[ppropstr]]={"value":str(pprop[1]),"prop":ppropstr}
         return {"vcard":thevcard,"hcard":thehcard}
@@ -181,13 +181,13 @@ class PersonPage:
                     result += f"<span class=\"{PersonPage.vcardTohCard[hcard[prop]['prop']]}\">{hcard[prop]['value']}</span></li>"
                 else:
                     result += f"<span class=\"{prop}\">{hcard[prop]['value']}</span></li>"
-        return result+"</ul></td></tr>"
+        return f"{result}</ul></td></tr>"
 
     @staticmethod
     def vcardJSONToString(vcard):
         res="BEGIN:VCARD\nVERSION:4.0\nPROFILE:VCARD\n"
         res+="".join(f'{str(key).upper()}:{vcard[key]["value"]}\n' for key in vcard)
-        return res+"END:VCARD\n"
+        return f"{res}END:VCARD\n"
 
     @staticmethod
     def collectionConstraint():

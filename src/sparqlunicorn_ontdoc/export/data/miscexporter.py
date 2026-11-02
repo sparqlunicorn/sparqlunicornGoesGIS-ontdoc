@@ -44,7 +44,7 @@ class MiscExporter:
             #    res[str(tup[0])]=str(tup[1])
             typeToRes[subjectsToType[str(sub)]].append({str(tup[0]):str(tup[1]) for tup in g.predicate_objects(sub)})
         for type in typeToFields:
-            with open(f'{os.path.realpath(file.name).replace("."+formatt,"")}_{DocUtils.shortenURI(type)}.{formatt}',"w") as f:
+            with open(f'{os.path.realpath(file.name).replace(f".{formatt}", "")}_{DocUtils.shortenURI(type)}.{formatt}',"w") as f:
                 tlist=list(typeToFields[type])
                 tlistlen=len(tlist)
                 for i in range(0,tlistlen):
@@ -77,7 +77,7 @@ class MiscExporter:
             #    res[str(tup[0])] = str(tup[1])
             typeToRes[subjectsToType[str(sub)]].append({str(tup[0]):str(tup[1]) for tup in g.predicate_objects(sub)})
         for type in typeToFields:
-            with open(f'{os.path.realpath(file.name).replace("." + formatt, "")}_{DocUtils.shortenURI(type)}.{formatt}', "w") as f:
+            with open(f'{os.path.realpath(file.name).replace(f".{formatt}", "")}_{DocUtils.shortenURI(type)}.{formatt}', "w") as f:
                 f.write("\n")
                 for res in typeToRes[type]:
                     json.dump(res,f)
