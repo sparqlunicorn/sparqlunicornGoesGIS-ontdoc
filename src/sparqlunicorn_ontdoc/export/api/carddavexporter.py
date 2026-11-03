@@ -1,5 +1,4 @@
 import os
-import json
 from ..pages.personpage import PersonPage
 
 class CardDAVExporter:

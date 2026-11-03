@@ -1,4 +1,5 @@
 from rdflib import URIRef, Literal
+from rdflib.namespace import RDFS
 from doc.docconfig import DocConfig
 from doc.docutils import DocUtils
 from doc.literalutils import LiteralUtils
@@ -63,9 +64,8 @@ class GeometryViewPage:
         hasnonns = parameters.get("hasnonns", {})
         thecrs = set()
         dateatt = ""
-        memberpred = URIRef("http://www.w3.org/2000/01/rdf-schema#member")
         if not nonns:
-            for memberid in graph.objects(subject, memberpred, True):
+            for memberid in graph.objects(subject, RDFS.member, True):
                 memberidstr=str(memberid)
                 geojsonrep = None
                 timeobj={}

@@ -12,6 +12,7 @@ from datetime import date
 
 _EXIF_WIDTH = URIRef("http://www.w3.org/2003/12/exif/ns#width")
 _EXIF_HEIGHT = URIRef("http://www.w3.org/2003/12/exif/ns#height")
+_LABEL_PROPERTIES = frozenset(URIRef(uri) for uri in DocConfig.labelproperties)
 
 
 class DocUtils:
@@ -80,17 +81,14 @@ class DocUtils:
     @staticmethod
     def getDataNamespace(g):
         print("Automatic data namespace detection")
-        namespacetosub = defaultdict(set)
-        for sub in g.subjects(None, None, True):
-            namespacetosub[DocUtils.instanceToNS(sub)].add(sub)
-            #if ns not in namespacetosub:
-            #    namespacetosub[ns] = set()
-            #namespacetosub[ns].add(sub)
+        namespacecounts = defaultdict(int)
         maxns=None
         maxnsnum=-1
-        for ns in namespacetosub:
-            if len(namespacetosub[ns])>maxnsnum:
-                maxnsnum=len(namespacetosub[ns])
+        for sub in g.subjects(None, None, True):
+            ns=DocUtils.instanceToNS(sub)
+            namespacecounts[ns] += 1
+            if namespacecounts[ns] > maxnsnum:
+                maxnsnum=namespacecounts[ns]
                 maxns=ns
         print(f"Automatically detected datanamespace {maxns}")
         return maxns
@@ -117,10 +115,12 @@ class DocUtils:
     def instanceToNS(uri):
         if not uri.startswith("http"):
             return uri
-        if "#" in uri:
-            return uri[:uri.rfind("#") + 1]
-        if "/" in uri:
-            return uri[:uri.rfind("/") + 1]
+        separator = uri.rfind("#")
+        if separator >= 0:
+            return uri[:separator + 1]
+        separator = uri.rfind("/")
+        if separator >= 0:
+            return uri[:separator + 1]
         return uri
 
 
@@ -210,22 +210,25 @@ class DocUtils:
 
     @staticmethod
     def shortenURI(uri,ns=False):
-        if uri is not None:
-            if ns:
-                if "#" in uri:
-                    return uri[0:uri.rfind('#')+1]
-                if "/" in uri:
-                    return uri[0:uri.rfind('/')+1]
-            if uri.endswith("/"):
-                uri = uri[0:-1]
-            if not ns:
-                if "#" in uri:
-                    return uri[uri.rfind('#') + 1:]
-                if "/" in uri:
-                    return uri[uri.rfind('/') + 1:]
-            return uri
-        else:
+        if uri is None:
             return ""
+        if ns:
+            separator = uri.rfind("#")
+            if separator >= 0:
+                return uri[:separator + 1]
+            separator = uri.rfind("/")
+            if separator >= 0:
+                return uri[:separator + 1]
+            return uri
+        if uri.endswith("/"):
+            uri = uri[:-1]
+        separator = uri.rfind("#")
+        if separator >= 0:
+            return uri[separator + 1:]
+        separator = uri.rfind("/")
+        if separator >= 0:
+            return uri[separator + 1:]
+        return uri
 
     @staticmethod
     def createURILink(prefixes,uri):
@@ -311,24 +314,25 @@ class DocUtils:
     @staticmethod
     def getLabelForObject(obj,graph,prefixes=None,labellang=None):
         label=""
-        objstr=str(obj)
-        onelabel=DocUtils.shortenURI(objstr)
-        for tup in graph.predicate_objects(obj):
-            if str(tup[0]) in DocConfig.labelproperties:
-                tup1str = str(tup[1])
+        onelabel=None
+        for predicate, value in graph.predicate_objects(obj):
+            if predicate in _LABEL_PROPERTIES:
+                value_str = str(value)
                 # Check for label property
-                if tup[1].language==labellang:
-                    label=tup1str
-                onelabel=tup1str
+                if value.language==labellang:
+                    label=value_str
+                onelabel=value_str
         if label=="":
+            if onelabel is None:
+                onelabel=DocUtils.shortenURI(str(obj))
             if onelabel is not None and onelabel!="":
                 if prefixes is not None:
-                    res = DocUtils.replaceNameSpacesInLabel(prefixes, objstr)
+                    res = DocUtils.replaceNameSpacesInLabel(prefixes, str(obj))
                     label=res["uri"]
                 else:
                     label = onelabel
             elif prefixes is not None:
-                res = DocUtils.replaceNameSpacesInLabel(prefixes, objstr)
+                res = DocUtils.replaceNameSpacesInLabel(prefixes, str(obj))
                 label=res["uri"]
         return label
 

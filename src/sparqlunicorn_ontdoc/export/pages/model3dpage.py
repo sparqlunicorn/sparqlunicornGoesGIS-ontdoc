@@ -1,7 +1,7 @@
 from doc.docconfig import DocConfig
 
 from export.api.iiifexporter import IIIFAPIExporter
-from rdflib import URIRef
+from rdflib.namespace import RDFS
 
 from doc.docutils import DocUtils
 
@@ -60,8 +60,7 @@ class Model3DPage:
     @staticmethod
     def generateCollectionWidget(self,graph,templates,subject,f):
         print("CollectionWidget")
-        memberpred = URIRef("http://www.w3.org/2000/01/rdf-schema#member")
-        for memberid in graph.objects(subject, memberpred, True):
+        for memberid in graph.objects(subject, RDFS.member, True):
             print("3d model member")
         #    Model3DPage.generatePageWidget()
 

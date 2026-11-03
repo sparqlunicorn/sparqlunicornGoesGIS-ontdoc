@@ -4,6 +4,10 @@ from doc.docconfig import DocConfig
 from doc.docutils import DocUtils
 from rdflib import URIRef
 
+
+_GEO_INSTANCE_TYPES = frozenset({"geoinstance", "featurecollection", "geocollection"})
+
+
 class ClassTreeUtils:
 
     @staticmethod
@@ -65,10 +69,17 @@ class ClassTreeUtils:
             #        ress[str(res["subject"])] = {"super": None, "label": res["label"]}
         # print(ress)
         type_uri = URIRef(typeproperty)
+        class_uris = {cls: URIRef(cls) for cls in ress}
+        class_uri_set = set(class_uris.values())
+        instances_by_class = defaultdict(list)
+        for obj, class_uri in graph.subject_objects(type_uri):
+            if class_uri in class_uri_set:
+                instances_by_class[class_uri].append(obj)
+
         for cls in ress:
             clsstr = str(cls)
-            class_uri = URIRef(cls)
-            for obj in graph.subjects(type_uri, class_uri, True):
+            class_uri = class_uris[cls]
+            for obj in instances_by_class[class_uri]:
                 objstr = str(obj)
                 res = DocUtils.replaceNameSpacesInLabel(prefixes, objstr)
                 if objstr in uritolabel:
@@ -142,30 +153,34 @@ class ClassTreeUtils:
     @staticmethod
     def assignGeoClassesToTree(tree):
         classlist = {}
+        classcounts = defaultdict(lambda: [0, 0])
         for item in tree["core"]["data"]:
-            if item["type"] == "class":
+            item_type = item["type"]
+            if item_type == "class":
                 classlist[item["id"]] = {"items": 0, "geoitems": 0, "item": item}
-        for item in tree["core"]["data"]:
-            if item["type"] == "instance" and item["parent"] in classlist:
-                classlist[item["parent"]]["items"] += 1
-            elif (item["type"] == "geoinstance" or item["type"] == "featurecollection" or item[
-                "type"] == "geocollection") and item["parent"] in classlist:
-                classlist[item["parent"]]["items"] += 1
-                classlist[item["parent"]]["geoitems"] += 1
-        for item in classlist:
-            if classlist[item]["items"] > 0:
-                if classlist[item]["item"]["text"].endswith("]"):
-                    classlist[item]["item"]["text"] = f'{classlist[item]["item"]["text"][0:classlist[item]["item"]["text"].rfind("[") - 1]} [{classlist[item]["items"]}]'
+            elif item_type == "instance":
+                classcounts[item["parent"]][0] += 1
+            elif item_type in _GEO_INSTANCE_TYPES:
+                counts = classcounts[item["parent"]]
+                counts[0] += 1
+                counts[1] += 1
+
+        for class_id, class_data in classlist.items():
+            class_data["items"], class_data["geoitems"] = classcounts[class_id]
+            class_item = class_data["item"]
+            if class_data["items"] > 0:
+                if class_item["text"].endswith("]"):
+                    class_item["text"] = f'{class_item["text"][0:class_item["text"].rfind("[") - 1]} [{class_data["items"]}]'
                 else:
-                    classlist[item]["item"]["text"] = f'{classlist[item]["item"]["text"]} [{classlist[item]["items"]}]'
-            if item in DocConfig.collectionclasses:
-                classlist[item]["item"]["type"] = "collectionclass"
-            elif classlist[item]["items"] == classlist[item]["geoitems"] and classlist[item]["items"] > 0 and classlist[item]["geoitems"] > 0:
-                classlist[item]["item"]["type"] = "geoclass"
-            elif classlist[item]["items"] > classlist[item]["geoitems"] > 0:
-                classlist[item]["item"]["type"] = "halfgeoclass"
+                    class_item["text"] = f'{class_item["text"]} [{class_data["items"]}]'
+            if class_id in DocConfig.collectionclasses:
+                class_item["type"] = "collectionclass"
+            elif class_data["items"] == class_data["geoitems"] and class_data["items"] > 0 and class_data["geoitems"] > 0:
+                class_item["type"] = "geoclass"
+            elif class_data["items"] > class_data["geoitems"] > 0:
+                class_item["type"] = "halfgeoclass"
             else:
-                classlist[item]["item"]["type"] = "class"
+                class_item["type"] = "class"
         return classlist
 
     @staticmethod

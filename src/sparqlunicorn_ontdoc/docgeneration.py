@@ -49,6 +49,12 @@ resourcepath = os.path.abspath(os.path.join(os.path.dirname(__file__), "resource
 
 templates = DocDefaults.templates
 
+
+_LDP_CONTAINER = URIRef("http://www.w3.org/ns/ldp#Container")
+_LDP_BASIC_CONTAINER = URIRef("http://www.w3.org/ns/ldp#BasicContainer")
+_LDP_RESOURCE = URIRef("http://www.w3.org/ns/ldp#Resource")
+
+
 class OntDocGeneration:
 
     def __init__(self, prefixes, modtime, outpath, apis, graph, pubconfig, exports=["json", "ttl"]):
@@ -146,8 +152,7 @@ class OntDocGeneration:
                     for key in data:
                         labeltouri[key] = data[key]
             except Exception as e:
-                print(f"Exception occurred {e}")
-                print(traceback.format_exc())
+                print(f"Exception occurred {e}\n{traceback.format_exc()}")
         #with open(searchjspath, 'w', encoding='utf-8') as f:
         #    f.write("var search=")
         #    json.(labeltouri,f, indent=1, sort_keys=True)
@@ -375,7 +380,7 @@ class OntDocGeneration:
                                        uritotreeitem, labeltouri):
         nonnsuris = len(uristorender)
         counter = 0
-        print(f"NONS URIS TO RENDER: {nonnsuris}")
+        #print(f"NONS URIS TO RENDER: {nonnsuris}")
         for uri in uristorender:
             theuri=URIRef(uri)
             label = ""
@@ -388,7 +393,7 @@ class OntDocGeneration:
                 suri = DocUtils.shortenURI(uri)
                 if uri in uritotreeitem:
                     res = DocUtils.replaceNameSpacesInLabel(self.pubconfig["prefixes"], uri)
-                    label = DocUtils.getLabelForObject(URIRef(uri), graph, None, self.pubconfig["labellang"])
+                    label = DocUtils.getLabelForObject(theuri, graph, None, self.pubconfig["labellang"])
                     if res is not None and label != "":
                         uritotreeitem[uri][-1]["text"] = f'{label} ({res["uri"]})'
                     elif label != "":
@@ -509,7 +514,7 @@ def main():
         elif expo not in dataexports:
             dataexports.append(expo)
     print(f"EXPORTS: {dataexports}")
-    print(os.listdir(os.getcwd()))
+    #print(os.listdir(os.getcwd()))
     if args.templatepath is not None:
         templatepath=args.templatepath
         if templatepath.startswith("http") and templatepath.endswith(".zip"):
@@ -524,9 +529,7 @@ def main():
                     args.templatename = subfoldername
                     if templatepath.endswith("/"):
                         templatepath = templatepath[0:-1]
-                    print(templatepath)
-                    print(subfoldername)
-                    print(args.templatename)
+                    print(f"{templatepath}\n{subfoldername}\n{args.templatename}")
     fcounter = 0
     docgen = None
     g = Graph()
@@ -557,9 +560,7 @@ def main():
             DocUtils.printExecutionStats(docgen.exectimes)
             DocUtils.writeExecutionStats(docgen.exectimes, f"{curpath}/buildlog.js")
         except Exception as inst:
-            print(f"Could not parse {fp}")
-            print(inst)
-            print(traceback.format_exc())
+            print(f"Could not parse {fp}\n{inst}\n{traceback.format_exc()}")
         fcounter += 1
     curlicense = license
     if docgen is not None:
@@ -572,9 +573,9 @@ def main():
             for predobj in g.predicate_objects(sub):
                 resg.add((sub, predobj[0], predobj[1]))
             if args.solidexport:
-                resg.add((sub, RDF.type,URIRef("http://www.w3.org/ns/ldp#Container")))
-                resg.add((sub, RDF.type,URIRef("http://www.w3.org/ns/ldp#BasicContainer")))
-                resg.add((sub, RDF.type,URIRef("http://www.w3.org/ns/ldp#Resource")))
+                resg.add((sub, RDF.type, _LDP_CONTAINER))
+                resg.add((sub, RDF.type, _LDP_BASIC_CONTAINER))
+                resg.add((sub, RDF.type, _LDP_RESOURCE))
         resg.serialize(f"{outpath[0]}/index.ttl")
     manifest={
         "lang": "en-us",

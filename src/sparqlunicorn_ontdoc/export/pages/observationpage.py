@@ -1,5 +1,4 @@
-from rdflib import URIRef
-from rdflib.namespace import SOSA
+from rdflib.namespace import SOSA, RDFS
 from doc.docconfig import DocConfig
 
 class ObservationPage:
@@ -46,13 +45,12 @@ class ObservationPage:
 
     @staticmethod
     def generateCollectionWidget(graph, subject,templates, f):
-        memberpred = URIRef("http://www.w3.org/2000/01/rdf-schema#member")
         xValues = []
         xValueAlt=[]
         xLabel = "Value"
         timeValues = []
         yLabel = "Time"
-        for memberid in graph.objects(subject, memberpred, True):
+        for memberid in graph.objects(subject, RDFS.member, True):
             res=ObservationPage.generatePageWidget(graph,memberid,templates,f,False)
             if res["timeValue"] is not None and res["xValue"] is not None:
                 xValues.append(res["xValue"])
