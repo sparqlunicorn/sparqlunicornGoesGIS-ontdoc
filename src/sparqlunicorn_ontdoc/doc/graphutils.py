@@ -181,7 +181,7 @@ class GraphUtils:
         voidds=URIRef(voidds)
         for sub in graph.subjects(None, None, True):
             substr=str(sub)
-            if prefixnamespace in sub and (isinstance(sub, URIRef)) or isinstance(sub, BNode):
+            if prefixnamespace in sub and (sub.__class__ is URIRef) or (sub.__class__ is BNode):
                 subjectstorender.add(sub)
                 label = DocUtils.shortenURI(substr)
                 restriction = False
@@ -189,7 +189,7 @@ class GraphUtils:
                 #nscount.setdefault(ns,0)
                 nscount[ns] += 1
                 graph.add((sub, VOID.inDataset,voidds))
-                if isinstance(sub, BNode):
+                if sub.__class__ is BNode:
                     blanknodes.add(substr)
                 irirefs += 1
                 subjectcounter += 1
@@ -197,7 +197,7 @@ class GraphUtils:
                 for tup in graph.predicate_objects(sub):
                     tuppredstr=str(tup[0])
                     tupobjstr = str(tup[1])
-                    if isinstance(tupobjstr, Literal):
+                    if tupobjstr.__class__ is Literal:
                         if tup[1].datatype is not None:
                             literaltypes[str(tup[1].datatype)].add(tuppredstr)
                             #literaltypes.setdefault(str(tup[1].datatype),set()).add(tuppredstr)
@@ -211,7 +211,7 @@ class GraphUtils:
                         if "." in val and val[val.rfind("."):] in DocConfig.imageextensions:
                             imgcounter+=1
                         literalcount += 1
-                    elif isinstance(tup[1], BNode):
+                    elif tup[1].__class__ is BNode:
                         blanknodes.add(tupobjstr)
                     else:
                         objectlength += len(tupobjstr)
@@ -231,14 +231,14 @@ class GraphUtils:
                         restriction = True
                     elif tuppredstr == "http://www.w3.org/2000/01/rdf-schema#subClassOf":
                         ressubcls =tupobjstr
-                    if isinstance(tup[1], URIRef) and prefixnamespace not in tupobjstr:
+                    if tup[1].__class__ is URIRef and prefixnamespace not in tupobjstr:
                         ns = DocUtils.shortenURI(tupobjstr, True)
                         #nscount.setdefault(ns, 0)
                         nscount[ns] += 1
                         #nonnscount.setdefault(tuppredstr,{})
                         #nonnscount[tuppredstr].setdefault(ns,0)
                         nonnscount[tuppredstr][ns] += 1
-                if isinstance(sub, BNode) and restriction:
+                if sub.__class__ is BNode and restriction:
                     graph.add((sub, RDFS.label,Literal(label + " [Restriction]", lang="en")))
             voidstats["http://rdfs.org/ns/void#distinctSubjects"] += 1
         voidstats["http://rdfs.org/ns/void#entities"] = len(subjectstorender)

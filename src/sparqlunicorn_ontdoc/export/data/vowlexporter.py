@@ -69,7 +69,7 @@ class VOWLExporter:
             for node in nodeuriToId:
                 for predobj in g.predicate_objects(URIRef(node)):
                     if node in nodeuriToId and str(predobj[1]) in nodeuriToId and str(predobj[0])!=typeproperty:
-                        links.append({"source":nodeuriToId[node],"target":nodeuriToId[str(predobj[1])],"valueTo": VOWLExporter.getIRILabel(str(predobj[0])), "propertyTo":("class" if isinstance(predobj[1], URIRef) else "datatype"), "uriTo":(str(predobj[1]) if isinstance(predobj[1], URIRef) else predobj[1].datatype)})
+                        links.append({"source":nodeuriToId[node],"target":nodeuriToId[str(predobj[1])],"valueTo": VOWLExporter.getIRILabel(str(predobj[0])), "propertyTo":("class" if predobj[1].__class__ is URIRef else "datatype"), "uriTo":(str(predobj[1]) if predobj[1].__class__ is URIRef else predobj[1].datatype)})
         minivowlresult["nodes"]=nodes
         minivowlresult["links"] = links
         with open(f'{outpath}/{outfile}', "w",encoding="utf-8") as f:
