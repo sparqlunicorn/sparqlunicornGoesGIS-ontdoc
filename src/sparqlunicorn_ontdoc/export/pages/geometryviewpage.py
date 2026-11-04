@@ -31,10 +31,10 @@ class GeometryViewPage:
         props = predobjmap
         dateprops=parameters.get("dateprops",[])
         epsgcode=parameters.get("epsgcode","")
-        if parameters.get("timeobj") is not None:
-            #print(parameters.get("timeobj"))
-            dateprops+=[item for item in parameters.get("timeobj")]
-            #for item in parameters.get("timeobj"):
+        timeobj = parameters.get("timeobj")
+        if timeobj is not None:
+            dateprops += [item for item in timeobj]
+            #for item in timeobj:
             #    dateprops.append(item)
                 #props[item] = str(parameters.get("timeobj")[item])
                 #props[item] = str(item)
@@ -56,13 +56,18 @@ class GeometryViewPage:
 
     def generateCollectionWidget(self,graph,subject,templates,f,uritotreeitem,featurecollectionspaths,parameters={"foundlabel":""}):
         subjectstr = str(subject)
-        if parameters.get("foundlabel") is not None and parameters.get("foundlabel") != "":
-            featcoll = {"type": "FeatureCollection", "id": subject, "name": str(parameters["foundlabel"]),"features": []}
+        foundlabel = parameters.get("foundlabel")
+        if foundlabel is not None and foundlabel != "":
+            featcoll = {"type": "FeatureCollection", "id": subject, "name": str(foundlabel),"features": []}
         else:
             featcoll = {"type": "FeatureCollection", "id": subject, "name": DocUtils.shortenURI(subjectstr),"features": []}
         geocache = parameters.get("geocache", {})
         nonns = parameters.get("nonns", False)
         hasnonns = parameters.get("hasnonns", {})
+        hasnonnslen = parameters.get("hasnonnslen", 0)
+        checkdepth = parameters.get("checkdepth", 0)
+        epsgdefslink = parameters.get("epsgdefslink", "")
+        completesavepath = parameters.get("completesavepath", "")
         thecrs = set()
         dateatt = ""
         if not nonns:
@@ -138,7 +143,7 @@ class GeometryViewPage:
                     if "crs" in geojsonrep:
                         thecrs.add(geojsonrep["crs"])
                         #break
-            if parameters.get("hasnonnslen", 0) > 0:
+            if hasnonnslen > 0:
                 geocache[subjectstr] = featcoll
         else:
             for item in hasnonns:
@@ -168,13 +173,12 @@ class GeometryViewPage:
                             feat["properties"][dateatt] = ""
                 if parameters.get("localOptimized", False):
                     f.write(templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace("{{myfeature}}",f'[{json.dumps(featcoll)}]').replace(
-                        "{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(parameters.get("checkdepth", 0))).replace("{{epsg}}",epsgcode).replace(
-                        "{{baselayers}}", json.dumps(DocConfig.baselayers)).replace("{{epsgdefspath}}",parameters.get("epsgdefslink","")).replace("{{dateatt}}",str(dateatt)))
+                        "{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace("{{epsg}}",epsgcode).replace(
+                        "{{baselayers}}", json.dumps(DocConfig.baselayers)).replace("{{epsgdefsPath}}",epsgdefslink).replace("{{dateatt}}",str(dateatt)))
                 else:
-                    f.write(templates["maptemplate"].replace("{{myfeature}}", f'["{DocUtils.shortenURI(str(parameters.get("completesavepath", "").replace(".html", ".geojson")))}"]').replace(
-                        "{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(parameters.get("checkdepth", 0))).replace("{{baselayers}}", json.dumps(DocConfig.baselayers)).replace("{{epsg}}",epsgcode).replace("{{epsgdefspath}}",parameters.get(
-                                                                                                          "epsgdefslink","")).replace("{{dateatt}}", str(dateatt)))
-                spath=parameters.get("completesavepath", "").replace(".html", ".geojson")
+                    f.write(templates["maptemplate"].replace("{{myfeature}}", f'["{DocUtils.shortenURI(str(completesavepath.replace(".html", ".geojson")))}"]').replace(
+                        "{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace("{{baselayers}}", json.dumps(DocConfig.baselayers)).replace("{{epsg}}",epsgcode).replace("{{epsgdefsPath}}",epsgdefslink).replace("{{dateatt}}", str(dateatt)))
+                spath=completesavepath.replace(".html", ".geojson")
                 with open(spath, 'w',encoding='utf-8') as fgeo:
                     featurecollectionspaths[spath] = {"name": featcoll["name"],"id": featcoll["id"]}
                     json.dump(featcoll,fgeo)
