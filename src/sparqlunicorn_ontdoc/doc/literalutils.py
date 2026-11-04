@@ -1,5 +1,4 @@
 from rdflib import URIRef, Literal
-import json
 import shapely
 import traceback
 
@@ -44,7 +43,7 @@ class LiteralUtils:
                     curcrs = crsuri[crsuri.rfind('/') + 1:]
                     literal = literal[literal.rfind('>') + 1:].strip()
                 shapelygeom = shapely.wkt.loads(literal)
-                thejson = shapely.geometry.mapping(shapelygeom)#json.loads(json.dumps(shapely.geometry.mapping(shapelygeom), indent=2))
+                thejson = shapely.geometry.mapping(shapelygeom)
                 if curcrs is not None:
                     thejson["crs"] = curcrs
                 return thejson

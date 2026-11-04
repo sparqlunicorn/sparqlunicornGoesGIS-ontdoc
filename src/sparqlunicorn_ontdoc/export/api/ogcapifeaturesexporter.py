@@ -1,6 +1,6 @@
 
 import os
-import json
+from doc import orjsonutils as json
 from pathlib import Path
 
 from doc.docutils import DocUtils

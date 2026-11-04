@@ -8,27 +8,29 @@ class OWLTimePage:
     @staticmethod
     def resolveTimeObject(pred, obj, graph, timeobj):
         if pred == TIME.hasBeginning:
-            if str(obj) in DocConfig.timecalendarinstances:
+            if obj in DocConfig.TIME_CALENDAR_INSTANCES:
                 timeobj["begin"] = obj
             else:
                 for tobj2 in graph.predicate_objects(obj):
-                    if str(tobj2[0]) in DocConfig.timeproperties: 
+                    if tobj2[0] in DocConfig.TIME_PREDICATES:
                         timeobj["begin"] = tobj2[1]
                         break
         elif pred == TIME.hasEnd:
-            if str(obj) in DocConfig.timecalendarinstances:
+            if obj in DocConfig.TIME_CALENDAR_INSTANCES:
                 timeobj["end"] = obj
             else:
                 for tobj2 in graph.predicate_objects(obj):
-                    if str(tobj2[0]) in DocConfig.timeproperties or str(tobj2[1]) in DocConfig.timecalendarinstances:
+                    if (tobj2[0] in DocConfig.TIME_PREDICATES or
+                            tobj2[1] in DocConfig.TIME_CALENDAR_INSTANCES):
                         timeobj["end"] = tobj2[1]
                         break
         elif pred == TIME.hasTime or pred == SOSA.phenomenonTime or pred == SOSA.resultTime:
-            if str(obj) in DocConfig.timecalendarinstances:
+            if obj in DocConfig.TIME_CALENDAR_INSTANCES:
                 timeobj["timepoint"] = obj
             else:
                 for tobj2 in graph.predicate_objects(obj):
-                    if str(tobj2[0]) in DocConfig.timeproperties or str(tobj2[1]) in DocConfig.timecalendarinstances:
+                    if (tobj2[0] in DocConfig.TIME_PREDICATES or
+                            tobj2[1] in DocConfig.TIME_CALENDAR_INSTANCES):
                         timeobj["timepoint"] = tobj2[1]
         return timeobj
 
@@ -68,7 +70,7 @@ class OWLTimePage:
     def resolveTimeLiterals(pred, obj, graph):
         timeobj = {}
         if isinstance(obj, URIRef):
-            if str(pred) in DocConfig.timepointerproperties:
+            if pred in DocConfig.TIME_POINTER_PREDICATES:
                 timeobj = OWLTimePage.resolveTimeObject(pred, obj, graph, timeobj)
             if pred == TIME.hasTime or pred == SOSA.phenomenonTime or pred == SOSA.resultTime:
                 for tobj in graph.predicate_objects(obj):

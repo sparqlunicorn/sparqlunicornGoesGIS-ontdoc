@@ -19,6 +19,7 @@ classifiers = [
 keywords = ["feed", "reader", "tutorial"]
 dependencies = [
 "pillow>=10.0.1",
+"orjson>=3.9.0",
 "rdflib>=6.2.0",
 "requests>=2.31.0",
 "shapely>=1.7.1"

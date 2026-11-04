@@ -6,7 +6,7 @@ from doc.literalutils import LiteralUtils
 
 import shapely.wkt
 import shapely.geometry
-import json
+from doc import orjsonutils as json
 
 from export.pages.owltimepage import OWLTimePage
 

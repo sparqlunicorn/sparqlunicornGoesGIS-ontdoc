@@ -1,5 +1,8 @@
 
 
+from rdflib import URIRef
+
+
 class DocConfig:
 
     rdfformats = ["ttl", "trix", "trig", "n3", "nquads", "nt", "xml"]
@@ -498,3 +501,66 @@ class DocConfig:
                     ?subject != owl:NamedIndividual &&\n
                     ?subject != owl:Ontology) )\n
             }"""
+
+    EXIF_WIDTH = URIRef("http://www.w3.org/2003/12/exif/ns#width")
+    EXIF_HEIGHT = URIRef("http://www.w3.org/2003/12/exif/ns#height")
+    LABEL_PREDICATES = frozenset(URIRef(uri) for uri in labelproperties)
+    VALUE_PROPERTIES = {URIRef(uri): kind for uri, kind in valueproperties.items()}
+    VALUE_PREDICATES = frozenset(VALUE_PROPERTIES)
+    STRICT_VALUE_PREDICATES = frozenset(URIRef(uri) for uri in strictvalueproperties)
+    UNIT_PREDICATES = frozenset(URIRef(uri) for uri in unitproperties)
+    COLLECTION_RELATION_PREDICATES = frozenset(
+        URIRef(uri) for uri in collectionrelationproperties
+    )
+    TIME_POINTER_PREDICATES = frozenset(URIRef(uri) for uri in timepointerproperties)
+    TIME_PREDICATES = frozenset(URIRef(uri) for uri in timeproperties)
+    TIME_CALENDAR_INSTANCES = frozenset(URIRef(uri) for uri in timecalendarinstances)
+    GEO_PROPERTIES = frozenset(URIRef(uri) for uri in geoproperties)
+    GEO_POINTER_PROPERTIES = frozenset(URIRef(uri) for uri in geopointerproperties)
+    OA_HAS_SELECTOR = URIRef("http://www.w3.org/ns/oa#hasSelector")
+    OA_HAS_SOURCE = URIRef("http://www.w3.org/ns/oa#hasSource")
+    OA_HAS_BODY = URIRef("http://www.w3.org/ns/oa#hasBody")
+    OA_SVG_SELECTOR = URIRef("http://www.w3.org/ns/oa#SvgSelector")
+    OA_WKT_SELECTOR = URIRef("http://www.w3.org/ns/oa#WKTSelector")
+    OA_TEXT_POSITION_SELECTOR = URIRef("http://www.w3.org/ns/oa#TextPositionSelector")
+    OA_START = URIRef("http://www.w3.org/ns/oa#start")
+    OA_END = URIRef("http://www.w3.org/ns/oa#end")
+    RDF_VALUE = URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#value")
+    RDFS_MEMBER = URIRef("http://www.w3.org/2000/01/rdf-schema#member")
+    SHACL_PROPERTY = URIRef("http://www.w3.org/ns/shacl#property")
+    SHACL_PROPERTY_CONSTRAINTS = (
+        URIRef("http://www.w3.org/ns/shacl#minCount"),
+        URIRef("http://www.w3.org/ns/shacl#maxCount"),
+        URIRef("http://www.w3.org/ns/shacl#minLength"),
+        URIRef("http://www.w3.org/ns/shacl#maxLength"),
+        URIRef("http://www.w3.org/ns/shacl#languageIn"),
+        URIRef("http://www.w3.org/ns/shacl#datatype"),
+        URIRef("http://www.w3.org/ns/shacl#pattern"),
+        URIRef("http://www.w3.org/ns/shacl#path"),
+    )
+    SHACL_PROPERTY_CONSTRAINT_SET = frozenset(SHACL_PROPERTY_CONSTRAINTS)
+    LEXICOG_ENTRY = URIRef("http://www.w3.org/ns/lemon/lexicog#entry")
+    LIME_ENTRY = URIRef("http://www.w3.org/ns/lemon/lime#entry")
+    LDP_CONTAINER = URIRef("http://www.w3.org/ns/ldp#Container")
+    LDP_BASIC_CONTAINER = URIRef("http://www.w3.org/ns/ldp#BasicContainer")
+    LDP_RESOURCE = URIRef("http://www.w3.org/ns/ldp#Resource")
+    LDP_RDF_RESOURCE = URIRef("http://www.w3.org/ns/ldp#RDFResource")
+    PERSONAL_PROFILE_DOCUMENT = URIRef("http://xmlns.com/foaf/0.1/PersonalProfileDocument")
+    PIM_STORAGE = URIRef("http://www.w3.org/ns/pim/space#storage")
+    PUBLIC_TYPE_INDEX = URIRef("http://www.w3.org/ns/solid/terms#publicTypeIndex")
+    PRIVATE_TYPE_INDEX = URIRef("http://www.w3.org/ns/solid/terms#privateTypeIndex")
+    TYPE_INDEX = URIRef("http://www.w3.org/ns/solid/terms#TypeIndex")
+    LISTED_DOCUMENT = URIRef("http://www.w3.org/ns/solid/terms#ListedDocument")
+    SOLID_STORAGE = URIRef("http://www.w3.org/ns/pim/space#Storage")
+    TURTLE_RESOURCE = URIRef("http://www.w3.org/ns/iana/media-types/text/ttl#Resource")
+    HTTPS_TURTLE_RESOURCE = URIRef(
+        "https://www.iana.org/assignments/media-types/text/turtle#Resource"
+    )
+    FOR_CLASS = URIRef("http://www.w3.org/ns/solid/terms#forClass")
+    INSTANCE = URIRef("http://www.w3.org/ns/solid/terms#instance")
+    DC_LICENSE = URIRef("http://purl.org/dc/elements/1.1/license")
+    OBSERVATION_COLLECTION = URIRef("http://www.w3.org/ns/sosa/ObservationCollection")
+    BIB_REFERENCE_PREDICATES = frozenset((
+        URIRef("http://purl.org/dc/terms/isReferencedBy"),
+        URIRef("http://purl.org/spar/cito/hasCitingEntity"),
+    ))

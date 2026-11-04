@@ -1,6 +1,6 @@
 from doc.docutils import DocUtils
 from doc.literalutils import LiteralUtils
-from doc.docutils import DocConfig
+from doc.docconfig import DocConfig
 from doc.docdefaults import DocDefaults
 from export.pages.bibpage import BibPage
 from export.pages.owltimepage import OWLTimePage
@@ -10,7 +10,7 @@ from collections import defaultdict
 from collections import OrderedDict
 import re
 import os
-import json
+from doc import orjsonutils as json
 import urllib
 import traceback
 
@@ -22,13 +22,6 @@ from export.pages.shaclpage import SHACLPage
 from export.pages.model3dpage import Model3DPage
 
 from export.pages.textannopage import TextAnnoPage
-
-
-_WKT_SELECTOR = URIRef("http://www.w3.org/ns/oa#WKTSelector")
-_DC_LICENSE = URIRef("http://purl.org/dc/elements/1.1/license")
-_LDP_RESOURCE = URIRef("http://www.w3.org/ns/ldp#Resource")
-_TURTLE_RESOURCE = URIRef("https://www.iana.org/assignments/media-types/text/turtle#Resource")
-_OBSERVATION_COLLECTION = URIRef("http://www.w3.org/ns/sosa/ObservationCollection")
 
 
 class HTMLExporter():
@@ -145,7 +138,7 @@ class HTMLExporter():
                             break
                         itemstr = str(item)
                         itemup=itemstr.upper()
-                        if tup in DocConfig.valueproperties and ("POINT" in itemup or "POLYGON" in itemup or "LINESTRING" in itemup) and self.typeproperty in predobjmap and _WKT_SELECTOR in predobjmap[self.typeproperty]:
+                        if tup in DocConfig.valueproperties and ("POINT" in itemup or "POLYGON" in itemup or "LINESTRING" in itemup) and self.typeproperty in predobjmap and DocConfig.OA_WKT_SELECTOR in predobjmap[self.typeproperty]:
                             image3dannos.append({"value": itemstr})
                         elif "<svg" in itemstr:
                             foundmedia["image"][itemstr] = {}
@@ -272,10 +265,10 @@ class HTMLExporter():
                     tablecontents += "<td class=\"wrapword\"></td>"
                 tablecontents += "</tr>"
         if self.pubconfig["licenseuri"] is not None:
-            ttlf.add((subject, _DC_LICENSE, URIRef(self.pubconfig["licenseuri"])))
+            ttlf.add((subject, DocConfig.DC_LICENSE, URIRef(self.pubconfig["licenseuri"])))
         if self.pubconfig["apis"]["solidexport"] is not None:
-            ttlf.add((subject, RDF.type, _LDP_RESOURCE))
-            ttlf.add((subject, RDF.type, _TURTLE_RESOURCE))
+            ttlf.add((subject, RDF.type, DocConfig.LDP_RESOURCE))
+            ttlf.add((subject, RDF.type, DocConfig.HTTPS_TURTLE_RESOURCE))
         nonnslink = ""
         if nonns:
             if "http:" in savepath:
@@ -489,49 +482,53 @@ class HTMLExporter():
                                                 labellang, typeproperty, prefixes):
         annosource,foundval,foundunit,onelabel,bibtex,timeobj = None,None,None,None,None,None
         typeprop=URIRef(typeproperty)
-        for tup in graph.predicate_objects(object):
-            tuppredstr=str(tup[0])
-            tupobjstr=str(tup[1])
-            if tuppredstr in DocConfig.labelproperties:
-                if tup[1].language == labellang:
+        incoming_predicate = URIRef(pred) if pred is not None else None
+        object_triples = tuple(graph.predicate_objects(object))
+        object_types = (
+            tuple(value for predicate, value in object_triples if predicate == typeprop)
+            if incoming_predicate == DocConfig.OA_HAS_SELECTOR else ()
+        )
+        for predicate, value in object_triples:
+            tuppredstr=str(predicate)
+            tupobjstr=str(value)
+            if predicate in DocConfig.LABEL_PREDICATES:
+                if value.language == labellang:
                     label = tupobjstr
                 onelabel = tupobjstr
-            elif tuppredstr==typeproperty:
-                if pred == "http://www.w3.org/ns/oa#hasSelector":
-                    if tupobjstr == "http://www.w3.org/ns/oa#SvgSelector" or tupobjstr == "http://www.w3.org/ns/oa#WKTSelector":
-                        for svglit in graph.objects(object, typeprop):
+            elif predicate == typeprop:
+                if incoming_predicate == DocConfig.OA_HAS_SELECTOR:
+                    if value == DocConfig.OA_SVG_SELECTOR or value == DocConfig.OA_WKT_SELECTOR:
+                        for svglit in object_types:
                             svglitstr=str(svglit)
                             svglistrup=svglitstr.upper()
                             if "<svg" in svglitstr:
                                 imageannos.append({"value": svglitstr, "bodies": []})
                             elif "POINT" in svglistrup or "POLYGON" in svglistrup or "LINESTRING" in svglistrup:
                                 image3dannos.append({"value": svglitstr, "bodies": []})
-                    elif tupobjstr == "http://www.w3.org/ns/oa#TextPositionSelector":
+                    elif value == DocConfig.OA_TEXT_POSITION_SELECTOR:
                         curanno = {}
-                        for txtlit in graph.predicate_objects(object):
-                            txtlitpredstr = str(txtlit[0])
-                            txtlitobjstr=str(txtlit[1])
-                            if txtlitpredstr == "http://www.w3.org/1999/02/22-rdf-syntax-ns#value":
-                                curanno["exact"] = txtlitobjstr
-                            elif txtlitpredstr == "http://www.w3.org/ns/oa#start":
-                                curanno["start"] = txtlitobjstr
-                            elif txtlitpredstr == "http://www.w3.org/ns/oa#end":
-                                curanno["end"] = txtlitobjstr
+                        for text_predicate, text_value in object_triples:
+                            if text_predicate == DocConfig.RDF_VALUE:
+                                curanno["exact"] = str(text_value)
+                            elif text_predicate == DocConfig.OA_START:
+                                curanno["start"] = str(text_value)
+                            elif text_predicate == DocConfig.OA_END:
+                                curanno["end"] = str(text_value)
                         textannos.append(curanno)
-                elif (pred == "http://purl.org/dc/terms/isReferencedBy" or pred == "http://purl.org/spar/cito/hasCitingEntity") and ("http://purl.org/ontology/bibo/" in tupobjstr):
-                    bibtex = BibPage.resolveBibtexReference(graph.predicate_objects(object), object, graph)
-            elif tuppredstr == "http://www.w3.org/2000/01/rdf-schema#member":
-                if not inverse and (object, typeprop, _OBSERVATION_COLLECTION) in graph:
-                    for valtup in graph.predicate_objects(tup[1]):
+                elif incoming_predicate in DocConfig.BIB_REFERENCE_PREDICATES and ("http://purl.org/ontology/bibo/" in tupobjstr):
+                    bibtex = BibPage.resolveBibtexReference(object_triples, object, graph)
+            elif predicate == DocConfig.RDFS_MEMBER:
+                if not inverse and (object, typeprop, DocConfig.OBSERVATION_COLLECTION) in graph:
+                    for valtup in graph.predicate_objects(value):
                         if str(valtup[0]) in DocConfig.unitproperties:
                             foundunit = str(valtup[1])
                         elif str(valtup[0]) in DocConfig.valueproperties and isinstance(valtup[1], Literal):
                             foundval = str(valtup[1])
-            elif tuppredstr == "http://www.w3.org/ns/oa#hasSource":
+            elif predicate == DocConfig.OA_HAS_SOURCE:
                 annosource = tupobjstr
                 #print("Found annosource " + tupobjstr + " from " + str(object) + " Imageannos: " + str(len(imageannos)))
-            elif tuppredstr in DocConfig.valueproperties:
-                res=DocUtils.resolveUnitValue(graph,tup[1],tuppredstr,tupobjstr,foundval,foundunit)
+            elif predicate in DocConfig.VALUE_PREDICATES:
+                res=DocUtils.resolveUnitValue(graph,value,tuppredstr,tupobjstr,foundval,foundunit)
                 foundval=res[0]
                 foundunit=res[1]
                 """
@@ -563,19 +560,19 @@ class HTMLExporter():
                         elif str(valtup[0]) in DocConfig.valueproperties and isinstance(valtup[1], Literal):
                             foundval = str(valtup[1])
                 """
-            elif tuppredstr in DocConfig.unitproperties:
-                foundunit = tup[1]
-            elif pred in DocConfig.collectionrelationproperties:
+            elif predicate in DocConfig.UNIT_PREDICATES:
+                foundunit = value
+            elif incoming_predicate in DocConfig.COLLECTION_RELATION_PREDICATES:
                 if "<svg" in tupobjstr:
                     foundmedia["image"][tupobjstr] = {}
                 elif "http" in tupobjstr:
                     ext = f".{''.join(filter(str.isalpha, tupobjstr.split('.')[-1]))}"
                     if ext in DocConfig.fileextensionmap:
                         foundmedia[DocConfig.fileextensionmap[ext]][tupobjstr] = {}
-            elif pred in DocConfig.timepointerproperties:
-                timeobj = OWLTimePage.resolveTimeLiterals(URIRef(pred), object, graph)
+            elif incoming_predicate in DocConfig.TIME_POINTER_PREDICATES:
+                timeobj = OWLTimePage.resolveTimeLiterals(incoming_predicate, object, graph)
             elif not nonns:
-                geojsonrep = LiteralUtils.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep, nonns)
+                geojsonrep = LiteralUtils.resolveGeoLiterals(predicate, value, graph, geojsonrep, nonns)
         if foundval is not None:
             if foundunit is not None:
                 unitlabel = f"{foundval} {foundunit}"

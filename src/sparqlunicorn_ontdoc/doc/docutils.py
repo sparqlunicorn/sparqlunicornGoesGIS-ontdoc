@@ -2,17 +2,12 @@ from rdflib import URIRef, Literal
 import os
 import re
 import shutil
-import json
+from doc import orjsonutils as json
 import urllib.request
 
 from collections import defaultdict
 from doc.docconfig import DocConfig
 from datetime import date
-
-
-_EXIF_WIDTH = URIRef("http://www.w3.org/2003/12/exif/ns#width")
-_EXIF_HEIGHT = URIRef("http://www.w3.org/2003/12/exif/ns#height")
-_LABEL_PROPERTIES = frozenset(URIRef(uri) for uri in DocConfig.labelproperties)
 
 
 class DocUtils:
@@ -250,36 +245,30 @@ class DocUtils:
         #print("RESOLVE UNIT VALUE: "+str(obj))
         if tuppredstr == "http://www.w3.org/ns/oa#hasSource":
             foundval = tupobjstr
-        elif tuppredstr is not None and tuppredstr != "http://www.w3.org/ns/oa#hasSource" and DocConfig.valueproperties[
-            tuppredstr] == "DatatypeProperty" and (isinstance(obj, Literal) or isinstance(obj, URIRef)):
-            foundval = tupobjstr
         elif tuppredstr == "http://www.w3.org/ns/oa#hasTarget":
-            for inttup in graph.predicate_objects(obj):
-                if str(inttup[0]) == "http://www.w3.org/ns/oa#hasSelector":
-                    for valtup in graph.predicate_objects(inttup[1]):
-                        if str(valtup[0]) in DocConfig.unitproperties:
-                            foundunit = str(valtup[1])
-                        elif str(valtup[0]) in DocConfig.valueproperties and (
-                                isinstance(valtup[1], Literal) or isinstance(valtup[1], URIRef)):
-                            foundval = str(valtup[1])
-        elif tuppredstr is not None and DocConfig.valueproperties[tuppredstr] == "DatatypeProperty":
-            if tuppredstr in DocConfig.valueproperties and isinstance(obj, Literal):
+            for selector in graph.objects(obj, DocConfig.OA_HAS_SELECTOR):
+                for value_predicate, value in graph.predicate_objects(selector):
+                    if value_predicate in DocConfig.UNIT_PREDICATES:
+                        foundunit = str(value)
+                    elif value_predicate in DocConfig.VALUE_PROPERTIES and (
+                            isinstance(value, Literal) or isinstance(value, URIRef)):
+                        foundval = str(value)
+        elif tuppredstr is not None and DocConfig.valueproperties.get(tuppredstr) == "DatatypeProperty":
+            if isinstance(obj, (Literal, URIRef)):
                 foundval = tupobjstr
+            # Keep datatype-property handling from falling through to linked-node lookup.
         else:
-            for valtup in graph.predicate_objects(obj):
-                valtup0str=str(valtup[0])
-                if valtup0str in DocConfig.unitproperties:
-                    foundunit = str(valtup[1])
-                elif valtup0str in DocConfig.valueproperties and isinstance(valtup[1], Literal):
-                    foundval = str(valtup[1])
-                elif valtup0str in DocConfig.strictvalueproperties and isinstance(valtup[1], URIRef):
-                    #print("Valtup[1]: " + str(valtup[1]))
-                    for tup2 in graph.predicate_objects(valtup[1]):
-                        #print("Tup2: " + str(tup2))
-                        if str(tup2[0]) in DocConfig.unitproperties:
-                            foundunit = str(tup2[1])
-                        elif str(tup2[0]) in DocConfig.valueproperties:
-                            foundval=str(tup2[1])
+            for value_predicate, value in graph.predicate_objects(obj):
+                if value_predicate in DocConfig.UNIT_PREDICATES:
+                    foundunit = str(value)
+                elif value_predicate in DocConfig.VALUE_PROPERTIES and isinstance(value, Literal):
+                    foundval = str(value)
+                elif value_predicate in DocConfig.STRICT_VALUE_PREDICATES and isinstance(value, URIRef):
+                    for nested_predicate, nested_value in graph.predicate_objects(value):
+                        if nested_predicate in DocConfig.UNIT_PREDICATES:
+                            foundunit = str(nested_value)
+                        elif nested_predicate in DocConfig.VALUE_PROPERTIES:
+                            foundval=str(nested_value)
         return [foundval,foundunit]
 
 
@@ -287,9 +276,9 @@ class DocUtils:
     def checkImgMetadataRDF(g,uri):
         res={}
         image_uri = URIRef(uri)
-        for obj in g.objects(image_uri, _EXIF_WIDTH):
+        for obj in g.objects(image_uri, DocConfig.EXIF_WIDTH):
             res["width"]=str(obj)
-        for obj in g.objects(image_uri, _EXIF_HEIGHT):
+        for obj in g.objects(image_uri, DocConfig.EXIF_HEIGHT):
             res["height"]=str(obj)
         return res
 
@@ -316,7 +305,7 @@ class DocUtils:
         label=""
         onelabel=None
         for predicate, value in graph.predicate_objects(obj):
-            if predicate in _LABEL_PROPERTIES:
+            if predicate in DocConfig.LABEL_PREDICATES:
                 value_str = str(value)
                 # Check for label property
                 if value.language==labellang:

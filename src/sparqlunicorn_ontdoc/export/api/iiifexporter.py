@@ -1,6 +1,6 @@
 
 import os
-import json
+from doc import orjsonutils as json
 import requests
 from PIL import Image
 from io import BytesIO

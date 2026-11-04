@@ -40,7 +40,7 @@ from export.api.solidexporter import SolidExporter
 
 import argparse
 import shutil
-import json
+from doc import orjsonutils as json
 import time
 from collections import OrderedDict, defaultdict
 
@@ -48,11 +48,6 @@ templatepath = os.path.abspath(os.path.join(os.path.dirname(__file__), "resource
 resourcepath = os.path.abspath(os.path.join(os.path.dirname(__file__), "resources/"))
 
 templates = DocDefaults.templates
-
-
-_LDP_CONTAINER = URIRef("http://www.w3.org/ns/ldp#Container")
-_LDP_BASIC_CONTAINER = URIRef("http://www.w3.org/ns/ldp#BasicContainer")
-_LDP_RESOURCE = URIRef("http://www.w3.org/ns/ldp#Resource")
 
 
 class OntDocGeneration:
@@ -573,9 +568,9 @@ def main():
             for predobj in g.predicate_objects(sub):
                 resg.add((sub, predobj[0], predobj[1]))
             if args.solidexport:
-                resg.add((sub, RDF.type, _LDP_CONTAINER))
-                resg.add((sub, RDF.type, _LDP_BASIC_CONTAINER))
-                resg.add((sub, RDF.type, _LDP_RESOURCE))
+                resg.add((sub, RDF.type, DocConfig.LDP_CONTAINER))
+                resg.add((sub, RDF.type, DocConfig.LDP_BASIC_CONTAINER))
+                resg.add((sub, RDF.type, DocConfig.LDP_RESOURCE))
         resg.serialize(f"{outpath[0]}/index.ttl")
     manifest={
         "lang": "en-us",

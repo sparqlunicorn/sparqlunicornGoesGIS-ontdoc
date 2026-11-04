@@ -1,4 +1,4 @@
-import json
+from doc import orjsonutils as json
 import os
 import re
 from doc.docdefaults import DocDefaults

@@ -1,6 +1,6 @@
-from rdflib import Graph, Literal
+from rdflib import Literal
 from rdflib.namespace import RDF
-import json
+from doc import orjsonutils as json
 import random
 
 from doc.docutils import DocUtils

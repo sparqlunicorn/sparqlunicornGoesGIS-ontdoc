@@ -1,5 +1,4 @@
-from rdflib import URIRef
-
+from doc.docconfig import DocConfig
 from doc.docutils import DocUtils
 
 
@@ -36,7 +35,7 @@ class TextAnnoPage:
                     end = str(pred[1])
                 elif str(pred[0]) == "http://www.w3.org/ns/oa#exact":
                     exact = str(pred[1])
-            annobody=" ".join(graph.objects(anno[0],URIRef("http://www.w3.org/ns/oa#hasBody")))
+            annobody=" ".join(graph.objects(anno[0], DocConfig.OA_HAS_BODY))
             #for obj in graph.objects(anno[0],URIRef("http://www.w3.org/ns/oa#hasBody")):
             #    annobody+=str(obj)+" "
             f.write(f'<tr><td><a href="{anno.replace(prefixnamespace,outpath)}+">{DocUtils.shortenURI(anno)}</a></td><td><a href="{thetype}">{DocUtils.shortenURI(str(thetype))}</a></td><td>{exact} [{start}-{end}]</td><td>{annobody}</td></tr>')

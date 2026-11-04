@@ -1,17 +1,15 @@
+from collections import defaultdict
+
 from rdflib import Graph, URIRef
 from rdflib.namespace import RDF
 
+from doc.docconfig import DocConfig
 from doc.docutils import DocUtils
 
 from export.exporterutils import ExporterUtils
 
 import re
 import urllib.parse
-
-
-_LDP_CONTAINER = URIRef("http://www.w3.org/ns/ldp#Container")
-_LDP_BASIC_CONTAINER = URIRef("http://www.w3.org/ns/ldp#BasicContainer")
-_LDP_RESOURCE = URIRef("http://www.w3.org/ns/ldp#Resource")
 
 
 class IndexViewPage:
@@ -25,6 +23,16 @@ class IndexViewPage:
     @staticmethod
     def createIndexPages(pubconfig,templates,apis,paths,subjectstorender,uritotreeitem,voidds,tree,classlist,graph,voidstatshtml,curlicense):
         indpcounter = 0
+        coredata = tree["core"]["data"]
+        class_types = {"geoclass", "class", "featurecollection", "geocollection"}
+        instance_types = {"instance", "geoinstance"}
+        class_items = [
+            item for item in coredata
+            if item["type"] in class_types and item.get("instancecount", 0) > 0
+        ]
+        children_by_parent = defaultdict(list)
+        for item in coredata:
+            children_by_parent[item.get("parent")].append(item)
         #print("PATHS: "+str(paths))
         #print(tree)
         for path in paths:
@@ -52,9 +60,9 @@ class IndexViewPage:
                         subgraph.add((sub, tup[0], tup[1]))
                     if apis["solidexport"]:
                         container_uri = URIRef(sub.replace("nslink", ""))
-                        subgraph.add((container_uri, RDF.type, _LDP_CONTAINER))
-                        subgraph.add((container_uri, RDF.type, _LDP_BASIC_CONTAINER))
-                        subgraph.add((container_uri, RDF.type, _LDP_RESOURCE))
+                        subgraph.add((container_uri, RDF.type, DocConfig.LDP_CONTAINER))
+                        subgraph.add((container_uri, RDF.type, DocConfig.LDP_BASIC_CONTAINER))
+                        subgraph.add((container_uri, RDF.type, DocConfig.LDP_RESOURCE))
             for ex in pubconfig["exports"]:
                 if ex in ExporterUtils.exportToFunction:
                     if ex not in ExporterUtils.rdfformats:
@@ -82,29 +90,27 @@ class IndexViewPage:
                     startconcept=pubconfig["startconcept"]
                     f.write(f'<p>Start exploring the graph here: <img src="{tree["types"][uritotreeitem[startconcept][-1]["type"]]["icon"]}" height="25" width="25" alt="{uritotreeitem[startconcept][-1]["type"]}"/><a property="http://rdfs.org/ns/void#rootResource" resource="{startconcept}" href="{DocUtils.generateRelativeLinkFromGivenDepth(pubconfig["prefixns"], 0,str(startconcept), True)}">{DocUtils.shortenURI(startconcept)}</a></p>')
                 f.write(f'<table about="{voidds}" typeof="http://rdfs.org/ns/void#Dataset" property="http://rdfs.org/ns/void#dataDump" resource="{pubconfig["deploypath"]}/index.ttl" class="description" style ="height: 100%; overflow: auto" border=1 id=indextable><thead><tr><th>Class</th><th>Number of instances</th><th>Instance Example</th></tr></thead><tbody>')
-                for item in tree["core"]["data"]:
-                    if (item["type"] == "geoclass" or item["type"] == "class" or item["type"] == "featurecollection" or
-                        item["type"] == "geocollection") and "instancecount" in item and item["instancecount"] > 0:
-                        exitem = None
-                        #exitemlabel=""
-                        for item2 in tree["core"]["data"]:
-                            if item2["parent"] == item["id"] and (item2["type"] == "instance" or item2["type"] == "geoinstance") and nslink in item2["id"]:
-                                exitem = f"<td><img src=\"{tree['types'][item2['type']]['icon']}\" height=\"25\" width=\"25\" alt=\"{item2['type']}\"/><a property=\"http://rdfs.org/ns/void#exampleResource\" resource=\"{DocUtils.shortenURI(str(item2['id']))}\" href=\"{DocUtils.generateRelativeLinkFromGivenDepth(pubconfig['prefixns'], checkdepth, str(re.sub('_suniv[0-9]+_', '', item2['id'])),True)}\">"
-                                if "[" in item2["text"]:
-                                    exitem+=f'{str(item2["text"])[0:str(item2["text"]).rfind("[")]}</a></td>'
-                                    #exitemlabel=str(item2["text"])[0:str(item2["text"]).rfind("[")]
-                                else:
-                                    exitem+=f'{item2["text"]}</a></td>'
-                                    #exitemlabel=str(item2["text"])
-                                break
-                        if exitem is not None:
-                            if pubconfig["createCollections"]:
-                                f.write(f'<tr><td><img src="{tree["types"][item["type"]]["icon"]}" height="25" width="25" alt="{item["type"]}"/><a property="http://rdfs.org/ns/void#exampleResource" resource="{DocUtils.shortenURI(str(item["id"]))}_collection/" href="{DocUtils.shortenURI(str(item["id"]))}_collection/index.html" target="_blank">{item["text"]}</a></td>')
+                for item in class_items:
+                    exitem = None
+                    #exitemlabel=""
+                    for item2 in children_by_parent[item["id"]]:
+                        if item2["type"] in instance_types and nslink in item2["id"]:
+                            exitem = f"<td><img src=\"{tree['types'][item2['type']]['icon']}\" height=\"25\" width=\"25\" alt=\"{item2['type']}\"/><a property=\"http://rdfs.org/ns/void#exampleResource\" resource=\"{DocUtils.shortenURI(str(item2['id']))}\" href=\"{DocUtils.generateRelativeLinkFromGivenDepth(pubconfig['prefixns'], checkdepth, str(re.sub('_suniv[0-9]+_', '', item2['id'])),True)}\">"
+                            if "[" in item2["text"]:
+                                exitem+=f'{str(item2["text"])[0:str(item2["text"]).rfind("[")]}</a></td>'
+                                #exitemlabel=str(item2["text"])[0:str(item2["text"]).rfind("[")]
                             else:
-                                f.write(f"<tr><td><img src=\"{tree['types'][item['type']]['icon']}\" height=\"25\" width=\"25\" alt=\"{item['type']}\"/><a  href=\"{item['id']}\" target=\"_blank\">")
-                                itemstr=str(item["text"])
-                                f.write(f'{itemstr[0:itemstr.rfind("[")] if "[" in itemstr else ""}</a></td>')
-                            f.write(f'<td property="http://rdfs.org/ns/void#classPartition" typeof="http://rdfs.org/ns/void#Dataset" resource="{voidds}_{DocUtils.shortenURI(item["id"])}"><span about="{voidds}_{DocUtils.shortenURI(item["id"])}" property="http://rdfs.org/ns/void#class" resource="{item["id"]}"></span><span about="{voidds}_{DocUtils.shortenURI(item["id"])}" property="http://rdfs.org/ns/void#entities" content="{item["instancecount"]}" datatype="http://www.w3.org/2001/XMLSchema#integer">{item["instancecount"]}</td>{exitem}</tr>')
+                                exitem+=f'{item2["text"]}</a></td>'
+                                #exitemlabel=str(item2["text"])
+                            break
+                    if exitem is not None:
+                        if pubconfig["createCollections"]:
+                            f.write(f'<tr><td><img src="{tree["types"][item["type"]]["icon"]}" height="25" width="25" alt="{item["type"]}"/><a property="http://rdfs.org/ns/void#exampleResource" resource="{DocUtils.shortenURI(str(item["id"]))}_collection/" href="{DocUtils.shortenURI(str(item["id"]))}_collection/index.html" target="_blank">{item["text"]}</a></td>')
+                        else:
+                            f.write(f"<tr><td><img src=\"{tree['types'][item['type']]['icon']}\" height=\"25\" width=\"25\" alt=\"{item['type']}\"/><a  href=\"{item['id']}\" target=\"_blank\">")
+                            itemstr=str(item["text"])
+                            f.write(f'{itemstr[0:itemstr.rfind("[")] if "[" in itemstr else ""}</a></td>')
+                        f.write(f'<td property="http://rdfs.org/ns/void#classPartition" typeof="http://rdfs.org/ns/void#Dataset" resource="{voidds}_{DocUtils.shortenURI(item["id"])}"><span about="{voidds}_{DocUtils.shortenURI(item["id"])}" property="http://rdfs.org/ns/void#class" resource="{item["id"]}"></span><span about="{voidds}_{DocUtils.shortenURI(item["id"])}" property="http://rdfs.org/ns/void#entities" content="{item["instancecount"]}" datatype="http://www.w3.org/2001/XMLSchema#integer">{item["instancecount"]}</td>{exitem}</tr>')
                 f.write(f"</tbody></table><script property=\"http://purl.org/dc/terms/modified\" content=\"{pubconfig['modtime']}\" datatype=\"http://www.w3.org/2001/XMLSchema#dateTime\">$('#indextable').DataTable();</script>")
                 tempfoot = DocUtils.replaceStandardVariables(templates["footer"], "", checkdepth,str(nslink == pubconfig["prefixns"]).lower(),pubconfig).replace(
                     "{{license}}", curlicense).replace("{{exports}}", templates["nongeoexports"]).replace("{{bibtex}}","").replace("{{stats}}", voidstatshtml)
