@@ -43,7 +43,7 @@ class SolidExporter:
         for cls in classtree:
             ptyeindexhash=URIRef(f'{deploypath}/settings/publicTypeIndex.ttl#{DocUtils.shortenURI(cls["id"])}')
             typeindexgraph.add((ptypeindex, RDFS.member, ptyeindexhash))
-            typeindexgraph.add((ptyeindexhash, DocConfig.FOR_CLASS, cls["parent"]))
+            typeindexgraph.add((ptyeindexhash, DocConfig.FOR_CLASS, URIRef(cls["parent"])))
             typeindexgraph.add((ptyeindexhash, DocConfig.INSTANCE, URIRef(f'{deploypath}/{DocUtils.shortenURI(cls["id"])}')))
         for subj,obj in graph.subject_objects(RDFS.subClassOf):
             typeindexgraph.add((subj, RDFS.subClassOf, obj))
