@@ -484,22 +484,17 @@ class HTMLExporter():
         typeprop=URIRef(typeproperty)
         incoming_predicate = URIRef(pred) if pred is not None else None
         incoming_predicate_str = str(incoming_predicate) if incoming_predicate is not None else None
-        object_triples = tuple(graph.predicate_objects(object))
-        object_types = (
-            tuple(value for predicate, value in object_triples if str(predicate) == typeproperty)
-            if incoming_predicate_str == DocConfig.OA_HAS_SELECTOR_IRI else ()
-        )
-        for predicate, value in object_triples:
-            tuppredstr=str(predicate)
-            tupobjstr=str(value)
+        for tup in graph.predicate_objects(object):
+            tuppredstr=str(tup[0])
+            tupobjstr=str(tup[1])
             if tuppredstr in DocConfig.LABEL_PREDICATES:
-                if value.language == labellang:
+                if tup[1].language == labellang:
                     label = tupobjstr
                 onelabel = tupobjstr
             elif tuppredstr == typeproperty:
                 if incoming_predicate_str == DocConfig.OA_HAS_SELECTOR_IRI:
                     if tupobjstr == DocConfig.OA_SVG_SELECTOR_IRI or tupobjstr == DocConfig.OA_WKT_SELECTOR_IRI:
-                        for svglit in object_types:
+                        for svglit in graph.objects(object, typeprop):
                             svglitstr=str(svglit)
                             svglistrup=svglitstr.upper()
                             if "<svg" in svglitstr:
@@ -508,20 +503,20 @@ class HTMLExporter():
                                 image3dannos.append({"value": svglitstr, "bodies": []})
                     elif tupobjstr == DocConfig.OA_TEXT_POSITION_SELECTOR_IRI:
                         curanno = {}
-                        for text_predicate, text_value in object_triples:
-                            text_predicate_str = str(text_predicate)
+                        for txtlit in graph.predicate_objects(object):
+                            text_predicate_str = str(txtlit[0])
                             if text_predicate_str == DocConfig.RDF_VALUE_IRI:
-                                curanno["exact"] = str(text_value)
+                                curanno["exact"] = str(txtlit[1])
                             elif text_predicate_str == DocConfig.OA_START_IRI:
-                                curanno["start"] = str(text_value)
+                                curanno["start"] = str(txtlit[1])
                             elif text_predicate_str == DocConfig.OA_END_IRI:
-                                curanno["end"] = str(text_value)
+                                curanno["end"] = str(txtlit[1])
                         textannos.append(curanno)
                 elif incoming_predicate_str in DocConfig.BIB_REFERENCE_PREDICATES and ("http://purl.org/ontology/bibo/" in tupobjstr):
-                    bibtex = BibPage.resolveBibtexReference(object_triples, object, graph)
+                    bibtex = BibPage.resolveBibtexReference(graph.predicate_objects(object), object, graph)
             elif tuppredstr == DocConfig.RDFS_MEMBER_IRI:
                 if not inverse and (object, typeprop, DocConfig.OBSERVATION_COLLECTION) in graph:
-                    for valtup in graph.predicate_objects(value):
+                    for valtup in graph.predicate_objects(tup[1]):
                         if str(valtup[0]) in DocConfig.unitproperties:
                             foundunit = str(valtup[1])
                         elif str(valtup[0]) in DocConfig.valueproperties and isinstance(valtup[1], Literal):
@@ -530,7 +525,7 @@ class HTMLExporter():
                 annosource = tupobjstr
                 #print("Found annosource " + tupobjstr + " from " + str(object) + " Imageannos: " + str(len(imageannos)))
             elif tuppredstr in DocConfig.VALUE_PREDICATES:
-                res=DocUtils.resolveUnitValue(graph,value,tuppredstr,tupobjstr,foundval,foundunit)
+                res=DocUtils.resolveUnitValue(graph,tup[1],tuppredstr,tupobjstr,foundval,foundunit)
                 foundval=res[0]
                 foundunit=res[1]
                 """
@@ -563,7 +558,7 @@ class HTMLExporter():
                             foundval = str(valtup[1])
                 """
             elif tuppredstr in DocConfig.UNIT_PREDICATES:
-                foundunit = value
+                foundunit = tup[1]
             elif incoming_predicate_str in DocConfig.COLLECTION_RELATION_PREDICATES:
                 if "<svg" in tupobjstr:
                     foundmedia["image"][tupobjstr] = {}
@@ -574,7 +569,7 @@ class HTMLExporter():
             elif incoming_predicate_str in DocConfig.TIME_POINTER_PREDICATES:
                 timeobj = OWLTimePage.resolveTimeLiterals(incoming_predicate, object, graph)
             elif not nonns:
-                geojsonrep = LiteralUtils.resolveGeoLiterals(predicate, value, graph, geojsonrep, nonns)
+                geojsonrep = LiteralUtils.resolveGeoLiterals(tup[0], tup[1], graph, geojsonrep, nonns)
         if foundval is not None:
             if foundunit is not None:
                 unitlabel = f"{foundval} {foundunit}"
@@ -671,7 +666,7 @@ class HTMLExporter():
             objstrrep = objstring.replace("\"", "'")
             if isinstance(object, Literal) and object.datatype is not None:
                 res = DocUtils.replaceNameSpacesInLabel(prefixes, str(object.datatype))
-                if object.datatype == XSD.anyURI:
+                if str(object.datatype) == str(XSD.anyURI):
                     objstring = f'<a href="{objstr}">{objstr}</a>'
                 elif str(object.datatype) in DocConfig.timeliteraltypes and dateprops is not None and DocUtils.shortenURI(predstr, True) not in DocConfig.metadatanamespaces and str(pred) not in dateprops:
                     dateprops.append(predstr)
