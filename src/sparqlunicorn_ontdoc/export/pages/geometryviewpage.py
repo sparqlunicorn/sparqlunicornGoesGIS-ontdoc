@@ -55,10 +55,11 @@ class GeometryViewPage:
         return geocache
 
     def generateCollectionWidget(self,graph,subject,templates,f,uritotreeitem,featurecollectionspaths,parameters={"foundlabel":""}):
+        subjectstr = str(subject)
         if parameters.get("foundlabel") is not None and parameters.get("foundlabel") != "":
             featcoll = {"type": "FeatureCollection", "id": subject, "name": str(parameters["foundlabel"]),"features": []}
         else:
-            featcoll = {"type": "FeatureCollection", "id": subject, "name": DocUtils.shortenURI(subject),"features": []}
+            featcoll = {"type": "FeatureCollection", "id": subject, "name": DocUtils.shortenURI(subjectstr),"features": []}
         geocache = parameters.get("geocache", {})
         nonns = parameters.get("nonns", False)
         hasnonns = parameters.get("hasnonns", {})
@@ -72,21 +73,36 @@ class GeometryViewPage:
                 dateatt=[]
                 properties = {}
                 for geoinstance in graph.predicate_objects(memberid, True):
-                    geoinstance0str=str(geoinstance[0])
+                    geoinstance0str = str(geoinstance[0])
                     geoinstance1str = str(geoinstance[1])
+                    geoinstanceobject = geoinstance[1]
+                    geoinstancetype = (
+                        str(geoinstanceobject.datatype)
+                        if geoinstanceobject.__class__ is Literal else None
+                    )
                     if geoinstance[1].__class__ is Literal and (
-                            geoinstance0str in DocConfig.geoproperties or str(geoinstance[1].datatype) in DocConfig.geoliteraltypes):
-                        geojsonrep = LiteralUtils.processLiteral(geoinstance1str, str(geoinstance[1].datatype), "")
-                        uritotreeitem[str(subject)][-1]["type"] = "geocollection"
-                    elif geoinstance0str in DocConfig.geopointerproperties:
-                        uritotreeitem[str(subject)][-1]["type"] = "featurecollection"
+                            geoinstance0str in DocConfig.GEO_PROPERTIES or
+                            geoinstancetype in DocConfig.geoliteraltypes):
+                        geojsonrep = LiteralUtils.processLiteral(
+                            geoinstance1str, geoinstancetype, "")
+                        uritotreeitem[subjectstr][-1]["type"] = "geocollection"
+                    elif geoinstance0str in DocConfig.GEO_POINTER_PROPERTIES:
+                        uritotreeitem[subjectstr][-1]["type"] = "featurecollection"
                         for geotup in graph.predicate_objects(geoinstance[1], True):
-                            if geotup[1].__class__ is Literal and (str(geotup[0]) in DocConfig.geoproperties or str(
-                                    geotup[1].datatype) in DocConfig.geoliteraltypes):
-                                geojsonrep = LiteralUtils.processLiteral(str(geotup[1]), str(geotup[1].datatype), "")
+                            geotupobject = geotup[1]
+                            geotuptype = (
+                                str(geotupobject.datatype)
+                                if geotupobject.__class__ is Literal else None
+                            )
+                            if geotupobject.__class__ is Literal and (
+                                    str(geotup[0]) in DocConfig.GEO_PROPERTIES or
+                                    geotuptype in DocConfig.geoliteraltypes):
+                                geotupobjectstr = str(geotupobject)
+                                geojsonrep = LiteralUtils.processLiteral(
+                                    geotupobjectstr, geotuptype, "")
                                 break
                     else:
-                        if geoinstance0str in DocConfig.timepointerproperties:
+                        if geoinstance0str in DocConfig.TIME_POINTER_PREDICATES:
                             timeobj=OWLTimePage.resolveTimeLiterals(geoinstance[0],geoinstance[1],graph)
                             for key in timeobj:
                                 dateatt.append(key)
@@ -106,24 +122,24 @@ class GeometryViewPage:
                         else:
                             properties[geoinstance0str]=geoinstance1str
                     #print(geojsonrep)
-                if geojsonrep is not None and geojsonrep!= "" and isinstance(geojsonrep,dict) and "coordinates" in geojsonrep and len(geojsonrep["coordinates"]) > 0:
+                if geojsonrep is not None and geojsonrep != "" and geojsonrep.__class__ is dict and "coordinates" in geojsonrep and len(geojsonrep["coordinates"]) > 0:
                     if uritotreeitem is not None and memberidstr in uritotreeitem:
-                        featcoll["features"].append({"type": "Feature", 'id': memberidstr,
-                                                     'name': uritotreeitem[memberidstr][-1]["text"],
-                                                     'dateprops': list(timeobj.keys()), 'properties': properties,
-                                                     "geometry": geojsonrep})
+                        feature = {"type": "Feature", 'id': memberidstr,
+                                   'name': uritotreeitem[memberidstr][-1]["text"],
+                                   'dateprops': list(timeobj.keys()), 'properties': properties,
+                                   "geometry": geojsonrep}
                     else:
-                        featcoll["features"].append(
-                            {"type": "Feature", 'id': memberidstr, 'name': memberidstr,
-                             'dateprops': list(timeobj.keys()),
-                             'properties': properties, "geometry": geojsonrep})
-                    if len(featcoll["features"][-1]["dateprops"]) > 0:
-                        dateatt = featcoll["features"][-1]["dateprops"][0]
+                        feature = {"type": "Feature", 'id': memberidstr, 'name': memberidstr,
+                                   'dateprops': list(timeobj.keys()),
+                                   'properties': properties, "geometry": geojsonrep}
+                    featcoll["features"].append(feature)
+                    if feature["dateprops"]:
+                        dateatt = feature["dateprops"][0]
                     if "crs" in geojsonrep:
                         thecrs.add(geojsonrep["crs"])
                         #break
             if parameters.get("hasnonnslen", 0) > 0:
-                geocache[str(subject)] = featcoll
+                geocache[subjectstr] = featcoll
         else:
             for item in hasnonns:
                 if item in geocache:

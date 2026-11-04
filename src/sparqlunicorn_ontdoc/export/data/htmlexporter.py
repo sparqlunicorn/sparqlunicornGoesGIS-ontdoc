@@ -607,7 +607,7 @@ class HTMLExporter():
         #timeobj = None
         objstr=str(object)
         predstr=str(pred)
-        if object.__class__ is URIRef or isinstance(object, BNode):
+        if object.__class__ is URIRef or object.__class__ is BNode:
             if ttlf is not None:
                 ttlf.add((subject, URIRef(pred), object))
             unitlabel = ""
@@ -634,7 +634,7 @@ class HTMLExporter():
             else:
                 rdfares = f"resource=\"{objstr}\""
                 microdatares = " "
-            if baseurl in objstr or isinstance(object, BNode):
+            if baseurl in objstr or object.__class__ is BNode:
                 rellink = DocUtils.generateRelativeLinkFromGivenDepth(baseurl, checkdepth, objstr, True)
                 tablecontents += f"<span><a itemprop=\"{predstr}\"{microdatares}property=\"{pred}\" {rdfares} href=\"{rellink}\">{label} <span style=\"color: #666;\">({namespaceshort}:{DocUtils.shortenURI(objstr)})</span></a>"
                 if bibtex is not None:

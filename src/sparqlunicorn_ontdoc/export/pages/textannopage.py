@@ -9,7 +9,7 @@ class TextAnnoPage:
     @staticmethod
     def generatePageWidget(graph, textannos, templates, f, pageWidget=False):
         for textanno in textannos:
-            if isinstance(textanno, dict):
+            if textanno.__class__ is dict:
                 if "src" in textanno:
                     f.write(f'<span style="font-weight:bold" class="textanno" start="{textanno["start"]}" end="{textanno["end"]}" exact="{textanno["exact"]} src={textanno["src"]}"><mark>{textanno["exact"]}</mark></span>')
                 else:

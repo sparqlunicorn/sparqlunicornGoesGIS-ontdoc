@@ -1,6 +1,6 @@
-from rdflib import Graph, URIRef
-from rdflib.namespace import RDFS,OWL,RDF
-import json
+from rdflib import URIRef
+from rdflib.namespace import RDFS
+from doc import orjsonutils as json
 
 class VOWLExporter:
 
@@ -42,39 +42,52 @@ class VOWLExporter:
         minivowlresult={"info": [{"description": "Created with pyowl2vowl (version 0.1) as part of the SPARQLing Unicorn QGIS Plugin"}],"nodes": [],"links": []}
         nodes,links=[],[]
         nodeuriToId={}
+        iri_label_cache={}
+        def iri_label(iri):
+            if iri not in iri_label_cache:
+                iri_label_cache[iri] = VOWLExporter.getIRILabel(iri)
+            return iri_label_cache[iri]
         nodecounter=0
-        for pred in g.subject_objects(URIRef(typeproperty)):
-            predstr=str(pred[1])
+        for _, class_type in g.subject_objects(URIRef(typeproperty)):
+            predstr=str(class_type)
             if predstr not in nodeuriToId:
                 nodeuriToId[predstr]=nodecounter
                 nodecounter+=1
-                if pred[1]==OWL.Class or pred[1]==RDFS.Class or pred[1]==RDFS.Datatype:
-                    nodes.append({"name":VOWLExporter.getIRILabel(predstr), "type": "class", "uri":predstr})
-                else:
-                    nodes.append({"name": VOWLExporter.getIRILabel(predstr), "type": "class", "uri": predstr})
+                nodes.append({"name": iri_label(predstr), "type": "class", "uri": predstr})
         if predicates:
             for pred in predicates:
                 if "from" in predicates[pred] and "to" in predicates[pred]:
+                    predstr = str(pred)
                     for fromsub in predicates[pred]["from"]:
-                        if str(fromsub) in nodeuriToId:
+                        fromsub_str = str(fromsub)
+                        if fromsub_str in nodeuriToId:
                             if predicates[pred]["to"]!=[]:
                                 for topred in predicates[pred]["to"]:
-                                    if "http://www.w3.org/1999/02/22-rdf-syntax-ns#" not in str(topred) and "http://www.w3.org/2002/07/owl#" not in str(topred):
-                                        links.append({"source": nodeuriToId[str(fromsub)],
-                                                      "target": nodeuriToId[str(topred)],
-                                                      "valueTo": VOWLExporter.getIRILabel(str(pred)),
+                                    topred_str = str(topred)
+                                    if "http://www.w3.org/1999/02/22-rdf-syntax-ns#" not in topred_str and "http://www.w3.org/2002/07/owl#" not in topred_str:
+                                        links.append({"source": nodeuriToId[fromsub_str],
+                                                      "target": nodeuriToId[topred_str],
+                                                      "valueTo": iri_label(predstr),
                                                       "propertyTo": "class",
-                                                      "uriTo": str(pred)})
+                                                      "uriTo": predstr})
         else:
+            outgoing_by_subject = {}
+            for subject, predicate, object in g:
+                subject_str = str(subject)
+                if subject_str in nodeuriToId:
+                    outgoing_by_subject.setdefault(subject_str, []).append((predicate, object))
             for node in nodeuriToId:
-                for predobj in g.predicate_objects(URIRef(node)):
-                    if node in nodeuriToId and str(predobj[1]) in nodeuriToId and str(predobj[0])!=typeproperty:
-                        links.append({"source":nodeuriToId[node],"target":nodeuriToId[str(predobj[1])],"valueTo": VOWLExporter.getIRILabel(str(predobj[0])), "propertyTo":("class" if isinstance(predobj[1], URIRef) else "datatype"), "uriTo":(str(predobj[1]) if isinstance(predobj[1], URIRef) else predobj[1].datatype)})
+                for predicate, object in outgoing_by_subject.get(node, ()):
+                    object_str = str(object)
+                    predicate_str = str(predicate)
+                    if object_str in nodeuriToId and predicate_str!=typeproperty:
+                        is_uri_ref = object.__class__ is URIRef
+                        links.append({"source":nodeuriToId[node],"target":nodeuriToId[object_str],"valueTo": iri_label(predicate_str), "propertyTo":("class" if is_uri_ref else "datatype"), "uriTo":(object_str if is_uri_ref else object.datatype)})
         minivowlresult["nodes"]=nodes
         minivowlresult["links"] = links
         with open(f'{outpath}/{outfile}', "w",encoding="utf-8") as f:
             f.write("var minivowlresult=")
-            json.dump(minivowlresult,f, indent=1)
+            json.dump(minivowlresult,f)
         return minivowlresult
 
     @staticmethod
@@ -83,50 +96,76 @@ class VOWLExporter:
                       "header": {"prefixList": {}, "baseIris": [], "languages": []}, "namespace": [], "class": [],
                       "classAttribute": [], "property": [], "propertyAttribute": []}
         props,propAttributes,classes,classAttributes=[],[],[],[]
-        iriToProdId,classiriToProdId,propiriToProdId={},{},{}
-        propidcounter,classidcounter,idcounter=0,0,0
+        classiriToProdId,propiriToProdId={},{}
+        idcounter=0
         tprop=URIRef(typeproperty)
         lprop=URIRef(labelproperty)
+        typed_triples = list(g.subject_objects(tprop))
+        types_by_subject = {}
+        for subject, object in typed_triples:
+            types_by_subject.setdefault(str(subject), []).append(object)
+        range_triples = list(g.subject_objects(RDFS.range))
+        subjects_to_index = {str(subject) for subject, _ in typed_triples}
+        subjects_to_index.update(str(object) for _, object in range_triples)
+        outgoing_by_subject = {}
+        for subject, predicate, object in g:
+            subject_str = str(subject)
+            if subject_str in subjects_to_index:
+                outgoing_by_subject.setdefault(subject_str, []).append((predicate, object))
+        iri_label_cache={}
+        base_iri_cache={}
+        def iri_label(iri):
+            if iri not in iri_label_cache:
+                iri_label_cache[iri] = VOWLExporter.getIRILabel(iri)
+            return iri_label_cache[iri]
+        def base_iri(iri):
+            if iri not in base_iri_cache:
+                base_iri_cache[iri] = VOWLExporter.getBaseIRI(iri)
+            return base_iri_cache[iri]
         for nstup in g.namespaces():
             vowlresult["header"]["prefixList"][str(nstup[0])]=str(nstup[1])
             vowlresult["header"]["baseIris"].append(str(nstup[1]))
-        for pred in g.subject_objects(URIRef(typeproperty)):
+        for pred in typed_triples:
             #print(pred)
             predsubstr = str(pred[0])
             predobjstr = str(pred[1])
-            iriToProdId[predsubstr]=idcounter
             if predobjstr=="http://www.w3.org/2002/07/owl#Class" or predobjstr=="http://www.w3.org/2000/01/rdf-schema#Class" or predobjstr=="http://www.w3.org/2000/01/rdf-schema#Datatype":
                 classes.append({"id":idcounter,"type":predobjstr})
                 classiriToProdId[predsubstr]={"id":idcounter,"attid":len(classAttributes)-1}
-                classAttributes.append({"id":idcounter,"iri":predsubstr,"baseIRI":VOWLExporter.getBaseIRI(predsubstr), "instances":0, "label":{"IRI-based":VOWLExporter.getIRILabel(predsubstr)}, "annotations":{}, "subClasses":[], "superClasses":[]})
+                classAttributes.append({"id":idcounter,"iri":predsubstr,"baseIRI":base_iri(predsubstr), "instances":0, "label":{"IRI-based":iri_label(predsubstr)}, "annotations":{}, "subClasses":[], "superClasses":[]})
                 idcounter+=1
             else:
-                props.append({"id":idcounter,"type":VOWLExporter.getTypeForProperty(predsubstr, g, typeproperty)})
+                property_type = "rdf:Property"
+                for type_object in types_by_subject.get(predsubstr, ()):
+                    if str(type_object)!="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property":
+                        property_type = VOWLExporter.normalizeNS(str(type_object))
+                        break
+                props.append({"id":idcounter,"type":property_type})
                 propiriToProdId[predsubstr]={"id":idcounter,"attid":len(propAttributes)-1}
-                propAttributes.append({"id":idcounter,"iri":predsubstr,"baseIRI":VOWLExporter.getBaseIRI(predsubstr), "instances":0, "label":{"IRI-based":VOWLExporter.getIRILabel(predsubstr)}, "annotations":{}, "range":[], "domain":[], "subProperties":[], "superProperties":[]})
+                propAttributes.append({"id":idcounter,"iri":predsubstr,"baseIRI":base_iri(predsubstr), "instances":0, "label":{"IRI-based":iri_label(predsubstr)}, "annotations":{}, "range":[], "domain":[], "subProperties":[], "superProperties":[]})
                 idcounter+=1
 
-        for pred in g.subject_objects(RDFS.range):
-            print(pred)
+        for pred in range_triples:
             predstr=str(pred[1])
             if predstr not in classiriToProdId:
                 classes.append({"id":idcounter,"type":"http://www.w3.org/2000/01/rdf-schema#Datatype"})
                 classiriToProdId[predstr]={"id":idcounter,"attid":len(classAttributes)-1}
-                classAttributes.append({"id":idcounter,"iri":predstr,"baseIRI":VOWLExporter.getBaseIRI(str(pred)), "instances":0, "label":{"IRI-based":VOWLExporter.getIRILabel(predstr)}, "annotations":{}, "subClasses":[], "superClasses":[]})
+                classAttributes.append({"id":idcounter,"iri":predstr,"baseIRI":base_iri(predstr), "instances":0, "label":{"IRI-based":iri_label(predstr)}, "annotations":{}, "subClasses":[], "superClasses":[]})
                 idcounter+=1
 
         for iri in classiriToProdId:
             #print(iri)
-            for clsatt in g.predicate_objects(URIRef(iri)):
+            for predicate, object in outgoing_by_subject.get(iri, ()):
+                clsatt = (predicate, object)
                 #print(clsatt)
                 clsattstr0=str(clsatt[0])
                 clsattstr1 = str(clsatt[1])
-                if clsatt[0]!=tprop:
-                    if clsatt[0]==RDFS.subClassOf:
+                if clsattstr0 != typeproperty:
+                    if clsattstr0 == str(RDFS.subClassOf):
                         if clsattstr1 in classiriToProdId:
                             classAttributes[classiriToProdId[iri]["attid"]]["superClasses"].append(str(classiriToProdId[clsattstr1]["id"]))
                             classAttributes[classiriToProdId[clsattstr1]["attid"]]["subClasses"].append(str(classiriToProdId[iri]["id"]))
-                    elif clsatt[0]==lprop:
+                    elif clsattstr0 == labelproperty:
                         classAttributes[classiriToProdId[iri]["attid"]]["label"]=clsattstr1
                     else:
                         classAttributes[classiriToProdId[iri]["attid"]]["annotations"][clsattstr0]=[]
@@ -137,7 +176,8 @@ class VOWLExporter:
 
         for iri in propiriToProdId:
             #print(iri)
-            for propatt in g.predicate_objects(URIRef(iri)):
+            for predicate, object in outgoing_by_subject.get(iri, ()):
+                propatt = (predicate, object)
                 #print(propatt)
                 propattpred = str(propatt[0])
                 propattobj=str(propatt[1])
@@ -163,7 +203,7 @@ class VOWLExporter:
         vowlresult["propertyAttribute"]=propAttributes
         vowlresult["class"]=classes
         vowlresult["classAttribute"]=classAttributes
-        with open(outpath+"/vowl_result.js","w",encoding="utf-8") as f:
+        with open(f"{outpath}/vowl_result.js","w",encoding="utf-8") as f:
             f.write("var vowlresult=")
-            json.dump(vowlresult,f,indent=1)
+            json.dump(vowlresult,f)
         return vowlresult

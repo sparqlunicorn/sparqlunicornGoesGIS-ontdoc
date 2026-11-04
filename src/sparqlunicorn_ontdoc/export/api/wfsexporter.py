@@ -1,5 +1,5 @@
 import os
-import json
+from doc import orjsonutils as json
 
 class WFSExporter:
 
