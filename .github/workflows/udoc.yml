@@ -134,6 +134,10 @@ on:
         required: false
         default: "3.11"
         type: string
+      debug:
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   ontdoc-action:
@@ -174,9 +178,15 @@ jobs:
           pip install rdflib pillow shapely requests
       - name: Generate Ontology Documentation
         run: |
-          sleep "${{inputs.sleepbefore}}"
-          python ontdocscript/src/sparqlunicorn_ontdoc/docgeneration.py --input "${{inputs.rdffilepath}}" --output "${{inputs.docpath}}" --prefixns "${{inputs.prefixns}}" --prefixnsshort "${{inputs.prefixnsshort}}" --createIndexPages "${{inputs.indexpages}}" --createCollections "${{inputs.createcollections}}" --labellang "${{inputs.preferredlang}}" --license "${{inputs.license}}" --logourl "${{inputs.logourl}}" --metadatatable "${{inputs.metadatatable}}" --nonnspages "${{inputs.createnonNSPages}}" --createvowl "${{inputs.createVOWL}}" --ogcapifeatures "${{inputs.ogcapifeatures}}" --iiif "${{inputs.iiif}}" --ckan "${{inputs.ckan}}" --startconcept "${{inputs.startconcept}}" --repository "${{ github.server_url }}/${{ github.repository }}" --deploypath "https://${{github.repository_owner}}.github.io/${{ github.event.repository.name }}/${{ inputs.ghpagesfolder }}" --templatepath "${{inputs.templatedir}}" --offlinecompat "${{inputs.offlinecompat}}" --publishingorg "${{inputs.publishingorg}}" --publisher "${{inputs.publisher}}" --exports "${{inputs.exports}}" --datasettitle "${{inputs.datasettitle}}"    
-          sleep "${{inputs.sleepafter}}"
+          if [ "${{inputs.pythonversion}}" = "true" ]; then
+            sleep "${{inputs.sleepbefore}}"
+            python -m cProfile -s cumtime ontdocscript/src/sparqlunicorn_ontdoc/docgeneration.py --input "${{inputs.rdffilepath}}" --output "${{inputs.docpath}}" --prefixns "${{inputs.prefixns}}" --prefixnsshort "${{inputs.prefixnsshort}}" --createIndexPages "${{inputs.indexpages}}" --createCollections "${{inputs.createcollections}}" --labellang "${{inputs.preferredlang}}" --license "${{inputs.license}}" --logourl "${{inputs.logourl}}" --metadatatable "${{inputs.metadatatable}}" --nonnspages "${{inputs.createnonNSPages}}" --createvowl "${{inputs.createVOWL}}" --ogcapifeatures "${{inputs.ogcapifeatures}}" --iiif "${{inputs.iiif}}" --ckan "${{inputs.ckan}}" --startconcept "${{inputs.startconcept}}" --repository "${{ github.server_url }}/${{ github.repository }}" --deploypath "https://${{github.repository_owner}}.github.io/${{ github.event.repository.name }}/${{ inputs.ghpagesfolder }}" --templatepath "${{inputs.templatedir}}" --offlinecompat "${{inputs.offlinecompat}}" --publishingorg "${{inputs.publishingorg}}" --publisher "${{inputs.publisher}}" --exports "${{inputs.exports}}" --datasettitle "${{inputs.datasettitle}}"    
+            sleep "${{inputs.sleepafter}}"
+          else
+            sleep "${{inputs.sleepbefore}}"
+            python ontdocscript/src/sparqlunicorn_ontdoc/docgeneration.py --input "${{inputs.rdffilepath}}" --output "${{inputs.docpath}}" --prefixns "${{inputs.prefixns}}" --prefixnsshort "${{inputs.prefixnsshort}}" --createIndexPages "${{inputs.indexpages}}" --createCollections "${{inputs.createcollections}}" --labellang "${{inputs.preferredlang}}" --license "${{inputs.license}}" --logourl "${{inputs.logourl}}" --metadatatable "${{inputs.metadatatable}}" --nonnspages "${{inputs.createnonNSPages}}" --createvowl "${{inputs.createVOWL}}" --ogcapifeatures "${{inputs.ogcapifeatures}}" --iiif "${{inputs.iiif}}" --ckan "${{inputs.ckan}}" --startconcept "${{inputs.startconcept}}" --repository "${{ github.server_url }}/${{ github.repository }}" --deploypath "https://${{github.repository_owner}}.github.io/${{ github.event.repository.name }}/${{ inputs.ghpagesfolder }}" --templatepath "${{inputs.templatedir}}" --offlinecompat "${{inputs.offlinecompat}}" --publishingorg "${{inputs.publishingorg}}" --publisher "${{inputs.publisher}}" --exports "${{inputs.exports}}" --datasettitle "${{inputs.datasettitle}}"    
+            sleep "${{inputs.sleepafter}}"
+          fi
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         if: ${{ inputs.ghpages }}
