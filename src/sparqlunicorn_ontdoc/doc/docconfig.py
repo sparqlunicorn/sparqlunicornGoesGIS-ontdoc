@@ -504,39 +504,46 @@ class DocConfig:
 
     EXIF_WIDTH = URIRef("http://www.w3.org/2003/12/exif/ns#width")
     EXIF_HEIGHT = URIRef("http://www.w3.org/2003/12/exif/ns#height")
-    LABEL_PREDICATES = frozenset(URIRef(uri) for uri in labelproperties)
-    VALUE_PROPERTIES = {URIRef(uri): kind for uri, kind in valueproperties.items()}
-    VALUE_PREDICATES = frozenset(VALUE_PROPERTIES)
-    STRICT_VALUE_PREDICATES = frozenset(URIRef(uri) for uri in strictvalueproperties)
-    UNIT_PREDICATES = frozenset(URIRef(uri) for uri in unitproperties)
-    COLLECTION_RELATION_PREDICATES = frozenset(
-        URIRef(uri) for uri in collectionrelationproperties
-    )
-    TIME_POINTER_PREDICATES = frozenset(URIRef(uri) for uri in timepointerproperties)
-    TIME_PREDICATES = frozenset(URIRef(uri) for uri in timeproperties)
-    TIME_CALENDAR_INSTANCES = frozenset(URIRef(uri) for uri in timecalendarinstances)
-    GEO_PROPERTIES = frozenset(URIRef(uri) for uri in geoproperties)
-    GEO_POINTER_PROPERTIES = frozenset(URIRef(uri) for uri in geopointerproperties)
+    LABEL_PREDICATES = frozenset(labelproperties)
+    VALUE_PROPERTIES = valueproperties
+    VALUE_PREDICATES = frozenset(valueproperties)
+    STRICT_VALUE_PREDICATES = frozenset(strictvalueproperties)
+    UNIT_PREDICATES = frozenset(unitproperties)
+    COLLECTION_RELATION_PREDICATES = frozenset(collectionrelationproperties)
+    TIME_POINTER_PREDICATES = frozenset(timepointerproperties)
+    TIME_PREDICATES = frozenset(timeproperties)
+    TIME_CALENDAR_INSTANCES = frozenset(timecalendarinstances)
+    GEO_PROPERTIES = frozenset(geoproperties)
+    GEO_POINTER_PROPERTIES = frozenset(geopointerproperties)
     OA_HAS_SELECTOR = URIRef("http://www.w3.org/ns/oa#hasSelector")
+    OA_HAS_SELECTOR_IRI = "http://www.w3.org/ns/oa#hasSelector"
     OA_HAS_SOURCE = URIRef("http://www.w3.org/ns/oa#hasSource")
+    OA_HAS_SOURCE_IRI = "http://www.w3.org/ns/oa#hasSource"
     OA_HAS_BODY = URIRef("http://www.w3.org/ns/oa#hasBody")
     OA_SVG_SELECTOR = URIRef("http://www.w3.org/ns/oa#SvgSelector")
+    OA_SVG_SELECTOR_IRI = "http://www.w3.org/ns/oa#SvgSelector"
     OA_WKT_SELECTOR = URIRef("http://www.w3.org/ns/oa#WKTSelector")
+    OA_WKT_SELECTOR_IRI = "http://www.w3.org/ns/oa#WKTSelector"
     OA_TEXT_POSITION_SELECTOR = URIRef("http://www.w3.org/ns/oa#TextPositionSelector")
+    OA_TEXT_POSITION_SELECTOR_IRI = "http://www.w3.org/ns/oa#TextPositionSelector"
     OA_START = URIRef("http://www.w3.org/ns/oa#start")
+    OA_START_IRI = "http://www.w3.org/ns/oa#start"
     OA_END = URIRef("http://www.w3.org/ns/oa#end")
+    OA_END_IRI = "http://www.w3.org/ns/oa#end"
     RDF_VALUE = URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#value")
+    RDF_VALUE_IRI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#value"
     RDFS_MEMBER = URIRef("http://www.w3.org/2000/01/rdf-schema#member")
+    RDFS_MEMBER_IRI = "http://www.w3.org/2000/01/rdf-schema#member"
     SHACL_PROPERTY = URIRef("http://www.w3.org/ns/shacl#property")
     SHACL_PROPERTY_CONSTRAINTS = (
-        URIRef("http://www.w3.org/ns/shacl#minCount"),
-        URIRef("http://www.w3.org/ns/shacl#maxCount"),
-        URIRef("http://www.w3.org/ns/shacl#minLength"),
-        URIRef("http://www.w3.org/ns/shacl#maxLength"),
-        URIRef("http://www.w3.org/ns/shacl#languageIn"),
-        URIRef("http://www.w3.org/ns/shacl#datatype"),
-        URIRef("http://www.w3.org/ns/shacl#pattern"),
-        URIRef("http://www.w3.org/ns/shacl#path"),
+        "http://www.w3.org/ns/shacl#minCount",
+        "http://www.w3.org/ns/shacl#maxCount",
+        "http://www.w3.org/ns/shacl#minLength",
+        "http://www.w3.org/ns/shacl#maxLength",
+        "http://www.w3.org/ns/shacl#languageIn",
+        "http://www.w3.org/ns/shacl#datatype",
+        "http://www.w3.org/ns/shacl#pattern",
+        "http://www.w3.org/ns/shacl#path",
     )
     SHACL_PROPERTY_CONSTRAINT_SET = frozenset(SHACL_PROPERTY_CONSTRAINTS)
     LEXICOG_ENTRY = URIRef("http://www.w3.org/ns/lemon/lexicog#entry")
@@ -561,6 +568,6 @@ class DocConfig:
     DC_LICENSE = URIRef("http://purl.org/dc/elements/1.1/license")
     OBSERVATION_COLLECTION = URIRef("http://www.w3.org/ns/sosa/ObservationCollection")
     BIB_REFERENCE_PREDICATES = frozenset((
-        URIRef("http://purl.org/dc/terms/isReferencedBy"),
-        URIRef("http://purl.org/spar/cito/hasCitingEntity"),
+        "http://purl.org/dc/terms/isReferencedBy",
+        "http://purl.org/spar/cito/hasCitingEntity",
     ))

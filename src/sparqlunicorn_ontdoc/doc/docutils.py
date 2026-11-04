@@ -248,9 +248,10 @@ class DocUtils:
         elif tuppredstr == "http://www.w3.org/ns/oa#hasTarget":
             for selector in graph.objects(obj, DocConfig.OA_HAS_SELECTOR):
                 for value_predicate, value in graph.predicate_objects(selector):
-                    if value_predicate in DocConfig.UNIT_PREDICATES:
+                    value_predicate_uri = str(value_predicate)
+                    if value_predicate_uri in DocConfig.UNIT_PREDICATES:
                         foundunit = str(value)
-                    elif value_predicate in DocConfig.VALUE_PROPERTIES and (
+                    elif value_predicate_uri in DocConfig.VALUE_PROPERTIES and (
                             isinstance(value, Literal) or isinstance(value, URIRef)):
                         foundval = str(value)
         elif tuppredstr is not None and DocConfig.valueproperties.get(tuppredstr) == "DatatypeProperty":
@@ -259,15 +260,17 @@ class DocUtils:
             # Keep datatype-property handling from falling through to linked-node lookup.
         else:
             for value_predicate, value in graph.predicate_objects(obj):
-                if value_predicate in DocConfig.UNIT_PREDICATES:
+                value_predicate_uri = str(value_predicate)
+                if value_predicate_uri in DocConfig.UNIT_PREDICATES:
                     foundunit = str(value)
-                elif value_predicate in DocConfig.VALUE_PROPERTIES and isinstance(value, Literal):
+                elif value_predicate_uri in DocConfig.VALUE_PROPERTIES and isinstance(value, Literal):
                     foundval = str(value)
-                elif value_predicate in DocConfig.STRICT_VALUE_PREDICATES and isinstance(value, URIRef):
+                elif value_predicate_uri in DocConfig.STRICT_VALUE_PREDICATES and isinstance(value, URIRef):
                     for nested_predicate, nested_value in graph.predicate_objects(value):
-                        if nested_predicate in DocConfig.UNIT_PREDICATES:
+                        nested_predicate_uri = str(nested_predicate)
+                        if nested_predicate_uri in DocConfig.UNIT_PREDICATES:
                             foundunit = str(nested_value)
-                        elif nested_predicate in DocConfig.VALUE_PROPERTIES:
+                        elif nested_predicate_uri in DocConfig.VALUE_PROPERTIES:
                             foundval=str(nested_value)
         return [foundval,foundunit]
 
@@ -305,7 +308,7 @@ class DocUtils:
         label=""
         onelabel=None
         for predicate, value in graph.predicate_objects(obj):
-            if predicate in DocConfig.LABEL_PREDICATES:
+            if str(predicate) in DocConfig.LABEL_PREDICATES:
                 value_str = str(value)
                 # Check for label property
                 if value.language==labellang:
