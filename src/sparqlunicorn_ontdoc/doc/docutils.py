@@ -279,10 +279,12 @@ class DocUtils:
     def checkImgMetadataRDF(g,uri):
         res={}
         image_uri = URIRef(uri)
-        for obj in g.objects(image_uri, DocConfig.EXIF_WIDTH):
-            res["width"]=str(obj)
-        for obj in g.objects(image_uri, DocConfig.EXIF_HEIGHT):
-            res["height"]=str(obj)
+        width = g.value(image_uri, DocConfig.EXIF_WIDTH)
+        if width is not None:
+            res["width"] = str(width)
+        height = g.value(image_uri, DocConfig.EXIF_HEIGHT)
+        if height is not None:
+            res["height"] = str(height)
         return res
 
     @staticmethod

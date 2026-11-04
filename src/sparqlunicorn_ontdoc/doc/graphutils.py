@@ -169,6 +169,7 @@ class GraphUtils:
         blanknodes = set()
         literallangs = set()
         literals = set()
+        subjecttriples = {}
         irirefs = 0
         literallength = 0
         literalcount = 0
@@ -188,13 +189,16 @@ class GraphUtils:
                 ns = DocUtils.shortenURI(substr, True)
                 #nscount.setdefault(ns,0)
                 nscount[ns] += 1
-                graph.add((sub, VOID.inDataset,voidds))
+                dataset_triple = (sub, VOID.inDataset, voidds)
+                graph.add(dataset_triple)
                 if sub.__class__ is BNode:
                     blanknodes.add(substr)
                 irirefs += 1
                 subjectcounter += 1
                 subjectlength += len(substr)
+                subtriples = []
                 for tup in graph.predicate_objects(sub):
+                    subtriples.append(tup)
                     tuppredstr=str(tup[0])
                     tupobjstr = str(tup[1])
                     if tup[1].__class__ is Literal:
@@ -238,8 +242,16 @@ class GraphUtils:
                         #nonnscount.setdefault(tuppredstr,{})
                         #nonnscount[tuppredstr].setdefault(ns,0)
                         nonnscount[tuppredstr][ns] += 1
+                dataset_predobj = (VOID.inDataset, voidds)
+                if dataset_predobj not in subtriples:
+                    subtriples.append(dataset_predobj)
                 if sub.__class__ is BNode and restriction:
-                    graph.add((sub, RDFS.label,Literal(label + " [Restriction]", lang="en")))
+                    restriction_value = Literal(label + " [Restriction]", lang="en")
+                    graph.add((sub, RDFS.label, restriction_value))
+                    restriction_predobj = (RDFS.label, restriction_value)
+                    if restriction_predobj not in subtriples:
+                        subtriples.append(restriction_predobj)
+                subjecttriples[sub] = subtriples
             voidstats["http://rdfs.org/ns/void#distinctSubjects"] += 1
         voidstats["http://rdfs.org/ns/void#entities"] = len(subjectstorender)
         voidstats["http://ldf.fi/void-ext#languages"] = len(literallangs)
@@ -252,4 +264,5 @@ class GraphUtils:
         voidstats["http://ldf.fi/void-ext#distinctIRIReferences"] = voidstats["http://rdfs.org/ns/void#distinctSubjects"] + res["preds"] + res["objs"]
         voidstats["http://ldf.fi/void-ext#distinctRDFNodes"] = len(blanknodes) + len(literals) + voidstats["http://ldf.fi/void-ext#distinctIRIReferences"]
         return {"voidstats":voidstats,"iiif":(imgcounter>0),"geo":(geocounter>0),
-                "subjectstorender":subjectstorender,"predmap":predmap,"nonnscount":nonnscount,"nscount":nscount,"instancecount":instancecount}
+                "subjectstorender":subjectstorender,"subjecttriples":subjecttriples,"predmap":predmap,
+                "nonnscount":nonnscount,"nscount":nscount,"instancecount":instancecount}

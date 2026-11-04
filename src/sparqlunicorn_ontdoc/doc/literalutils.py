@@ -16,7 +16,8 @@ class LiteralUtils:
                 pairprop = DocConfig.geopairproperties[predstr]["pair"]
                 latorlong = DocConfig.geopairproperties[predstr]["islong"]
                 othervalue = ""
-                for obj in graph.objects(subject, URIRef(pairprop)):
+                obj = graph.value(subject, URIRef(pairprop))
+                if obj is not None:
                     othervalue = str(obj)
                 if latorlong:
                     geojsonrep = {"type": "Point", "coordinates": [float(othervalue), float(object)]}

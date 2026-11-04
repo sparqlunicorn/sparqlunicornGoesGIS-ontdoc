@@ -181,8 +181,12 @@ class OntDocGeneration:
                                                    res["voidstats"], subjectstorender,
                                                    tree, res["predmap"], res["nonnscount"], res["nscount"], res["instancecount"])
         self.voidstatshtml = VoidExporter.toHTML(res["voidstats"], self.pubconfig["deploypath"])
-        self.graph += voidgraph["graph"]
         subjectstorender = voidgraph["subjects"]
+        subjecttriples = res.pop("subjecttriples")
+        for subj, pred, obj in voidgraph["graph"]:
+            if subj in subjectstorender and (subj, pred, obj) not in self.graph:
+                subjecttriples.setdefault(subj, []).append((pred, obj))
+        self.graph += voidgraph["graph"]
         end=time.time()
         self.exectimes["Void stats generation"]={"time":end-start,"items":numclasses}
         print(f"Void stats generation time for {numclasses} classes: {end-start} seconds")
@@ -207,7 +211,7 @@ class OntDocGeneration:
             #    except Exception as e:
             #        print(e)
             #        print(traceback.format_exc())
-            res = self.htmlexporter.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace,
+            res = self.htmlexporter.createHTML(outpath + path, subjecttriples[subj], subj, prefixnamespace,
                                   self.graph.subject_predicates(subj),
                                   self.graph, f'{self.pubconfig["corpusid"]}_search.js', f'{self.pubconfig["corpusid"]}_classtree.js',
                                   uritotreeitem, curlicense, subjectstorender, postprocessing, nonnsmap)
@@ -227,19 +231,21 @@ class OntDocGeneration:
         for subj in postprocessing.subjects(None, None, True):
             path = str(subj).replace(prefixnamespace, "")
             paths = DocUtils.processSubjectPath(outpath, paths, path, self.graph)
+            predobjs = subjecttriples[subj] if subj in subjecttriples else self.graph.predicate_objects(subj)
             #if os.path.exists(outpath + path + "/index.ttl"):
             #    try:
             #        self.graph.parse(outpath + path + "/index.ttl")
             #    except Exception as e:
             #        print(e)
             #        print(traceback.format_exc())
-            self.htmlexporter.createHTML(outpath + path, self.graph.predicate_objects(subj), subj, prefixnamespace,
+            self.htmlexporter.createHTML(outpath + path, predobjs, subj, prefixnamespace,
                             self.graph.subject_predicates(subj),
                             self.graph, f'{self.pubconfig["corpusid"]}_search.js', f'{self.pubconfig["corpusid"]}_classtree.js', uritotreeitem,
                             curlicense, subjectstorender, postprocessing)
             subtorencounter += 1
             if subtorencounter % 250 == 0:
                 DocUtils.updateProgressBar(subtorencounter, subtorenderlen, "Processing Subject URIs")
+        del subjecttriples
         start=time.time()
         ClassTreeUtils.checkGeoInstanceAssignment(uritotreeitem)
         classlist = ClassTreeUtils.assignGeoClassesToTree(tree)

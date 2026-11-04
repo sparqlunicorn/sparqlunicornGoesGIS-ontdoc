@@ -74,6 +74,8 @@ class HTMLExporter():
         #    uritotreeitem[parentclass][-1]["data"]["from"] = {}
         itembibtex = ""
         if predobjs is not None:
+            if predobjs.__class__ is not list:
+                predobjs = list(predobjs)
             for tup in sorted(predobjs, key=lambda tup: tup[0]):
                 tupobjstr = str(tup[1])
                 tuppredstr = str(tup[0])
@@ -114,7 +116,7 @@ class HTMLExporter():
                             #uritotreeitem[tpstr][-1]["instancecount"] += 1
                             collections.add(DocConfig.collectionclasses[tpstr])
                         elif tpstr in DocConfig.bibtextypemappings:
-                            itembibtex = f"<details><summary>[BIBTEX]</summary><pre>{BibPage.resolveBibtexReference(graph.predicate_objects(subject), subject,graph)}</pre></details>"
+                            itembibtex = f"<details><summary>[BIBTEX]</summary><pre>{BibPage.resolveBibtexReference(predobjs, subject,graph)}</pre></details>"
                 thetable += HTMLExporter.formatPredicate(tup, baseurl, checkdepth, graph, inverse, self.pubconfig["labellang"], self.pubconfig["prefixes"])
                 if tup in DocConfig.labelproperties:
                     for lab in predobjmap[tup]:
