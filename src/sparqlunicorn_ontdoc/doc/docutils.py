@@ -254,7 +254,7 @@ class DocUtils:
                     elif value_predicate_uri in DocConfig.VALUE_PROPERTIES and (
                             value.__class__ is Literal or value.__class__ is URIRef):
                         foundval = str(value)
-        elif tuppredstr is not None and DocConfig.valueproperties.get(tuppredstr) == "DatatypeProperty":
+        elif tuppredstr is not None and tuppredstr in DocConfig.valueproperties and DocConfig[tuppredstr] == "DatatypeProperty":
             if obj.__class__ is Literal or obj.__class__ is URIRef:
                 foundval = tupobjstr
             # Keep datatype-property handling from falling through to linked-node lookup.

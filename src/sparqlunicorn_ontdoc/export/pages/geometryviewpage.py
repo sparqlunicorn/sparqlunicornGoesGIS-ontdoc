@@ -29,45 +29,46 @@ class GeometryViewPage:
         if uritotreeitem is not None and substr in uritotreeitem:
             uritotreeitem[substr][-1]["type"] = "geoinstance"
         props = predobjmap
-        dateprops=parameters.get("dateprops",[])
-        epsgcode=parameters.get("epsgcode","")
-        timeobj = parameters.get("timeobj")
+        dateprops = parameters["dateprops"] if "dateprops" in parameters else []
+        epsgcode = parameters["epsgcode"] if "epsgcode" in parameters else ""
+        timeobj = parameters["timeobj"] if "timeobj" in parameters else None
         if timeobj is not None:
             dateprops += [item for item in timeobj]
-            #for item in timeobj:
-            #    dateprops.append(item)
-                #props[item] = str(parameters.get("timeobj")[item])
-                #props[item] = str(item)
-        jsonfeat = {"type": "Feature", 'id': substr, 'name': parameters.get("foundlabel",""), 'dateprops': dateprops,'properties': props, "geometry": geojsonrep}
+        foundlabel = parameters["foundlabel"] if "foundlabel" in parameters else ""
+        jsonfeat = {"type": "Feature", 'id': substr, 'name': foundlabel, 'dateprops': dateprops,'properties': props, "geometry": geojsonrep}
         if epsgcode == "" and "crs" in geojsonrep:
             epsgcode = f"EPSG:{geojsonrep['crs']}"
             jsonfeat["crs"]=epsgcode
-        if parameters.get("hasnonnslen",0) > 0:
+        hasnonnslen = parameters["hasnonnslen"] if "hasnonnslen" in parameters else 0
+        if hasnonnslen > 0:
             geocache[substr] = jsonfeat
         geom=shapely.geometry.shape(jsonfeat["geometry"])
         if geom.has_z and len(str(shapely.get_coordinates(geom)[0, 0]).split(".")[1])<6:
             self.createSVGFromWKT(templates, {"type":"FeatureCollection","features":[jsonfeat]}, f)
         else:
+            checkdepth = parameters["checkdepth"] if "checkdepth" in parameters else 0
+            epsgdefslink = parameters["epsgdefslink"] if "epsgdefslink" in parameters else ""
             f.write(templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace("{{myfeature}}", f'[{json.dumps(jsonfeat)}]').replace(
-                "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(parameters.get("checkdepth",0))).replace("{{epsg}}",epsgcode).replace(
-                "{{baselayers}}", json.dumps(DocConfig.baselayers)).replace("{{epsgdefspath}}", parameters.get("epsgdefslink","")).replace(
+                "{{relativepath}}", DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace("{{epsg}}",epsgcode).replace(
+                "{{baselayers}}", json.dumps(DocConfig.baselayers)).replace("{{epsgdefsPath}}", epsgdefslink).replace(
                 "{{dateatt}}", str(dateprops)))
         return geocache
 
     def generateCollectionWidget(self,graph,subject,templates,f,uritotreeitem,featurecollectionspaths,parameters={"foundlabel":""}):
         subjectstr = str(subject)
-        foundlabel = parameters.get("foundlabel")
+        foundlabel = parameters["foundlabel"] if "foundlabel" in parameters else None
         if foundlabel is not None and foundlabel != "":
             featcoll = {"type": "FeatureCollection", "id": subject, "name": str(foundlabel),"features": []}
         else:
             featcoll = {"type": "FeatureCollection", "id": subject, "name": DocUtils.shortenURI(subjectstr),"features": []}
-        geocache = parameters.get("geocache", {})
-        nonns = parameters.get("nonns", False)
-        hasnonns = parameters.get("hasnonns", {})
-        hasnonnslen = parameters.get("hasnonnslen", 0)
-        checkdepth = parameters.get("checkdepth", 0)
-        epsgdefslink = parameters.get("epsgdefslink", "")
-        completesavepath = parameters.get("completesavepath", "")
+        geocache = parameters["geocache"] if "geocache" in parameters else {}
+        nonns = parameters["nonns"] if "nonns" in parameters else False
+        hasnonns = parameters["hasnonns"] if "hasnonns" in parameters else {}
+        hasnonnslen = parameters["hasnonnslen"] if "hasnonnslen" in parameters else 0
+        checkdepth = parameters["checkdepth"] if "checkdepth" in parameters else 0
+        epsgdefslink = parameters["epsgdefslink"] if "epsgdefslink" in parameters else ""
+        completesavepath = parameters["completesavepath"] if "completesavepath" in parameters else ""
+        local_optimized = parameters["localOptimized"] if "localOptimized" in parameters else False
         thecrs = set()
         dateatt = ""
         if not nonns:
@@ -171,7 +172,7 @@ class GeometryViewPage:
                     for feat in featcoll["features"]:
                         if dateatt not in feat["properties"]:
                             feat["properties"][dateatt] = ""
-                if parameters.get("localOptimized", False):
+                if local_optimized:
                     f.write(templates["maptemplate"].replace("var ajax=true", "var ajax=false").replace("{{myfeature}}",f'[{json.dumps(featcoll)}]').replace(
                         "{{relativepath}}",DocUtils.generateRelativePathFromGivenDepth(checkdepth)).replace("{{epsg}}",epsgcode).replace(
                         "{{baselayers}}", json.dumps(DocConfig.baselayers)).replace("{{epsgdefsPath}}",epsgdefslink).replace("{{dateatt}}",str(dateatt)))
