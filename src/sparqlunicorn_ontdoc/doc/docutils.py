@@ -252,10 +252,10 @@ class DocUtils:
                     if value_predicate_uri in DocConfig.UNIT_PREDICATES:
                         foundunit = str(value)
                     elif value_predicate_uri in DocConfig.VALUE_PROPERTIES and (
-                            isinstance(value, Literal) or isinstance(value, URIRef)):
+                            value.__class__ is Literal or value.__class__ is URIRef):
                         foundval = str(value)
         elif tuppredstr is not None and DocConfig.valueproperties.get(tuppredstr) == "DatatypeProperty":
-            if isinstance(obj, (Literal, URIRef)):
+            if obj.__class__ is Literal or obj.__class__ is URIRef:
                 foundval = tupobjstr
             # Keep datatype-property handling from falling through to linked-node lookup.
         else:
@@ -263,9 +263,9 @@ class DocUtils:
                 value_predicate_uri = str(value_predicate)
                 if value_predicate_uri in DocConfig.UNIT_PREDICATES:
                     foundunit = str(value)
-                elif value_predicate_uri in DocConfig.VALUE_PROPERTIES and isinstance(value, Literal):
+                elif value_predicate_uri in DocConfig.VALUE_PROPERTIES and value.__class__ is Literal:
                     foundval = str(value)
-                elif value_predicate_uri in DocConfig.STRICT_VALUE_PREDICATES and isinstance(value, URIRef):
+                elif value_predicate_uri in DocConfig.STRICT_VALUE_PREDICATES and value.__class__ is URIRef:
                     for nested_predicate, nested_value in graph.predicate_objects(value):
                         nested_predicate_uri = str(nested_predicate)
                         if nested_predicate_uri in DocConfig.UNIT_PREDICATES:

@@ -57,8 +57,8 @@ class ClassTreeUtils:
         ress = {}
         for res in results:
             # print(res)
-            if isinstance(res["subject"], URIRef):
-                if isinstance(res["supertype"], URIRef):
+            if res["subject"].__class__ is URIRef:
+                if res["supertype"].__class__ is URIRef:
                     ress[str(res["subject"])] = {"super": res["supertype"], "label": res["label"]}
                 else:
                     ress[str(res["subject"])] = {"super": None, "label": res["label"]}

@@ -40,7 +40,7 @@ class BibPage:
             if tupstr == "http://purl.org/dc/elements/1.1/creator" or tupstr == "http://purl.org/dc/terms/creator":
                 if "author" not in bibtexitem:
                     bibtexitem["author"] = []
-                if isinstance(tup[1], URIRef):
+                if tup[1].__class__ is URIRef:
                     bibtexitem["author"].append(DocUtils.getLabelForObject(tup[1], graph))
                 else:
                     bibtexitem["author"].append(tupstrobj)
@@ -55,7 +55,7 @@ class BibPage:
             elif tupstr == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type" and tupstrobj in DocConfig.bibtextypemappings:
                 bibtexitem["type"] = DocConfig.bibtextypemappings[tupstrobj]
             elif tupstr in bibtexmappings:
-                if isinstance(tup[1], URIRef):
+                if tup[1].__class__ is URIRef:
                     bibtexitem[bibtexmappings[tupstr]] = DocUtils.getLabelForObject(tup[1], graph)
                 else:
                     bibtexitem[bibtexmappings[tupstr]] = tupstrobj

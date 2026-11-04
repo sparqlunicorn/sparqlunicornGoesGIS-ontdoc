@@ -74,14 +74,14 @@ class GeometryViewPage:
                 for geoinstance in graph.predicate_objects(memberid, True):
                     geoinstance0str=str(geoinstance[0])
                     geoinstance1str = str(geoinstance[1])
-                    if isinstance(geoinstance[1], Literal) and (
+                    if geoinstance[1].__class__ is Literal and (
                             geoinstance0str in DocConfig.geoproperties or str(geoinstance[1].datatype) in DocConfig.geoliteraltypes):
                         geojsonrep = LiteralUtils.processLiteral(geoinstance1str, str(geoinstance[1].datatype), "")
                         uritotreeitem[str(subject)][-1]["type"] = "geocollection"
                     elif geoinstance0str in DocConfig.geopointerproperties:
                         uritotreeitem[str(subject)][-1]["type"] = "featurecollection"
                         for geotup in graph.predicate_objects(geoinstance[1], True):
-                            if isinstance(geotup[1], Literal) and (str(geotup[0]) in DocConfig.geoproperties or str(
+                            if geotup[1].__class__ is Literal and (str(geotup[0]) in DocConfig.geoproperties or str(
                                     geotup[1].datatype) in DocConfig.geoliteraltypes):
                                 geojsonrep = LiteralUtils.processLiteral(str(geotup[1]), str(geotup[1].datatype), "")
                                 break
@@ -91,7 +91,7 @@ class GeometryViewPage:
                             for key in timeobj:
                                 dateatt.append(key)
                                 properties[key] = str(timeobj[key])
-                        elif isinstance(geoinstance[1],URIRef):
+                        elif geoinstance[1].__class__ is URIRef:
                             foundunit=None
                             foundval=None
                             #print("RESOLVE UNIT FROM: "+str(geoinstance[1]))

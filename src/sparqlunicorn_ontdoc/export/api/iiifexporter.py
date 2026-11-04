@@ -124,7 +124,7 @@ class IIIFAPIExporter:
                 pagecounter += 1
             for pred in predobjmap:
                 for objs in predobjmap[pred]:
-                    if isinstance(objs, URIRef):
+                    if objs.__class__ is URIRef:
                         curiiifmanifest["metadata"].append({"label": {"en": [DocUtils.shortenURI(str(pred))]}, "value": {"en": [f"<a href=\"{objs}\">{objs}</a>"]}})
                     else:
                         curiiifmanifest["metadata"].append({"label": {"en": [DocUtils.shortenURI(str(pred))]}, "value": {"en": [str(objs)]}})

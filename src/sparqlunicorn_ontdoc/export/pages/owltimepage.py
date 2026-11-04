@@ -78,13 +78,13 @@ class OWLTimePage:
     @staticmethod
     def resolveTimeLiterals(pred, obj, graph):
         timeobj = {}
-        if isinstance(obj, URIRef):
+        if obj.__class__ is URIRef:
             if str(pred) in DocConfig.TIME_POINTER_PREDICATES:
                 timeobj = OWLTimePage.resolveTimeObject(pred, obj, graph, timeobj)
             if str(pred) in (
                     _TIME_HAS_TIME, _SOSA_PHENOMENON_TIME, _SOSA_RESULT_TIME):
                 for tobj in graph.predicate_objects(obj):
                     timeobj = OWLTimePage.resolveTimeObject(tobj[0], tobj[1], graph, timeobj)
-        elif isinstance(obj, Literal):
+        elif obj.__class__ is Literal:
             timeobj = OWLTimePage.resolveTimeObject(pred, obj, graph, timeobj)
         return timeobj

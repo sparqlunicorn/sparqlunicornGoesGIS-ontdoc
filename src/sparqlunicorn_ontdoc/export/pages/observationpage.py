@@ -17,14 +17,13 @@ class ObservationPage:
         gotvalue = None
         xLabel=None
         for observ in graph.predicate_objects(memberid, True):
-            predicate = str(observ[0])
-            if predicate == str(SOSA.hasSimpleResult):
+            if observ[0] == SOSA.hasSimpleResult:
                 gotvalue = str(observ[1])
-            if predicate == str(SOSA.phenomenonTime):
+            if observ[0] == SOSA.phenomenonTime:
                 for val in graph.predicate_objects(observ[1]):
                     if str(val[0]) in DocConfig.timeproperties:
                         gottime = str(val[1])
-            if predicate == str(SOSA.hasResult):
+            if observ[0] == SOSA.hasResult:
                 for val in graph.predicate_objects(observ[1]):
                     if str(val[0]) in DocConfig.valueproperties and val[1] is not None and str(val[1]) != "":
                         gotvalue = str(val[1])

@@ -28,7 +28,7 @@ class SHACLPage(Page):
         resmapprop["http://www.w3.org/ns/shacl#path"] = None
         for predobj in graph.predicate_objects(subject):
             if str(predobj[0]) in resmapprop:
-                if isinstance(predobj[1], URIRef):
+                if predobj[1].__class__ is URIRef:
                     resmapprop[str(predobj[0])] = f"<a href=\"{predobj[1]}\">{DocUtils.shortenURI(str(predobj[1]))}</a>"
                 else:
                     resmapprop[str(predobj[0])] = str(predobj[1])

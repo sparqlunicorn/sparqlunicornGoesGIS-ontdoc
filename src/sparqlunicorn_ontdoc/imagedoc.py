@@ -53,7 +53,7 @@ lg.parse(inputfile)
 g=Graph()
 for s, p, o in lg:
     #print(str(o))
-    if isinstance(o,URIRef) or isinstance(o,Literal):
+    if o.__class__ is URIRef or o.__class__ is Literal:
         if str(o)[o.rfind("."):] in imageextensions:
             res=getImageMetadataFromURL(str(o))
             g.add((URIRef(str(o)),URIRef("http://www.w3.org/2003/12/exif/ns#width"),Literal(res["width"])))

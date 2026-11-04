@@ -11,7 +11,7 @@ class LiteralUtils:
     def resolveGeoLiterals(pred, object, graph, geojsonrep, nonns, subject=None):
         #print("resolveGeoLiterals")
         predstr=str(pred)
-        if isinstance(object, Literal):
+        if object.__class__ is Literal:
             if subject is not None and (predstr in DocConfig.geopairproperties):
                 pairprop = DocConfig.geopairproperties[predstr]["pair"]
                 latorlong = DocConfig.geopairproperties[predstr]["islong"]
@@ -24,9 +24,9 @@ class LiteralUtils:
                     geojsonrep = {"type": "Point", "coordinates": [float(object), float(othervalue)]}
             elif predstr in DocConfig.geoproperties or str(object.datatype) in DocConfig.geoliteraltypes:
                 geojsonrep = LiteralUtils.processLiteral(str(object), str(object.datatype), "")
-        elif isinstance(object, URIRef) and nonns:
+        elif object.__class__ is URIRef and nonns:
             for pobj in graph.predicate_objects(object):
-                if isinstance(pobj[1], Literal) and (str(pobj[0]) in DocConfig.geoproperties or str(pobj[1].datatype) in DocConfig.geoliteraltypes):
+                if pobj[1].__class__ is Literal and (str(pobj[0]) in DocConfig.geoproperties or str(pobj[1].datatype) in DocConfig.geoliteraltypes):
                     geojsonrep = LiteralUtils.processLiteral(str(pobj[1]), str(pobj[1].datatype), "")
         #print(geojsonrep)
         return geojsonrep

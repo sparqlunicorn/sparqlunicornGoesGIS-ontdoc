@@ -46,7 +46,7 @@ class GraphExporter:
         for sub in subjectstorender:
             file.write(f'<node id="{sub}" uri="{sub}"><data key="nodekey"><y:ShapeNode><y:Shape shape="ellipse"></y:Shape><y:Fill color="#800080" transparent="false"></y:Fill><y:NodeLabel alignment="center" fontSize="12" fontStyle="plain" hasText="true" visible="true" width="4.0">{DocUtils.shortenURI(sub)}</y:NodeLabel></y:ShapeNode></data></node>\n')
             for tup in g.predicate_objects(sub):
-                if isinstance(tup[1], Literal):
+                if tup[1].__class__ is Literal:
                     file.write(f'<node id="literal{literalcounter}" uri="literal{literalcounter}"><data key="nodekey"><y:ShapeNode><y:Shape shape="ellipse"></y:Shape><y:Fill color="#008000" transparent="false"></y:Fill><y:NodeLabel alignment="center" fontSize="12" fontStyle="plain" hasText="true" visible="true" width="4.0"><![CDATA[{tup[1]}]]></y:NodeLabel></y:ShapeNode></data></node>\n')
                     file.write(f'<edge id="e{edgecounter}" uri="{tup[0]}" source="{sub}" target="literal{literalcounter}"><data key="edgekey"><y:PolyLineEdge><y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" fontSize="12" fontStyle="plain" hasText="true" visible="true" width="4.0">{DocUtils.shortenURI(str(tup[0]))}</y:EdgeLabel></y:PolyLineEdge></data></edge>\n')
                     literalcounter += 1
@@ -69,7 +69,7 @@ class GraphExporter:
         for sub in subjectstorender:
             file.write(f"node\n[\nid {sub}\nlabel \"{DocUtils.shortenURI(str(sub))}\"\n]\n")
             for tup in g.predicate_objects(sub):
-                if isinstance(tup[1], Literal):
+                if tup[1].__class__ is Literal:
                     file.write(f'node\n[\nid literal{literalcounter}\nlabel "{DocUtils.shortenURI(str(tup[1]))}"\n]\n')
                     file.write(f"edge\n[\nsource {sub}\n target literal{literalcounter}\nlabel \"{DocUtils.shortenURI(str(tup[0]))}\"\n]\n")
                     literalcounter += 1
@@ -241,7 +241,7 @@ class GraphExporter:
                 nodecounter += 1
             for tup in g.predicate_objects(sub):
                 tup1str=str(tup[1])
-                if isinstance(tup[1],Literal):
+                if tup[1].__class__ is Literal:
                     if tup1str not in uriToNodeId:
                         escaped_value = str(tup1str.replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;").replace("\"", "'"))
                         escaped_label = str(str(tup[1]).replace("<", "&lt;").replace(">", "&gt;").replace("&", "&amp;").replace("\"", "'"))

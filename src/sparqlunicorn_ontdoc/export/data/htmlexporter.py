@@ -85,7 +85,7 @@ class HTMLExporter():
                     #else:
                     uritotreeitem[parentclass][-1]["data"]["to"][tuppredstr]["instancecount"] += 1
                         #uritotreeitem[parentclass][-1]["instancecount"] += 1
-                if isinstance(tup[1], URIRef):
+                if tup[1].__class__ is URIRef:
                     for item in graph.objects(tup[1], tprop):
                         thetypes.add(str(item))
                         if parentclass is not None:
@@ -143,7 +143,7 @@ class HTMLExporter():
                         elif "<svg" in itemstr:
                             foundmedia["image"][itemstr] = {}
                         elif "http" in itemstr:
-                            if isinstance(item, Literal):
+                            if item.__class__ is Literal:
                                 ext = f".{''.join(filter(str.isalpha, str(item.value).split('.')[-1]))}"
                             else:
                                 ext = f".{''.join(filter(str.isalpha, itemstr.split('.')[-1]))}"
@@ -201,7 +201,7 @@ class HTMLExporter():
                 #if parentclass is not None and tupobjstr not in uritotreeitem[parentclass][-1]["data"]["from"]:
                     #uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr] = defaultdict(int)
                     #uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr]["instancecount"] = 0
-                if isinstance(tup[0], URIRef):
+                if tup[0].__class__ is URIRef:
                     if parentclass is not None:
                         for item in graph.objects(tup[0], tprop):
                             #uritotreeitem[parentclass][-1]["data"]["from"][tupobjstr].setdefault(item, 0)
@@ -519,7 +519,7 @@ class HTMLExporter():
                     for valtup in graph.predicate_objects(tup[1]):
                         if str(valtup[0]) in DocConfig.unitproperties:
                             foundunit = str(valtup[1])
-                        elif str(valtup[0]) in DocConfig.valueproperties and isinstance(valtup[1], Literal):
+                        elif str(valtup[0]) in DocConfig.valueproperties and valtup[1].__class__ is Literal:
                             foundval = str(valtup[1])
             elif tuppredstr == DocConfig.OA_HAS_SOURCE_IRI:
                 annosource = tupobjstr
@@ -533,7 +533,7 @@ class HTMLExporter():
                     tempvalprop = tuppredstr
                     foundval = tupobjstr
                 elif tuppredstr != "http://www.w3.org/ns/oa#hasSource" and DocConfig.valueproperties[
-                tuppredstr] == "DatatypeProperty" and (isinstance(tup[1], Literal) or isinstance(tup[1], URIRef)):
+                tuppredstr] == "DatatypeProperty" and (tup[1].__class__ is Literal or tup[1].__class__ is URIRef):
                     tempvalprop = tuppredstr
                     foundval = tupobjstr
                 elif tuppredstr == "http://www.w3.org/ns/oa#hasTarget":
@@ -544,17 +544,17 @@ class HTMLExporter():
                                 if str(valtup[0]) in DocConfig.unitproperties:
                                     foundunit = str(valtup[1])
                                 elif str(valtup[0]) in DocConfig.valueproperties and (
-                                        isinstance(valtup[1], Literal) or isinstance(valtup[1], URIRef)):
+                                        valtup[1].__class__ is Literal or valtup[1].__class__ is URIRef):
                                     foundval = str(valtup[1])
                 elif DocConfig.valueproperties[tuppredstr] == "DatatypeProperty":
-                    if tuppredstr in DocConfig.valueproperties and isinstance(tup[1], Literal):
+                    if tuppredstr in DocConfig.valueproperties and tup[1].__class__ is Literal:
                         tempvalprop = tuppredstr
                         foundval = tupobjstr
                 else:
                     for valtup in graph.predicate_objects(tup[1]):
                         if str(valtup[0]) in DocConfig.unitproperties:
                             foundunit = str(valtup[1])
-                        elif str(valtup[0]) in DocConfig.valueproperties and isinstance(valtup[1], Literal):
+                        elif str(valtup[0]) in DocConfig.valueproperties and valtup[1].__class__ is Literal:
                             foundval = str(valtup[1])
                 """
             elif tuppredstr in DocConfig.UNIT_PREDICATES:
@@ -607,7 +607,7 @@ class HTMLExporter():
         #timeobj = None
         objstr=str(object)
         predstr=str(pred)
-        if isinstance(object, URIRef) or isinstance(object, BNode):
+        if object.__class__ is URIRef or isinstance(object, BNode):
             if ttlf is not None:
                 ttlf.add((subject, URIRef(pred), object))
             unitlabel = ""
@@ -664,9 +664,9 @@ class HTMLExporter():
                 ttlf.add((subject, URIRef(pred), object))
             objstring = objstr.replace("<", "&lt").replace(">", "&gt;")
             objstrrep = objstring.replace("\"", "'")
-            if isinstance(object, Literal) and object.datatype is not None:
+            if object.__class__ is Literal and object.datatype is not None:
                 res = DocUtils.replaceNameSpacesInLabel(prefixes, str(object.datatype))
-                if str(object.datatype) == str(XSD.anyURI):
+                if object.datatype == XSD.anyURI:
                     objstring = f'<a href="{objstr}">{objstr}</a>'
                 elif str(object.datatype) in DocConfig.timeliteraltypes and dateprops is not None and DocUtils.shortenURI(predstr, True) not in DocConfig.metadatanamespaces and str(pred) not in dateprops:
                     dateprops.append(predstr)

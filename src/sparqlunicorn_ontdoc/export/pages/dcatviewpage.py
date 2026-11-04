@@ -23,7 +23,7 @@ class DCATOverviewPage:
         widget="<table><thead><tr><th>Name</th><th>Type</th><th>Composed of</th><th>part of</th><th>documented in</th><th>was present at</th><th>has dimension</th</tr></thead><tbody><tr>"
         for predobj in graph.predicate_objects(subject):
             if str(predobj[0]) in resmap:
-                if isinstance(predobj[1],URIRef):
+                if predobj[1].__class__ is URIRef:
                     resmap[str(predobj[0])] = f"<a href=\"{predobj[0]}\">{DocUtils.shortenURI(str(predobj[0]))}</a>"
                 else:
                     resmap[str(predobj[0])]=str(predobj[1])
