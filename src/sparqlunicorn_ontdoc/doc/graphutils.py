@@ -2,7 +2,7 @@ from rdflib import URIRef, BNode, Literal
 from rdflib.namespace import RDF, RDFS, OWL, SKOS, VOID, GEO
 from doc.docutils import DocUtils
 from doc.docconfig import DocConfig
-from doc import orjsonutils as json
+import json
 from collections import defaultdict
 from export.data.vowlexporter import VOWLExporter
 
@@ -76,16 +76,20 @@ class GraphUtils:
                 graph.add((colluri, tprop,
                            gcoll))
             elif cls in DocConfig.classToCollectionClass:
-                collection_config = DocConfig.classToCollectionClass[cls]
-                collection_class = URIRef(collection_config["class"])
-                if "super" in collection_config:
-                    super_class = URIRef(collection_config["super"])
-                    graph.add((collection_class, RDFS.subClassOf, super_class))
-                    graph.add((super_class, RDFS.subClassOf, collcls))
+                if "super" in DocConfig.classToCollectionClass[cls]:
+                    graph.add((URIRef(DocConfig.classToCollectionClass[cls]["class"]),
+                               RDFS.subClassOf,
+                               URIRef(DocConfig.classToCollectionClass[cls]["super"])))
+                    graph.add((URIRef(DocConfig.classToCollectionClass[cls]["super"]),
+                               RDFS.subClassOf,
+                               collcls))
                 else:
-                    graph.add((collection_class, RDFS.subClassOf, collcls))
-                graph.add((colluri, tprop, collection_class))
-                collrelprop = collection_config["prop"]
+                    graph.add((URIRef(DocConfig.classToCollectionClass[cls]["class"]),
+                               RDFS.subClassOf,
+                               collcls))
+                graph.add((colluri, tprop,
+                           URIRef(DocConfig.classToCollectionClass[cls]["class"])))
+                collrelprop = DocConfig.classToCollectionClass[cls]["prop"]
             else:
                 graph.add((colluri, tprop,collcls))
             graph.add((colluri, RDFS.label,Literal(f"{DocUtils.shortenURI(cls)} Instances Collection", lang="en")))
@@ -121,28 +125,25 @@ class GraphUtils:
         predicatecounter,predicatelength,predicateClasses = 0,0,0
         objects = set()
         tpprop=URIRef(typeproperty)
-        types_by_node = defaultdict(set)
-        for subject, object in graph.subject_objects(tpprop):
-            types_by_node[subject].add(object)
-
-        for subject, pred, object in graph:
-            if pred not in predicates:
-                predicatecounter += 1
-                predicatelength += len(str(pred))
-            if subject == tpprop:
-                predicateClasses += 1
-            predstats = predicates[pred]
-            predstats["from"].update(types_by_node.get(subject, ()))
-            predstats["to"].update(types_by_node.get(object, ()))
-            objects.add(str(object))
-            predstats["triples"] += 1
-
-        for predstats in predicates.values():
-            predstats["from"] = list(predstats["from"])
-            predstats["to"] = list(predstats["to"])
-        if createVOWL:
-            VOWLExporter.convertOWL2MiniVOWL(graph, outpath, "minivowl_result.js", predicates)
-        with open(f"{outpath}proprelations.js", 'w', encoding='utf-8') as f:
+        for pred in graph.predicates(None, None, True):
+            #predicates[pred] = {"from": set(), "to": set(), "triples": 0}
+            for tup in graph.subject_objects(pred):
+                if tup[0] == tpprop:
+                    predicateClasses += 1
+                predicates[pred]["from"].update(graph.objects(tup[0], tpprop, True))
+                predicates[pred]["to"].update(graph.objects(tup[1], tpprop, True))
+                #for item in graph.objects(tup[0], tpprop, True):
+                #    predicates[pred]["from"].add(item)
+                #for item in graph.objects(tup[1], tpprop, True):
+                #    predicates[pred]["to"].add(item)
+                objects.add(str(tup[1]))
+                predicates[pred]["triples"] += 1
+            predicates[pred]["from"] = list(predicates[pred]["from"])
+            predicates[pred]["to"] = list(predicates[pred]["to"])
+            predicatecounter += 1
+            predicatelength += len(str(pred))
+        VOWLExporter.convertOWL2MiniVOWL(graph, outpath, "minivowl_result.js", predicates)
+        with open(outpath + "proprelations.js", 'w', encoding='utf-8') as f:
             f.write("var proprelations=")
             json.dump(predicates,f)
         return {"preds": predicatecounter, "avgpredlen": str(int(DocUtils.zero_div(predicatelength,predicatecounter))),
@@ -180,7 +181,7 @@ class GraphUtils:
         voidds=URIRef(voidds)
         for sub in graph.subjects(None, None, True):
             substr=str(sub)
-            if prefixnamespace in sub and (sub.__class__ is URIRef) or sub.__class__ is BNode:
+            if prefixnamespace in sub and (isinstance(sub, URIRef)) or isinstance(sub, BNode):
                 subjectstorender.add(sub)
                 label = DocUtils.shortenURI(substr)
                 restriction = False
@@ -188,7 +189,7 @@ class GraphUtils:
                 #nscount.setdefault(ns,0)
                 nscount[ns] += 1
                 graph.add((sub, VOID.inDataset,voidds))
-                if sub.__class__ is BNode:
+                if isinstance(sub, BNode):
                     blanknodes.add(substr)
                 irirefs += 1
                 subjectcounter += 1
@@ -196,7 +197,7 @@ class GraphUtils:
                 for tup in graph.predicate_objects(sub):
                     tuppredstr=str(tup[0])
                     tupobjstr = str(tup[1])
-                    if tup[1].__class__ is Literal:
+                    if isinstance(tupobjstr, Literal):
                         if tup[1].datatype is not None:
                             literaltypes[str(tup[1].datatype)].add(tuppredstr)
                             #literaltypes.setdefault(str(tup[1].datatype),set()).add(tuppredstr)
@@ -210,7 +211,7 @@ class GraphUtils:
                         if "." in val and val[val.rfind("."):] in DocConfig.imageextensions:
                             imgcounter+=1
                         literalcount += 1
-                    elif tup[1].__class__ is BNode:
+                    elif isinstance(tup[1], BNode):
                         blanknodes.add(tupobjstr)
                     else:
                         objectlength += len(tupobjstr)
@@ -230,15 +231,15 @@ class GraphUtils:
                         restriction = True
                     elif tuppredstr == "http://www.w3.org/2000/01/rdf-schema#subClassOf":
                         ressubcls =tupobjstr
-                    if tup[1].__class__ is URIRef and prefixnamespace not in tupobjstr:
+                    if isinstance(tup[1], URIRef) and prefixnamespace not in tupobjstr:
                         ns = DocUtils.shortenURI(tupobjstr, True)
                         #nscount.setdefault(ns, 0)
                         nscount[ns] += 1
                         #nonnscount.setdefault(tuppredstr,{})
                         #nonnscount[tuppredstr].setdefault(ns,0)
                         nonnscount[tuppredstr][ns] += 1
-                if sub.__class__ is BNode and restriction:
-                    graph.add((sub, RDFS.label,Literal(f"{label} [Restriction]", lang="en")))
+                if isinstance(sub, BNode) and restriction:
+                    graph.add((sub, RDFS.label,Literal(label + " [Restriction]", lang="en")))
             voidstats["http://rdfs.org/ns/void#distinctSubjects"] += 1
         voidstats["http://rdfs.org/ns/void#entities"] = len(subjectstorender)
         voidstats["http://ldf.fi/void-ext#languages"] = len(literallangs)
