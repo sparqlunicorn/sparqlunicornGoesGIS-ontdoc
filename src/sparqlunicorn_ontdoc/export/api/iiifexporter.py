@@ -123,11 +123,17 @@ class IIIFAPIExporter:
                 curiiifmanifest["items"].append(curitem)
                 pagecounter += 1
             for pred in predobjmap:
-                for objs in predobjmap[pred]:
-                    if objs.__class__ is URIRef:
-                        curiiifmanifest["metadata"].append({"label": {"en": [DocUtils.shortenURI(str(pred))]}, "value": {"en": [f"<a href=\"{objs}\">{objs}</a>"]}})
-                    else:
-                        curiiifmanifest["metadata"].append({"label": {"en": [DocUtils.shortenURI(str(pred))]}, "value": {"en": [str(objs)]}})
+                predlabel = DocUtils.shortenURI(str(pred))
+                curiiifmanifest["metadata"].extend([
+                    {
+                        "label": {"en": [predlabel]},
+                        "value": {"en": [
+                            f"<a href=\"{objs}\">{objs}</a>"
+                            if objs.__class__ is URIRef else str(objs)
+                        ]},
+                    }
+                    for objs in predobjmap[pred]
+                ])
             # print(curiiifmanifest["metadata"])
             if summary is not None and summary != "" and summary != {}:
                 curiiifmanifest["summary"] = {"en": [str(summary)]}

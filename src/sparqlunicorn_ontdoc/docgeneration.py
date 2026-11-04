@@ -2,7 +2,7 @@
 from sys import prefix
 
 from rdflib import Graph
-from rdflib import URIRef, Literal, BNode
+from rdflib import URIRef
 from rdflib.namespace import RDF
 from rdflib.plugins.sparql import prepareQuery
 from urllib.request import urlopen
