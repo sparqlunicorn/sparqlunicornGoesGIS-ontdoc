@@ -106,7 +106,7 @@ class GeometryViewPage:
                         else:
                             properties[geoinstance0str]=geoinstance1str
                     #print(geojsonrep)
-                if geojsonrep is not None and geojsonrep!= "" and isinstance(geojsonrep,dict) and "coordinates" in geojsonrep and len(geojsonrep["coordinates"]) > 0:
+                if geojsonrep is not None and geojsonrep!= "" and geojsonrep.__class__ is dict and "coordinates" in geojsonrep and len(geojsonrep["coordinates"]) > 0:
                     if uritotreeitem is not None and memberidstr in uritotreeitem:
                         featcoll["features"].append({"type": "Feature", 'id': memberidstr,
                                                      'name': uritotreeitem[memberidstr][-1]["text"],
