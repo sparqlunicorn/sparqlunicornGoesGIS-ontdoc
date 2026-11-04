@@ -175,7 +175,7 @@ jobs:
         run: |
           python -c "import sys; print(sys.version)"
           python -m pip install --upgrade pip
-          pip install rdflib pillow shapely requests
+          pip install -r requirements.txt
       - name: Generate Ontology Documentation
         run: |
           if [ "${{inputs.debug}}" = "true" ]; then
